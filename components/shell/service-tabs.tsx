@@ -376,7 +376,9 @@ export const STRATEGY_SUB_TABS: ServiceTab[] = [
     matchPrefix: "/services/research/strategy/families",
   },
   { label: "Catalog", href: "/services/research/strategy/catalog", matchPrefix: "/services/research/strategy/catalog" },
-  { label: "Allocator", href: "/services/research/strategy/allocator" },
+  // G2.10: Allocator removed from research sub-tabs (rule 03 same-system-principle —
+  // allocator is a commercial surface at /services/investment-management/allocator
+  // or /services/trading-platform/allocator, resolved via audience claim).
   { label: "Unity", href: "/services/research/strategy/unity" },
   { label: "Venues", href: "/services/research/strategy/venues" },
   { label: "Policies", href: "/services/research/strategy/execution-policies" },

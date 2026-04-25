@@ -1,1195 +1,1679 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Platform — Odum Research</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0a0a0b;
+        --bg-card: #111113;
+        --bg-surface: #161618;
+        --border: rgba(255, 255, 255, 0.08);
+        --border-accent: rgba(255, 255, 255, 0.12);
+        --text: #e4e4e7;
+        --text-muted: #a1a1aa;
+        --text-secondary: #c4c4cc;
+        --text-dim: #71717a;
+        --primary: #22d3ee;
+        --sky: #38bdf8;
+        --emerald: #4ade80;
+        --violet: #a78bfa;
+        --amber: #fbbf24;
+        --rose: #fb7185;
+        --cyan: #22d3ee;
+        --font-sans: "IBM Plex Sans", -apple-system, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(10, 10, 11, 0.92);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--border);
+      }
+
+      .header-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 56px;
+      }
+
+      header .container.header-inner {
+        padding-left: 10px;
+        padding-right: 24px;
+      }
+
+      .logo-group {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .logo-img {
+        width: 36px;
+        height: 36px;
+        object-fit: contain;
+      }
+
+      .logo-text {
+        font-size: 18px;
+        font-weight: 600;
+      }
+
+      .fca-badge {
+        display: inline-block;
+        margin-left: 8px;
+        font-size: 11px;
+        font-weight: 500;
+        color: var(--text-muted);
+        border: 1px solid var(--border-accent);
+        border-radius: 9999px;
+        padding: 2px 10px;
+      }
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Platform — Odum Research</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link
-    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
-    rel="stylesheet">
-  <style>
-    :root {
-      --bg: #0a0a0b;
-      --bg-card: #111113;
-      --bg-surface: #161618;
-      --border: rgba(255, 255, 255, 0.08);
-      --border-accent: rgba(255, 255, 255, 0.12);
-      --text: #e4e4e7;
-      --text-muted: #a1a1aa;
-      --text-secondary: #c4c4cc;
-      --text-dim: #71717a;
-      --primary: #22d3ee;
-      --sky: #38bdf8;
-      --emerald: #4ade80;
-      --violet: #a78bfa;
-      --amber: #fbbf24;
-      --rose: #fb7185;
-      --cyan: #22d3ee;
-      --font-sans: 'IBM Plex Sans', -apple-system, sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
-    }
-
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--font-sans);
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 24px;
-    }
-
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(10, 10, 11, 0.92);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .header-inner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 56px;
-    }
-
-    header .container.header-inner {
-      padding-left: 10px;
-      padding-right: 24px;
-    }
-
-    .logo-group {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .logo-img {
-      width: 36px;
-      height: 36px;
-      object-fit: contain;
-    }
-
-    .logo-text {
-      font-size: 18px;
-      font-weight: 600;
-    }
-
-    .fca-badge {
-      display: inline-block;
-      margin-left: 8px;
-      font-size: 11px;
-      font-weight: 500;
-      color: var(--text-muted);
-      border: 1px solid var(--border-accent);
-      border-radius: 9999px;
-      padding: 2px 10px;
-    }
-
-    nav {
-      display: flex;
-      align-items: center;
-      gap: 18px;
-    }
-
-    nav>a {
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text-dim);
-      transition: color 0.15s;
-    }
-
-    nav>a:hover {
-      color: var(--text-muted);
-    }
-
-    nav>a.active {
-      color: var(--text);
-      font-weight: 600;
-    }
-
-    nav>span {
-      color: rgba(255, 255, 255, 0.06);
-      font-size: 10px;
-      font-weight: 300;
-      user-select: none;
-      padding: 0 1px;
-    }
-
-    nav .nav-dropdown>a {
-      font-size: 14px;
-      font-weight: 600;
-      letter-spacing: 0.01em;
-      transition: color 0.15s;
-    }
-
-    nav .nav-dropdown:nth-child(3)>a {
-      color: rgba(251, 113, 133, 0.88);
-    }
-
-    nav .nav-dropdown:nth-child(3)>a:hover {
-      color: #fda4af;
-    }
-
-    nav .nav-dropdown:nth-child(4)>a {
-      color: rgba(34, 211, 238, 0.88);
-    }
-
-    nav .nav-dropdown:nth-child(4)>a:hover {
-      color: #67e8f9;
-    }
-
-    nav .nav-dropdown:nth-child(5)>a {
-      color: #94a3b8;
-    }
-
-    nav .nav-dropdown:nth-child(5)>a:hover {
-      color: #cbd5e1;
-    }
-
-    nav .nav-dropdown>a.active {
-      font-weight: 700;
-      text-decoration: underline;
-      text-decoration-thickness: 2px;
-      text-underline-offset: 5px;
-      text-decoration-color: currentColor;
-    }
-
-    .nav-dropdown {
-      position: relative;
-    }
-
-    .nav-dropdown>a::after {
-      content: ' \25BE';
-      font-size: 10px;
-      opacity: 0.5;
-    }
-
-    .dropdown-menu {
-      display: none;
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-      min-width: 200px;
-      background: rgba(16, 16, 18, 0.98);
-      backdrop-filter: blur(12px);
-      border: 1px solid var(--border-accent);
-      border-radius: 10px;
-      padding: 8px 0;
-      margin-top: 12px;
-      z-index: 200;
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
-    }
-
-    .dropdown-menu::before {
-      content: '';
-      position: absolute;
-      top: -12px;
-      left: 0;
-      right: 0;
-      height: 12px;
-    }
-
-    .nav-dropdown:hover .dropdown-menu {
-      display: block;
-    }
-
-    .dropdown-menu a {
-      display: block;
-      padding: 8px 20px;
-      font-size: 13px;
-      color: var(--text-dim);
-      white-space: nowrap;
-      font-weight: 400;
-    }
-
-    .dropdown-menu a:hover {
-      color: var(--cyan);
-      background: rgba(6, 182, 212, 0.06);
-    }
-
-    .dropdown-menu .dd-heading {
-      display: block;
-      padding: 8px 20px 4px;
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-family: var(--font-sans);
-      font-size: 14px;
-      font-weight: 500;
-      border-radius: 8px;
-      padding: 8px 18px;
-      cursor: pointer;
-      transition: all 0.15s;
-      border: none;
-    }
-
-    .btn-primary {
-      background: var(--primary);
-      color: #0a0a0b;
-    }
-
-    .btn-primary:hover {
-      background: #06b6d4;
-    }
-
-    .btn-outline {
-      background: transparent;
-      color: var(--text);
-      border: 1px solid var(--border-accent);
-    }
-
-    .btn-outline:hover {
-      border-color: var(--primary);
-      color: var(--primary);
-    }
-
-    .btn-ghost {
-      background: transparent;
-      color: var(--text-muted);
-      padding: 8px 12px;
-    }
-
-    section {
-      border-bottom: 1px solid var(--border);
-    }
-
-    .section-pad {
-      padding: 80px 0;
-    }
-
-    .section-header {
-      text-align: center;
-      max-width: 700px;
-      margin: 0 auto 48px;
-    }
-
-    .eyebrow {
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--primary);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 12px;
-    }
-
-    .section-header h2 {
-      font-size: clamp(24px, 3vw, 36px);
-      font-weight: 700;
-      letter-spacing: -0.01em;
-    }
-
-    .section-header p {
-      margin-top: 16px;
-      font-size: 16px;
-      color: var(--text-muted);
-    }
-
-    .hero {
-      position: relative;
-      overflow: hidden;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .hero-bg {
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(ellipse at 40% 30%, rgba(34, 211, 238, 0.07) 0%, transparent 60%), radial-gradient(ellipse at 80% 70%, rgba(251, 191, 36, 0.04) 0%, transparent 50%);
-    }
-
-    .hero-content {
-      position: relative;
-      text-align: center;
-      padding: 80px 24px 60px;
-      max-width: 800px;
-      margin: 0 auto;
-    }
-
-    .hero h1 {
-      font-size: clamp(28px, 4vw, 44px);
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      line-height: 1.2;
-    }
-
-    .hero .subtitle {
-      margin-top: 20px;
-      font-size: clamp(16px, 2vw, 19px);
-      color: var(--text-muted);
-      max-width: 640px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    .hero-ctas {
-      display: flex;
-      justify-content: center;
-      gap: 16px;
-      margin-top: 32px;
-      flex-wrap: wrap;
-    }
-
-    .hero-stats {
-      display: flex;
-      justify-content: center;
-      gap: 40px;
-      margin-top: 40px;
-      flex-wrap: wrap;
-    }
-
-    .hero-stat {
-      text-align: center;
-    }
-
-    .hero-stat .value {
-      font-size: 28px;
-      font-weight: 700;
-      color: var(--primary);
-      font-family: var(--font-mono);
-    }
-
-    .hero-stat .label {
-      font-size: 12px;
-      color: var(--text-dim);
-      margin-top: 4px;
-    }
-
-    .card-grid {
-      display: grid;
-      gap: 20px;
-    }
-
-    .card-grid-2 {
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    }
-
-    .card-grid-3 {
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    }
-
-    .card-grid-4 {
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    }
-
-    .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 28px;
-      transition: all 0.2s;
-    }
-
-    .card:hover {
-      border-color: var(--border-accent);
-      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
-    }
-
-    .card h3 {
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 10px;
-    }
-
-    .card p {
-      font-size: 0.875rem;
-      color: var(--text-secondary);
-      line-height: 1.6;
-    }
-
-    .card ul {
-      list-style: none;
-      margin-top: 12px;
-    }
-
-    .card ul li {
-      font-size: 0.8125rem;
-      color: var(--text-secondary);
-      padding: 4px 0 4px 18px;
-      position: relative;
-    }
-
-    .card ul li::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 10px;
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--text-dim);
-    }
-
-    .layer-section {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 56px;
-      align-items: start;
-    }
-
-    .layer-section.reverse {
-      direction: rtl;
-    }
-
-    .layer-section.reverse>* {
-      direction: ltr;
-    }
-
-    .layer-content h3 {
-      font-size: 24px;
-      font-weight: 700;
-      margin-bottom: 12px;
-    }
-
-    .layer-content p {
-      font-size: 15px;
-      color: var(--text-muted);
-      margin-bottom: 16px;
-    }
-
-    .layer-visual {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 32px;
-      min-height: 240px;
-      position: relative;
-    }
-
-    .illustrative-tag {
-      position: absolute;
-      top: 10px;
-      right: 12px;
-      font-family: var(--font-sans);
-      font-size: 9px;
-      font-weight: 500;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      color: var(--text-dim);
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      border-radius: 4px;
-      padding: 2px 7px;
-      pointer-events: none;
-    }
-
-    .layer-visual .mock-label {
-      font-family: var(--font-mono);
-      font-size: 13px;
-      color: var(--text-dim);
-      text-align: center;
-    }
-
-    .layer-visual .mock-label span {
-      display: block;
-      font-size: 32px;
-      margin-bottom: 8px;
-    }
-
-    .feature-list {
-      list-style: none;
-    }
-
-    .feature-list li {
-      font-size: 14px;
-      color: var(--text-muted);
-      padding: 6px 0 6px 20px;
-      position: relative;
-    }
-
-    .feature-list li::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 13px;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-    }
-
-    .flow-diagram {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0;
-      flex-wrap: wrap;
-      margin-top: 32px;
-    }
-
-    .flow-step {
-      text-align: center;
-      padding: 20px 24px;
-    }
-
-    .flow-step .step-label {
-      font-size: 14px;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-
-    .flow-step .step-desc {
-      font-size: 12px;
-      color: var(--text-dim);
-    }
-
-    .flow-arrow {
-      font-size: 20px;
-      color: var(--text-dim);
-      padding: 0 4px;
-    }
-
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 32px 0;
-    }
-
-    .footer-inner {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 16px;
-    }
-
-    .footer-links {
-      display: flex;
-      gap: 24px;
-    }
-
-    .footer-links a {
-      font-size: 13px;
-      color: var(--text-dim);
-    }
-
-    .footer-copy {
-      font-size: 12px;
-      color: var(--text-dim);
-    }
-
-    @media (max-width: 768px) {
       nav {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+      }
+
+      nav > a {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-dim);
+        transition: color 0.15s;
+      }
+
+      nav > a:hover {
+        color: var(--text-muted);
+      }
+
+      nav > a.active {
+        color: var(--text);
+        font-weight: 600;
+      }
+
+      nav > span {
+        color: rgba(255, 255, 255, 0.06);
+        font-size: 10px;
+        font-weight: 300;
+        user-select: none;
+        padding: 0 1px;
+      }
+
+      nav .nav-dropdown > a {
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: 0.01em;
+        transition: color 0.15s;
+      }
+
+      nav .nav-dropdown:nth-child(3) > a {
+        color: rgba(251, 113, 133, 0.88);
+      }
+
+      nav .nav-dropdown:nth-child(3) > a:hover {
+        color: #fda4af;
+      }
+
+      nav .nav-dropdown:nth-child(4) > a {
+        color: rgba(34, 211, 238, 0.88);
+      }
+
+      nav .nav-dropdown:nth-child(4) > a:hover {
+        color: #67e8f9;
+      }
+
+      nav .nav-dropdown:nth-child(5) > a {
+        color: #94a3b8;
+      }
+
+      nav .nav-dropdown:nth-child(5) > a:hover {
+        color: #cbd5e1;
+      }
+
+      nav .nav-dropdown > a.active {
+        font-weight: 700;
+        text-decoration: underline;
+        text-decoration-thickness: 2px;
+        text-underline-offset: 5px;
+        text-decoration-color: currentColor;
+      }
+
+      .nav-dropdown {
+        position: relative;
+      }
+
+      .nav-dropdown > a::after {
+        content: " \25BE";
+        font-size: 10px;
+        opacity: 0.5;
+      }
+
+      .dropdown-menu {
         display: none;
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        min-width: 200px;
+        background: rgba(16, 16, 18, 0.98);
+        backdrop-filter: blur(12px);
+        border: 1px solid var(--border-accent);
+        border-radius: 10px;
+        padding: 8px 0;
+        margin-top: 12px;
+        z-index: 200;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
       }
 
-      .layer-section,
-      .layer-section.reverse {
-        grid-template-columns: 1fr;
+      .dropdown-menu::before {
+        content: "";
+        position: absolute;
+        top: -12px;
+        left: 0;
+        right: 0;
+        height: 12px;
       }
 
-      .card-grid-3,
-      .card-grid-4 {
-        grid-template-columns: 1fr;
+      .nav-dropdown:hover .dropdown-menu {
+        display: block;
+      }
+
+      .dropdown-menu a {
+        display: block;
+        padding: 8px 20px;
+        font-size: 13px;
+        color: var(--text-dim);
+        white-space: nowrap;
+        font-weight: 400;
+      }
+
+      .dropdown-menu a:hover {
+        color: var(--cyan);
+        background: rgba(6, 182, 212, 0.06);
+      }
+
+      .dropdown-menu .dd-heading {
+        display: block;
+        padding: 8px 20px 4px;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-family: var(--font-sans);
+        font-size: 14px;
+        font-weight: 500;
+        border-radius: 8px;
+        padding: 8px 18px;
+        cursor: pointer;
+        transition: all 0.15s;
+        border: none;
+      }
+
+      .btn-primary {
+        background: var(--primary);
+        color: #0a0a0b;
+      }
+
+      .btn-primary:hover {
+        background: #06b6d4;
+      }
+
+      .btn-outline {
+        background: transparent;
+        color: var(--text);
+        border: 1px solid var(--border-accent);
+      }
+
+      .btn-outline:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+      }
+
+      .btn-ghost {
+        background: transparent;
+        color: var(--text-muted);
+        padding: 8px 12px;
+      }
+
+      section {
+        border-bottom: 1px solid var(--border);
       }
 
       .section-pad {
-        padding: 48px 0;
+        padding: 80px 0;
+      }
+
+      .section-header {
+        text-align: center;
+        max-width: 700px;
+        margin: 0 auto 48px;
+      }
+
+      .eyebrow {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--primary);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 12px;
+      }
+
+      .section-header h2 {
+        font-size: clamp(24px, 3vw, 36px);
+        font-weight: 700;
+        letter-spacing: -0.01em;
+      }
+
+      .section-header p {
+        margin-top: 16px;
+        font-size: 16px;
+        color: var(--text-muted);
+      }
+
+      .hero {
+        position: relative;
+        overflow: hidden;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .hero-bg {
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(ellipse at 40% 30%, rgba(34, 211, 238, 0.07) 0%, transparent 60%),
+          radial-gradient(ellipse at 80% 70%, rgba(251, 191, 36, 0.04) 0%, transparent 50%);
       }
 
       .hero-content {
-        padding: 48px 16px 40px;
+        position: relative;
+        text-align: center;
+        padding: 80px 24px 60px;
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      .hero h1 {
+        font-size: clamp(28px, 4vw, 44px);
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+      }
+
+      .hero .subtitle {
+        margin-top: 20px;
+        font-size: clamp(16px, 2vw, 19px);
+        color: var(--text-muted);
+        max-width: 640px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .hero-ctas {
+        display: flex;
+        justify-content: center;
+        gap: 16px;
+        margin-top: 32px;
+        flex-wrap: wrap;
+      }
+
+      .hero-stats {
+        display: flex;
+        justify-content: center;
+        gap: 40px;
+        margin-top: 40px;
+        flex-wrap: wrap;
+      }
+
+      .hero-stat {
+        text-align: center;
+      }
+
+      .hero-stat .value {
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--primary);
+        font-family: var(--font-mono);
+      }
+
+      .hero-stat .label {
+        font-size: 12px;
+        color: var(--text-dim);
+        margin-top: 4px;
+      }
+
+      .card-grid {
+        display: grid;
+        gap: 20px;
+      }
+
+      .card-grid-2 {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      }
+
+      .card-grid-3 {
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      }
+
+      .card-grid-4 {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      }
+
+      .card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 28px;
+        transition: all 0.2s;
+      }
+
+      .card:hover {
+        border-color: var(--border-accent);
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+      }
+
+      .card h3 {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 10px;
+      }
+
+      .card p {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        line-height: 1.6;
+      }
+
+      .card ul {
+        list-style: none;
+        margin-top: 12px;
+      }
+
+      .card ul li {
+        font-size: 0.8125rem;
+        color: var(--text-secondary);
+        padding: 4px 0 4px 18px;
+        position: relative;
+      }
+
+      .card ul li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 10px;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--text-dim);
+      }
+
+      .layer-section {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 56px;
+        align-items: start;
+      }
+
+      .layer-section.reverse {
+        direction: rtl;
+      }
+
+      .layer-section.reverse > * {
+        direction: ltr;
+      }
+
+      .layer-content h3 {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 12px;
+      }
+
+      .layer-content p {
+        font-size: 15px;
+        color: var(--text-muted);
+        margin-bottom: 16px;
+      }
+
+      .layer-visual {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 32px;
+        min-height: 240px;
+        position: relative;
+      }
+
+      .illustrative-tag {
+        position: absolute;
+        top: 10px;
+        right: 12px;
+        font-family: var(--font-sans);
+        font-size: 9px;
+        font-weight: 500;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--text-dim);
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 4px;
+        padding: 2px 7px;
+        pointer-events: none;
+      }
+
+      .layer-visual .mock-label {
+        font-family: var(--font-mono);
+        font-size: 13px;
+        color: var(--text-dim);
+        text-align: center;
+      }
+
+      .layer-visual .mock-label span {
+        display: block;
+        font-size: 32px;
+        margin-bottom: 8px;
+      }
+
+      .feature-list {
+        list-style: none;
+      }
+
+      .feature-list li {
+        font-size: 14px;
+        color: var(--text-muted);
+        padding: 6px 0 6px 20px;
+        position: relative;
+      }
+
+      .feature-list li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 13px;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
       }
 
       .flow-diagram {
-        flex-direction: column;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0;
+        flex-wrap: wrap;
+        margin-top: 32px;
+      }
+
+      .flow-step {
+        text-align: center;
+        padding: 20px 24px;
+      }
+
+      .flow-step .step-label {
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+
+      .flow-step .step-desc {
+        font-size: 12px;
+        color: var(--text-dim);
       }
 
       .flow-arrow {
-        transform: rotate(90deg);
+        font-size: 20px;
+        color: var(--text-dim);
+        padding: 0 4px;
       }
-    }
-  </style>
-</head>
 
-<body>
+      footer {
+        border-top: 1px solid var(--border);
+        padding: 32px 0;
+      }
 
-  <header>
-    <div class="container header-inner">
-      <a href="homepage.html" class="logo-group">
-        <img src="favicon-odum-leaf-512x512.png" alt="Odum Research" class="logo-img">
-        <div><span class="logo-text">Odum Research</span><span class="fca-badge">FCA 975797</span></div>
-      </a>
-      <nav>
-        <a href="homepage.html">Home</a>
-        <span aria-hidden="true">|</span>
-        <div class="nav-dropdown">
-          <a href="strategies.html">Investment Management</a>
-          <div class="dropdown-menu">
-            <span class="dd-heading">Sections</span>
-            <a href="strategies.html#strategies">Sleeves (detail)</a>
-            <a href="strategies.html#breadth">Domain matrix</a>
-            <a href="strategies.html#process">How It Works</a>
-            <a href="strategies.html#allocators">What You Get</a>
-            <a href="strategies.html#contact-cta">Get Started</a>
+      .footer-inner {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+
+      .footer-links {
+        display: flex;
+        gap: 24px;
+      }
+
+      .footer-links a {
+        font-size: 13px;
+        color: var(--text-dim);
+      }
+
+      .footer-copy {
+        font-size: 12px;
+        color: var(--text-dim);
+      }
+
+      @media (max-width: 768px) {
+        nav {
+          display: none;
+        }
+
+        .layer-section,
+        .layer-section.reverse {
+          grid-template-columns: 1fr;
+        }
+
+        .card-grid-3,
+        .card-grid-4 {
+          grid-template-columns: 1fr;
+        }
+
+        .section-pad {
+          padding: 48px 0;
+        }
+
+        .hero-content {
+          padding: 48px 16px 40px;
+        }
+
+        .flow-diagram {
+          flex-direction: column;
+        }
+
+        .flow-arrow {
+          transform: rotate(90deg);
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <div class="container header-inner">
+        <a href="homepage.html" class="logo-group">
+          <img src="favicon-odum-leaf-512x512.png" alt="Odum Research" class="logo-img" />
+          <div><span class="logo-text">Odum Research</span><span class="fca-badge">FCA 975797</span></div>
+        </a>
+        <nav>
+          <a href="homepage.html">Home</a>
+          <span aria-hidden="true">|</span>
+          <div class="nav-dropdown">
+            <a href="strategies.html">Investment Management</a>
+            <div class="dropdown-menu">
+              <span class="dd-heading">Sections</span>
+              <a href="strategies.html#strategies">Sleeves (detail)</a>
+              <a href="strategies.html#breadth">Domain matrix</a>
+              <a href="strategies.html#process">How It Works</a>
+              <a href="strategies.html#allocators">What You Get</a>
+              <a href="strategies.html#contact-cta">Get Started</a>
+            </div>
+          </div>
+          <div class="nav-dropdown">
+            <a href="platform.html" class="active">Platform</a>
+            <div class="dropdown-menu">
+              <span class="dd-heading">Sections</span>
+              <a href="#pipeline">Pipeline</a>
+              <a href="#data">Data</a>
+              <a href="#research">Research</a>
+              <a href="#execution">Execution</a>
+              <a href="#reporting">Reporting</a>
+              <a href="#who">Who It's For</a>
+            </div>
+          </div>
+          <a href="signals.html">Signals</a>
+          <span aria-hidden="true">|</span>
+          <div class="nav-dropdown">
+            <a href="regulatory.html">Regulatory</a>
+            <div class="dropdown-menu">
+              <span class="dd-heading">Sections</span>
+              <a href="regulatory.html#coverage">What's Covered</a>
+              <a href="regulatory.html#why">Why Structure Matters</a>
+              <a href="regulatory.html#onboarding">Onboarding</a>
+              <a href="regulatory.html#comparison">Umbrella vs Direct</a>
+              <a href="regulatory.html#reg-cta">Get Started</a>
+            </div>
+          </div>
+          <span aria-hidden="true">|</span>
+          <a href="who-we-are.html">Who We Are</a>
+          <a href="contact.html">Contact</a>
+        </nav>
+        <div class="header-actions">
+          <a href="contact.html" class="btn btn-ghost">Sign In</a>
+          <a href="https://calendly.com/odum-ikenna" target="_blank" rel="noopener noreferrer" class="btn btn-primary"
+            >Book a 45-minute call</a
+          >
+        </div>
+      </div>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-bg"></div>
+      <div class="hero-content">
+        <p class="eyebrow">DART</p>
+        <h1>One screen. Every venue. Every trade.</h1>
+        <p class="subtitle">See trades, positions, P&amp;L, and analytics across every venue from one terminal.</p>
+        <div class="hero-ctas">
+          <a href="contact.html" class="btn btn-primary">Request a guided walkthrough</a>
+          <a href="contact.html" class="btn btn-outline">Book a Demo</a>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="value">100+</div>
+            <div class="label">Venues</div>
+          </div>
+          <div class="hero-stat">
+            <div class="value">5</div>
+            <div class="label">Asset Classes</div>
+          </div>
+          <div class="hero-stat">
+            <div class="value">24/7</div>
+            <div class="label">Trading</div>
+          </div>
+          <div class="hero-stat">
+            <div class="value">&lt;2s</div>
+            <div class="label">Signal Latency</div>
           </div>
         </div>
-        <div class="nav-dropdown">
-          <a href="platform.html" class="active">Platform</a>
-          <div class="dropdown-menu">
-            <span class="dd-heading">Sections</span>
-            <a href="#pipeline">Pipeline</a>
-            <a href="#data">Data</a>
-            <a href="#research">Research</a>
-            <a href="#execution">Execution</a>
-            <a href="#reporting">Reporting</a>
-            <a href="#who">Who It's For</a>
+      </div>
+    </section>
+
+    <!-- SECTION NAV -->
+    <style>
+      .section-nav {
+        position: sticky;
+        top: 56px;
+        z-index: 90;
+        background: rgba(10, 10, 11, 0.95);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--border);
+        padding: 0;
+      }
+
+      .section-nav-inner {
+        display: flex;
+        gap: 0;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+
+      .section-nav-inner::-webkit-scrollbar {
+        display: none;
+      }
+
+      .section-nav a {
+        display: block;
+        padding: 12px 20px;
+        font-size: 13px;
+        color: var(--text-dim);
+        white-space: nowrap;
+        border-bottom: 2px solid transparent;
+        transition: all 0.15s;
+      }
+
+      .section-nav a:hover {
+        color: var(--text-muted);
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .section-nav a.active {
+        color: var(--cyan);
+        border-bottom-color: var(--cyan);
+      }
+    </style>
+    <div class="section-nav">
+      <div class="container section-nav-inner">
+        <a href="#pipeline" class="active">Pipeline</a>
+        <a href="#data">Data</a>
+        <a href="#research">Research</a>
+        <a href="#execution">Execution</a>
+        <a href="#reporting">Reporting</a>
+        <a href="#who">Who It's For</a>
+      </div>
+    </div>
+
+    <!-- PIPELINE FLOW -->
+    <section id="pipeline" class="section-pad">
+      <div class="container">
+        <div class="section-header">
+          <h2>One pipeline from data to reporting</h2>
+          <p>Every layer feeds the next. Start at any point and expand without rebuilding.</p>
+        </div>
+        <div class="flow-diagram">
+          <div class="flow-step">
+            <div class="step-label" style="color: var(--sky)">Data</div>
+            <div class="step-desc">Ingest &amp; normalise</div>
+          </div>
+          <div class="flow-arrow">&rarr;</div>
+          <div class="flow-step">
+            <div class="step-label" style="color: var(--violet)">Research</div>
+            <div class="step-desc">Model &amp; test</div>
+          </div>
+          <div class="flow-arrow">&rarr;</div>
+          <div class="flow-step">
+            <div class="step-label" style="color: var(--amber)">Execution</div>
+            <div class="step-desc">Trade &amp; monitor</div>
+          </div>
+          <div class="flow-arrow">&rarr;</div>
+          <div class="flow-step">
+            <div class="step-label" style="color: var(--emerald)">Reporting</div>
+            <div class="step-desc">Attribute &amp; comply</div>
           </div>
         </div>
-        <a href="signals.html">Signals</a>
-        <span aria-hidden="true">|</span>
-        <div class="nav-dropdown">
-          <a href="regulatory.html">Regulatory</a>
-          <div class="dropdown-menu">
-            <span class="dd-heading">Sections</span>
-            <a href="regulatory.html#coverage">What's Covered</a>
-            <a href="regulatory.html#why">Why Structure Matters</a>
-            <a href="regulatory.html#onboarding">Onboarding</a>
-            <a href="regulatory.html#comparison">Umbrella vs Direct</a>
-            <a href="regulatory.html#reg-cta">Get Started</a>
+      </div>
+    </section>
+
+    <!-- STRATEGY LIFECYCLE -->
+    <section class="section-pad" style="background: var(--bg-surface)">
+      <div class="container">
+        <div class="section-header">
+          <p class="eyebrow">Strategy Lifecycle</p>
+          <h2>The same code from research to paper to live</h2>
+          <p>
+            Promote strategies through the lifecycle without rebuilding logic, while reviewing alerts, reconciliation,
+            and scenario outcomes from one terminal.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- LAYER 1: DATA -->
+    <section id="data" class="section-pad">
+      <div class="container">
+        <div class="layer-section">
+          <div class="layer-content">
+            <p class="eyebrow" style="color: var(--sky)">Layer 1</p>
+            <h3 style="color: var(--sky)">Data</h3>
+            <p>
+              Unified market data across venues and asset classes, normalised to one schema and surfaced through the
+              Odum platform. Used as the input layer for research, execution, and reporting on the same stack.
+            </p>
+            <ul class="feature-list">
+              <li style="--dot: var(--sky)">
+                <span
+                  style="
+                    position: absolute;
+                    left: 0;
+                    top: 13px;
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 50%;
+                    background: var(--sky);
+                  "
+                ></span
+                >100+ venues normalised to one schema
+              </li>
+              <li style="--dot: var(--sky)">
+                <span
+                  style="
+                    position: absolute;
+                    left: 0;
+                    top: 13px;
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 50%;
+                    background: var(--sky);
+                  "
+                ></span
+                >Real-time and historical (tick, bar, orderbook)
+              </li>
+              <li style="--dot: var(--sky)">
+                <span
+                  style="
+                    position: absolute;
+                    left: 0;
+                    top: 13px;
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 50%;
+                    background: var(--sky);
+                  "
+                ></span
+                >Coverage tracking and freshness monitoring
+              </li>
+              <li style="--dot: var(--sky)">
+                <span
+                  style="
+                    position: absolute;
+                    left: 0;
+                    top: 13px;
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 50%;
+                    background: var(--sky);
+                  "
+                ></span
+                >Accessed through the platform &mdash; not resold as raw feeds
+              </li>
+            </ul>
           </div>
-        </div>
-        <span aria-hidden="true">|</span>
-        <a href="who-we-are.html">Who We Are</a>
-        <a href="contact.html">Contact</a>
-      </nav>
-      <div class="header-actions">
-        <a href="contact.html" class="btn btn-ghost">Sign In</a>
-        <a href="contact.html" class="btn btn-primary">Book a Call</a>
-      </div>
-    </div>
-  </header>
-
-  <!-- HERO -->
-  <section class="hero">
-    <div class="hero-bg"></div>
-    <div class="hero-content">
-      <p class="eyebrow">DART</p>
-      <h1>One screen. Every venue. Every trade.</h1>
-      <p class="subtitle">
-        See trades, positions, P&amp;L, and analytics across every venue from one terminal.
-      </p>
-      <div class="hero-ctas">
-        <a href="contact.html" class="btn btn-primary">Request a guided walkthrough</a>
-        <a href="contact.html" class="btn btn-outline">Book a Demo</a>
-      </div>
-      <div class="hero-stats">
-        <div class="hero-stat">
-          <div class="value">100+</div>
-          <div class="label">Venues</div>
-        </div>
-        <div class="hero-stat">
-          <div class="value">5</div>
-          <div class="label">Asset Classes</div>
-        </div>
-        <div class="hero-stat">
-          <div class="value">24/7</div>
-          <div class="label">Trading</div>
-        </div>
-        <div class="hero-stat">
-          <div class="value">&lt;2s</div>
-          <div class="label">Signal Latency</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- SECTION NAV -->
-  <style>
-    .section-nav {
-      position: sticky;
-      top: 56px;
-      z-index: 90;
-      background: rgba(10, 10, 11, 0.95);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--border);
-      padding: 0;
-    }
-
-    .section-nav-inner {
-      display: flex;
-      gap: 0;
-      overflow-x: auto;
-      scrollbar-width: none;
-    }
-
-    .section-nav-inner::-webkit-scrollbar {
-      display: none;
-    }
-
-    .section-nav a {
-      display: block;
-      padding: 12px 20px;
-      font-size: 13px;
-      color: var(--text-dim);
-      white-space: nowrap;
-      border-bottom: 2px solid transparent;
-      transition: all 0.15s;
-    }
-
-    .section-nav a:hover {
-      color: var(--text-muted);
-      background: rgba(255, 255, 255, 0.02);
-    }
-
-    .section-nav a.active {
-      color: var(--cyan);
-      border-bottom-color: var(--cyan);
-    }
-  </style>
-  <div class="section-nav">
-    <div class="container section-nav-inner">
-      <a href="#pipeline" class="active">Pipeline</a>
-      <a href="#data">Data</a>
-      <a href="#research">Research</a>
-      <a href="#execution">Execution</a>
-      <a href="#reporting">Reporting</a>
-      <a href="#who">Who It's For</a>
-    </div>
-  </div>
-
-  <!-- PIPELINE FLOW -->
-  <section id="pipeline" class="section-pad">
-    <div class="container">
-      <div class="section-header">
-        <h2>One pipeline from data to reporting</h2>
-        <p>Every layer feeds the next. Start at any point and expand without rebuilding.</p>
-      </div>
-      <div class="flow-diagram">
-        <div class="flow-step">
-          <div class="step-label" style="color:var(--sky);">Data</div>
-          <div class="step-desc">Ingest &amp; normalise</div>
-        </div>
-        <div class="flow-arrow">&rarr;</div>
-        <div class="flow-step">
-          <div class="step-label" style="color:var(--violet);">Research</div>
-          <div class="step-desc">Model &amp; test</div>
-        </div>
-        <div class="flow-arrow">&rarr;</div>
-        <div class="flow-step">
-          <div class="step-label" style="color:var(--amber);">Execution</div>
-          <div class="step-desc">Trade &amp; monitor</div>
-        </div>
-        <div class="flow-arrow">&rarr;</div>
-        <div class="flow-step">
-          <div class="step-label" style="color:var(--emerald);">Reporting</div>
-          <div class="step-desc">Attribute &amp; comply</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- STRATEGY LIFECYCLE -->
-  <section class="section-pad" style="background: var(--bg-surface);">
-    <div class="container">
-      <div class="section-header">
-        <p class="eyebrow">Strategy Lifecycle</p>
-        <h2>The same code from research to paper to live</h2>
-        <p>Promote strategies through the lifecycle without rebuilding logic, while reviewing alerts, reconciliation,
-          and scenario outcomes from one terminal.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- LAYER 1: DATA -->
-  <section id="data" class="section-pad">
-    <div class="container">
-      <div class="layer-section">
-        <div class="layer-content">
-          <p class="eyebrow" style="color:var(--sky);">Layer 1</p>
-          <h3 style="color:var(--sky);">Data</h3>
-          <p>Unified market data across venues and asset classes, normalised to one schema and surfaced through the
-            Odum platform. Used as the input layer for research, execution, and reporting on the same stack.</p>
-          <ul class="feature-list">
-            <li style="--dot: var(--sky);"><span
-                style="position:absolute;left:0;top:13px;width:8px;height:8px;border-radius:50%;background:var(--sky);"></span>100+
-              venues normalised to one schema</li>
-            <li style="--dot: var(--sky);"><span
-                style="position:absolute;left:0;top:13px;width:8px;height:8px;border-radius:50%;background:var(--sky);"></span>Real-time
-              and historical (tick, bar, orderbook)</li>
-            <li style="--dot: var(--sky);"><span
-                style="position:absolute;left:0;top:13px;width:8px;height:8px;border-radius:50%;background:var(--sky);"></span>Coverage
-              tracking and freshness monitoring</li>
-            <li style="--dot: var(--sky);"><span
-                style="position:absolute;left:0;top:13px;width:8px;height:8px;border-radius:50%;background:var(--sky);"></span>Accessed
-              through the platform &mdash; not resold as raw feeds</li>
-          </ul>
-        </div>
-        <div class="layer-visual"
-          style="border-color: rgba(56,189,248,0.2);padding:24px;font-family:'JetBrains Mono',monospace;font-size:11px;">
-          <span class="illustrative-tag">Illustrative</span>
           <div
-            style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid rgba(56,189,248,0.12);">
-            <span style="font-family:'IBM Plex Sans',sans-serif;font-weight:600;color:var(--sky);font-size:13px;">Data
-              Pipeline</span>
-            <span
-              style="padding:2px 8px;border-radius:4px;background:rgba(74,222,128,0.12);color:var(--emerald);font-size:10px;">HEALTHY</span>
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;">
+            class="layer-visual"
+            style="
+              border-color: rgba(56, 189, 248, 0.2);
+              padding: 24px;
+              font-family: &quot;JetBrains Mono&quot;, monospace;
+              font-size: 11px;
+            "
+          >
+            <span class="illustrative-tag">Illustrative</span>
             <div
-              style="background:rgba(56,189,248,0.06);border:1px solid rgba(56,189,248,0.1);border-radius:6px;padding:8px;text-align:center;">
-              <div style="color:var(--text-dim);font-size:9px;margin-bottom:2px;">Venues</div>
-              <div style="color:var(--sky);font-size:16px;font-weight:600;">100+</div>
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 12px;
+                padding-bottom: 8px;
+                border-bottom: 1px solid rgba(56, 189, 248, 0.12);
+              "
+            >
+              <span
+                style="
+                  font-family: &quot;IBM Plex Sans&quot;, sans-serif;
+                  font-weight: 600;
+                  color: var(--sky);
+                  font-size: 13px;
+                "
+                >Data Pipeline</span
+              >
+              <span
+                style="
+                  padding: 2px 8px;
+                  border-radius: 4px;
+                  background: rgba(74, 222, 128, 0.12);
+                  color: var(--emerald);
+                  font-size: 10px;
+                "
+                >HEALTHY</span
+              >
             </div>
-            <div
-              style="background:rgba(56,189,248,0.06);border:1px solid rgba(56,189,248,0.1);border-radius:6px;padding:8px;text-align:center;">
-              <div style="color:var(--text-dim);font-size:9px;margin-bottom:2px;">Instruments</div>
-              <div style="color:var(--sky);font-size:16px;font-weight:600;">2,847</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px">
+              <div
+                style="
+                  background: rgba(56, 189, 248, 0.06);
+                  border: 1px solid rgba(56, 189, 248, 0.1);
+                  border-radius: 6px;
+                  padding: 8px;
+                  text-align: center;
+                "
+              >
+                <div style="color: var(--text-dim); font-size: 9px; margin-bottom: 2px">Venues</div>
+                <div style="color: var(--sky); font-size: 16px; font-weight: 600">100+</div>
+              </div>
+              <div
+                style="
+                  background: rgba(56, 189, 248, 0.06);
+                  border: 1px solid rgba(56, 189, 248, 0.1);
+                  border-radius: 6px;
+                  padding: 8px;
+                  text-align: center;
+                "
+              >
+                <div style="color: var(--text-dim); font-size: 9px; margin-bottom: 2px">Instruments</div>
+                <div style="color: var(--sky); font-size: 16px; font-weight: 600">2,847</div>
+              </div>
+              <div
+                style="
+                  background: rgba(56, 189, 248, 0.06);
+                  border: 1px solid rgba(56, 189, 248, 0.1);
+                  border-radius: 6px;
+                  padding: 8px;
+                  text-align: center;
+                "
+              >
+                <div style="color: var(--text-dim); font-size: 9px; margin-bottom: 2px">Freshness</div>
+                <div style="color: var(--emerald); font-size: 16px; font-weight: 600">&lt;1s</div>
+              </div>
             </div>
-            <div
-              style="background:rgba(56,189,248,0.06);border:1px solid rgba(56,189,248,0.1);border-radius:6px;padding:8px;text-align:center;">
-              <div style="color:var(--text-dim);font-size:9px;margin-bottom:2px;">Freshness</div>
-              <div style="color:var(--emerald);font-size:16px;font-weight:600;">&lt;1s</div>
-            </div>
-          </div>
-          <div style="color:var(--text-dim);font-size:10px;">
-            <div
-              style="display:grid;grid-template-columns:1fr 2fr auto;gap:8px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
-              <span>Binance</span><span style="text-align:center;">tick · book · bar</span><span
-                style="color:var(--emerald);text-align:right;">OK</span>
-            </div>
-            <div
-              style="display:grid;grid-template-columns:1fr 2fr auto;gap:8px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
-              <span>CME</span><span style="text-align:center;">tick · book · bar</span><span
-                style="color:var(--emerald);text-align:right;">OK</span>
-            </div>
-            <div
-              style="display:grid;grid-template-columns:1fr 2fr auto;gap:8px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
-              <span>Uniswap</span><span style="text-align:center;">trade · pool</span><span
-                style="color:var(--emerald);text-align:right;">OK</span>
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 2fr auto;gap:8px;padding:4px 0;">
-              <span>Betfair</span><span style="text-align:center;">odds · trade</span><span
-                style="color:var(--emerald);text-align:right;">OK</span>
+            <div style="color: var(--text-dim); font-size: 10px">
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: 1fr 2fr auto;
+                  gap: 8px;
+                  padding: 4px 0;
+                  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+                "
+              >
+                <span>Binance</span><span style="text-align: center">tick · book · bar</span
+                ><span style="color: var(--emerald); text-align: right">OK</span>
+              </div>
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: 1fr 2fr auto;
+                  gap: 8px;
+                  padding: 4px 0;
+                  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+                "
+              >
+                <span>CME</span><span style="text-align: center">tick · book · bar</span
+                ><span style="color: var(--emerald); text-align: right">OK</span>
+              </div>
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: 1fr 2fr auto;
+                  gap: 8px;
+                  padding: 4px 0;
+                  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+                "
+              >
+                <span>Uniswap</span><span style="text-align: center">trade · pool</span
+                ><span style="color: var(--emerald); text-align: right">OK</span>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 2fr auto; gap: 8px; padding: 4px 0">
+                <span>Betfair</span><span style="text-align: center">odds · trade</span
+                ><span style="color: var(--emerald); text-align: right">OK</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- LAYER 2: RESEARCH -->
-  <section id="research" class="section-pad" style="background: var(--bg-surface);">
-    <div class="container">
-      <div class="layer-section reverse">
-        <div class="layer-content">
-          <p class="eyebrow" style="color:var(--violet);">Layer 2</p>
-          <h3 style="color:var(--violet);">Research</h3>
-          <p>Build and test models, signals, and execution logic in one pipeline. Run large-scale parallel experiments.
-            Promote proven research straight into live trading.</p>
-          <ul class="feature-list">
-            <li><span
-                style="position:absolute;left:0;top:13px;width:8px;height:8px;border-radius:50%;background:var(--violet);"></span>ML
-              training, feature engineering, signal generation</li>
-            <li><span
-                style="position:absolute;left:0;top:13px;width:8px;height:8px;border-radius:50%;background:var(--violet);"></span>Multi-asset
-              backtesting with GPU acceleration</li>
-            <li><span
-                style="position:absolute;left:0;top:13px;width:8px;height:8px;border-radius:50%;background:var(--violet);"></span>Strategy
-              comparison and promotion lifecycle</li>
-          </ul>
-        </div>
-        <div class="layer-visual"
-          style="border-color: rgba(167,139,250,0.2);padding:24px;font-family:'JetBrains Mono',monospace;font-size:11px;">
-          <span class="illustrative-tag">Illustrative</span>
+    <!-- LAYER 2: RESEARCH -->
+    <section id="research" class="section-pad" style="background: var(--bg-surface)">
+      <div class="container">
+        <div class="layer-section reverse">
+          <div class="layer-content">
+            <p class="eyebrow" style="color: var(--violet)">Layer 2</p>
+            <h3 style="color: var(--violet)">Research</h3>
+            <p>
+              Build and test models, signals, and execution logic in one pipeline. Run large-scale parallel experiments.
+              Promote proven research straight into live trading.
+            </p>
+            <ul class="feature-list">
+              <li>
+                <span
+                  style="
+                    position: absolute;
+                    left: 0;
+                    top: 13px;
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 50%;
+                    background: var(--violet);
+                  "
+                ></span
+                >ML training, feature engineering, signal generation
+              </li>
+              <li>
+                <span
+                  style="
+                    position: absolute;
+                    left: 0;
+                    top: 13px;
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 50%;
+                    background: var(--violet);
+                  "
+                ></span
+                >Multi-asset backtesting with GPU acceleration
+              </li>
+              <li>
+                <span
+                  style="
+                    position: absolute;
+                    left: 0;
+                    top: 13px;
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 50%;
+                    background: var(--violet);
+                  "
+                ></span
+                >Strategy comparison and promotion lifecycle
+              </li>
+            </ul>
+          </div>
           <div
-            style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid rgba(167,139,250,0.12);">
-            <span
-              style="font-family:'IBM Plex Sans',sans-serif;font-weight:600;color:var(--violet);font-size:13px;">Research
-              Pipeline</span>
-            <span style="color:var(--text-dim);font-size:10px;">14 strategies live</span>
-          </div>
-          <div style="color:var(--text-dim);font-size:10px;">
+            class="layer-visual"
+            style="
+              border-color: rgba(167, 139, 250, 0.2);
+              padding: 24px;
+              font-family: &quot;JetBrains Mono&quot;, monospace;
+              font-size: 11px;
+            "
+          >
+            <span class="illustrative-tag">Illustrative</span>
             <div
-              style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-weight:600;color:var(--text-muted);font-size:9px;">
-              <span>Strategy</span><span>Sharpe</span><span>Status</span><span>Stage</span>
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 12px;
+                padding-bottom: 8px;
+                border-bottom: 1px solid rgba(167, 139, 250, 0.12);
+              "
+            >
+              <span
+                style="
+                  font-family: &quot;IBM Plex Sans&quot;, sans-serif;
+                  font-weight: 600;
+                  color: var(--violet);
+                  font-size: 13px;
+                "
+                >Research Pipeline</span
+              >
+              <span style="color: var(--text-dim); font-size: 10px">14 strategies live</span>
             </div>
-            <div
-              style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
-              <span>momentum_cross_v3</span><span style="color:var(--violet);">2.41</span><span
-                style="color:var(--emerald);">Live</span><span>Prod</span>
-            </div>
-            <div
-              style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
-              <span>mean_rev_defi</span><span style="color:var(--violet);">1.87</span><span
-                style="color:var(--amber);">Testing</span><span>Backtest</span>
-            </div>
-            <div
-              style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
-              <span>stat_arb_cefi</span><span style="color:var(--violet);">3.12</span><span
-                style="color:var(--emerald);">Live</span><span>Prod</span>
-            </div>
-            <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4px;padding:6px 0;">
-              <span>funding_carry</span><span style="color:var(--violet);">1.54</span><span
-                style="color:var(--sky);">Staging</span><span>Review</span>
+            <div style="color: var(--text-dim); font-size: 10px">
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: 2fr 1fr 1fr 1fr;
+                  gap: 4px;
+                  padding: 4px 0;
+                  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+                  font-weight: 600;
+                  color: var(--text-muted);
+                  font-size: 9px;
+                "
+              >
+                <span>Strategy</span><span>Sharpe</span><span>Status</span><span>Stage</span>
+              </div>
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: 2fr 1fr 1fr 1fr;
+                  gap: 4px;
+                  padding: 6px 0;
+                  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+                "
+              >
+                <span>momentum_cross_v3</span><span style="color: var(--violet)">2.41</span
+                ><span style="color: var(--emerald)">Live</span><span>Prod</span>
+              </div>
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: 2fr 1fr 1fr 1fr;
+                  gap: 4px;
+                  padding: 6px 0;
+                  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+                "
+              >
+                <span>mean_rev_defi</span><span style="color: var(--violet)">1.87</span
+                ><span style="color: var(--amber)">Testing</span><span>Backtest</span>
+              </div>
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: 2fr 1fr 1fr 1fr;
+                  gap: 4px;
+                  padding: 6px 0;
+                  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+                "
+              >
+                <span>stat_arb_cefi</span><span style="color: var(--violet)">3.12</span
+                ><span style="color: var(--emerald)">Live</span><span>Prod</span>
+              </div>
+              <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 4px; padding: 6px 0">
+                <span>funding_carry</span><span style="color: var(--violet)">1.54</span
+                ><span style="color: var(--sky)">Staging</span><span>Review</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- LAYER 3: EXECUTION -->
-  <section id="execution" class="section-pad">
-    <div class="container">
-      <div class="layer-section">
-        <div class="layer-content">
-          <p class="eyebrow" style="color:var(--amber);">Layer 3</p>
-          <h3 style="color:var(--amber);">Execution</h3>
-          <p>Run, monitor, and control trading in one live environment. See the whole portfolio or drill into the detail
-            that matters &mdash; positions, risk, P&amp;L, alerts, and order flow.</p>
-          <ul class="feature-list">
-            <li><span
-                style="position:absolute;left:0;top:13px;width:8px;height:8px;border-radius:50%;background:var(--amber);"></span>Multi-venue
-              order routing and algo execution</li>
-            <li><span
-                style="position:absolute;left:0;top:13px;width:8px;height:8px;border-radius:50%;background:var(--amber);"></span>Real-time
-              positions, P&amp;L, and risk monitoring</li>
-            <li><span
-                style="position:absolute;left:0;top:13px;width:8px;height:8px;border-radius:50%;background:var(--amber);"></span>Kill
-              switch and circuit breaker controls</li>
-            <li><span
-                style="position:absolute;left:0;top:13px;width:8px;height:8px;border-radius:50%;background:var(--amber);"></span>TCA
-              benchmarking and execution analytics</li>
-          </ul>
-        </div>
-        <div class="layer-visual"
-          style="border-color: rgba(251,191,36,0.2);padding:24px;font-family:'JetBrains Mono',monospace;font-size:11px;">
-          <span class="illustrative-tag">Illustrative</span>
+    <!-- LAYER 3: EXECUTION -->
+    <section id="execution" class="section-pad">
+      <div class="container">
+        <div class="layer-section">
+          <div class="layer-content">
+            <p class="eyebrow" style="color: var(--amber)">Layer 3</p>
+            <h3 style="color: var(--amber)">Execution</h3>
+            <p>
+              Run, monitor, and control trading in one live environment. See the whole portfolio or drill into the
+              detail that matters &mdash; positions, risk, P&amp;L, alerts, and order flow.
+            </p>
+            <ul class="feature-list">
+              <li>
+                <span
+                  style="
+                    position: absolute;
+                    left: 0;
+                    top: 13px;
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 50%;
+                    background: var(--amber);
+                  "
+                ></span
+                >Multi-venue order routing and algo execution
+              </li>
+              <li>
+                <span
+                  style="
+                    position: absolute;
+                    left: 0;
+                    top: 13px;
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 50%;
+                    background: var(--amber);
+                  "
+                ></span
+                >Real-time positions, P&amp;L, and risk monitoring
+              </li>
+              <li>
+                <span
+                  style="
+                    position: absolute;
+                    left: 0;
+                    top: 13px;
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 50%;
+                    background: var(--amber);
+                  "
+                ></span
+                >Kill switch and circuit breaker controls
+              </li>
+              <li>
+                <span
+                  style="
+                    position: absolute;
+                    left: 0;
+                    top: 13px;
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 50%;
+                    background: var(--amber);
+                  "
+                ></span
+                >TCA benchmarking and execution analytics
+              </li>
+            </ul>
+          </div>
           <div
-            style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid rgba(251,191,36,0.12);">
-            <span
-              style="font-family:'IBM Plex Sans',sans-serif;font-weight:600;color:var(--amber);font-size:13px;">Trading
-              Terminal</span>
-            <span
-              style="padding:2px 8px;border-radius:4px;background:rgba(74,222,128,0.12);color:var(--emerald);font-size:10px;">ALL
-              SYSTEMS OK</span>
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+            class="layer-visual"
+            style="
+              border-color: rgba(251, 191, 36, 0.2);
+              padding: 24px;
+              font-family: &quot;JetBrains Mono&quot;, monospace;
+              font-size: 11px;
+            "
+          >
+            <span class="illustrative-tag">Illustrative</span>
             <div
-              style="background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.1);border-radius:6px;padding:8px;">
-              <div style="color:var(--text-dim);font-size:9px;">Active Positions</div>
-              <div style="color:var(--amber);font-size:18px;font-weight:600;">47</div>
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 12px;
+                padding-bottom: 8px;
+                border-bottom: 1px solid rgba(251, 191, 36, 0.12);
+              "
+            >
+              <span
+                style="
+                  font-family: &quot;IBM Plex Sans&quot;, sans-serif;
+                  font-weight: 600;
+                  color: var(--amber);
+                  font-size: 13px;
+                "
+                >Trading Terminal</span
+              >
+              <span
+                style="
+                  padding: 2px 8px;
+                  border-radius: 4px;
+                  background: rgba(74, 222, 128, 0.12);
+                  color: var(--emerald);
+                  font-size: 10px;
+                "
+                >ALL SYSTEMS OK</span
+              >
             </div>
-            <div
-              style="background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.1);border-radius:6px;padding:8px;">
-              <div style="color:var(--text-dim);font-size:9px;">Open Orders</div>
-              <div style="color:var(--amber);font-size:18px;font-weight:600;">12</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px">
+              <div
+                style="
+                  background: rgba(251, 191, 36, 0.06);
+                  border: 1px solid rgba(251, 191, 36, 0.1);
+                  border-radius: 6px;
+                  padding: 8px;
+                "
+              >
+                <div style="color: var(--text-dim); font-size: 9px">Active Positions</div>
+                <div style="color: var(--amber); font-size: 18px; font-weight: 600">47</div>
+              </div>
+              <div
+                style="
+                  background: rgba(251, 191, 36, 0.06);
+                  border: 1px solid rgba(251, 191, 36, 0.1);
+                  border-radius: 6px;
+                  padding: 8px;
+                "
+              >
+                <div style="color: var(--text-dim); font-size: 9px">Open Orders</div>
+                <div style="color: var(--amber); font-size: 18px; font-weight: 600">12</div>
+              </div>
             </div>
-          </div>
-          <div style="color:var(--text-dim);font-size:10px;">
-            <div
-              style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-weight:600;color:var(--text-muted);font-size:9px;">
-              <span>Instrument</span><span>Side</span><span>Size</span><span>P&amp;L</span>
-            </div>
-            <div
-              style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
-              <span>BTC-PERP</span><span style="color:var(--emerald);">LONG</span><span>2.5</span><span
-                style="color:var(--emerald);">+$1,842</span>
-            </div>
-            <div
-              style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
-              <span>ES-FUT</span><span style="color:var(--rose);">SHORT</span><span>4</span><span
-                style="color:var(--rose);">-$312</span>
-            </div>
-            <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4px;padding:5px 0;">
-              <span>AAVE/USDC</span><span style="color:var(--emerald);">LONG</span><span>150</span><span
-                style="color:var(--emerald);">+$428</span>
+            <div style="color: var(--text-dim); font-size: 10px">
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: 2fr 1fr 1fr 1fr;
+                  gap: 4px;
+                  padding: 4px 0;
+                  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+                  font-weight: 600;
+                  color: var(--text-muted);
+                  font-size: 9px;
+                "
+              >
+                <span>Instrument</span><span>Side</span><span>Size</span><span>P&amp;L</span>
+              </div>
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: 2fr 1fr 1fr 1fr;
+                  gap: 4px;
+                  padding: 5px 0;
+                  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+                "
+              >
+                <span>BTC-PERP</span><span style="color: var(--emerald)">LONG</span><span>2.5</span
+                ><span style="color: var(--emerald)">+$1,842</span>
+              </div>
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: 2fr 1fr 1fr 1fr;
+                  gap: 4px;
+                  padding: 5px 0;
+                  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+                "
+              >
+                <span>ES-FUT</span><span style="color: var(--rose)">SHORT</span><span>4</span
+                ><span style="color: var(--rose)">-$312</span>
+              </div>
+              <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 4px; padding: 5px 0">
+                <span>AAVE/USDC</span><span style="color: var(--emerald)">LONG</span><span>150</span
+                ><span style="color: var(--emerald)">+$428</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- LAYER 4: REPORTING -->
-  <section id="reporting" class="section-pad" style="background: var(--bg-surface);">
-    <div class="container">
-      <div class="layer-section reverse">
-        <div class="layer-content">
-          <p class="eyebrow" style="color:var(--emerald);">Layer 4</p>
-          <h3 style="color:var(--emerald);">Reporting &amp; Controls</h3>
-          <p>Portfolio reporting, P&amp;L attribution, compliance documentation, settlement tracking, and operational
-            oversight &mdash; all generated from the same data pipeline.</p>
-          <ul class="feature-list">
-            <li><span
-                style="position:absolute;left:0;top:13px;width:8px;height:8px;border-radius:50%;background:var(--emerald);"></span>P&amp;L
-              attribution by strategy, venue, and asset</li>
-            <li><span
-                style="position:absolute;left:0;top:13px;width:8px;height:8px;border-radius:50%;background:var(--emerald);"></span>Regulatory
-              reporting and compliance docs</li>
-            <li><span
-                style="position:absolute;left:0;top:13px;width:8px;height:8px;border-radius:50%;background:var(--emerald);"></span>Settlement
-              tracking and reconciliation</li>
-            <li><span
-                style="position:absolute;left:0;top:13px;width:8px;height:8px;border-radius:50%;background:var(--emerald);"></span>Daily
-              validation and audit trail</li>
-          </ul>
-        </div>
-        <div class="layer-visual"
-          style="border-color: rgba(74,222,128,0.2);padding:24px;font-family:'JetBrains Mono',monospace;font-size:11px;">
-          <span class="illustrative-tag">Illustrative</span>
+    <!-- LAYER 4: REPORTING -->
+    <section id="reporting" class="section-pad" style="background: var(--bg-surface)">
+      <div class="container">
+        <div class="layer-section reverse">
+          <div class="layer-content">
+            <p class="eyebrow" style="color: var(--emerald)">Layer 4</p>
+            <h3 style="color: var(--emerald)">Reporting &amp; Controls</h3>
+            <p>
+              Portfolio reporting, P&amp;L attribution, compliance documentation, settlement tracking, and operational
+              oversight &mdash; all generated from the same data pipeline.
+            </p>
+            <ul class="feature-list">
+              <li>
+                <span
+                  style="
+                    position: absolute;
+                    left: 0;
+                    top: 13px;
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 50%;
+                    background: var(--emerald);
+                  "
+                ></span
+                >P&amp;L attribution by strategy, venue, and asset
+              </li>
+              <li>
+                <span
+                  style="
+                    position: absolute;
+                    left: 0;
+                    top: 13px;
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 50%;
+                    background: var(--emerald);
+                  "
+                ></span
+                >Regulatory reporting and compliance docs
+              </li>
+              <li>
+                <span
+                  style="
+                    position: absolute;
+                    left: 0;
+                    top: 13px;
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 50%;
+                    background: var(--emerald);
+                  "
+                ></span
+                >Settlement tracking and reconciliation
+              </li>
+              <li>
+                <span
+                  style="
+                    position: absolute;
+                    left: 0;
+                    top: 13px;
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 50%;
+                    background: var(--emerald);
+                  "
+                ></span
+                >Daily validation and audit trail
+              </li>
+            </ul>
+          </div>
           <div
-            style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid rgba(74,222,128,0.12);">
-            <span
-              style="font-family:'IBM Plex Sans',sans-serif;font-weight:600;color:var(--emerald);font-size:13px;">Reporting
-              &amp; Controls</span>
-            <span style="color:var(--text-dim);font-size:10px;">April 2026</span>
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;">
+            class="layer-visual"
+            style="
+              border-color: rgba(74, 222, 128, 0.2);
+              padding: 24px;
+              font-family: &quot;JetBrains Mono&quot;, monospace;
+              font-size: 11px;
+            "
+          >
+            <span class="illustrative-tag">Illustrative</span>
             <div
-              style="background:rgba(74,222,128,0.06);border:1px solid rgba(74,222,128,0.1);border-radius:6px;padding:8px;text-align:center;">
-              <div style="color:var(--text-dim);font-size:9px;">MTD P&amp;L</div>
-              <div style="color:var(--emerald);font-size:14px;font-weight:600;">+$284K</div>
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 12px;
+                padding-bottom: 8px;
+                border-bottom: 1px solid rgba(74, 222, 128, 0.12);
+              "
+            >
+              <span
+                style="
+                  font-family: &quot;IBM Plex Sans&quot;, sans-serif;
+                  font-weight: 600;
+                  color: var(--emerald);
+                  font-size: 13px;
+                "
+                >Reporting &amp; Controls</span
+              >
+              <span style="color: var(--text-dim); font-size: 10px">April 2026</span>
             </div>
-            <div
-              style="background:rgba(74,222,128,0.06);border:1px solid rgba(74,222,128,0.1);border-radius:6px;padding:8px;text-align:center;">
-              <div style="color:var(--text-dim);font-size:9px;">Sharpe</div>
-              <div style="color:var(--text);font-size:14px;font-weight:600;">2.41</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px">
+              <div
+                style="
+                  background: rgba(74, 222, 128, 0.06);
+                  border: 1px solid rgba(74, 222, 128, 0.1);
+                  border-radius: 6px;
+                  padding: 8px;
+                  text-align: center;
+                "
+              >
+                <div style="color: var(--text-dim); font-size: 9px">MTD P&amp;L</div>
+                <div style="color: var(--emerald); font-size: 14px; font-weight: 600">+$284K</div>
+              </div>
+              <div
+                style="
+                  background: rgba(74, 222, 128, 0.06);
+                  border: 1px solid rgba(74, 222, 128, 0.1);
+                  border-radius: 6px;
+                  padding: 8px;
+                  text-align: center;
+                "
+              >
+                <div style="color: var(--text-dim); font-size: 9px">Sharpe</div>
+                <div style="color: var(--text); font-size: 14px; font-weight: 600">2.41</div>
+              </div>
+              <div
+                style="
+                  background: rgba(74, 222, 128, 0.06);
+                  border: 1px solid rgba(74, 222, 128, 0.1);
+                  border-radius: 6px;
+                  padding: 8px;
+                  text-align: center;
+                "
+              >
+                <div style="color: var(--text-dim); font-size: 9px">Max DD</div>
+                <div style="color: var(--amber); font-size: 14px; font-weight: 600">-3.2%</div>
+              </div>
             </div>
-            <div
-              style="background:rgba(74,222,128,0.06);border:1px solid rgba(74,222,128,0.1);border-radius:6px;padding:8px;text-align:center;">
-              <div style="color:var(--text-dim);font-size:9px;">Max DD</div>
-              <div style="color:var(--amber);font-size:14px;font-weight:600;">-3.2%</div>
-            </div>
-          </div>
-          <div style="color:var(--text-dim);font-size:10px;">
-            <div
-              style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:4px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-weight:600;color:var(--text-muted);font-size:9px;">
-              <span>Report</span><span>Status</span><span>Due</span>
-            </div>
-            <div
-              style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:4px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
-              <span>Daily P&amp;L</span><span style="color:var(--emerald);">Sent</span><span>T+0</span>
-            </div>
-            <div
-              style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:4px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
-              <span>Compliance</span><span style="color:var(--emerald);">Sent</span><span>T+1</span>
-            </div>
-            <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:4px;padding:5px 0;">
-              <span>Reconciliation</span><span style="color:var(--amber);">Pending</span><span>T+1</span>
+            <div style="color: var(--text-dim); font-size: 10px">
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: 2fr 1fr 1fr;
+                  gap: 4px;
+                  padding: 4px 0;
+                  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+                  font-weight: 600;
+                  color: var(--text-muted);
+                  font-size: 9px;
+                "
+              >
+                <span>Report</span><span>Status</span><span>Due</span>
+              </div>
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: 2fr 1fr 1fr;
+                  gap: 4px;
+                  padding: 5px 0;
+                  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+                "
+              >
+                <span>Daily P&amp;L</span><span style="color: var(--emerald)">Sent</span><span>T+0</span>
+              </div>
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: 2fr 1fr 1fr;
+                  gap: 4px;
+                  padding: 5px 0;
+                  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+                "
+              >
+                <span>Compliance</span><span style="color: var(--emerald)">Sent</span><span>T+1</span>
+              </div>
+              <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 4px; padding: 5px 0">
+                <span>Reconciliation</span><span style="color: var(--amber)">Pending</span><span>T+1</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- WHO IT'S FOR -->
-  <section id="who" class="section-pad">
-    <div class="container">
-      <div class="section-header">
-        <h2>Two DART paths, one operating system</h2>
-        <p>DART &mdash; Data Analytics, Research &amp; Trading &mdash; is the product family this platform runs under.
-          Same platform underneath. The engagement depth is what differs &mdash; keep your strategy IP upstream, or
-          build end-to-end on our stack.</p>
+    <!-- WHO IT'S FOR -->
+    <section id="who" class="section-pad">
+      <div class="container">
+        <div class="section-header">
+          <h2>Two DART paths, one operating system</h2>
+          <p>
+            DART &mdash; Data Analytics, Research &amp; Trading &mdash; is the product family this platform runs under.
+            Same platform underneath. The engagement depth is what differs &mdash; keep your strategy IP upstream, or
+            build end-to-end on our stack.
+          </p>
+        </div>
+        <div class="card-grid card-grid-3">
+          <article class="card">
+            <h3>DART Signals-In</h3>
+            <p>
+              Your signals, our execution. Keep your strategy IP upstream. Send structured instructions against a
+              defined 8-field schema; we run the execution, reconciliation, and reporting layer. Fixed-scope pricing;
+              client capital, client signals, Odum downstream operations.
+            </p>
+          </article>
+          <article class="card">
+            <h3>DART Full Pipeline</h3>
+            <p>
+              Research, promote through paper, and run on the full stack. Fixed-access layer plus metered research
+              consumption. Exclusivity available on specialised strategies.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Investment Management</h3>
+            <p>
+              Allocate capital to Odum-run strategies on the same infrastructure. Performance-fee only, with a
+              client-choice platform-access mechanic. Reporting from the same surface Odum uses internally,
+              entitlement-filtered to the allocator view.
+            </p>
+          </article>
+        </div>
+        <div style="margin-top: 32px; text-align: center">
+          <p style="font-size: 14px; color: var(--text-muted); max-width: 640px; margin: 0 auto">
+            A separate <a href="/signals" style="color: var(--primary)">Odum Signals</a> path leases Odum-generated
+            strategy signals to institutional counterparties who execute on their own infrastructure. Regulated activity
+            cover sits under <a href="/regulatory" style="color: var(--primary)">Regulatory Umbrella</a>.
+          </p>
+          <p
+            style="
+              margin-top: 18px;
+              font-size: 14px;
+              color: var(--text-muted);
+              max-width: 640px;
+              margin-left: auto;
+              margin-right: auto;
+            "
+          >
+            DART's reporting stack also powers Investment Management and Regulatory Umbrella &mdash; same components,
+            entitlement-filtered per path. Regulatory Umbrella clients wire their venues in via read-only API keys and
+            inherit the same positions, P&amp;L, reconciliation, and audit surface IM allocators use.
+          </p>
+          <p
+            style="
+              margin-top: 18px;
+              font-size: 14px;
+              color: var(--text-muted);
+              max-width: 680px;
+              margin-left: auto;
+              margin-right: auto;
+              line-height: 1.65;
+            "
+          >
+            <strong>Dashboard vs API.</strong> Day-to-day work uses the authenticated platform: the post-login
+            <strong>services portal</strong> (dashboard and service areas &mdash; data, research, trading, observe,
+            reports &mdash; sliced to your entitlements). The same workflows are available programmatically where we
+            ship endpoints: <strong>Unified Trading API</strong> and other service REST APIs, documented on
+            <a href="/docs" style="color: var(--primary)">/docs</a>. We extend client-facing APIs as we wire
+            capabilities in the stack.
+          </p>
+        </div>
       </div>
-      <div class="card-grid card-grid-3">
-        <article class="card">
-          <h3>DART Signals-In</h3>
-          <p>Your signals, our execution. Keep your strategy IP upstream. Send structured instructions against a
-            defined 8-field schema; we run the execution, reconciliation, and reporting layer. Fixed-scope pricing;
-            client capital, client signals, Odum downstream operations.</p>
-        </article>
-        <article class="card">
-          <h3>DART Full Pipeline</h3>
-          <p>Research, promote through paper, and run on the full stack. Fixed-access layer plus metered research
-            consumption. Exclusivity available on specialised strategies.</p>
-        </article>
-        <article class="card">
-          <h3>Investment Management</h3>
-          <p>Allocate capital to Odum-run strategies on the same infrastructure. Performance-fee only,
-            with a client-choice platform-access mechanic. Reporting from the same surface Odum uses
-            internally, entitlement-filtered to the allocator view.</p>
-        </article>
-      </div>
-      <div style="margin-top:32px; text-align:center;">
-        <p style="font-size:14px; color:var(--text-muted); max-width:640px; margin:0 auto;">
-          A separate <a href="/signals" style="color:var(--primary);">Odum Signals</a> path leases Odum-generated
-          strategy signals to institutional counterparties who execute on their own infrastructure. Regulated
-          activity cover sits under <a href="/regulatory" style="color:var(--primary);">Regulatory Umbrella</a>.
+    </section>
+
+    <!-- CTA -->
+    <section class="section-pad" style="background: var(--bg-surface)">
+      <div class="container" style="text-align: center; max-width: 600px">
+        <h2>See the platform in context</h2>
+        <p style="margin-top: 16px; font-size: 16px; color: var(--text-muted)">
+          Explore the Odum platform through a guided walkthrough based on your use case. Certain service surfaces are
+          shown in structured walkthrough where appropriate.
         </p>
-        <p style="margin-top:18px; font-size:14px; color:var(--text-muted); max-width:640px; margin-left:auto; margin-right:auto;">
-          DART's reporting stack also powers Investment Management and Regulatory Umbrella &mdash; same components,
-          entitlement-filtered per path. Regulatory Umbrella clients wire their venues in via read-only API keys
-          and inherit the same positions, P&amp;L, reconciliation, and audit surface IM allocators use.
+        <div style="margin-top: 28px; display: flex; justify-content: center; gap: 16px; flex-wrap: wrap">
+          <a href="contact.html" class="btn btn-primary">Request a guided walkthrough</a>
+          <a href="contact.html" class="btn btn-outline">Book a Demo</a>
+        </div>
+        <p style="margin-top: 24px; font-size: 13px; color: var(--text-dim)">
+          info@odum-research.co.uk &middot; London, United Kingdom
         </p>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- CTA -->
-  <section class="section-pad" style="background: var(--bg-surface);">
-    <div class="container" style="text-align:center; max-width:600px;">
-      <h2>See the platform in context</h2>
-      <p style="margin-top:16px; font-size:16px; color:var(--text-muted);">
-        Explore the Odum platform through a guided walkthrough based on your use case.
-        Certain service surfaces are shown in structured walkthrough where appropriate.
-      </p>
-      <div style="margin-top:28px; display:flex; justify-content:center; gap:16px; flex-wrap:wrap;">
-        <a href="contact.html" class="btn btn-primary">Request a guided walkthrough</a>
-        <a href="contact.html" class="btn btn-outline">Book a Demo</a>
+    <footer>
+      <div class="container footer-inner">
+        <p class="footer-copy">&copy; 2026 Odum Research Ltd. All rights reserved.</p>
+        <div class="footer-links">
+          <a href="/privacy">Privacy</a>
+          <a href="/terms">Terms</a>
+          <a href="regulatory.html">FCA 975797</a>
+          <a href="contact.html">Contact</a>
+        </div>
       </div>
-      <p style="margin-top:24px; font-size:13px; color:var(--text-dim);">
-        info@odum-research.co.uk &middot; London, United Kingdom
-      </p>
-    </div>
-  </section>
+    </footer>
 
-  <footer>
-    <div class="container footer-inner">
-      <p class="footer-copy">&copy; 2026 Odum Research Ltd. All rights reserved.</p>
-      <div class="footer-links">
-        <a href="who-we-are.html">Privacy</a>
-        <a href="who-we-are.html">Terms</a>
-        <a href="regulatory.html">FCA 975797</a>
-        <a href="contact.html">Contact</a>
-      </div>
-    </div>
-  </footer>
-
-  <script>
-    (function () {
-      var links = document.querySelectorAll('.section-nav a');
-      var sections = [];
-      links.forEach(function (a) { var t = document.querySelector(a.getAttribute('href')); if (t) sections.push({ el: t, link: a }); });
-      links.forEach(function (a) { a.addEventListener('click', function (e) { e.preventDefault(); var t = document.querySelector(a.getAttribute('href')); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }); });
-      window.addEventListener('scroll', function () { var y = window.scrollY + 120; sections.forEach(function (s) { s.link.classList.remove('active'); }); for (var i = sections.length - 1; i >= 0; i--) { if (sections[i].el.offsetTop <= y) { sections[i].link.classList.add('active'); break; } } });
-    })();
-  </script>
-</body>
-
+    <script>
+      (function () {
+        var links = document.querySelectorAll(".section-nav a");
+        var sections = [];
+        links.forEach(function (a) {
+          var t = document.querySelector(a.getAttribute("href"));
+          if (t) sections.push({ el: t, link: a });
+        });
+        links.forEach(function (a) {
+          a.addEventListener("click", function (e) {
+            e.preventDefault();
+            var t = document.querySelector(a.getAttribute("href"));
+            if (t) t.scrollIntoView({ behavior: "smooth", block: "start" });
+          });
+        });
+        window.addEventListener("scroll", function () {
+          var y = window.scrollY + 120;
+          sections.forEach(function (s) {
+            s.link.classList.remove("active");
+          });
+          for (var i = sections.length - 1; i >= 0; i--) {
+            if (sections[i].el.offsetTop <= y) {
+              sections[i].link.classList.add("active");
+              break;
+            }
+          }
+        });
+      })();
+    </script>
+  </body>
 </html>

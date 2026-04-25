@@ -3,21 +3,19 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { RegUmbrellaHierarchyDiagram } from "@/components/marketing/reg-umbrella-hierarchy-diagram";
+import { CALENDLY_URL } from "@/lib/marketing/calendly";
 
 /**
  * Regulatory Umbrella — public marketing page.
  *
- * Content axes: read-only-key custody mechanic (same shape as IM), multi-fund /
- * SMA designated-representative setup, supervisory artifacts list, same-system
- * claim. Multi-fund / SMA visual is tracked separately.
+ * Content axes: shape-aware venue-key custody mechanic (same shape as IM),
+ * multi-fund / SMA umbrella mandate (default = Odum as IM under Shapes 1 or 2;
+ * AR / designated-representative route under Shape 3 is available but not the
+ * default because FCA AR registration adds 4-12 weeks of onboarding lead time),
+ * supervisory artifacts list, same-system claim. Multi-fund / SMA visual is
+ * tracked separately.
  *
  * Codex SSOT:
  *   codex/14-playbooks/_ssot-rules/03-same-system-principle.md
@@ -26,7 +24,7 @@ import { RegUmbrellaHierarchyDiagram } from "@/components/marketing/reg-umbrella
 export const metadata: Metadata = {
   title: "Regulatory Umbrella — Odum Research",
   description:
-    "Operate regulated activity under Odum's FCA permissions. Multi-fund / SMA designated-representative setup, same custody + reporting model as Investment Management, supervisory artifacts included.",
+    "Operate regulated activity under Odum's FCA permissions (FRN 975797). Multi-fund / SMA umbrella mandate, same custody + reporting model as Investment Management, supervisory artifacts included. Default mandate has Odum as IM of record; appointed-representative route available where you want to be customer-facing IM under your own brand.",
 };
 
 export default function RegulatoryPage() {
@@ -38,16 +36,14 @@ export default function RegulatoryPage() {
           <div className="mb-12">
             <div className="mb-3 flex flex-wrap items-center gap-2">
               <Badge variant="outline">Regulatory Umbrella</Badge>
-              <Badge variant="outline">FCA 975797</Badge>
-              <Badge variant="outline">Designated representative</Badge>
+              <Badge variant="outline">FCA FRN 975797</Badge>
+              <Badge variant="outline">Multi-vehicle mandate</Badge>
             </div>
             <h1 className="text-3xl font-bold">Regulatory Umbrella</h1>
             <p className="mt-4 text-lg text-muted-foreground">
-              Operate regulated activity under Odum&apos;s FCA permissions.
-              Onboarding covers regulatory scope, compliance artefacts, MLRO
-              coverage, and supervisory reporting. The reporting surface is the
-              same component tree Odum uses internally for its own investment
-              management.
+              Operate regulated activity under Odum&apos;s FCA permissions. Onboarding covers regulatory scope,
+              compliance artefacts, MLRO coverage, and supervisory reporting. The reporting surface is the same
+              component tree Odum uses internally for its own investment management.
             </p>
           </div>
 
@@ -56,23 +52,23 @@ export default function RegulatoryPage() {
             <CardHeader>
               <CardTitle>How custody works</CardTitle>
               <CardDescription>
-                Odum does not take custody of client or sub-entity capital. The
-                regulatory umbrella is a permission and supervision construct,
-                not a custody construct.
+                Odum does not take custody of client or sub-entity capital. The regulatory umbrella is a permission and
+                supervision construct, not a custody construct.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3 text-sm text-muted-foreground">
               <p>
-                Client retains venue custody. Client issues scoped
-                read-only-plus-execute API keys to Odum. Odum never custodies
-                client capital. All trades settle in the client&apos;s venue
-                account.
+                Venue custody stays with the umbrella client (for SMA) or with a qualified third-party custodian like
+                Copper (for Fund). Odum operates scoped venue API keys in Secret Manager with no withdrawal authority,
+                ever. The key scope follows the mandate shape: execute-plus-read where Odum is IM of record and runs
+                execution, read-only-plus-read-transaction where the umbrella client is IM and executes under its own
+                authorisation or AR status.
               </p>
               <p>
-                Each fund or SMA under the regulatory client&apos;s umbrella
-                follows the same key-scoping model: execution where required,
-                read-only where only supervisory reconciliation is needed,
-                withdrawal permission never requested.
+                Each fund or SMA under the umbrella client follows the same key-scoping rule per its mandate shape.
+                Withdrawal permission is never requested under any configuration. Who controls the account is the
+                regulatory-relevant test — and that is always the IM of record under the mandate, not the legal
+                account-holder and not the venue-facing operational party.
               </p>
             </CardContent>
           </Card>
@@ -82,23 +78,24 @@ export default function RegulatoryPage() {
             <CardHeader>
               <CardTitle>Multi-fund / SMA setup</CardTitle>
               <CardDescription>
-                Designated-representative structure: the regulatory client sits
-                above one or more sub-entities, each with its own share class
-                or SMA book.
+                Umbrella mandate: one client sits above one or more sub-entities, each with its own share class or SMA
+                book. The hierarchy is the same across all three umbrella mandate shapes (Odum as IM, or your firm as AR
+                under Odum).
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3 text-sm text-muted-foreground">
               <p>
-                Regulatory clients act as designated representatives with N
-                funds or SMAs under them; each sub-entity has its own share
-                class or SMA book.
+                The default shape has Odum Research Ltd (or the EU-regulated affiliate for EU-AIFM wrappers) as
+                investment manager of record, with the umbrella client as advisor, introducer, or sub-advisor.
+                Onboarding is fast because no FCA AR registration is required. The appointed-representative route is
+                available where the umbrella client specifically wants to be customer-facing IM under its own brand; FCA
+                AR registration typically adds 4&ndash;12 weeks of lead time, so speed-to-live engagements default to
+                the Odum-as-IM shape.
               </p>
               <p>
-                Sub-entities are addressed independently in the reporting
-                surface. Positions, NAV, attribution, and compliance artefacts
-                are scoped to the sub-entity. The parent regulatory client has
-                supervisory visibility across its own umbrella only &mdash;
-                never across other regulatory clients on the platform.
+                Sub-entities are addressed independently in the reporting surface. Positions, NAV, attribution, and
+                compliance artefacts are scoped to the sub-entity. The parent umbrella client has supervisory visibility
+                across its own umbrella only &mdash; never across other umbrella clients on the platform.
               </p>
             </CardContent>
           </Card>
@@ -111,25 +108,22 @@ export default function RegulatoryPage() {
             <CardHeader>
               <CardTitle>Supervisory artefacts</CardTitle>
               <CardDescription>
-                The platform produces the standard set of artefacts a
-                designated representative needs to supervise sub-entity
-                activity.
+                The platform produces the standard set of artefacts the umbrella client needs to supervise sub-entity
+                activity &mdash; identical whether Odum is IM of record or the umbrella client operates as AR under
+                Odum.
               </CardDescription>
             </CardHeader>
             <CardContent>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li>Monthly NAV per fund or SMA book.</li>
+                <li>Quarterly performance attribution at strategy and venue granularity.</li>
                 <li>
-                  Quarterly performance attribution at strategy and venue
-                  granularity.
+                  Compliance certifications and periodic attestations covering mandate boundaries, best execution, and
+                  conflicts.
                 </li>
                 <li>
-                  Compliance certifications and periodic attestations covering
-                  mandate boundaries, best execution, and conflicts.
-                </li>
-                <li>
-                  Audit-trail access covering instructions, orders, fills,
-                  position movements, and reconciliation events.
+                  Audit-trail access covering instructions, orders, fills, position movements, and reconciliation
+                  events.
                 </li>
               </ul>
             </CardContent>
@@ -139,23 +133,25 @@ export default function RegulatoryPage() {
           <div className="mb-8 rounded-lg border border-border bg-card/50 p-6">
             <h2 className="text-lg font-semibold">One system, partitioned views</h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              The same dashboards, risk controls, and audit trails serve IM
-              clients that serve the Regulatory Umbrella &mdash; one system,
-              slice-scoped per audience. Regulatory-client views carry an
-              additional supervisory overlay across their own sub-entities,
-              built on the same component tree.
+              The same dashboards, risk controls, and audit trails serve IM clients that serve the Regulatory Umbrella
+              &mdash; one system, slice-scoped per audience. Regulatory-client views carry an additional supervisory
+              overlay across their own sub-entities, built on the same component tree.
             </p>
           </div>
 
           {/* CTA */}
           <div className="rounded-lg border border-border bg-card/50 p-6 text-center">
-            <h2 className="text-lg font-semibold">
-              Regulatory scope and onboarding workstreams
-            </h2>
+            <h2 className="text-lg font-semibold">Regulatory scope and onboarding workstreams</h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              Regulatory scope details, onboarding workstreams, and the
-              supervisory-reporting walkthrough sit behind the briefings access
-              code.
+              Regulatory scope details, onboarding workstreams, and the supervisory-reporting walkthrough sit behind the
+              briefings access code. You can{" "}
+              <Link
+                href="/contact?service=regulatory&action=request-access"
+                className="text-primary underline-offset-4 hover:underline"
+              >
+                request a code here
+              </Link>
+              .
             </p>
             <div className="mt-4 flex flex-wrap justify-center gap-3">
               <Button asChild>
@@ -164,7 +160,9 @@ export default function RegulatoryPage() {
                 </Link>
               </Button>
               <Button asChild variant="outline">
-                <Link href="/contact">Book a call</Link>
+                <a href={CALENDLY_URL} target="_blank" rel="noopener noreferrer">
+                  Book a call
+                </a>
               </Button>
             </div>
           </div>
@@ -182,8 +180,7 @@ export default function RegulatoryPage() {
                 </Link>
                 <span className="text-muted-foreground">
                   {" "}
-                  &mdash; same custody and reporting model; capital allocated
-                  to Odum-run systematic strategies.
+                  &mdash; same custody and reporting model; capital allocated to Odum-run systematic strategies.
                 </span>
               </li>
               <li>
@@ -195,33 +192,25 @@ export default function RegulatoryPage() {
                 </Link>
                 <span className="text-muted-foreground">
                   {" "}
-                  &mdash; regulatory scope, onboarding workstreams, supervisory
-                  artefacts in depth.
+                  &mdash; regulatory scope, onboarding workstreams, supervisory artefacts in depth.
                 </span>
               </li>
               <li>
-                <Link
-                  href="/who-we-are"
-                  className="font-medium text-foreground underline-offset-4 hover:underline"
-                >
+                <Link href="/who-we-are" className="font-medium text-foreground underline-offset-4 hover:underline">
                   Who We Are
                 </Link>
-                <span className="text-muted-foreground">
-                  {" "}
-                  &mdash; team, operating history, FCA credentials.
-                </span>
+                <span className="text-muted-foreground"> &mdash; team, operating history, FCA credentials.</span>
               </li>
               <li>
-                <Link
-                  href="/contact"
+                <a
+                  href="https://calendly.com/odum-ikenna"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="font-medium text-foreground underline-offset-4 hover:underline"
                 >
-                  Contact
-                </Link>
-                <span className="text-muted-foreground">
-                  {" "}
-                  &mdash; book a regulatory-fit call.
-                </span>
+                  Book a call
+                </a>
+                <span className="text-muted-foreground"> &mdash; schedule a regulatory-fit call on Calendly.</span>
               </li>
             </ul>
           </div>

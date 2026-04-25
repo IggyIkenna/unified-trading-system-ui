@@ -1,0 +1,42 @@
+{
+  "meta": {
+    "ssot": "content/public-marketing/sleeve-copy.json",
+    "consumers": [
+      "public/homepage.html",
+      "public/strategies.html",
+      "public/who-we-are.html",
+      "components/marketing/galaxy-canvas.tsx",
+      "components/marketing/market-galaxy.tsx",
+      "components/marketing/arbitrage-galaxy.tsx"
+    ],
+    "note": "Sleeve narrative + venue examples for static marketing. Regenerate or verify with pnpm run verify:public-marketing. Do not name specific sharp bookmakers that we avoid listing on the public site."
+  },
+  "galaxy": {
+    "sportsNodeSub": "Betfair · Smarkets"
+  },
+  "venueMarquee": {
+    "sportsPills": ["Betfair", "Smarkets"]
+  },
+  "sports": {
+    "bookmakersLine": "Betfair, Smarkets, bet365, Matchbook +20 bookmakers",
+    "sleeveVenuesList": "Betfair, Smarkets +20 bookmakers",
+    "domainMatrixVenues": "Betfair, Smarkets +20 bookmakers"
+  },
+  "panels": {
+    "crypto": {
+      "familiesLine": "ML directional · Funding carry (perp) · Pairs stat-arb · Market making"
+    },
+    "defi": {
+      "familiesLine": "Staked basis (3-leg atomic) · Recursive staking · Yield rotation (lending) · Liquidation capture"
+    },
+    "tradfi": {
+      "familiesLine": "ML directional (ES/NQ/Brent) · Basis carry (IBKR ↔ CME) · Cross-sectional momentum (S&P 500) · Volatility trading"
+    },
+    "sports": {
+      "familiesLine": "Model-led directional · Cross-book arbitrage · Exchange-liquidity making · Event-driven (lineup / news)"
+    },
+    "predictions": {
+      "familiesLine": "Cross-venue price dispersion · Event-settled structure · Model vs market divergence"
+    }
+  }
+}

@@ -6,16 +6,13 @@ import { PersonaGate } from "@/components/platform/persona-gate";
 import { RuntimeModeBadge } from "@/components/runtime-mode-badge";
 import { useAuth } from "@/hooks/use-auth";
 import { useRiskAlertNotifications } from "@/hooks/api/use-risk-alert-notifications";
+import { DashboardFilterProvider } from "@/lib/context/dashboard-filter-context";
 
 /**
  * Platform shell — THE product. Auth required.
  * Same layout for internal AND client users — data scoping is API-driven.
  */
-export default function PlatformLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function PlatformLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <RequireAuth>
@@ -32,13 +29,15 @@ function PlatformShellInner({ children }: { children: React.ReactNode }) {
   useRiskAlertNotifications();
 
   return (
-    <UnifiedShell
-      orgName={user?.org?.name ?? "Odum Internal"}
-      orgId={user?.org?.id ?? "odum-internal"}
-      userName={user?.email?.split("@")[0] ?? "Trader"}
-      userRole={user?.role ?? "internal"}
-    >
-      <PersonaGate>{children}</PersonaGate>
-    </UnifiedShell>
+    <DashboardFilterProvider userId={user?.id ?? null}>
+      <UnifiedShell
+        orgName={user?.org?.name ?? "Odum Internal"}
+        orgId={user?.org?.id ?? "odum-internal"}
+        userName={user?.email?.split("@")[0] ?? "Trader"}
+        userRole={user?.role ?? "internal"}
+      >
+        <PersonaGate>{children}</PersonaGate>
+      </UnifiedShell>
+    </DashboardFilterProvider>
   );
 }

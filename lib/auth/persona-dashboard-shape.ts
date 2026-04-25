@@ -60,6 +60,7 @@ const DEFAULT_SUBROUTE_SHAPE: DashboardSubRouteVisibility = {
     "dr-playbook": "hidden",
     security: "hidden",
     "ir-briefings": "hidden",
+    "demo-preview": "hidden",
   },
   admin: {
     users: "hidden",
@@ -68,6 +69,9 @@ const DEFAULT_SUBROUTE_SHAPE: DashboardSubRouteVisibility = {
     "strategy-lifecycle-editor": "hidden",
     deployments: "hidden",
     "service-registry": "hidden",
+    "system-health": "hidden",
+    engagement: "hidden",
+    "data-etl": "hidden",
     "audit-log": "hidden",
   },
 };
@@ -137,6 +141,7 @@ const ALL_VISIBLE_SUBROUTES: DashboardSubRouteVisibility = {
     "dr-playbook": "visible",
     security: "visible",
     "ir-briefings": "visible",
+    "demo-preview": "visible",
   },
   admin: {
     users: "visible",
@@ -145,6 +150,9 @@ const ALL_VISIBLE_SUBROUTES: DashboardSubRouteVisibility = {
     "strategy-lifecycle-editor": "visible",
     deployments: "visible",
     "service-registry": "visible",
+    "system-health": "visible",
+    engagement: "visible",
+    "data-etl": "visible",
     "audit-log": "visible",
   },
 };
@@ -300,6 +308,9 @@ const PERSONA_SUBROUTE_SHAPES: Record<string, DashboardSubRouteVisibility> = {
       "strategy-lifecycle-editor": "visible",
       deployments: "visible",
       "service-registry": "visible",
+      "system-health": "visible",
+      engagement: "visible",
+      "data-etl": "visible",
       "audit-log": "visible",
     },
   },
@@ -316,11 +327,13 @@ const PERSONA_SUBROUTE_SHAPES: Record<string, DashboardSubRouteVisibility> = {
       "dr-playbook": "visible",
       security: "visible",
       "ir-briefings": "visible",
+      "demo-preview": "visible",
     },
     admin: {
       deployments: "visible",
       "audit-log": "visible",
       "strategy-universe": "visible",
+      "system-health": "visible",
     },
   }),
 
@@ -429,12 +442,14 @@ const PERSONA_SUBROUTE_SHAPES: Record<string, DashboardSubRouteVisibility> = {
       "dr-playbook": "visible",
       security: "visible",
       "ir-briefings": "visible",
+      "demo-preview": "visible",
     },
   }),
   advisor: subRouteOverride({
     "investor-relations": {
       board: "visible",
       "ir-briefings": "visible",
+      "demo-preview": "visible",
     },
   }),
 
@@ -576,13 +591,9 @@ const PERSONA_SUBROUTE_SHAPES: Record<string, DashboardSubRouteVisibility> = {
  * fall-through to DEFAULT_TILE_SHAPE which hides 3 of 5 tiles — see the
  * 2026-04-25 desmond / elysium-defi-full regression).
  */
-export const REGISTERED_TILE_SHAPE_IDS: ReadonlySet<string> = new Set(
-  Object.keys(PERSONA_TILE_SHAPES),
-);
+export const REGISTERED_TILE_SHAPE_IDS: ReadonlySet<string> = new Set(Object.keys(PERSONA_TILE_SHAPES));
 
-export const REGISTERED_SUBROUTE_SHAPE_IDS: ReadonlySet<string> = new Set(
-  Object.keys(PERSONA_SUBROUTE_SHAPES),
-);
+export const REGISTERED_SUBROUTE_SHAPE_IDS: ReadonlySet<string> = new Set(Object.keys(PERSONA_SUBROUTE_SHAPES));
 
 /**
  * Resolve the per-persona 5-tile visibility. Falls back to a conservative

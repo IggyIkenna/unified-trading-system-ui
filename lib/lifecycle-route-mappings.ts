@@ -136,6 +136,27 @@ export const routeMappings: RouteMapping[] = [
     requiresAuth: true,
   },
 
+  // G2.10 — Portfolio allocator surfaces (two commercial audiences on one
+  // ``portfolio_allocator`` core). Rule 03 same-system-principle.
+  {
+    path: "/services/investment-management/allocator",
+    label: "Allocator (IM)",
+    primaryStage: "promote",
+    secondaryStage: "manage",
+    lanes: ["strategy", "capital"],
+    description: "IM-side portfolio allocator — proposal-then-apply flow.",
+    requiresAuth: true,
+  },
+  {
+    path: "/services/trading-platform/allocator",
+    label: "Allocator (platform)",
+    primaryStage: "promote",
+    secondaryStage: "run",
+    lanes: ["strategy", "execution"],
+    description: "Trading-platform allocator — auto-apply on client-infra.",
+    requiresAuth: true,
+  },
+
   // PROMOTE stage
   {
     path: "/services/promote/pipeline",

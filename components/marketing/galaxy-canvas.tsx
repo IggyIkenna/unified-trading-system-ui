@@ -1,8 +1,8 @@
 "use client";
 
-import * as React from "react";
 import { cn } from "@/lib/utils";
 import { formatNumber } from "@/lib/utils/formatters";
+import * as React from "react";
 
 interface AssetGalaxyProps {
   className?: string;
@@ -15,7 +15,7 @@ const NODES = [
   { label: "DeFi", sub: "Uniswap · Aave", color: "#a78bfa", fill: "#0c0818" },
   {
     label: "Sports",
-    sub: "Betfair · Pinnacle",
+    sub: "Betfair · Smarkets",
     color: "#fbbf24",
     fill: "#141003",
   },

@@ -9,9 +9,7 @@ vi.mock("next/navigation", () => ({
 }));
 
 vi.mock("next/link", () => ({
-  default: ({ children, href }: { children: React.ReactNode; href: string }) => (
-    <a href={href}>{children}</a>
-  ),
+  default: ({ children, href }: { children: React.ReactNode; href: string }) => <a href={href}>{children}</a>,
 }));
 
 describe("SiteHeader nav structure", () => {
@@ -25,17 +23,9 @@ describe("SiteHeader nav structure", () => {
     const { PLATFORM_MARKETING_NAV_LABEL } = await import("@/components/shell/nav-copy");
     const { container } = render(<SiteHeader />, { wrapper: TestWrapper });
 
-    const expectedHrefs = [
-      "/investment-management",
-      "/platform",
-      "/signals",
-      "/regulatory",
-      "/who-we-are",
-    ];
+    const expectedHrefs = ["/investment-management", "/platform", "/signals", "/regulatory", "/who-we-are"];
     const anchors = Array.from(container.querySelectorAll("nav a")) as HTMLAnchorElement[];
-    const topLevelHrefs = anchors
-      .map((a) => a.getAttribute("href") ?? "")
-      .filter((h) => expectedHrefs.includes(h));
+    const topLevelHrefs = anchors.map((a) => a.getAttribute("href") ?? "").filter((h) => expectedHrefs.includes(h));
 
     // de-dupe while preserving first-seen order
     const seen = new Set<string>();
@@ -55,7 +45,7 @@ describe("SiteHeader nav structure", () => {
     expect(screen.getAllByText("Who We Are").length).toBeGreaterThan(0);
   }, 15000);
 
-  it("unauth CTA Book a call points to /contact", async () => {
+  it("unauth CTA Book a call points to Calendly", async () => {
     const { SiteHeader } = await import("@/components/shell/site-header");
     const { AuthContext } = await import("@/hooks/use-auth");
     const React = await import("react");
@@ -82,10 +72,8 @@ describe("SiteHeader nav structure", () => {
       );
 
     const { container } = render(<SiteHeader />, { wrapper: UnauthWrapper });
-    const cta = Array.from(container.querySelectorAll("a")).find(
-      (a) => a.textContent?.trim() === "Book a call",
-    );
+    const cta = Array.from(container.querySelectorAll("a")).find((a) => a.textContent?.trim() === "Book a call");
     expect(cta).toBeTruthy();
-    expect(cta?.getAttribute("href")).toBe("/contact");
+    expect(cta?.getAttribute("href")).toBe("https://calendly.com/odum-ikenna");
   }, 15000);
 });

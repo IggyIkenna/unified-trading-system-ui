@@ -1,29 +1,19 @@
 "use client";
 
+import { DashboardFilterStrip } from "@/components/services/DashboardFilterStrip";
 import { QuickActions } from "@/components/platform/quick-actions";
 import { StatusDot } from "@/components/shared/status-badge";
-import {
-  ServiceTile,
-  mockServiceDegraded,
-  type ServiceTileSubRouteChip,
-} from "@/components/services/ServiceTile";
+import { ServiceTile, mockServiceDegraded, type ServiceTileSubRouteChip } from "@/components/services/ServiceTile";
 import { PageHeader } from "@/components/shared/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
+import { useDashboardFilter } from "@/hooks/use-dashboard-filter";
+import { useFilteredDashboardQuickStats } from "@/hooks/api/use-filtered-dashboard-quick-stats";
 import type { Entitlement } from "@/lib/config/auth";
-import type {
-  DashboardTileId,
-  ServiceDefinition,
-} from "@/lib/config/services";
-import {
-  SERVICE_REGISTRY,
-  getAccessibleSubRoutes,
-  getVisibleServices,
-} from "@/lib/config/services";
-import {
-  personaDashboardShape,
-  personaDashboardSubRoutes,
-} from "@/lib/auth/persona-dashboard-shape";
+import type { DashboardTileId, ServiceDefinition } from "@/lib/config/services";
+import { SERVICE_REGISTRY, getAccessibleSubRoutes, getVisibleServices } from "@/lib/config/services";
+import { personaDashboardShape, personaDashboardSubRoutes } from "@/lib/auth/persona-dashboard-shape";
+import { appendFilterToHref } from "@/lib/context/dashboard-filter-context";
 import { useExecutionMode } from "@/lib/execution-mode-context";
 import { PLATFORM_LIFECYCLE_CONFIG, PLATFORM_LIFECYCLE_STAGES, type PlatformLifecycleStage } from "@/lib/taxonomy";
 import { cn } from "@/lib/utils";
@@ -163,6 +153,8 @@ function useRoleKPIs(hasEntitlement: (e: Entitlement) => boolean, isLive: boolea
 export default function DashboardPage() {
   const { user, hasEntitlement, isAdmin, isInternal } = useAuth();
   const { isLive } = useExecutionMode();
+  const { filter } = useDashboardFilter();
+  const filteredQuickStats = useFilteredDashboardQuickStats(filter, isLive);
 
   // Resolve per-persona tile visibility from the dashboard shape. Tiles marked
   // "hidden" drop out entirely; "locked" / "visible" tiles both render (locked
@@ -213,8 +205,8 @@ export default function DashboardPage() {
           title={user.org.name}
           description={
             <>
-              {user.displayName} &middot; <span className="capitalize">{user.role}</span> &middot;{" "}
-              {allServices.length} {allServices.length === 1 ? "service" : "services"}
+              {user.displayName} &middot; <span className="capitalize">{user.role}</span> &middot; {allServices.length}{" "}
+              {allServices.length === 1 ? "service" : "services"}
             </>
           }
         />
@@ -231,8 +223,10 @@ export default function DashboardPage() {
             <Shield className="size-4 shrink-0 text-primary/50" />
             <span>
               <strong className="text-foreground/80">{user.org.name}</strong> has access to{" "}
-              <strong className="text-foreground/80">{allServices.length} {allServices.length === 1 ? "service" : "services"}</strong> across{" "}
-              {visibleStages.length} lifecycle {visibleStages.length === 1 ? "stage" : "stages"}.
+              <strong className="text-foreground/80">
+                {allServices.length} {allServices.length === 1 ? "service" : "services"}
+              </strong>{" "}
+              across {visibleStages.length} lifecycle {visibleStages.length === 1 ? "stage" : "stages"}.
             </span>
           </div>
         )}
@@ -245,6 +239,12 @@ export default function DashboardPage() {
               noise on the services hub, and duplicates what the top-nav
               already exposes. */}
           <div className="space-y-4">
+            {/* Filter strip — family/archetype/venue-set/share-class/instrument-type
+                picker, collapsed-by-default. Selections persist per-user in
+                localStorage and get threaded as URL query params onto every
+                sub-route chip href below. Plan phase 4 Sequence. */}
+            <DashboardFilterStrip />
+
             {/* Service cards — 5 top-level tiles (post 2026-04-21 collapse).
                 Tile visibility resolved against persona-dashboard-shape; sub-
                 route chips pre-filtered by entitlement + persona sub-route
@@ -258,17 +258,18 @@ export default function DashboardPage() {
                 // Sub-routes: start from entitlement-filtered set, then apply
                 // persona visibility (hidden → drop, locked → keep with
                 // locked=true chip).
-                const accessible = getAccessibleSubRoutes(
-                  svc,
-                  user.entitlements as readonly string[],
-                  user.role,
-                );
+                const accessible = getAccessibleSubRoutes(svc, user.entitlements as readonly string[], user.role);
                 const chips: ServiceTileSubRouteChip[] = accessible
                   .filter((sub) => chipVis[sub.key] !== "hidden")
                   .map((sub) => ({
                     key: sub.key,
                     label: sub.label,
-                    href: sub.href,
+                    // Thread active dashboard filter onto chip href so DART
+                    // sub-tabs + Reports land pre-filtered (Phase 3 wiring
+                    // parses ?family= / ?archetype= / ?venue_set_variant= /
+                    // ?share_class= / ?instrument_type= via
+                    // FamilyArchetypePicker).
+                    href: appendFilterToHref(sub.href, filter),
                     icon: sub.icon,
                     locked: sub.locked || chipVis[sub.key] === "locked",
                   }));
@@ -280,6 +281,7 @@ export default function DashboardPage() {
                     isLive={isLive}
                     subRoutes={chips}
                     personaId={user.id}
+                    filteredQuickStats={filteredQuickStats}
                   />
                 );
               })}
@@ -381,7 +383,12 @@ function serviceKeySalt(key: string): number {
 
 // ─── Quick stat generators (mock — production uses API) ──────────────────────
 
-function useServiceQuickStat(key: string, isLive: boolean, personaId?: string): string | undefined {
+function useServiceQuickStat(
+  key: string,
+  isLive: boolean,
+  personaId: string | undefined,
+  filtered: { dart: string | null; reports: string | null },
+): string | undefined {
   return React.useMemo(() => {
     // Signals-In personas see a signal-centric stat on the DART tile, not the
     // generic P&L. Post 2026-04-21 collapse — DART tile swallows Research /
@@ -393,6 +400,11 @@ function useServiceQuickStat(key: string, isLive: boolean, personaId?: string): 
     if (key === "dart" && personaId === "client-data-only") {
       return "2,400+ instruments · Strategy catalogue";
     }
+    // Filter-aware slices come from useFilteredDashboardQuickStats (real API
+    // when deployed, deterministic mock otherwise). When the filter is
+    // unset, the hook returns nulls and we fall back to the default copy.
+    if (key === "dart" && filtered.dart) return filtered.dart;
+    if (key === "reports" && filtered.reports) return filtered.reports;
     const stats: Record<string, string> = {
       dart: isLive ? "$142K P&L · 47 positions · 3 alerts" : "$139K batch P&L · 38 backtests",
       "odum-signals": "12 counterparties · 284 emissions today",
@@ -401,7 +413,7 @@ function useServiceQuickStat(key: string, isLive: boolean, personaId?: string): 
       admin: "42 users · 8 orgs",
     };
     return stats[key];
-  }, [key, isLive, personaId]);
+  }, [key, isLive, personaId, filtered]);
 }
 
 /**
@@ -427,22 +439,20 @@ function ServiceCardWrapper({
   isLive,
   subRoutes,
   personaId,
+  filteredQuickStats,
 }: {
   service: ServiceDefinition;
   entitlementLocked: boolean;
   isLive: boolean;
   subRoutes?: readonly ServiceTileSubRouteChip[];
   personaId?: string;
+  filteredQuickStats: { dart: string | null; reports: string | null };
 }) {
   const profileLockState = useTileLockState(service.key);
   const resolvedLockState: TileLockState =
-    profileLockState !== "unlocked"
-      ? profileLockState
-      : entitlementLocked
-        ? "padlocked-visible"
-        : "unlocked";
+    profileLockState !== "unlocked" ? profileLockState : entitlementLocked ? "padlocked-visible" : "unlocked";
 
-  const quickStat = useServiceQuickStat(service.key, isLive, personaId);
+  const quickStat = useServiceQuickStat(service.key, isLive, personaId, filteredQuickStats);
   const degraded = React.useMemo(
     () => (resolvedLockState === "unlocked" ? mockServiceDegraded(service.key) : false),
     [resolvedLockState, service.key],
@@ -461,13 +471,7 @@ function ServiceCardWrapper({
 
 // ─── System Health Strip ─────────────────────────────────────────────────────
 
-function SystemHealthStrip({
-  services,
-  visibleKeys,
-}: {
-  services: ServiceDefinition[];
-  visibleKeys: Set<string>;
-}) {
+function SystemHealthStrip({ services, visibleKeys }: { services: ServiceDefinition[]; visibleKeys: Set<string> }) {
   const accessible = services.filter((s) => visibleKeys.has(s.key));
   const healthCounts = React.useMemo(() => {
     let healthy = 0;
@@ -497,9 +501,7 @@ function SystemHealthStrip({
         </div>
       )}
       <span className="text-muted-foreground/50">|</span>
-      <span className="text-muted-foreground">
-        {healthCounts.total} services monitored
-      </span>
+      <span className="text-muted-foreground">{healthCounts.total} services monitored</span>
     </div>
   );
 }
@@ -630,8 +632,7 @@ function PlatformStateNarrative({
   return (
     <div className="px-4 py-3 rounded-lg border border-border/30 bg-muted/5">
       <p className="text-xs text-muted-foreground leading-relaxed">
-        <span className="font-medium text-foreground/80">Platform Status</span> —{" "}
-        {segments.join(". ")}.
+        <span className="font-medium text-foreground/80">Platform Status</span> — {segments.join(". ")}.
       </p>
     </div>
   );

@@ -1,7 +1,7 @@
 "use client";
 
-import * as React from "react";
 import { formatNumber } from "@/lib/utils/formatters";
+import * as React from "react";
 
 // Canvas-only. Zero JSX SVG elements.
 // Matches reference: large fixed-position nodes, sequential packet firing per connection.
@@ -37,7 +37,7 @@ const NODES = [
   {
     id: "sports",
     label: "Sports",
-    sub: "Betfair · Pinnacle",
+    sub: "Betfair · Smarkets",
     color: "#fbbf24",
     fill: "#1a1205",
     fx: 0.24,

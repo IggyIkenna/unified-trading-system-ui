@@ -4,8 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ACCESS_CODE_REQUIRED, accessCodeMatches } from "@/lib/briefings/access-code";
 import { isBriefingSessionActive, setBriefingSessionActive } from "@/lib/briefings/session";
+import { contactHrefFromPath } from "@/lib/marketing/contact-link";
 import { Lock } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import * as React from "react";
 
 /**
@@ -21,6 +23,7 @@ export function BriefingAccessGate({ children }: { children: React.ReactNode }) 
   const [unlocked, setUnlocked] = React.useState(!ACCESS_CODE_REQUIRED);
   const [code, setCode] = React.useState("");
   const [error, setError] = React.useState("");
+  const pathname = usePathname();
 
   React.useEffect(() => {
     if (!ACCESS_CODE_REQUIRED) return;
@@ -63,7 +66,7 @@ export function BriefingAccessGate({ children }: { children: React.ReactNode }) 
       </form>
       <p className="text-xs text-muted-foreground text-center max-w-md mt-6">
         Don&apos;t have a code?{" "}
-        <Link href="/contact" className="text-primary hover:underline">
+        <Link href={contactHrefFromPath(pathname, "request-access")} className="text-primary hover:underline">
           Contact us
         </Link>{" "}
         to request one.

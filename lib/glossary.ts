@@ -129,6 +129,12 @@ export const GLOSSARY: Readonly<Record<string, GlossaryEntry>> = {
     definition:
       "An investor deploying capital into managed strategies — typically a family office, fund-of-funds, endowment, or institutional principal choosing external managers.",
   },
+  aum: {
+    id: "aum",
+    label: "AUM",
+    definition:
+      "Assets under management or advisory, depending on vehicle and permissions. A rough number here helps size follow-up, not a commitment for compliance purposes.",
+  },
   venue: {
     id: "venue",
     label: "venue",
@@ -236,6 +242,233 @@ export const GLOSSARY: Readonly<Record<string, GlossaryEntry>> = {
     label: "Odum Signals",
     definition:
       "Odum's outbound signal-leasing service. Odum-generated trading signals delivered to counterparty webhook or REST-pull endpoints under HMAC-signed envelopes.",
+  },
+  "category-sports": {
+    id: "category-sports",
+    label: "Sports",
+    definition:
+      "Sports-derivative and event-contract markets (exchange and OTC) where payoffs are tied to sporting outcomes. Distinct from non-sports prediction and political-only books.",
+  },
+  "category-prediction": {
+    id: "category-prediction",
+    label: "Prediction",
+    definition:
+      "Prediction and non-sports event markets where positions reference outcomes (politics, macro, other events) — not the same as generic single-name directional equity credit.",
+  },
+  "q-instr-spot": {
+    id: "q-instr-spot",
+    label: "spot",
+    definition:
+      "Cash instruments — you hold or deliver the asset. Drives margin, inventory, and basis vs perps, dated futures, and event-settled tickets on the same underlier.",
+  },
+  "q-instr-perp": {
+    id: "q-instr-perp",
+    label: "perp",
+    definition:
+      "A non-dated, funding-benchmarked contract that tracks spot. Funding is part of the carry profile; not the same as a listed dated future or a one-off event ticket.",
+  },
+  "q-instr-dated-future": {
+    id: "q-instr-dated-future",
+    label: "dated future",
+    definition:
+      "A contract with a fixed expiry, roll, or delivery — term structure, calendar rolls, and basis work sit here. Separately risk-managed from 24/7 perp stacks.",
+  },
+  "q-instr-option": {
+    id: "q-instr-option",
+    label: "option",
+    definition:
+      "Outright, spread, and vol-aware optionality — for convexity, hedging, and vol trading. Pairs with TCA and vol reporting in Odum’s risk and execution layers.",
+  },
+  "q-instr-lending": {
+    id: "q-instr-lending",
+    label: "lending",
+    definition:
+      "Secured and unsecured borrow/lend, repo-style legs, and funding for shorts — a core part of short availability and net carry, especially on digital-asset books.",
+  },
+  "q-instr-staking": {
+    id: "q-instr-staking",
+    label: "staking",
+    definition:
+      "On-chain or venue-native staking, liquid staking, and restaking — yield and lock-up are explicit in the mandate; not generic passive spot at an exchange alone.",
+  },
+  "q-instr-lp": {
+    id: "q-instr-lp",
+    label: "lp",
+    definition:
+      "Concentrated liquidity and market-making in AMMs and hybrid CLOB+LP venues — you earn from fees, incentives, and take inventory risk, not a single passive ticket.",
+  },
+  "q-instr-event-settled": {
+    id: "q-instr-event-settled",
+    label: "event-settled",
+    definition:
+      "Payoffs on discrete, observable outcomes (sports, events, other settlement references). Not the same as rolling spot/perp; settlement and KYC/venue fit differ by venue pack.",
+  },
+  "q-strat-ml-directional": {
+    id: "q-strat-ml-directional",
+    label: "ml directional",
+    definition:
+      "Model-driven, systematic directional or long/short risk — you may bring models, lease ours, or both; execution, limits, and reporting stay inside Odum’s controlled pipeline.",
+  },
+  "q-strat-rules-directional": {
+    id: "q-strat-rules-directional",
+    label: "rules directional",
+    definition:
+      "Hand-built, auditable rules and heuristics (not ML) with explicit parameters — the profile compliance and the allocator can read without a black box.",
+  },
+  "q-strat-stat-arb": {
+    id: "q-strat-stat-arb",
+    label: "stat arb",
+    definition:
+      "Short-horizon relative value — mean-reversion, pairs, cross-sectional rankings. Risk is basket and correlation, not a single name’s macro bet.",
+  },
+  "q-strat-arbitrage": {
+    id: "q-strat-arbitrage",
+    label: "arbitrage",
+    definition:
+      "Cross-venue, cross-instrument, or cross-chain mispricing with hedged or locked economics — you care more about dislocation and capacity than one-way beta.",
+  },
+  "q-strat-carry": {
+    id: "q-strat-carry",
+    label: "carry",
+    definition:
+      "Funding, basis, staking, and roll — harvesting structural payoffs with explicit hedge sizing. A common home for 24/7 books that are not single-name directional risk.",
+  },
+  "q-strat-event-driven": {
+    id: "q-strat-event-driven",
+    label: "event driven",
+    definition:
+      "Catalyst, calendar, and microstructure dislocations; includes sports and event markets where the payoff is outcome-linked, not a continuous spot curve alone.",
+  },
+  "q-strat-market-making": {
+    id: "q-strat-market-making",
+    label: "market making",
+    definition:
+      "Two-sided liquidity provision, quotes, and inventory risk — you think in spread capture, vol of inventory, and venue incentives, not one-way positioning.",
+  },
+  "q-strat-vol-trading": {
+    id: "q-strat-vol-trading",
+    label: "vol trading",
+    definition:
+      "Trades in implied vs realised vol, skew, and term structure — options, var, and vol-aware digital structures, with greeks and scenario risk in the read.",
+  },
+  "service-combo": {
+    id: "service-combo",
+    label: "combo",
+    definition:
+      "A single relationship that explicitly stacks more than one service (for example DART plus Regulatory Umbrella) so legal, technical, and commercial wiring align.",
+  },
+  "fund-structure-na": {
+    id: "fund-structure-na",
+    label: "NA",
+    definition:
+      "Not applicable yet or not chosen — e.g. scoping platform or umbrella fit before a vehicle (SMA, fund, or wrapper) is in place. We still route operational questions.",
+  },
+  "q-licence-eu-only": {
+    id: "q-licence-eu-only",
+    label: "EU only",
+    definition:
+      "You want the group’s AIFM / EU home first. UK FCA direct routes are out of the initial pass — we can revisit if client geography shifts.",
+  },
+  "q-licence-uk-only": {
+    id: "q-licence-uk-only",
+    label: "UK only",
+    definition: "You want a UK FCA / UK home first. EU-only AIFM routing is de-prioritised in the first design pass.",
+  },
+  "q-licence-eu-or-uk": {
+    id: "q-licence-eu-or-uk",
+    label: "EU or UK",
+    definition:
+      "Either a single EEA AIFM home or a single UK FCA home will do — the choice is driven by your clients, substance, and market access, not a commitment to both yet.",
+  },
+  "q-licence-eu-and-uk": {
+    id: "q-licence-eu-and-uk",
+    label: "EU and UK",
+    definition:
+      "You will need both EU and UK permissions or parallel access — a heavier control and governance design; the umbrella and operator pattern is sized accordingly.",
+  },
+  "q-licence-other": {
+    id: "q-licence-other",
+    label: "other",
+    definition:
+      "A nonstandard region, hybrid, or TBD case — we capture text and then route a bespoke compliance and legal review on substance and pass-porting options.",
+  },
+  "q-legend-asset-categories": {
+    id: "q-legend-asset-categories",
+    label: "asset-class categories",
+    definition:
+      "Broad sleeves that bound which venue packs, data feeds, and risk models are in scope. Select every one you will touch — you can go narrow in venue scope later.",
+  },
+  "q-legend-instrument-types": {
+    id: "q-legend-instrument-types",
+    label: "instrument types",
+    definition:
+      "The primitives to trade: spot, perp, options, event-settled, and so on. Tells us execution algorithms, margin, and the risk runbooks you will see in reporting.",
+  },
+  "q-legend-venue-scope": {
+    id: "q-legend-venue-scope",
+    label: "Venue scope",
+    definition:
+      "All supported venues, or a named subset. It is a scope, compliance, and data-footprint decision — you are not picking every brand in this one field.",
+  },
+  "q-venue-all": {
+    id: "q-venue-all",
+    label: "All venues",
+    definition:
+      "The full supported venue and chain set for the asset and instrument classes you have enabled in scope. Wider data feed and compliance contract than a named list.",
+  },
+  "q-venue-explicit": {
+    id: "q-venue-explicit",
+    label: "Specific venues",
+    definition:
+      "A comma-separated list of venue or chain IDs from the catalogue (not free-text brands). Tighter pilot or migration; we validate IDs before wire-up.",
+  },
+  "q-legend-strategy-styles": {
+    id: "q-legend-strategy-styles",
+    label: "Strategy styles",
+    definition:
+      "The families of strategy you expect to run — it calibrates research, backtest baselines, and which catalogue lanes matter. It is not a commitment to one archetype.",
+  },
+  "q-legend-service-family": {
+    id: "q-legend-service-family",
+    label: "service family",
+    definition:
+      "The buy-side line: IM with Odum, DART as operator, or umbrella cover — or an explicit stack of lines. Drives the contract, permissions boundary, and onboarding pack.",
+  },
+  "q-legend-fund-structure": {
+    id: "q-legend-fund-structure",
+    label: "Fund structure",
+    definition:
+      "SMA, pooled, or TBD. Shapes who holds accounts, who administers the books, and how reporting and fees are run — we wire execution and control to the vehicle.",
+  },
+  "q-invite-only": {
+    id: "q-invite-only",
+    label: "Invite-only",
+    definition:
+      "Access is by invitation or code so responses line up to a specific cohort, commercial path, and follow-up — it is not a public marketing form.",
+  },
+  "q-entity-jurisdiction": {
+    id: "q-entity-jurisdiction",
+    label: "Operating entity jurisdiction",
+    definition:
+      "Where the firm that will take regulated activity (or the holding above it) is domiciled — the hook for AIFM, FCA, or umbrella structure. Not your personal address.",
+  },
+  "q-operating-currencies": {
+    id: "q-operating-currencies",
+    label: "Operating currencies",
+    definition:
+      "Currencies in which the entity will run banking, subscriptions, and P&L reporting. Trading notionals can be multi-CCY; this is about how you want operations sized.",
+  },
+  "q-targets-rolling": {
+    id: "q-targets-rolling",
+    label: "Business targets",
+    definition:
+      "AUM, revenue, run-rate, or milestone goals you are willing to state — for umbrella planning and capacity, not a term-sheet commitment. Blank is acceptable.",
+  },
+  "q-reg-umbrella-section": {
+    id: "q-reg-umbrella-section",
+    label: "Regulatory Umbrella details",
+    definition:
+      "Extra axes when you are seeking FCA-recognised cover or a combined DART+umbrella stack — we size MLRO, substance, and reporting without duplicating the main path briefings here.",
   },
   "dart-full": {
     id: "dart-full",

@@ -126,6 +126,14 @@ function walkAll(dir: string, acc: string[]): string[] {
 
 const sourceFiles = SOURCE_DIRS.flatMap((d) => walkAll(join(REPO_ROOT, d), []));
 
+// Additionally include root-level Next.js config files — `next.config.mjs` etc.
+// carry `redirects()` and `rewrites()` entries that imply reachability.
+const ROOT_CONFIG_FILES = ["next.config.mjs", "next.config.js", "next.config.ts"];
+for (const rel of ROOT_CONFIG_FILES) {
+  const abs = join(REPO_ROOT, rel);
+  if (existsSync(abs)) sourceFiles.push(abs);
+}
+
 // Regexes for href / path extraction. We do two passes:
 //   Pass 1: harvest `const NAME = "/path"` or `const NAME = `/path`` — build a
 //           lookup map so template literals that concatenate a base constant
@@ -145,7 +153,14 @@ const HREF_TEMPLATE_RE = /\bhref\s*=\s*\{\s*`([^`]+)`\s*\}/g;
 // Any backtick-template containing `${...}` or a leading "/" — broader catch.
 const ANY_TEMPLATE_RE = /`([^`]*\$\{[^}]*\}[^`]*)`/g;
 // `redirect("/...")` / `router.push("/...")` / `router.replace("/...")`.
-const NAV_CALL_RE = /\b(?:redirect|router\.(?:push|replace))\s*\(\s*["']([^"']+?)["']/g;
+// Covers bare calls AND chained `useRouter().push(...)` / `const r = useRouter(); r.push(...)`.
+const NAV_CALL_RE = /\b(?:redirect|router\.(?:push|replace)|\w+\.(?:push|replace))\s*\(\s*["']([^"']+?)["']/g;
+// `window.location.href = "/..."` / `.assign("/...")` / `.replace("/...")` / direct `location.href = "/..."`.
+const WINDOW_LOCATION_RE = /\b(?:window\.)?location\.(?:href|pathname)\s*=\s*["']([^"']+?)["']/g;
+const WINDOW_LOCATION_CALL_RE = /\b(?:window\.)?location\.(?:assign|replace)\s*\(\s*["']([^"']+?)["']/g;
+// `next.config.*` `redirects()` entries: `{ source: "/a", destination: "/b", ... }`.
+// Match both `source:` and `destination:` literals; both count as reachability.
+const NEXT_REDIRECT_RE = /\b(?:source|destination)\s*:\s*["']([^"']+?)["']/g;
 // Generic literal-path catch: any "/..." or `/...` starting with a URL-ish
 // segment. Over-includes (strings in comments, fs paths), but over-including
 // only makes the scanner more permissive — orphan count strictly decreases
@@ -191,8 +206,20 @@ for (const file of sourceFiles) {
 const rawHrefs = new Set<string>();
 
 // Pass 2 — extract all href / path candidates.
+// Whitelist triage rule: SSOT at unified-trading-pm/codex/06-coding-standards/
+// orphan-audit.md §Whitelist Triage Rule. TL;DR: if a human can gain from seeing the
+// page, it does NOT belong in the whitelist — wire it into a nav surface. Only
+// MACHINE-ONLY, API-HANDLER, and UNAUTHENTICATED-FUNNEL entries are acceptable.
 for (const [, content] of fileContents) {
-  for (const re of [HREF_STRING_RE, PATH_STRING_RE, NAV_CALL_RE, GENERIC_PATH_STRING_RE]) {
+  for (const re of [
+    HREF_STRING_RE,
+    PATH_STRING_RE,
+    NAV_CALL_RE,
+    WINDOW_LOCATION_RE,
+    WINDOW_LOCATION_CALL_RE,
+    NEXT_REDIRECT_RE,
+    GENERIC_PATH_STRING_RE,
+  ]) {
     re.lastIndex = 0;
     let m: RegExpExecArray | null;
     while ((m = re.exec(content)) !== null) {

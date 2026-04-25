@@ -69,9 +69,14 @@ export default function UsersManagementPage() {
 
   const [users, setUsers] = React.useState<User[]>([]);
 
-  // Sync API data into local state for mutation
+  // Sync API data into local state for mutation. Intentionally only re-fires
+  // when apiUsers.length changes — we treat the local users[] as the editable
+  // copy after first hydration, so re-running this on every apiUsers identity
+  // change would clobber in-flight edits. The exhaustive-deps lint rule
+  // wants apiUsers + users.length too, but they're deliberately excluded.
   React.useEffect(() => {
     if (apiUsers.length > 0 && users.length === 0) setUsers(apiUsers);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [apiUsers.length]);
   const [searchQuery, setSearchQuery] = React.useState("");
   const [orgFilter, setOrgFilter] = React.useState("all");
@@ -191,7 +196,10 @@ export default function UsersManagementPage() {
         <div className="bg-primary/5 border-b border-primary/10 px-6 py-2 flex items-center gap-2 text-sm">
           <Shield className="size-4 text-primary" />
           <span>Admin — full provisioning management available</span>
-          <Link href="/admin/users" className="ml-auto flex items-center gap-1 text-primary hover:underline text-xs font-medium">
+          <Link
+            href="/admin/users"
+            className="ml-auto flex items-center gap-1 text-primary hover:underline text-xs font-medium"
+          >
             Open Admin Console <ArrowRight className="size-3" />
           </Link>
         </div>
@@ -201,7 +209,11 @@ export default function UsersManagementPage() {
           <div className="flex items-center justify-between">
             <PageHeader
               title="User Management"
-              description={isAdmin() ? "Read-only directory — use the Admin Console for full management." : "Manage users, roles, and access across all organizations"}
+              description={
+                isAdmin()
+                  ? "Read-only directory — use the Admin Console for full management."
+                  : "Manage users, roles, and access across all organizations"
+              }
             />
             <div className="flex items-center gap-2">
               <ExportDropdown
@@ -257,6 +269,12 @@ export default function UsersManagementPage() {
               ))}
             </SelectContent>
           </Select>
+          <Link href="/services/manage/users/request">
+            <Button variant="outline">
+              <UserPlus className="mr-2 size-4" />
+              Request Access
+            </Button>
+          </Link>
           <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
             <DialogTrigger asChild>
               <Button>

@@ -43,6 +43,7 @@
     "orphan-audit": "tsx scripts/orphan-audit.ts",
     "orphan-audit:blocking": "tsx scripts/orphan-audit.ts --blocking",
     "orphan-audit:write-baseline": "tsx scripts/orphan-audit.ts --write-baseline",
+    "verify:public-marketing": "tsx scripts/verify-public-marketing-copy.ts",
     "prepare": "husky || true"
   },
   "dependencies": {
@@ -125,6 +126,7 @@
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
+    "@types/js-yaml": "^4.0.9",
     "@types/node": "^22",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",

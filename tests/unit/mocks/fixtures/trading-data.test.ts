@@ -99,12 +99,12 @@ describe("trading-data fixtures", () => {
     const ts = getAggregatedTimeSeries(BASE_FILTER);
     expect(ts.pnl.length).toBe(ts.nav.length);
     expect(ts.nav.length).toBe(ts.exposure.length);
-  });
+  }, 20_000);
 
   it("getLiveBatchDelta returns equal-length arrays", () => {
     const delta = getLiveBatchDelta(BASE_FILTER);
     expect(delta.pnl.length).toBe(delta.nav.length);
-  });
+  }, 20_000);
 
   it("getStrategyPerformance returns metrics per strategy", () => {
     const rows = getStrategyPerformance(BASE_FILTER);

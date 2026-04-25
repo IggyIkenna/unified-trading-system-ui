@@ -1,7 +1,11 @@
 /**
  * Plan A strategy lifecycle — TypeScript mirror of UAC 5-dim catalogue.
  *
- * SSOT: unified-api-contracts/unified_api_contracts/internal/domain/strategy_service/
+ * **Maturity phase meaning and ordering (normative):** `unified-trading-pm/codex/09-strategy/
+ * architecture-v2/strategy-lifecycle-maturity.md` §1. UAC implements that document;
+ * this file mirrors runtime enums and labels for the UI.
+ *
+ * Code SSOT: unified-api-contracts/unified_api_contracts/internal/domain/strategy_service/
  *   - catalogue.py         → StrategyInstance + STRATEGY_INSTANCE_CATALOGUE
  *   - venue_set_variants.py → VenueSetVariant + PricingTier + VENUE_SET_VARIANTS
  *   - enums.py             → StrategyMaturityPhase + ProductRouting + AccountType
@@ -16,11 +20,7 @@
 
 import rawReference from "@/lib/registry/ui-reference-data.json";
 
-import type {
-  ShareClass,
-  StrategyArchetype,
-  StrategyFamily,
-} from "./enums";
+import type { ShareClass, StrategyArchetype, StrategyFamily } from "./enums";
 
 // ──────────────────────────────────────────────────────────────────────────
 // Enum mirrors
@@ -65,10 +65,7 @@ export const MATURITY_PHASE_LABEL: Record<StrategyMaturityPhase, string> = {
   retired: "Retired",
 };
 
-export const MATURITY_PHASE_TONE: Record<
-  StrategyMaturityPhase,
-  "muted" | "amber" | "sky" | "emerald" | "violet"
-> = {
+export const MATURITY_PHASE_TONE: Record<StrategyMaturityPhase, "muted" | "amber" | "sky" | "emerald" | "violet"> = {
   smoke: "muted",
   backtest_minimal: "muted",
   backtest_1yr: "amber",
@@ -84,12 +81,7 @@ export const MATURITY_PHASE_TONE: Record<
 /** Which customer surfaces an instance may be routed to. */
 export type ProductRouting = "dart_only" | "im_only" | "both" | "internal_only";
 
-export const PRODUCT_ROUTINGS: readonly ProductRouting[] = [
-  "dart_only",
-  "im_only",
-  "both",
-  "internal_only",
-] as const;
+export const PRODUCT_ROUTINGS: readonly ProductRouting[] = ["dart_only", "im_only", "both", "internal_only"] as const;
 
 export const PRODUCT_ROUTING_LABEL: Record<ProductRouting, string> = {
   dart_only: "DART",
@@ -227,28 +219,24 @@ const reference = rawReference as RawReferenceShape;
 const rawInstances = reference.strategy_instance_catalogue?.instances ?? [];
 const rawVariants = reference.venue_set_variants ?? [];
 
-const STRATEGY_INSTANCE_CATALOGUE: readonly StrategyInstance[] = rawInstances.map(
-  (entry) => ({
-    instanceId: entry.instance_id,
-    family: entry.family as StrategyFamily,
-    archetype: entry.archetype as StrategyArchetype,
-    venueSetVariantId: entry.venue_set_variant_id,
-    instrumentTypeSet: entry.instrument_type_set,
-    shareClass: (entry.share_class as ShareClass | null) ?? null,
-    coverageStatus: entry.coverage_status as CoverageStatus,
-  }),
-);
+const STRATEGY_INSTANCE_CATALOGUE: readonly StrategyInstance[] = rawInstances.map((entry) => ({
+  instanceId: entry.instance_id,
+  family: entry.family as StrategyFamily,
+  archetype: entry.archetype as StrategyArchetype,
+  venueSetVariantId: entry.venue_set_variant_id,
+  instrumentTypeSet: entry.instrument_type_set,
+  shareClass: (entry.share_class as ShareClass | null) ?? null,
+  coverageStatus: entry.coverage_status as CoverageStatus,
+}));
 
-const VENUE_SET_VARIANTS_DATA: readonly VenueSetVariant[] = rawVariants.map(
-  (entry) => ({
-    id: entry.id,
-    archetype: entry.archetype as StrategyArchetype,
-    venues: entry.venues,
-    instrumentTypes: entry.instrument_types,
-    label: entry.label,
-    pricingTier: entry.pricing_tier as VenueSetPricingTier,
-  }),
-);
+const VENUE_SET_VARIANTS_DATA: readonly VenueSetVariant[] = rawVariants.map((entry) => ({
+  id: entry.id,
+  archetype: entry.archetype as StrategyArchetype,
+  venues: entry.venues,
+  instrumentTypes: entry.instrument_types,
+  label: entry.label,
+  pricingTier: entry.pricing_tier as VenueSetPricingTier,
+}));
 
 const VARIANTS_BY_ID: ReadonlyMap<VenueSetVariantId, VenueSetVariant> = new Map(
   VENUE_SET_VARIANTS_DATA.map((v) => [v.id, v]),
@@ -266,21 +254,15 @@ export function loadVenueSetVariants(): readonly VenueSetVariant[] {
   return VENUE_SET_VARIANTS_DATA;
 }
 
-export function lookupVenueSetVariant(
-  id: VenueSetVariantId,
-): VenueSetVariant | undefined {
+export function lookupVenueSetVariant(id: VenueSetVariantId): VenueSetVariant | undefined {
   return VARIANTS_BY_ID.get(id);
 }
 
-export function lookupStrategyInstance(
-  instanceId: string,
-): StrategyInstance | undefined {
+export function lookupStrategyInstance(instanceId: string): StrategyInstance | undefined {
   return INSTANCES_BY_ID.get(instanceId);
 }
 
-export function variantsForArchetype(
-  archetype: StrategyArchetype,
-): readonly VenueSetVariant[] {
+export function variantsForArchetype(archetype: StrategyArchetype): readonly VenueSetVariant[] {
   return VENUE_SET_VARIANTS_DATA.filter((v) => v.archetype === archetype);
 }
 
@@ -294,11 +276,7 @@ export function variantsForArchetype(
  * never smoke / backtest-only / paper-1d / paper-14d. Retired is terminal.
  */
 export function allowsAllocationCta(phase: StrategyMaturityPhase): boolean {
-  return (
-    phase === "paper_stable" ||
-    phase === "live_early" ||
-    phase === "live_stable"
-  );
+  return phase === "paper_stable" || phase === "live_early" || phase === "live_stable";
 }
 
 /**
@@ -333,29 +311,19 @@ export function maturityPhaseRank(phase: StrategyMaturityPhase): number {
  *
  * Mirror of UAC `is_valid_maturity_transition`.
  */
-export function isValidMaturityTransition(
-  from: StrategyMaturityPhase,
-  to: StrategyMaturityPhase,
-): boolean {
+export function isValidMaturityTransition(from: StrategyMaturityPhase, to: StrategyMaturityPhase): boolean {
   if (from === "retired") return false;
   if (to === "retired") return true;
   return maturityPhaseRank(to) > maturityPhaseRank(from);
 }
 
 /** Return the list of legal forward transitions from a given phase. */
-export function legalMaturityTargets(
-  from: StrategyMaturityPhase,
-): readonly StrategyMaturityPhase[] {
-  return STRATEGY_MATURITY_PHASES.filter((to) =>
-    to !== from && isValidMaturityTransition(from, to),
-  );
+export function legalMaturityTargets(from: StrategyMaturityPhase): readonly StrategyMaturityPhase[] {
+  return STRATEGY_MATURITY_PHASES.filter((to) => to !== from && isValidMaturityTransition(from, to));
 }
 
 /** Is the instance visible to a non-admin viewer under this routing? */
-export function isClientVisible(
-  routing: ProductRouting,
-  surface: "dart" | "im",
-): boolean {
+export function isClientVisible(routing: ProductRouting, surface: "dart" | "im"): boolean {
   if (routing === "internal_only") return false;
   if (routing === "both") return true;
   if (surface === "dart") return routing === "dart_only";

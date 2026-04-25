@@ -1,7 +1,9 @@
-import { ALL_ENTITLEMENTS } from "@/lib/config/auth";
+import { getPersonaByEmail, getPersonaById } from "@/lib/auth/personas";
 import type { Entitlement, TradingEntitlement } from "@/lib/config/auth";
-import { getPersonaById, getPersonaByEmail } from "@/lib/auth/personas";
+import { ALL_ENTITLEMENTS } from "@/lib/config/auth";
 import type { AuthProvider, AuthUser } from "./types";
+
+export { derivePersonaInstruments } from "./derive-persona-instruments";
 
 const STORAGE_KEY = "portal_user";
 const TOKEN_KEY = "portal_token";

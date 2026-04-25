@@ -9,18 +9,27 @@
  * If API is not reachable, tests are skipped.
  */
 
-import { describe, it, expect, beforeAll } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 
 const BASE =
-  (typeof process !== "undefined" && process.env.INTEGRATION_TEST_UNIFIED_TRADING_URL) ||
-  "http://localhost:8030";
-const API = `${BASE.replace(/\/$/, "")}/api`;
+  (typeof process !== "undefined" && process.env.INTEGRATION_TEST_UNIFIED_TRADING_URL) || "http://localhost:8030";
+const ROOT = BASE.replace(/\/$/, "");
+const API = `${ROOT}/api`;
 
-async function fetchApi(
-  path: string,
-  options?: RequestInit,
-): Promise<{ ok: boolean; status: number; data?: unknown }> {
-  const url = path.startsWith("http") ? path : `${API}${path}`;
+function resolveApiUrl(path: string): string {
+  if (path.startsWith("http")) {
+    return path;
+  }
+  // unified-trading-api mounts /health and /readiness on the app root, not under /api.
+  if (path === "/health" || path === "/readiness") {
+    return `${ROOT}${path.startsWith("/") ? path : `/${path}`}`;
+  }
+  const suffix = path.startsWith("/") ? path : `/${path}`;
+  return `${API}${suffix}`;
+}
+
+async function fetchApi(path: string, options?: RequestInit): Promise<{ ok: boolean; status: number; data?: unknown }> {
+  const url = resolveApiUrl(path);
   const res = await fetch(url, {
     ...options,
     headers: {
@@ -53,10 +62,7 @@ describe("unified-trading-system-ui ↔ unified-trading-api integration", () => 
   beforeAll(async () => {
     apiAvailable = await isApiReachable();
     if (!apiAvailable) {
-      console.warn(
-        "Skipping integration tests: unified-trading-api not reachable at",
-        BASE,
-      );
+      console.warn("Skipping integration tests: unified-trading-api not reachable at", BASE);
     }
   });
 

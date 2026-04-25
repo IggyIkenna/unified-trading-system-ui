@@ -16,15 +16,7 @@
 
 import type { Entitlement } from "./auth";
 
-export type LifecycleStage =
-  | "acquire"
-  | "build"
-  | "promote"
-  | "run"
-  | "execute"
-  | "observe"
-  | "manage"
-  | "report";
+export type LifecycleStage = "acquire" | "build" | "promote" | "run" | "execute" | "observe" | "manage" | "report";
 
 /** Sub-route chip rendered under an unlocked tile. */
 export interface ServiceSubRoute {
@@ -113,8 +105,7 @@ export const SERVICE_REGISTRY: readonly ServiceDefinition[] = [
         href: "/services/strategy-catalogue",
         icon: "Layers",
         requiredEntitlements: ["strategy-full", "execution-full"] as readonly Entitlement[],
-        description:
-          "Reality + FOMO view of the shared Tier-3 strategy catalogue primitive.",
+        description: "Reality + FOMO view of the shared Tier-3 strategy catalogue primitive.",
       },
       {
         key: "signal-intake",
@@ -186,8 +177,7 @@ export const SERVICE_REGISTRY: readonly ServiceDefinition[] = [
   {
     key: "reports",
     label: "Reports",
-    description:
-      "P&L attribution, executive summary, settlement, reconciliation, and regulatory reporting.",
+    description: "P&L attribution, executive summary, settlement, reconciliation, and regulatory reporting.",
     href: "/services/reports/overview",
     lifecycleStage: "report",
     requiredEntitlements: ["reporting"],
@@ -232,8 +222,7 @@ export const SERVICE_REGISTRY: readonly ServiceDefinition[] = [
         href: "/services/strategy-catalogue?tab=explore",
         icon: "Layers",
         requiredEntitlements: [],
-        description:
-          "Tier-3 strategy catalogue — FOMO tearsheets + Reality allocations for IM personas.",
+        description: "Tier-3 strategy catalogue — FOMO tearsheets + Reality allocations for IM personas.",
       },
     ],
   },
@@ -242,8 +231,7 @@ export const SERVICE_REGISTRY: readonly ServiceDefinition[] = [
   {
     key: "investor-relations",
     label: "Investor Relations",
-    description:
-      "Board presentations, disaster recovery playbook, security posture, and operational resilience.",
+    description: "Board presentations, disaster recovery playbook, security posture, and operational resilience.",
     href: "/investor-relations",
     lifecycleStage: "report",
     requiredEntitlements: ["investor-relations"],
@@ -281,6 +269,14 @@ export const SERVICE_REGISTRY: readonly ServiceDefinition[] = [
         icon: "Newspaper",
         requiredEntitlements: [],
         description: "Investor briefings + Q&A.",
+      },
+      {
+        key: "demo-preview",
+        label: "Demo Preview",
+        href: "/demo/preview",
+        icon: "PlayCircle",
+        requiredEntitlements: [],
+        description: "Static mock showcase of the platform — IR-safe, no live data.",
       },
     ],
   },
@@ -327,8 +323,7 @@ export const SERVICE_REGISTRY: readonly ServiceDefinition[] = [
         href: "/admin/strategy-lifecycle-editor",
         icon: "Edit",
         requiredEntitlements: ["*"],
-        description:
-          "Tier-2 maturity-phase + product-routing editor (enabled post Plan A Phase 3).",
+        description: "Tier-2 maturity-phase + product-routing editor (enabled post Plan A Phase 3).",
       },
       {
         key: "deployments",
@@ -347,6 +342,30 @@ export const SERVICE_REGISTRY: readonly ServiceDefinition[] = [
         description: "67-repo service catalog + health.",
       },
       {
+        key: "system-health",
+        label: "System Health",
+        href: "/admin/system-health",
+        icon: "HeartPulse",
+        requiredEntitlements: ["*"],
+        description: "Fleet-wide health × tier × mode × env matrix.",
+      },
+      {
+        key: "engagement",
+        label: "Engagement Tracker",
+        href: "/engagement",
+        icon: "Activity",
+        requiredEntitlements: ["*"],
+        description: "Client engagement telemetry + funnel metrics.",
+      },
+      {
+        key: "data-etl",
+        label: "Data ETL Console",
+        href: "/internal/data-etl",
+        icon: "Database",
+        requiredEntitlements: ["*"],
+        description: "Internal ETL ops + manual pipeline triggers.",
+      },
+      {
         key: "audit-log",
         label: "Audit Log",
         href: "/admin/audit",
@@ -359,18 +378,10 @@ export const SERVICE_REGISTRY: readonly ServiceDefinition[] = [
 ] as const;
 
 /** Dashboard tile ids — mirrors SERVICE_REGISTRY keys. */
-export type DashboardTileId =
-  | "dart"
-  | "odum-signals"
-  | "reports"
-  | "investor-relations"
-  | "admin";
+export type DashboardTileId = "dart" | "odum-signals" | "reports" | "investor-relations" | "admin";
 
 /** Get services visible to a given set of entitlements. */
-export function getVisibleServices(
-  entitlements: readonly string[],
-  role: string,
-): ServiceDefinition[] {
+export function getVisibleServices(entitlements: readonly string[], role: string): ServiceDefinition[] {
   const isWildcard = entitlements.includes("*");
   const isAdminOrInternal = role === "admin" || role === "internal";
 
@@ -378,9 +389,7 @@ export function getVisibleServices(
     if (svc.internalOnly && !isAdminOrInternal) return false;
     if (isWildcard) return true;
     if (svc.requiredEntitlements[0] === "*") return false;
-    return (svc.requiredEntitlements as readonly string[]).some((e) =>
-      entitlements.includes(e),
-    );
+    return (svc.requiredEntitlements as readonly string[]).some((e) => entitlements.includes(e));
   });
 }
 

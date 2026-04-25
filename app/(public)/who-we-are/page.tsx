@@ -18,28 +18,23 @@ export default function MarketingWhoWeArePage() {
             <h2 className="text-sm font-semibold text-foreground">Related</h2>
             <ul className="mt-3 space-y-2 text-sm">
               <li>
-                <Link
-                  href="/contact"
+                <a
+                  href="https://calendly.com/odum-ikenna"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="font-medium text-foreground underline-offset-4 hover:underline"
                 >
-                  Contact
-                </Link>
-                <span className="text-muted-foreground">
-                  {" "}
-                  &mdash; book a first call.
-                </span>
+                  Book a call
+                </a>
+                <span className="text-muted-foreground"> &mdash; schedule a first call on Calendly.</span>
               </li>
               <li>
-                <Link
-                  href="/briefings"
-                  className="font-medium text-foreground underline-offset-4 hover:underline"
-                >
+                <Link href="/briefings" className="font-medium text-foreground underline-offset-4 hover:underline">
                   Briefings hub
                 </Link>
                 <span className="text-muted-foreground">
                   {" "}
-                  &mdash; per-path deep-dive briefings behind the light-auth
-                  gate.
+                  &mdash; per-path deep-dive briefings behind the light-auth gate.
                 </span>
               </li>
               <li>
@@ -55,29 +50,21 @@ export default function MarketingWhoWeArePage() {
                 </span>
               </li>
               <li>
-                <Link
-                  href="/regulatory"
-                  className="font-medium text-foreground underline-offset-4 hover:underline"
-                >
+                <Link href="/regulatory" className="font-medium text-foreground underline-offset-4 hover:underline">
                   Regulatory Umbrella
                 </Link>
                 <span className="text-muted-foreground">
                   {" "}
-                  &mdash; operate regulated activity under Odum&apos;s FCA
-                  permissions.
+                  &mdash; operate regulated activity under Odum&apos;s FCA permissions.
                 </span>
               </li>
               <li>
-                <Link
-                  href="/platform"
-                  className="font-medium text-foreground underline-offset-4 hover:underline"
-                >
+                <Link href="/platform" className="font-medium text-foreground underline-offset-4 hover:underline">
                   DART
                 </Link>
                 <span className="text-muted-foreground">
                   {" "}
-                  &mdash; Data Analytics, Research &amp; Trading: our operating
-                  system, available to clients.
+                  &mdash; Data Analytics, Research &amp; Trading: our operating system, available to clients.
                 </span>
               </li>
             </ul>

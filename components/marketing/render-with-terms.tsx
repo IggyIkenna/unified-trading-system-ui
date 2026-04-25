@@ -1,5 +1,5 @@
-import * as React from "react";
 import { Term } from "@/components/marketing/term";
+import * as React from "react";
 
 /**
  * Token-substitution renderer for copy strings that want inline glossary
@@ -15,6 +15,7 @@ import { Term } from "@/components/marketing/term";
  *   {{term:<id>|<label>}}    — renders <Term id="id">label</Term> so copy can
  *                               keep its exact phrasing while the tooltip key
  *                               stays stable (e.g. "CeFi venues" with id=cefi).
+ *   {{strong:visible text}}  — wraps the span in <strong className="font-semibold">.
  *
  * Unknown ids fall through to plain text via Term's own fallback, so a typo
  * never breaks a page.
@@ -24,25 +25,33 @@ import { Term } from "@/components/marketing/term";
  * noise (dotted underlines everywhere reads as TOO hedge-y).
  */
 
-const TERM_TOKEN_PATTERN = /\{\{term:([a-z][a-z0-9-]*)(?:\|([^}]+))?\}\}/g;
+const COPY_TOKEN_PATTERN = /\{\{term:([a-z][a-z0-9-]*)(?:\|([^}]+))?\}\}|\{\{strong:([^}]+)\}\}/g;
 
 export function renderWithTerms(text: string): React.ReactNode[] {
   const nodes: React.ReactNode[] = [];
   let lastIndex = 0;
   let keyCounter = 0;
-  for (const match of text.matchAll(TERM_TOKEN_PATTERN)) {
-    const id = match[1];
-    const customLabel = match[2];
+  for (const match of text.matchAll(COPY_TOKEN_PATTERN)) {
     const matchIndex = match.index ?? 0;
-    if (!id) continue;
     if (matchIndex > lastIndex) {
       nodes.push(text.slice(lastIndex, matchIndex));
     }
-    nodes.push(
-      <Term key={`term-${keyCounter++}`} id={id}>
-        {customLabel ?? undefined}
-      </Term>,
-    );
+    const id = match[1];
+    const customLabel = match[2];
+    const strongText = match[3];
+    if (strongText != null && strongText.length > 0) {
+      nodes.push(
+        <strong key={`strong-${keyCounter++}`} className="font-semibold">
+          {strongText}
+        </strong>,
+      );
+    } else if (id) {
+      nodes.push(
+        <Term key={`term-${keyCounter++}`} id={id}>
+          {customLabel ?? undefined}
+        </Term>,
+      );
+    }
     lastIndex = matchIndex + match[0].length;
   }
   if (lastIndex < text.length) {
@@ -56,10 +65,7 @@ export function renderWithTerms(text: string): React.ReactNode[] {
  * (e.g. the briefings page's `linkify` for `/briefings/<slug>` references).
  * Preserves relative order — tokens inside a linked segment still render.
  */
-export function composeRenderers(
-  text: string,
-  outer: (chunk: string) => React.ReactNode[],
-): React.ReactNode[] {
+export function composeRenderers(text: string, outer: (chunk: string) => React.ReactNode[]): React.ReactNode[] {
   // Run the outer transform first; for each plain-string chunk it yields,
   // run the term-token pass. For non-string nodes, pass through unchanged.
   const outerNodes = outer(text);

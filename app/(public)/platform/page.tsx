@@ -1,15 +1,10 @@
-import type { Metadata } from "next";
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { CALENDLY_URL } from "@/lib/marketing/calendly";
+import { ArrowRight } from "lucide-react";
+import type { Metadata } from "next";
+import Link from "next/link";
 
 /**
  * Public umbrella landing for DART (Data Analytics, Research & Trading).
@@ -35,25 +30,18 @@ export default function MarketingPlatformPage() {
             <Badge variant="outline" className="mb-4">
               DART
             </Badge>
-            <h1 className="text-3xl font-bold">
-              Data Analytics, Research &amp; Trading (DART)
-            </h1>
+            <h1 className="text-3xl font-bold">Data Analytics, Research &amp; Trading (DART)</h1>
             <p className="mt-4 text-lg text-muted-foreground">
-              DART is the set of services Odum uses to build, research, promote,
-              execute, and monitor its own systematic strategies, packaged for
-              client use. Clients who operate their own strategies can plug
-              their signals into Odum&apos;s execution and reporting stack, or
-              use the full research and promotion pipeline. The underlying
-              components are the same as Odum&apos;s internal operation &mdash;
-              one system, partitioned views.
+              DART is the set of services Odum uses to build, research, promote, execute, and monitor its own systematic
+              strategies, packaged for client use. Clients who operate their own strategies can plug their signals into
+              Odum&apos;s execution and reporting stack, or use the full research and promotion pipeline. The underlying
+              components are the same as Odum&apos;s internal operation &mdash; one system, partitioned views.
             </p>
           </div>
 
           {/* Two DART paths */}
           <div className="mb-12">
-            <h2 className="mb-6 text-center text-2xl font-semibold">
-              Two DART paths
-            </h2>
+            <h2 className="mb-6 text-center text-2xl font-semibold">Two DART paths</h2>
             <div className="grid gap-6 md:grid-cols-2">
               {/* Signals-In */}
               <Card className="flex flex-col">
@@ -63,23 +51,16 @@ export default function MarketingPlatformPage() {
                   </Badge>
                   <CardTitle>DART Signals-In</CardTitle>
                   <CardDescription>
-                    Keep your strategy IP upstream. Your instructions flow into
-                    Odum&apos;s execution, reconciliation, and reporting stack.
+                    Your code never crosses the wire. Odum sees only the instruction schema and never the signal
+                    generator; your strategy runs on your own infrastructure and the instructions flow into Odum&apos;s
+                    execution, reconciliation, and reporting stack.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-1 flex-col justify-between gap-6">
                   <ul className="space-y-2 text-sm text-muted-foreground">
-                    <li>
-                      Structured instructions against an eight-field schema.
-                    </li>
-                    <li>
-                      Odum runs execution, reconciliation, positions, and
-                      reporting.
-                    </li>
-                    <li>
-                      No research, promote, or backtest layer in scope &mdash;
-                      those sit in the full DART path.
-                    </li>
+                    <li>Structured instructions against an eight-field schema.</li>
+                    <li>Odum runs execution, reconciliation, positions, and reporting.</li>
+                    <li>No research, promote, or backtest layer in scope &mdash; those sit in the full DART path.</li>
                   </ul>
                   <Button asChild variant="outline" className="w-fit">
                     <Link href="/platform/signals-in">
@@ -97,23 +78,16 @@ export default function MarketingPlatformPage() {
                   </Badge>
                   <CardTitle>DART Full</CardTitle>
                   <CardDescription>
-                    Research, promote through paper, and run live on the same
-                    stack Odum uses for its own capital.
+                    Research, promote through paper, and run live on the same stack Odum uses for its own capital.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-1 flex-col justify-between gap-6">
                   <ul className="space-y-2 text-sm text-muted-foreground">
+                    <li>Enriched data services, research, backtesting, promotion, execution, trading, observation.</li>
+                    <li>The strategy catalogue, maturity ladder, and promotion ledger are visible end-to-end.</li>
                     <li>
-                      Enriched data services, research, backtesting, promotion,
-                      execution, trading, observation.
-                    </li>
-                    <li>
-                      The strategy catalogue, maturity ladder, and promotion
-                      ledger are visible end-to-end.
-                    </li>
-                    <li>
-                      Exclusivity available on specialised strategies under
-                      fixed-tier engagement.
+                      <strong>Your IP stays yours:</strong> DART Full runs under a client-exclusivity contract &mdash;
+                      Odum does not run your strategy on its own book, and other clients do not run it either.
                     </li>
                   </ul>
                   <Button asChild variant="outline" className="w-fit">
@@ -126,25 +100,36 @@ export default function MarketingPlatformPage() {
             </div>
           </div>
 
+          {/* How clients access the product — matches codex IA: /dashboard → services, /docs for APIs */}
+          <div className="mb-12 rounded-lg border border-border bg-card/50 p-6">
+            <h2 className="text-lg font-semibold">Dashboard vs API</h2>
+            <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+              Day-to-day work runs in the authenticated platform: the post-login <strong>services portal</strong>{" "}
+              (dashboard and service areas &mdash; data, research, trading, observe, reports &mdash; sliced to your
+              entitlements) with product UI, forms, and tables. The same operations are available programmatically where
+              we ship endpoints: the <strong>Unified Trading API</strong> and other service REST APIs, documented on{" "}
+              <Link href="/docs" className="font-medium text-foreground underline-offset-4 hover:underline">
+                /docs
+              </Link>
+              . We extend client-facing APIs as we wire capabilities in the stack.
+            </p>
+          </div>
+
           {/* Adjacent services */}
           <div className="rounded-lg border border-border bg-card/50 p-6">
             <h2 className="text-lg font-semibold">Adjacent services</h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              DART is one of five commercial paths. Two adjacent paths cover the
-              other direction of the signal arrow and capital allocation:
+              DART is one of five commercial paths. Two adjacent paths cover the other direction of the signal arrow and
+              capital allocation:
             </p>
             <ul className="mt-4 space-y-2 text-sm">
               <li>
-                <Link
-                  href="/signals"
-                  className="font-medium text-foreground underline-offset-4 hover:underline"
-                >
+                <Link href="/signals" className="font-medium text-foreground underline-offset-4 hover:underline">
                   Odum Signals
                 </Link>
                 <span className="text-muted-foreground">
                   {" "}
-                  &mdash; Odum-generated signals leased to counterparties who
-                  execute on their own infrastructure.
+                  &mdash; Odum-generated signals leased to counterparties who execute on their own infrastructure.
                 </span>
               </li>
               <li>
@@ -156,21 +141,16 @@ export default function MarketingPlatformPage() {
                 </Link>
                 <span className="text-muted-foreground">
                   {" "}
-                  &mdash; allocate capital to Odum-run strategies under the same
-                  reporting surface.
+                  &mdash; allocate capital to Odum-run strategies under the same reporting surface.
                 </span>
               </li>
               <li>
-                <Link
-                  href="/regulatory"
-                  className="font-medium text-foreground underline-offset-4 hover:underline"
-                >
+                <Link href="/regulatory" className="font-medium text-foreground underline-offset-4 hover:underline">
                   Regulatory Umbrella
                 </Link>
                 <span className="text-muted-foreground">
                   {" "}
-                  &mdash; operate regulated activity under Odum&apos;s FCA
-                  permissions.
+                  &mdash; operate regulated activity under Odum&apos;s FCA permissions.
                 </span>
               </li>
             </ul>
@@ -179,9 +159,8 @@ export default function MarketingPlatformPage() {
           {/* CTA */}
           <div className="mt-12 text-center">
             <p className="mb-4 text-sm text-muted-foreground">
-              Have a strategy to evaluate for incubation or signal integration?
-              Submit our strategy evaluation pack — or open the briefings hub for a
-              detailed walk-through of either DART path.
+              Have a strategy to evaluate for incubation or signal integration? Submit our strategy evaluation pack — or
+              open the briefings hub for a detailed walk-through of either DART path.
             </p>
             <div className="flex flex-wrap justify-center gap-3">
               <Button asChild>
@@ -191,7 +170,9 @@ export default function MarketingPlatformPage() {
                 <Link href="/briefings">Open briefings</Link>
               </Button>
               <Button asChild variant="outline">
-                <Link href="/contact">Book a call</Link>
+                <a href={CALENDLY_URL} target="_blank" rel="noopener noreferrer">
+                  Book a call
+                </a>
               </Button>
             </div>
           </div>

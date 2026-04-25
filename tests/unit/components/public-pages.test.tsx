@@ -13,9 +13,7 @@ vi.mock("next/navigation", () => ({
 }));
 
 vi.mock("next/link", () => ({
-  default: ({ children, href }: { children: React.ReactNode; href: string }) => (
-    <a href={href}>{children}</a>
-  ),
+  default: ({ children, href }: { children: React.ReactNode; href: string }) => <a href={href}>{children}</a>,
 }));
 
 // Public-facing marketing pages were restructured 2026-04 to load static HTML
@@ -57,7 +55,8 @@ describe("Public pages — homepage shell", () => {
 describe("Public pages — homepage marketing content (SSOT: public/homepage.html)", () => {
   it("contains the hero headline", () => {
     const html = loadHomepageHtml();
-    expect(html).toContain("Unified Trading Infrastructure");
+    expect(html).toContain("Odum Research");
+    expect(html.toLowerCase()).toContain("unified trading infrastructure");
   });
 
   it("references the five asset groups section", () => {

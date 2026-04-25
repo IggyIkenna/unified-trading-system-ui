@@ -35,7 +35,7 @@ const NODES = [
   },
   {
     label: "Sports",
-    sub: "Betfair · Pinnacle",
+    sub: "Betfair · Smarkets",
     color: "#fbbf24",
     fill: "#141003",
     angle: 90,
@@ -72,11 +72,7 @@ function getNodePosition(angle: number, cx: number, cy: number, r: number) {
   };
 }
 
-export function MarketGalaxy({
-  className,
-  showStats = true,
-  animate,
-}: MarketGalaxyProps) {
+export function MarketGalaxy({ className, showStats = true, animate }: MarketGalaxyProps) {
   const [tick, setTick] = React.useState(0);
   React.useEffect(() => {
     const id = setInterval(() => setTick((t) => t + 1), 80);
@@ -160,14 +156,7 @@ export function MarketGalaxy({
           return (
             <g key={i}>
               <circle cx={x} cy={y} r={nr * 1.9} fill={`url(#halo-${i})`} />
-              <circle
-                cx={x}
-                cy={y}
-                r={nr}
-                fill={n.fill}
-                stroke={n.color}
-                strokeWidth={2.2}
-              />
+              <circle cx={x} cy={y} r={nr} fill={n.fill} stroke={n.color} strokeWidth={2.2} />
               <text
                 x={x}
                 y={y - 5}
@@ -198,15 +187,10 @@ export function MarketGalaxy({
         <div className="flex flex-col gap-6 flex-shrink-0">
           {STATS.map((s) => (
             <div key={s.label}>
-              <div
-                className="text-3xl font-bold tabular-nums leading-none"
-                style={{ color: s.color }}
-              >
+              <div className="text-3xl font-bold tabular-nums leading-none" style={{ color: s.color }}>
                 {s.value}
               </div>
-              <div className="text-xs text-muted-foreground mt-1 whitespace-nowrap">
-                {s.label}
-              </div>
+              <div className="text-xs text-muted-foreground mt-1 whitespace-nowrap">{s.label}</div>
             </div>
           ))}
         </div>

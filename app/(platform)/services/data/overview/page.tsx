@@ -300,6 +300,30 @@ export default function AcquireOverviewPage() {
           </CardContent>
         </Card>
 
+        {/* Drilldown links — honest-coverage v5 deep-links. Kept as explicit
+            <Link>s (not only query-param driven) so the orphan-audit scanner
+            sees them without relying on programmatic-navigation detection. */}
+        <div className="mb-6 flex flex-wrap gap-2">
+          <Link href="/services/data/logs">
+            <Button variant="outline" size="sm" className="h-8 text-xs">
+              Pipeline Logs
+              <ArrowRight className="ml-1 size-3" />
+            </Button>
+          </Link>
+          <Link href="/services/data/missing">
+            <Button variant="outline" size="sm" className="h-8 text-xs">
+              Missing-Data Drilldown
+              <ArrowRight className="ml-1 size-3" />
+            </Button>
+          </Link>
+          <Link href="/services/data/markets/pnl">
+            <Button variant="outline" size="sm" className="h-8 text-xs">
+              Markets P&amp;L
+              <ArrowRight className="ml-1 size-3" />
+            </Button>
+          </Link>
+        </div>
+
         {/* Active Jobs + Alerts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Active Jobs */}
