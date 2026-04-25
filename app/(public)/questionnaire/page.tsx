@@ -327,13 +327,25 @@ function QuestionnaireForm() {
         : null;
 
     const outcome = await submitQuestionnaire(response, envelope);
-    if (outcome.success) {
-      const personaId = resolvePersonaFromQuestionnaire(response);
-      persistResolvedPersona(personaId);
-      // Fire-and-forget: send full response email to user + BCC info@.
-      // Server inlines every answer into both copies so the prospect sees
-      // exactly what we received and we have a durable inbox record.
-      fetch("/api/questionnaire/email", {
+    if (!outcome.success) {
+      setResult(outcome);
+      setSubmitting(false);
+      return;
+    }
+    const personaId = resolvePersonaFromQuestionnaire(response);
+    persistResolvedPersona(personaId);
+
+    // Email-confirmation gate: wait for Resend to actually accept the email
+    // before unlocking the briefings hub. This stops fake-email submissions
+    // from bypassing the gate. Resend rejects malformed addresses
+    // syntactically, and unverified domains 4xx out — both surface as
+    // !ok here. In sandbox mode (local dev) the recipient is force-routed
+    // to ikenna@odum-research.com, so the gate effectively only checks
+    // that the API key is configured + the network round-trip succeeded.
+    let emailOk = false;
+    let emailReason = "unknown";
+    try {
+      const res = await fetch("/api/questionnaire/email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -361,7 +373,6 @@ function QuestionnaireForm() {
           riskProfile: state.risk_profile,
           targetSharpeMin: state.target_sharpe_min_str || undefined,
           leveragePreference: state.leverage_preference,
-          // Reg-Umbrella-only axes — pass even when unset; server skips empty values
           licenceRegion: state.licence_region,
           targets3mo: state.targets_3mo.trim() || undefined,
           targets1yr: state.targets_1yr.trim() || undefined,
@@ -376,35 +387,40 @@ function QuestionnaireForm() {
               .filter((v) => v.length > 0),
           ],
         }),
-      }).catch(() => {
-        /* non-critical */
       });
+      const json = (await res.json().catch(() => ({}))) as { ok?: boolean; reason?: string };
+      emailOk = res.ok && json.ok === true;
+      emailReason = json.reason ?? `http_${res.status}`;
+    } catch (err) {
+      emailOk = false;
+      emailReason = String(err);
     }
+
+    if (!emailOk) {
+      // Hold the user on the form until they fix the email. Their submission
+      // is in Firestore (so we have the lead) but the briefings hub stays
+      // locked. Surface a clear error.
+      setResult({
+        success: false,
+        sink: outcome.sink,
+        error:
+          emailReason === "no_api_key"
+            ? "Email backend isn't configured for this environment yet — try staging or prod, or contact info@odum-research.com."
+            : `We couldn't deliver a confirmation to ${state.email || "that address"}. Check the email and try again. (${emailReason})`,
+      });
+      setSubmitting(false);
+      return;
+    }
+
     setResult(outcome);
     setSubmitting(false);
-    if (outcome.success) {
-      // The visitor just gave us their info — auto-unlock the briefings hub
-      // on this browser without making them re-type the code we're about to
-      // email. Same browser: straight into the Deep Dive briefings hub.
-      // Different browser later: enter the emailed code at /briefings.
-      //
-      // We intentionally do NOT redirect to /services/strategy-catalogue here
-      // — that's a signed-in platform surface gated by Firebase Auth, and
-      // unlocking it is part of a later step in the onboarding flow (the
-      // demo-access stage, post first call). Sending them there now would
-      // bounce them to /login, which is a worse UX than landing them on the
-      // briefings hub they just earned access to.
-      //
-      // The persona + filter envelope still gets persisted server-side so the
-      // demo-onboarding step can pre-seed the catalogue when the user actually
-      // gets sandbox access.
-      try {
-        setBriefingSessionActive();
-      } catch {
-        /* localStorage unavailable — they'll need to enter the code manually next time */
-      }
-      setTimeout(() => router.push("/briefings"), 1200);
+    // Email confirmed. Unlock the briefings hub on this browser and redirect.
+    try {
+      setBriefingSessionActive();
+    } catch {
+      /* localStorage unavailable — user will enter the code manually next time */
     }
+    setTimeout(() => router.push("/briefings"), 1200);
   };
 
   return (

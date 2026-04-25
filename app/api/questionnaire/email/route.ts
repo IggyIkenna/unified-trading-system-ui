@@ -238,5 +238,20 @@ export async function POST(request: Request) {
     console.info(`[questionnaire/email] sendEmail OK to ${to}`);
   }
 
-  return NextResponse.json({ ok: true });
+  // Gate: client unlocks the briefings hub only when the email actually
+  // dispatched successfully. This stops a fake-email submission from
+  // unlocking — Resend rejects syntactically-malformed addresses, and
+  // domain-level rejections surface as result.ok=false. The "sent" flag
+  // distinguishes "no API key configured" (ok=true, sent=false) from real
+  // delivery — both treated as failure here so a misconfigured deploy
+  // can't silently let everyone in.
+  const sent = result.ok && result.sent;
+  return NextResponse.json(
+    {
+      ok: sent,
+      sent,
+      reason: sent ? undefined : (result.reason ?? "send_failed"),
+    },
+    { status: sent ? 200 : 502 },
+  );
 }
