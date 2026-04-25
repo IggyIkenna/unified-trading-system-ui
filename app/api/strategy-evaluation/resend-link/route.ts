@@ -68,6 +68,51 @@ export async function POST(request: Request) {
     });
 
     if (!matching) {
+      // No submitted doc — fall back to a draft if one exists. We email a
+      // resume-link pointing at the form with a draft-token so the prospect
+      // can pick up where they left off.
+      const { createHash } = await import("node:crypto");
+      const draftId = createHash("sha256").update(email).digest("hex").slice(0, 32);
+      const draftSnap = await db.collection("strategy_evaluation_drafts").doc(draftId).get();
+      if (!draftSnap.exists) {
+        return NextResponse.json({ ok: true });
+      }
+      const draftData = draftSnap.data() ?? {};
+      const draftPayload = (draftData.payload ?? {}) as Record<string, unknown>;
+      const resumeUrl = `${getSiteUrl(request)}/strategy-evaluation?draft=${encodeURIComponent(email)}`;
+      const draftStrategy =
+        typeof draftPayload.strategyName === "string" && draftPayload.strategyName.trim().length > 0
+          ? draftPayload.strategyName
+          : "your in-progress evaluation";
+      const draftHtml = `
+        <div style="font-family:sans-serif;max-width:560px;margin:0 auto;color:#111">
+          <h2 style="margin-bottom:4px">Resume your strategy evaluation</h2>
+          <hr style="border:none;border-top:1px solid #e5e7eb;margin:16px 0">
+          <p>You haven't submitted yet, but we have your in-progress draft saved. Click below to pick up where you left off.</p>
+          <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;padding:16px;margin:16px 0">
+            <p style="margin:0"><strong>Draft:</strong> ${escapeHtml(draftStrategy)}</p>
+          </div>
+          <p style="text-align:center;margin:24px 0">
+            <a href="${resumeUrl}"
+               style="display:inline-block;background:#111;color:#fff;text-decoration:none;padding:12px 20px;border-radius:6px;font-weight:600">
+              Resume your draft
+            </a>
+          </p>
+          <p style="color:#6b7280;font-size:13px">
+            If the button doesn't work, copy and paste this link into your browser:<br>
+            <a href="${resumeUrl}" style="color:#111;word-break:break-all">${resumeUrl}</a>
+          </p>
+          <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0">
+          <p style="color:#9ca3af;font-size:12px">Odum Capital Ltd — FCA authorised · FRN 975797</p>
+        </div>
+      `;
+      await sendEmail({
+        from: getSenderFor("hello"),
+        to: email,
+        replyTo: INTERNAL_ADDRESS,
+        subject: "Resume your strategy evaluation — Odum",
+        html: draftHtml,
+      });
       return NextResponse.json({ ok: true });
     }
 

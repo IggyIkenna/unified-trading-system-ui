@@ -87,6 +87,10 @@
       "reason": "API-HANDLER — Next.js route.ts called from /strategy-evaluation form's 'Already submitted? Resend my access link' button; not a page."
     },
     {
+      "path": "/api/strategy-evaluation/save-draft",
+      "reason": "API-HANDLER — Next.js route.ts called by the wizard form on every form-state change to mirror the localStorage draft into Firestore for cross-device resume; not a page."
+    },
+    {
       "path": "/strategy-evaluation/status",
       "reason": "UNAUTHENTICATED-FUNNEL — token-gated submission view; reached only via magic-link email after a successful form submit, not a declared nav tile."
     }

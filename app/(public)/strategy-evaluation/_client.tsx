@@ -538,11 +538,25 @@ export default function StrategyEvaluationFormClient({
       } catch {
         // ignore storage errors
       }
-    }, 1000);
+      // Server-side draft mirror — only fires once an email is set so we have
+      // a key. Stays fire-and-forget; localStorage is the authoritative cache,
+      // server-side is for cross-device resume via the resend-link flow.
+      const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email);
+      if (emailValid && !submitted) {
+        fetch("/api/strategy-evaluation/save-draft", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: form.email, payload: serializeState(form) }),
+          cache: "no-store",
+        }).catch(() => {
+          // non-critical
+        });
+      }
+    }, 1500);
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
-  }, [form]);
+  }, [form, submitted]);
 
   function setField<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
