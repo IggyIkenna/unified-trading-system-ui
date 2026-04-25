@@ -62,12 +62,7 @@ import {
   QUESTIONNAIRE_STRATEGY_STYLES,
 } from "@/lib/questionnaire/types";
 import { fingerprintAccessCode, submitQuestionnaire, type SubmitResult } from "@/lib/questionnaire/submit";
-import {
-  persistResolvedPersona,
-  resolvePersonaFromQuestionnaire,
-  seedFiltersFromQuestionnaire,
-} from "@/lib/questionnaire/resolve-persona";
-import { serialiseCatalogueFilter } from "@/lib/architecture-v2/catalogue-filter";
+import { persistResolvedPersona, resolvePersonaFromQuestionnaire } from "@/lib/questionnaire/resolve-persona";
 import { Term } from "@/components/marketing/term";
 
 /**
@@ -366,17 +361,25 @@ function QuestionnaireForm() {
     if (outcome.success) {
       // The visitor just gave us their info — auto-unlock the briefings hub
       // on this browser without making them re-type the code we're about to
-      // email. Same browser, same session: straight in. Different browser
-      // later: enter the code from the email at /briefings.
+      // email. Same browser: straight into the Deep Dive briefings hub.
+      // Different browser later: enter the emailed code at /briefings.
+      //
+      // We intentionally do NOT redirect to /services/strategy-catalogue here
+      // — that's a signed-in platform surface gated by Firebase Auth, and
+      // unlocking it is part of a later step in the onboarding flow (the
+      // demo-access stage, post first call). Sending them there now would
+      // bounce them to /login, which is a worse UX than landing them on the
+      // briefings hub they just earned access to.
+      //
+      // The persona + filter envelope still gets persisted server-side so the
+      // demo-onboarding step can pre-seed the catalogue when the user actually
+      // gets sandbox access.
       try {
         setBriefingSessionActive();
       } catch {
         /* localStorage unavailable — they'll need to enter the code manually next time */
       }
-      const filter = seedFiltersFromQuestionnaire(response);
-      const filterQs = new URLSearchParams(serialiseCatalogueFilter(filter)).toString();
-      const target = `/services/strategy-catalogue?tab=explore&from=questionnaire${filterQs ? `&${filterQs}` : ""}`;
-      setTimeout(() => router.push(target), 1200);
+      setTimeout(() => router.push("/briefings"), 1200);
     }
   };
 
