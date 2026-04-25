@@ -1,69 +1,76 @@
 "use client";
 
 import * as React from "react";
-import { StatusDot } from "@/components/shared/status-badge";
 import { cn } from "@/lib/utils";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts";
-import {
-  Radio,
-  Database,
-  SplitSquareVertical,
-  TrendingUp,
-  TrendingDown,
-  Calendar,
-  ArrowLeftRight,
-  Minus,
-} from "lucide-react";
+import { Radio, Database } from "lucide-react";
 import type { TimeSeriesPoint } from "@/lib/mocks/fixtures/trading-data";
 import { formatPercent } from "@/lib/utils/formatters";
 
-type ViewMode = "live" | "batch" | "split" | "delta";
+export type ViewMode = "live" | "batch" | "split" | "delta";
 
 interface LiveBatchComparisonProps {
-  title: string;
   liveData: TimeSeriesPoint[];
   batchData: TimeSeriesPoint[];
-  deltaData?: TimeSeriesPoint[];
   valueFormatter?: (value: number) => string;
-  height?: number;
+  height?: number | string;
   className?: string;
-  selectedDate: string;
-  onDateChange: (date: string) => void;
+  viewMode: ViewMode;
+  /**
+   * Optional id used to force Recharts to re-run animations when switching
+   * between datasets that produce a visually identical SVG path (e.g. P&L vs
+   * NAV in this app, where NAV = baseCapital + P&L → same shape, YAxis
+   * auto-rescales). Pass any value that changes per dataset.
+   */
+  animationId?: string | number;
 }
 
 export function LiveBatchComparison({
-  title,
   liveData,
   batchData,
-  deltaData,
   valueFormatter = (v) => v.toLocaleString(),
-  height = 250,
+  height = "100%",
   className,
-  selectedDate,
-  onDateChange,
+  viewMode,
+  animationId,
 }: LiveBatchComparisonProps) {
-  const [viewMode, setViewMode] = React.useState<ViewMode>("split");
-
-  // Calculate latest values
   const latestLive = liveData[liveData.length - 1]?.value ?? 0;
   const latestBatch = batchData[batchData.length - 1]?.value ?? 0;
   const latestDelta = latestLive - latestBatch;
-  const deltaPercent = latestBatch !== 0 ? (latestDelta / Math.abs(latestBatch)) * 100 : 0;
 
-  // Combine data for charts
-  const combinedData = liveData.map((point, i) => ({
-    timestamp: point.timestamp,
-    live: point.value,
-    batch: batchData[i]?.value ?? 0,
-    delta: point.value - (batchData[i]?.value ?? 0),
-  }));
+  // Recharts' `animationId` prop wants a number. Hash the caller-supplied
+  // identifier to a stable integer so different datasets re-trigger animation.
+  const animId = React.useMemo(() => {
+    if (animationId == null) return 0;
+    const s = String(animationId);
+    let h = 0;
+    for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
+    return h;
+  }, [animationId]);
 
-  // Calculate Y-axis domain with auto-adjustment (not starting at 0)
+  // Split batch into two overlay series so the dashed line can be coloured by
+  // its position relative to live: red when batch > live (live underperforming),
+  // green when batch <= live (live ahead). To avoid visual gaps at crossings,
+  // each segment also includes one boundary point from the opposite side.
+  const combinedData = liveData.map((point, i) => {
+    const liveVal = point.value;
+    const batchVal = batchData[i]?.value ?? 0;
+    const prevLive = i > 0 ? (liveData[i - 1]?.value ?? 0) : liveVal;
+    const prevBatch = i > 0 ? (batchData[i - 1]?.value ?? 0) : batchVal;
+    const isAbove = batchVal > liveVal;
+    const wasAbove = prevBatch > prevLive;
+    const isCrossing = i > 0 && isAbove !== wasAbove;
+    return {
+      timestamp: point.timestamp,
+      live: liveVal,
+      batch: batchVal,
+      delta: liveVal - batchVal,
+      batchAbove: isAbove || isCrossing ? batchVal : null,
+      batchBelow: !isAbove || isCrossing ? batchVal : null,
+    };
+  });
+
   const getYDomain = (data: number[]): [number, number] => {
     const min = Math.min(...data);
     const max = Math.max(...data);
@@ -79,7 +86,7 @@ export function LiveBatchComparison({
 
   const renderChart = (data: TimeSeriesPoint[], color: string, label: string, yDomain?: [number, number]) => (
     <ResponsiveContainer width="100%" height={height}>
-      <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+      <AreaChart key={animId} data={data} margin={{ top: 10, right: 0, left: 10, bottom: 0 }}>
         <defs>
           <linearGradient id={`gradient-${label}`} x1="0" y1="0" x2="0" y2="1">
             <stop offset="5%" stopColor={color} stopOpacity={0.3} />
@@ -95,6 +102,7 @@ export function LiveBatchComparison({
           interval="preserveStartEnd"
         />
         <YAxis
+          orientation="right"
           tick={{ fontSize: 10, fill: "var(--muted-foreground)" }}
           tickLine={false}
           axisLine={false}
@@ -120,6 +128,7 @@ export function LiveBatchComparison({
           stroke={color}
           strokeWidth={2}
           fill={`url(#gradient-${label})`}
+          animationId={animId}
         />
       </AreaChart>
     </ResponsiveContainer>
@@ -127,15 +136,19 @@ export function LiveBatchComparison({
 
   const renderSplitChart = () => (
     <ResponsiveContainer width="100%" height={height}>
-      <AreaChart data={combinedData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+      <AreaChart key={animId} data={combinedData} margin={{ top: 10, right: 0, left: 10, bottom: 0 }}>
         <defs>
           <linearGradient id="gradient-live" x1="0" y1="0" x2="0" y2="1">
             <stop offset="5%" stopColor="var(--status-live)" stopOpacity={0.3} />
             <stop offset="95%" stopColor="var(--status-live)" stopOpacity={0} />
           </linearGradient>
-          <linearGradient id="gradient-batch" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.3} />
-            <stop offset="95%" stopColor="var(--primary)" stopOpacity={0} />
+          <linearGradient id="gradient-batch-above" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor="var(--pnl-negative)" stopOpacity={0.18} />
+            <stop offset="95%" stopColor="var(--pnl-negative)" stopOpacity={0} />
+          </linearGradient>
+          <linearGradient id="gradient-batch-below" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor="var(--pnl-positive)" stopOpacity={0.18} />
+            <stop offset="95%" stopColor="var(--pnl-positive)" stopOpacity={0} />
           </linearGradient>
         </defs>
         <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
@@ -147,6 +160,7 @@ export function LiveBatchComparison({
           interval="preserveStartEnd"
         />
         <YAxis
+          orientation="right"
           tick={{ fontSize: 10, fill: "var(--muted-foreground)" }}
           tickLine={false}
           axisLine={false}
@@ -172,15 +186,29 @@ export function LiveBatchComparison({
           stroke="var(--status-live)"
           strokeWidth={2}
           fill="url(#gradient-live)"
+          animationId={animId}
         />
         <Area
           type="monotone"
-          dataKey="batch"
+          dataKey="batchAbove"
           name="batch"
-          stroke="var(--primary)"
+          stroke="var(--pnl-negative)"
           strokeWidth={2}
-          fill="url(#gradient-batch)"
+          fill="url(#gradient-batch-above)"
           strokeDasharray="5 5"
+          connectNulls={false}
+          animationId={animId}
+        />
+        <Area
+          type="monotone"
+          dataKey="batchBelow"
+          name="batch"
+          stroke="var(--pnl-positive)"
+          strokeWidth={2}
+          fill="url(#gradient-batch-below)"
+          strokeDasharray="5 5"
+          connectNulls={false}
+          animationId={animId}
         />
       </AreaChart>
     </ResponsiveContainer>
@@ -188,7 +216,7 @@ export function LiveBatchComparison({
 
   const renderDeltaChart = () => (
     <ResponsiveContainer width="100%" height={height}>
-      <AreaChart data={combinedData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+      <AreaChart key={animId} data={combinedData} margin={{ top: 10, right: 0, left: 10, bottom: 0 }}>
         <defs>
           <linearGradient id="gradient-delta-pos" x1="0" y1="0" x2="0" y2="1">
             <stop offset="5%" stopColor="var(--pnl-positive)" stopOpacity={0.3} />
@@ -208,6 +236,7 @@ export function LiveBatchComparison({
           interval="preserveStartEnd"
         />
         <YAxis
+          orientation="right"
           tick={{ fontSize: 10, fill: "var(--muted-foreground)" }}
           tickLine={false}
           axisLine={false}
@@ -233,122 +262,22 @@ export function LiveBatchComparison({
           stroke={latestDelta >= 0 ? "var(--pnl-positive)" : "var(--pnl-negative)"}
           strokeWidth={2}
           fill={latestDelta >= 0 ? "url(#gradient-delta-pos)" : "url(#gradient-delta-neg)"}
+          animationId={animId}
         />
       </AreaChart>
     </ResponsiveContainer>
   );
 
   return (
-    <Card className={className}>
-      <CardHeader className="pb-2">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <CardTitle className="text-base">{title}</CardTitle>
-
-            {/* Legend */}
-            <div className="flex items-center gap-4 text-xs">
-              <div className="flex items-center gap-1.5">
-                <StatusDot status="live" className="size-2" />
-                <span className="text-muted-foreground">Live</span>
-                <span className="font-medium">{valueFormatter(latestLive)}</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <StatusDot status="batch" className="size-2" />
-                <span className="text-muted-foreground">Batch</span>
-                <span className="font-medium">{valueFormatter(latestBatch)}</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <ArrowLeftRight className="size-3 text-muted-foreground" />
-                <span className="text-muted-foreground">Delta</span>
-                <span
-                  className={cn(
-                    "font-medium",
-                    latestDelta >= 0 ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]",
-                  )}
-                >
-                  {latestDelta >= 0 ? "+" : ""}
-                  {valueFormatter(latestDelta)}
-                  <span className="text-muted-foreground ml-1">
-                    ({deltaPercent >= 0 ? "+" : ""}
-                    {formatPercent(deltaPercent, 1)})
-                  </span>
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            {/* Date Picker for Batch */}
-            <div className="flex items-center gap-1.5 px-2 py-1 border border-border rounded-md">
-              <Calendar className="size-3 text-muted-foreground" />
-              <input
-                type="date"
-                value={selectedDate}
-                onChange={(e) => onDateChange(e.target.value)}
-                max={new Date(Date.now() - 86400000).toISOString().split("T")[0]} // Yesterday max
-                className="bg-transparent text-xs border-none focus:outline-none w-28"
-              />
-            </div>
-
-            {/* View Mode Toggle */}
-            <div className="flex items-center border border-border rounded-md overflow-hidden">
-              <button
-                onClick={() => setViewMode("live")}
-                className={cn(
-                  "flex items-center gap-1 px-2 py-1 text-xs transition-colors",
-                  viewMode === "live"
-                    ? "bg-[var(--status-live)]/10 text-[var(--status-live)]"
-                    : "text-muted-foreground hover:text-foreground",
-                )}
-              >
-                <Radio className="size-3" />
-                Live
-              </button>
-              <button
-                onClick={() => setViewMode("batch")}
-                className={cn(
-                  "flex items-center gap-1 px-2 py-1 text-xs transition-colors",
-                  viewMode === "batch" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground",
-                )}
-              >
-                <Database className="size-3" />
-                Batch
-              </button>
-              <button
-                onClick={() => setViewMode("split")}
-                className={cn(
-                  "flex items-center gap-1 px-2 py-1 text-xs transition-colors",
-                  viewMode === "split" ? "bg-secondary text-foreground" : "text-muted-foreground hover:text-foreground",
-                )}
-              >
-                <SplitSquareVertical className="size-3" />
-                Split
-              </button>
-              <button
-                onClick={() => setViewMode("delta")}
-                className={cn(
-                  "flex items-center gap-1 px-2 py-1 text-xs transition-colors",
-                  viewMode === "delta" ? "bg-secondary text-foreground" : "text-muted-foreground hover:text-foreground",
-                )}
-              >
-                <Minus className="size-3" />
-                Delta
-              </button>
-            </div>
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent className="pt-0">
-        {viewMode === "live" && renderChart(liveData, "var(--status-live)", "Live")}
-        {viewMode === "batch" && renderChart(batchData, "var(--primary)", "Batch")}
-        {viewMode === "split" && renderSplitChart()}
-        {viewMode === "delta" && renderDeltaChart()}
-      </CardContent>
-    </Card>
+    <div className={cn("w-full h-full", className)}>
+      {viewMode === "live" && renderChart(liveData, "var(--status-live)", "Live")}
+      {viewMode === "batch" && renderChart(batchData, "var(--primary)", "Batch")}
+      {viewMode === "split" && renderSplitChart()}
+      {viewMode === "delta" && renderDeltaChart()}
+    </div>
   );
 }
 
-// Compact indicator showing delta status
 export function LiveBatchDeltaIndicator({
   liveValue,
   batchValue,
