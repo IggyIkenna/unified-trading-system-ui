@@ -70,7 +70,7 @@ test.describe("BundleBuilderWidget — UI validation", () => {
   test("submit bundle button is clickable and shows confirmation", async () => {
     await w().locator('[data-testid="submit-bundle-button"]').click();
     // Toast should appear confirming submission.
-    await expect(page.locator("text=Bundle submitted").or(page.locator("text=submitted"))).toBeVisible({
+    await expect(page.locator("text=Bundle submitted").or(page.locator("text=submitted")).first()).toBeVisible({
       timeout: 5_000,
     });
   });

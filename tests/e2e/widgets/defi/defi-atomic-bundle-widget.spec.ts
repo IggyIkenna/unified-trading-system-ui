@@ -49,23 +49,21 @@ test.describe("DefiAtomicBundleWidget — UI validation", () => {
   // ── Adding operations ──────────────────────────────────────────────────────
 
   test("add operation button is present and clickable", async () => {
-    // Templates may be shown initially — add-operation-button appears inside the operations flow.
-    // Click add-operation-button if visible, otherwise find it through templates close path.
+    // Widget starts with templates panel showing (showTemplates=true, operations.length=0).
+    // add-operation-button only appears once templates are hidden or operations exist.
+    // Click the first pre-built template to populate operations.
     const addBtn = w().locator('[data-testid="add-operation-button"]');
     if (await addBtn.isVisible()) {
       await addBtn.click();
     } else {
-      // Templates panel may be shown; click through to operations view.
-      const useTemplate = w().locator("button:has-text('Use a template')").first();
-      if (await useTemplate.isVisible()) {
-        // Load first template to get operations populated.
-        const templateBtns = w()
-          .locator("button")
-          .filter({ hasText: /load|basis|arb|lend/i });
-        if ((await templateBtns.count()) > 0) {
-          await templateBtns.first().click();
-          await page.waitForTimeout(300);
-        }
+      // Templates panel shown — click the first pre-built template button.
+      const templateBtn = w()
+        .locator("button")
+        .filter({ hasText: /Flash Loan|Leverage|Yield Harvest/i })
+        .first();
+      if (await templateBtn.isVisible({ timeout: 3_000 }).catch(() => false)) {
+        await templateBtn.click();
+        await page.waitForTimeout(300);
       }
     }
     await page.waitForTimeout(300);
@@ -86,7 +84,11 @@ test.describe("DefiAtomicBundleWidget — UI validation", () => {
   test("execute bundle button submits and shows confirmation toast", async () => {
     await w().locator('[data-testid="execute-bundle-button"]').click();
     await expect(
-      page.locator("text=Bundle submitted").or(page.locator("text=submitted")).or(page.locator("text=Executing")),
+      page
+        .locator("text=Bundle submitted")
+        .or(page.locator("text=submitted"))
+        .or(page.locator("text=Executing"))
+        .first(),
     ).toBeVisible({ timeout: 5_000 });
   });
 

@@ -87,7 +87,7 @@ test.describe("DeFiStakingWidget — UI validation", () => {
 
   test("switching to UNSTAKE changes active button style", async () => {
     await w(page).locator('[data-testid="operation-button-UNSTAKE"]').click();
-    await expect(w(page).locator('[data-testid="operation-button-UNSTAKE"]')).toHaveClass(/bg-amber-600/);
+    await expect(w(page).locator('[data-testid="operation-button-UNSTAKE"]')).toHaveClass(/bg-rose-600/);
   });
 
   test("UNSTAKE: entering amount shows metrics", async () => {

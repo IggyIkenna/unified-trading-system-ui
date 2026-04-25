@@ -51,11 +51,14 @@ test.describe("DeFiSwapWidget (basis-trade mode) — UI validation", () => {
     expect(formText).toContain("ETH");
   });
 
-  test("all basis trade metric panels are present before amount entry", async () => {
+  test("all basis trade metric panels appear after entering amount", async () => {
+    await page.locator("[data-testid='capital-input']").fill("5000");
+    await page.waitForTimeout(300);
     await expect(swap().getByText("Basis Trade Metrics")).toBeVisible();
     await expect(swap().getByText("Funding APY")).toBeVisible();
     await expect(swap().getByText("Cost of Carry")).toBeVisible();
     await expect(swap().getByText("Net APY")).toBeVisible();
+    await page.locator("[data-testid='capital-input']").fill("");
   });
 
   test("swap button is disabled before capital amount is entered", async () => {

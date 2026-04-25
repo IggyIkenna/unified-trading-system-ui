@@ -81,7 +81,7 @@ test.describe("DeFiTradeHistoryWidget — UI validation", () => {
     const swapWidget = page.locator('[data-testid="defi-swap-widget"]');
     await swapWidget.locator('[data-testid="capital-input"]').fill("1000");
     await page.waitForTimeout(300);
-    await page.locator("button:has-text('Swap')").first().click();
+    await swapWidget.locator('[data-testid="execute-button"]').click({ force: true });
     await page.waitForTimeout(500);
     // Verify both LEND and SWAP rows exist.
     expect(await page.locator('[data-testid="trade-history-row"][data-trade-type="LEND"]').count()).toBeGreaterThan(0);
