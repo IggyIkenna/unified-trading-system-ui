@@ -8,9 +8,26 @@
  *
  * Returns the submission as-is (filenames, urls of uploaded docs, sections A-P).
  * Returns 404 if the token doesn't match anything — never reveals existence.
+ *
+ * Uses the Firebase Admin SDK because Firestore security rules deny anonymous
+ * reads on `strategy_evaluations/*` (only anonymous CREATE is allowed). Admin
+ * SDK runs with the Cloud Run service account, bypassing rules.
  */
 
 import { NextResponse } from "next/server";
+import admin from "firebase-admin";
+
+function getAdminApp(): admin.app.App {
+  if (admin.apps.length > 0) {
+    const existing = admin.apps[0];
+    if (existing) return existing;
+  }
+  // ADC: works on Cloud Run via the runtime service account; locally requires
+  // `gcloud auth application-default login`.
+  return admin.initializeApp({
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  });
+}
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
@@ -21,17 +38,11 @@ export async function GET(request: Request) {
   }
 
   try {
-    const [{ collection, getDocs, query, where, limit, doc: firestoreDoc, updateDoc }, { getFirebaseDb }] =
-      await Promise.all([import("firebase/firestore"), import("@/lib/auth/firebase-config")]);
+    const app = getAdminApp();
+    const db = admin.firestore(app);
 
-    const db = getFirebaseDb();
-    if (!db) {
-      return NextResponse.json({ error: "Database unavailable" }, { status: 503 });
-    }
+    const snap = await db.collection("strategy_evaluations").where("magicToken", "==", token).limit(1).get();
 
-    const snap = await getDocs(
-      query(collection(db, "strategy_evaluations"), where("magicToken", "==", token), limit(1)),
-    );
     if (snap.empty) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
@@ -42,12 +53,13 @@ export async function GET(request: Request) {
     // First-time visit: flip emailVerified=true. Subsequent visits are no-ops.
     if (data.emailVerified !== true) {
       try {
-        await updateDoc(firestoreDoc(db, "strategy_evaluations", docSnap.id), {
+        await docSnap.ref.update({
           emailVerified: true,
-          emailVerifiedAt: new Date().toISOString(),
+          emailVerifiedAt: admin.firestore.FieldValue.serverTimestamp(),
         });
-      } catch {
-        // Non-fatal — viewing should still work even if the update is denied
+      } catch (err) {
+        // Non-fatal — viewing should still work even if the update fails
+        console.error("[strategy-evaluation/status] emailVerified update failed", err);
       }
     }
 
