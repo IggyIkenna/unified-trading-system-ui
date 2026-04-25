@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
-import { ARCHETYPES, asset_group_COLORS, STATUSES } from "@/lib/config/services/strategies.config";
+import { ARCHETYPES, asset_group_COLORS, normalizeArchetype, STATUSES } from "@/lib/config/services/strategies.config";
 import type { Strategy } from "@/lib/mocks/fixtures/strategy-instances";
 import { cn } from "@/lib/utils";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
@@ -248,7 +248,7 @@ export function StrategiesCatalogueWidget(_props: WidgetComponentProps) {
       {Object.entries(groupedStrategies).map(([assetClass, strategies]) => {
         const byArchetype: Record<string, Strategy[]> = {};
         for (const s of strategies) {
-          const arch = s.archetype ?? "OTHER";
+          const arch = normalizeArchetype(s.archetype ?? "OTHER");
           if (!byArchetype[arch]) byArchetype[arch] = [];
           byArchetype[arch].push(s);
         }

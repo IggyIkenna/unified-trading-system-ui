@@ -79,7 +79,8 @@ import {
   ODDS_MARKETS,
   SUBSCRIBED_BOOKMAKERS,
 } from "@/lib/mocks/fixtures/sports-fixtures";
-import { STRATEGY_ALERTS, STRATEGY_CANDIDATES, STRATEGY_TEMPLATES } from "@/lib/mocks/fixtures/strategy-platform";
+import { STRATEGY_CANDIDATES, STRATEGY_TEMPLATES } from "@/lib/mocks/fixtures/strategy-platform";
+import { SEED_ALERTS } from "@/lib/mocks/fixtures/mock-data-seed";
 import {
   ACCOUNTS,
   CLIENTS,
@@ -94,6 +95,32 @@ import { ALL_INSTRUMENTS, SNAPSHOT_META, type Instrument } from "@/lib/registry/
 import { isMockDataMode } from "@/lib/runtime/data-mode";
 
 export const MOCK_MODE = typeof window !== "undefined" && isMockDataMode();
+
+// Runtime mutable state for seed alert mutations (acknowledge / resolve / escalate).
+// Keyed by alert id; values override the seed's defaults per session.
+const _alertOverlay = new Map<
+  string,
+  { status: "active" | "acknowledged" | "resolved"; severity: "critical" | "high" | "medium" | "low" }
+>();
+
+/** Build the full Alert API shape from a SeedAlert, merged with any runtime mutations. */
+function seedAlertToApiShape(a: (typeof SEED_ALERTS)[number]) {
+  const overlay = _alertOverlay.get(a.id);
+  const status: "active" | "acknowledged" | "resolved" =
+    overlay?.status ?? (a.acknowledged ? "acknowledged" : "active");
+  const severity: "critical" | "high" | "medium" | "low" = overlay?.severity ?? a.severity;
+  return {
+    id: a.id,
+    severity,
+    status,
+    title: a.message.split(" — ")[0] ?? a.message,
+    description: a.message,
+    source: a.source,
+    entity: a.strategyId || "portfolio",
+    entityType: "strategy" as const,
+    timestamp: a.timestamp,
+  };
+}
 
 function json(data: unknown, delay = 50): Promise<Response> {
   return new Promise((resolve) => {
@@ -380,6 +407,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     const perf = getStrategyPerformance(defaultFilter);
     const enriched = perf.map((s, i) => ({
       ...s,
+      clientId: STRATEGIES[i]?.clientId,
       description: `${s.archetype} strategy on ${s.assetClass}`,
       strategyType: s.archetype,
       version: "1.0.0",
@@ -391,6 +419,8 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
         returnPct: s.pnlChange ?? 0,
         maxDrawdown: s.maxDrawdown,
         pnlMTD: s.pnl,
+        pnlTotal: s.pnl,
+        netExposure: s.exposure,
       },
       sparklineData: Array.from({ length: 20 }, (_, j) => s.pnl * (0.5 + Math.sin(j * 0.3) * 0.5)),
     }));
@@ -1108,73 +1138,50 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
 
   // --- Alerts ---
   if (route === "/api/alerts/active") {
-    // Notification bell uses this — return unacknowledged alerts
-    const unacked = STRATEGY_ALERTS.filter((a) => !a.acknowledgedAt);
-    return json({
-      alerts: unacked.map((a) => ({
-        id: a.id,
-        severity: a.severity === "critical" ? "critical" : a.severity === "warning" ? "high" : "medium",
-        title: a.message,
-        timestamp: a.triggeredAt,
-        source: "strategy-service",
-      })),
-      total: unacked.length,
-    });
+    const shaped = SEED_ALERTS.map(seedAlertToApiShape).filter((a) => a.status === "active");
+    return json({ alerts: shaped, total: shaped.length });
   }
   if (route === "/api/alerts/list") {
-    const alertList = STRATEGY_ALERTS.map((a) => ({
-      id: a.id,
-      severity: a.severity === "critical" ? "critical" : a.severity === "warning" ? "high" : "medium",
-      status: a.resolvedAt ? "resolved" : a.acknowledgedAt ? "acknowledged" : "active",
-      title: a.message,
-      description: a.message,
-      source: "strategy-service",
-      entity: a.configId ?? "unknown",
-      entityType: "strategy" as const,
-      timestamp: a.triggeredAt,
-      value: a.details ? JSON.stringify(a.details) : undefined,
-      threshold: undefined,
-      recommendedAction: "Review strategy configuration",
-    }));
+    const alertList = SEED_ALERTS.map(seedAlertToApiShape);
     const pgAlerts = parsePaginationParams(path);
     return json(paginatedMockResponse(alertList, pgAlerts));
   }
   if (route === "/api/alerts/summary") {
-    // Use same severity mapping as /api/alerts/list (critical→critical, warning→high, info→medium)
-    const critCount = STRATEGY_ALERTS.filter((a) => a.severity === "critical").length;
-    const highCount = STRATEGY_ALERTS.filter((a) => a.severity === "warning").length;
-    const medCount = STRATEGY_ALERTS.filter((a) => a.severity === "info").length;
-    const unacked = STRATEGY_ALERTS.filter((a) => !a.acknowledgedAt).length;
+    const shaped = SEED_ALERTS.map(seedAlertToApiShape);
+    const active = shaped.filter((a) => a.status === "active");
     return json({
-      total: STRATEGY_ALERTS.length,
-      critical: critCount,
-      high: highCount,
-      medium: medCount,
-      warning: highCount,
-      info: medCount,
-      unacknowledged: unacked,
+      total: shaped.length,
+      critical: active.filter((a) => a.severity === "critical").length,
+      high: active.filter((a) => a.severity === "high").length,
+      medium: active.filter((a) => a.severity === "medium").length,
+      low: active.filter((a) => a.severity === "low").length,
+      unacknowledged: active.length,
     });
   }
-  // Acknowledge / escalate / resolve — mutate STRATEGY_ALERTS in place
+  // Acknowledge / escalate / resolve — write to runtime overlay
   if (route === "/api/alerts/acknowledge" || route === "/api/alerts/escalate" || route === "/api/alerts/resolve") {
     const action = route.split("/").pop() as string;
-    // alertId from POST body
     let alertId: string | undefined;
     try {
       alertId = opts?.body ? JSON.parse(opts.body as string).alertId : undefined;
     } catch {
       /* noop */
     }
-    const alert = alertId ? STRATEGY_ALERTS.find((a) => a.id === alertId) : undefined;
-    if (alert) {
-      if (action === "acknowledge") alert.acknowledgedAt = new Date().toISOString();
-      if (action === "resolve") {
-        alert.acknowledgedAt = alert.acknowledgedAt ?? new Date().toISOString();
-        alert.resolvedAt = new Date().toISOString();
-      }
-      if (action === "escalate") {
-        if (alert.severity === "info") alert.severity = "warning";
-        else if (alert.severity === "warning") alert.severity = "critical";
+    if (alertId) {
+      const seed = SEED_ALERTS.find((a) => a.id === alertId);
+      if (seed) {
+        const current = _alertOverlay.get(alertId) ?? {
+          status: (seed.acknowledged ? "acknowledged" : "active") as "active" | "acknowledged" | "resolved",
+          severity: seed.severity,
+        };
+        if (action === "acknowledge") current.status = "acknowledged";
+        if (action === "resolve") current.status = "resolved";
+        if (action === "escalate") {
+          if (current.severity === "low") current.severity = "medium";
+          else if (current.severity === "medium") current.severity = "high";
+          else if (current.severity === "high") current.severity = "critical";
+        }
+        _alertOverlay.set(alertId, current);
       }
     }
     return json({ ok: true });
@@ -1182,8 +1189,15 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   // Bell uses /api/alerts/{id}/acknowledge
   if (route.match(/^\/api\/alerts\/[^/]+\/acknowledge$/)) {
     const alertId = route.split("/")[3];
-    const alert = STRATEGY_ALERTS.find((a) => a.id === alertId);
-    if (alert) alert.acknowledgedAt = new Date().toISOString();
+    const seed = SEED_ALERTS.find((a) => a.id === alertId);
+    if (seed) {
+      const current = _alertOverlay.get(alertId) ?? {
+        status: (seed.acknowledged ? "acknowledged" : "active") as "active" | "acknowledged" | "resolved",
+        severity: seed.severity,
+      };
+      current.status = "acknowledged";
+      _alertOverlay.set(alertId, current);
+    }
     return json({ ok: true });
   }
 
@@ -5884,9 +5898,9 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     const updated = updateUser(uid, { status: "offboarded" });
     return updated
       ? json({
-        user: updated,
-        revocation_steps: [{ service: "portal", status: "revoked" }],
-      })
+          user: updated,
+          revocation_steps: [{ service: "portal", status: "revoked" }],
+        })
       : json({ error: "not found" });
   }
   if (route.match(/^\/api\/auth\/provisioning\/users\/[^/]+\/reprovision$/)) {
