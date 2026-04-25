@@ -12,6 +12,7 @@ import * as React from "react";
 import { MassQuotePanel } from "./mass-quote-panel";
 import { SingleOrderForm } from "./single-order-form";
 import type { ManualTradingPanelProps, OrderState, PreTradeCheckResponse } from "./types";
+import { useStrategyScopedInstruments } from "@/lib/architecture-v2/use-strategy-scoped-instruments";
 
 export type { ManualTradingPanelProps } from "./types";
 
@@ -35,6 +36,10 @@ export function ManualTradingPanel({
   const [quantity, setQuantity] = React.useState("");
   const [price, setPrice] = React.useState("");
   const [strategyId, setStrategyId] = React.useState("manual");
+  // Scope the instruments dropdown to whatever the selected strategy slot
+  // declares in strategy_instruments.json. Falls through to the full list
+  // when strategyId is "manual" or an unresolvable token. (Phase 10 P10.4.)
+  const scopedInstruments = useStrategyScopedInstruments(strategyId, instruments);
   const [reason, setReason] = React.useState("");
   const [algo, setAlgo] = React.useState<string>("MARKET");
   const [algoParams, setAlgoParams] = React.useState<Record<string, number>>({});
@@ -171,7 +176,7 @@ export function ManualTradingPanel({
 
           {panelMode === "single" && (
             <SingleOrderForm
-              instruments={instruments}
+              instruments={[...scopedInstruments]}
               strategies={strategies}
               currentPrice={currentPrice}
               side={side}

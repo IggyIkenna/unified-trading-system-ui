@@ -68,6 +68,7 @@ const MOCK_RISK_METRICS: RiskMetric[] = [
 
 export function PortfolioAnalytics() {
   const [selectedClientId, setSelectedClientId] = React.useState<string | null>(null);
+  const [categoryFilter, setCategoryFilter] = React.useState<string>("all");
   const [familyFilter, setFamilyFilter] = React.useState<string>("all");
   const [archetypeFilter, setArchetypeFilter] = React.useState<string>("all");
   const { data: clientsData, isLoading: clientsLoading } = useClients();
@@ -77,31 +78,48 @@ export function PortfolioAnalytics() {
   const allClients = clientsData?.clients ?? [];
   const strategies = clientsData?.strategies ?? [];
 
-  const families = React.useMemo(() => {
+  const categories = React.useMemo(() => {
     const s = new Set<string>();
-    for (const st of strategies) if (st.family) s.add(st.family);
+    for (const st of strategies) if (st.category) s.add(st.category);
     return Array.from(s).sort();
   }, [strategies]);
+
+  const familiesForCategory = React.useMemo(() => {
+    const s = new Set<string>();
+    for (const st of strategies) {
+      if (!st.family) continue;
+      if (categoryFilter === "all" || st.category === categoryFilter) s.add(st.family);
+    }
+    return Array.from(s).sort();
+  }, [strategies, categoryFilter]);
 
   const archetypesForFamily = React.useMemo(() => {
     const s = new Set<string>();
     for (const st of strategies) {
       if (!st.archetype) continue;
+      if (categoryFilter !== "all" && st.category !== categoryFilter) continue;
       if (familyFilter === "all" || st.family === familyFilter) s.add(st.archetype);
     }
     return Array.from(s).sort();
-  }, [strategies, familyFilter]);
+  }, [strategies, categoryFilter, familyFilter]);
 
   const clients = React.useMemo(() => {
-    if (familyFilter === "all" && archetypeFilter === "all") return allClients;
+    if (categoryFilter === "all" && familyFilter === "all" && archetypeFilter === "all") return allClients;
     const matchingIds = new Set(
       strategies
+        .filter((st) => (categoryFilter === "all" || st.category === categoryFilter))
         .filter((st) => (familyFilter === "all" || st.family === familyFilter))
         .filter((st) => (archetypeFilter === "all" || st.archetype === archetypeFilter))
         .map((st) => st.id),
     );
     return allClients.filter((c) => c.strategy_id && matchingIds.has(c.strategy_id));
-  }, [allClients, strategies, familyFilter, archetypeFilter]);
+  }, [allClients, strategies, categoryFilter, familyFilter, archetypeFilter]);
+
+  React.useEffect(() => {
+    if (familyFilter !== "all" && !familiesForCategory.includes(familyFilter)) {
+      setFamilyFilter("all");
+    }
+  }, [familyFilter, familiesForCategory]);
 
   React.useEffect(() => {
     if (archetypeFilter !== "all" && !archetypesForFamily.includes(archetypeFilter)) {
@@ -194,14 +212,27 @@ export function PortfolioAnalytics() {
           title="Portfolio Analytics"
           description="Allocation breakdown, correlation analysis, and risk metrics"
         >
-          {families.length > 0 && (
+          {categories.length > 0 && (
+            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+              <SelectTrigger className="w-[140px]">
+                <SelectValue placeholder="All Categories" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Categories</SelectItem>
+                {categories.map((c) => (
+                  <SelectItem key={c} value={c}>{c}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+          {familiesForCategory.length > 0 && (
             <Select value={familyFilter} onValueChange={setFamilyFilter}>
               <SelectTrigger className="w-[160px]">
                 <SelectValue placeholder="All Families" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Families</SelectItem>
-                {families.map((f) => (
+                {familiesForCategory.map((f) => (
                   <SelectItem key={f} value={f}>{f}</SelectItem>
                 ))}
               </SelectContent>

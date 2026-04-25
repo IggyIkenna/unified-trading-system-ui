@@ -52,6 +52,7 @@ const PIE_COLORS = ["#3b82f6", "#8b5cf6", "#06b6d4", "#f59e0b", "#ef4444", "#10b
 
 export function PerformanceDashboard() {
   const [selectedClientId, setSelectedClientId] = React.useState<string | null>(null);
+  const [categoryFilter, setCategoryFilter] = React.useState<string>("all");
   const [familyFilter, setFamilyFilter] = React.useState<string>("all");
   const [archetypeFilter, setArchetypeFilter] = React.useState<string>("all");
   const [strategyFilter, setStrategyFilter] = React.useState<string>("all");
@@ -65,28 +66,45 @@ export function PerformanceDashboard() {
   const organisations = clientsData?.organisations ?? [];
   const strategies = clientsData?.strategies ?? [];
 
-  const families = React.useMemo(() => {
+  const categories = React.useMemo(() => {
     const s = new Set<string>();
-    for (const st of strategies) if (st.family) s.add(st.family);
+    for (const st of strategies) if (st.category) s.add(st.category);
     return Array.from(s).sort();
   }, [strategies]);
+
+  const familiesForCategory = React.useMemo(() => {
+    const s = new Set<string>();
+    for (const st of strategies) {
+      if (!st.family) continue;
+      if (categoryFilter === "all" || st.category === categoryFilter) s.add(st.family);
+    }
+    return Array.from(s).sort();
+  }, [strategies, categoryFilter]);
 
   const archetypesForFamily = React.useMemo(() => {
     const s = new Set<string>();
     for (const st of strategies) {
       if (!st.archetype) continue;
+      if (categoryFilter !== "all" && st.category !== categoryFilter) continue;
       if (familyFilter === "all" || st.family === familyFilter) s.add(st.archetype);
     }
     return Array.from(s).sort();
-  }, [strategies, familyFilter]);
+  }, [strategies, categoryFilter, familyFilter]);
 
   const strategiesForArchetype = React.useMemo(() => {
     return strategies.filter((st) => {
+      if (categoryFilter !== "all" && st.category !== categoryFilter) return false;
       if (familyFilter !== "all" && st.family !== familyFilter) return false;
       if (archetypeFilter !== "all" && st.archetype !== archetypeFilter) return false;
       return true;
     });
-  }, [strategies, familyFilter, archetypeFilter]);
+  }, [strategies, categoryFilter, familyFilter, archetypeFilter]);
+
+  React.useEffect(() => {
+    if (familyFilter !== "all" && !familiesForCategory.includes(familyFilter)) {
+      setFamilyFilter("all");
+    }
+  }, [familyFilter, familiesForCategory]);
 
   React.useEffect(() => {
     if (archetypeFilter !== "all" && !archetypesForFamily.includes(archetypeFilter)) {
@@ -223,14 +241,27 @@ export function PerformanceDashboard() {
           title="Client Performance"
           description="Equity curves, monthly returns, stats, positions, and coin breakdowns"
         >
-          {families.length > 0 && (
+          {categories.length > 0 && (
+            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+              <SelectTrigger className="w-[160px]">
+                <SelectValue placeholder="All Categories" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Categories</SelectItem>
+                {categories.map((c) => (
+                  <SelectItem key={c} value={c}>{c}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+          {familiesForCategory.length > 0 && (
             <Select value={familyFilter} onValueChange={setFamilyFilter}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="All Families" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Families</SelectItem>
-                {families.map((f) => (
+                {familiesForCategory.map((f) => (
                   <SelectItem key={f} value={f}>{f}</SelectItem>
                 ))}
               </SelectContent>

@@ -30,6 +30,8 @@ export interface StrategyInfo {
   id: string;
   name: string;
   description?: string;
+  /** Primary execution category — CEFI / DEFI / TRADFI / SPORTS / PREDICTION / CROSS_CATEGORY. */
+  category?: string;
   family?: string;
   archetype?: string;
 }
@@ -55,8 +57,8 @@ export const MOCK_ORGANISATIONS: OrganisationInfo[] = [
 ];
 
 export const MOCK_STRATEGIES: StrategyInfo[] = [
-  { id: "mean_reversion_top20", name: "Mean Reversion Top 20", description: "Perpetual futures mean reversion on top 20 crypto assets", family: "STAT_ARB_PAIRS", archetype: "STAT_ARB_CROSS_SECTIONAL" },
-  { id: "defi_btc_yield", name: "DeFi BTC Yield", description: "BTC-denominated yield via DeFi protocols and fund-of-fund allocation", family: "CARRY_AND_YIELD", archetype: "YIELD_ROTATION_LENDING" },
+  { id: "mean_reversion_top20", name: "Mean Reversion Top 20", description: "Perpetual futures mean reversion on top 20 crypto assets", category: "CEFI", family: "STAT_ARB_PAIRS", archetype: "STAT_ARB_CROSS_SECTIONAL" },
+  { id: "defi_btc_yield", name: "DeFi BTC Yield", description: "BTC-denominated yield via DeFi protocols and fund-of-fund allocation", category: "DEFI", family: "CARRY_AND_YIELD", archetype: "YIELD_ROTATION_LENDING" },
 ];
 
 export const MOCK_CLIENTS: ClientInfo[] = [

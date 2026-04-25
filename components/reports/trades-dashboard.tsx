@@ -28,6 +28,7 @@ export function TradesDashboard() {
   const [selectedClientId, setSelectedClientId] = React.useState<string | null>(null);
   const [symbolFilter, setSymbolFilter] = React.useState<string>("");
   const [sideFilter, setSideFilter] = React.useState<string>("all");
+  const [categoryFilter, setCategoryFilter] = React.useState<string>("all");
   const [familyFilter, setFamilyFilter] = React.useState<string>("all");
   const [archetypeFilter, setArchetypeFilter] = React.useState<string>("all");
   const [page, setPage] = React.useState(0);
@@ -47,30 +48,47 @@ export function TradesDashboard() {
   const clients = clientsData?.clients ?? [];
   const strategies = clientsData?.strategies ?? [];
 
-  const families = React.useMemo(() => {
+  const categories = React.useMemo(() => {
     const s = new Set<string>();
-    for (const st of strategies) if (st.family) s.add(st.family);
+    for (const st of strategies) if (st.category) s.add(st.category);
     return Array.from(s).sort();
   }, [strategies]);
+
+  const familiesForCategory = React.useMemo(() => {
+    const s = new Set<string>();
+    for (const st of strategies) {
+      if (!st.family) continue;
+      if (categoryFilter === "all" || st.category === categoryFilter) s.add(st.family);
+    }
+    return Array.from(s).sort();
+  }, [strategies, categoryFilter]);
 
   const archetypesForFamily = React.useMemo(() => {
     const s = new Set<string>();
     for (const st of strategies) {
       if (!st.archetype) continue;
+      if (categoryFilter !== "all" && st.category !== categoryFilter) continue;
       if (familyFilter === "all" || st.family === familyFilter) s.add(st.archetype);
     }
     return Array.from(s).sort();
-  }, [strategies, familyFilter]);
+  }, [strategies, categoryFilter, familyFilter]);
 
   const matchingStrategyIds = React.useMemo(() => {
-    if (familyFilter === "all" && archetypeFilter === "all") return null;
+    if (categoryFilter === "all" && familyFilter === "all" && archetypeFilter === "all") return null;
     return new Set(
       strategies
+        .filter((st) => (categoryFilter === "all" || st.category === categoryFilter))
         .filter((st) => (familyFilter === "all" || st.family === familyFilter))
         .filter((st) => (archetypeFilter === "all" || st.archetype === archetypeFilter))
         .map((st) => st.id),
     );
-  }, [strategies, familyFilter, archetypeFilter]);
+  }, [strategies, categoryFilter, familyFilter, archetypeFilter]);
+
+  React.useEffect(() => {
+    if (familyFilter !== "all" && !familiesForCategory.includes(familyFilter)) {
+      setFamilyFilter("all");
+    }
+  }, [familyFilter, familiesForCategory]);
 
   React.useEffect(() => {
     if (archetypeFilter !== "all" && !archetypesForFamily.includes(archetypeFilter)) {
@@ -86,7 +104,7 @@ export function TradesDashboard() {
   }, [clients, selectedClientId]);
 
   // Reset page on filter change
-  React.useEffect(() => { setPage(0); }, [symbolFilter, sideFilter, selectedClientId, familyFilter, archetypeFilter]);
+  React.useEffect(() => { setPage(0); }, [symbolFilter, sideFilter, selectedClientId, categoryFilter, familyFilter, archetypeFilter]);
 
   const rawTrades = tradesData?.trades ?? [];
   const trades = React.useMemo(() => {
@@ -121,14 +139,27 @@ export function TradesDashboard() {
           title="Trade History"
           description="Full order history with fills, fees, and slippage"
         >
-          {families.length > 0 && (
+          {categories.length > 0 && (
+            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+              <SelectTrigger className="w-[140px]">
+                <SelectValue placeholder="All Categories" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Categories</SelectItem>
+                {categories.map((c) => (
+                  <SelectItem key={c} value={c}>{c}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+          {familiesForCategory.length > 0 && (
             <Select value={familyFilter} onValueChange={setFamilyFilter}>
               <SelectTrigger className="w-[160px]">
                 <SelectValue placeholder="All Families" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Families</SelectItem>
-                {families.map((f) => (
+                {familiesForCategory.map((f) => (
                   <SelectItem key={f} value={f}>{f}</SelectItem>
                 ))}
               </SelectContent>
