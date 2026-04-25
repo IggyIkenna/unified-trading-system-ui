@@ -1,10 +1,24 @@
-"use client";
+/**
+ * Status page for a submitted strategy evaluation.
+ *
+ * Server component: reads the magic token from the URL, fetches the
+ * Firestore doc directly via the Admin SDK, and renders the submission
+ * details into the initial HTML. This avoids the client-fetch race that
+ * left the previous client-component version showing empty fields after
+ * hydration / under aggressive caching.
+ *
+ * Marked `force-dynamic` so Next.js never prerenders this page at build
+ * time — every request resolves the token freshly.
+ */
 
-import * as React from "react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, AlertCircle, Download, ExternalLink } from "lucide-react";
+import admin from "firebase-admin";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 interface UploadedFileRef {
   readonly path: string;
@@ -15,7 +29,7 @@ interface UploadedFileRef {
   readonly uploadedAt: string;
 }
 
-interface StatusResponse {
+interface SubmissionData {
   id: string;
   email?: string;
   strategyName?: string;
@@ -23,6 +37,7 @@ interface StatusResponse {
   commercialPath?: string;
   submittedAt?: string;
   emailVerified?: boolean;
+  parentSubmissionId?: string | null;
   backtestMethodologyDoc?: UploadedFileRef | null;
   assumptionsDoc?: UploadedFileRef | null;
   tearSheet?: UploadedFileRef | null;
@@ -36,7 +51,7 @@ const PATH_LABELS: Record<string, string> = {
   C: "Path C — Regulatory Umbrella",
 };
 
-const FILE_FIELDS: { key: keyof StatusResponse; label: string }[] = [
+const FILE_FIELDS: { key: keyof SubmissionData; label: string }[] = [
   { key: "backtestMethodologyDoc", label: "Backtest methodology document" },
   { key: "assumptionsDoc", label: "Assumptions document" },
   { key: "tearSheet", label: "Performance tear sheet" },
@@ -50,49 +65,68 @@ function formatFileSize(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-export default function StrategyEvaluationStatusPage() {
-  const [token, setToken] = React.useState<string | null>(null);
-  const [loading, setLoading] = React.useState(true);
-  const [data, setData] = React.useState<StatusResponse | null>(null);
-  const [error, setError] = React.useState<string | null>(null);
-
-  React.useEffect(() => {
-    const sp = new URLSearchParams(window.location.search);
-    const t = sp.get("token");
-    setToken(t);
-    if (!t) {
-      setLoading(false);
-      setError("No access token in URL.");
-      return;
-    }
-    fetch(`/api/strategy-evaluation/status?token=${encodeURIComponent(t)}`)
-      .then(async (res) => {
-        if (!res.ok) {
-          if (res.status === 404) {
-            setError("This link is invalid or has expired. Please refile the form to receive a fresh link.");
-          } else {
-            setError("Could not load your submission. Please try again or email info@odum-research.com.");
-          }
-          return null;
-        }
-        return res.json() as Promise<StatusResponse>;
-      })
-      .then((json) => {
-        if (json) setData(json);
-      })
-      .catch(() => setError("Network error. Please try again."))
-      .finally(() => setLoading(false));
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="max-w-3xl mx-auto px-4 py-12 md:px-6">
-        <p className="text-muted-foreground">Loading your submission…</p>
-      </div>
-    );
+function getAdminApp(): admin.app.App {
+  if (admin.apps.length > 0) {
+    const existing = admin.apps[0];
+    if (existing) return existing;
   }
+  return admin.initializeApp({
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  });
+}
 
-  if (error || !data) {
+async function loadSubmission(token: string): Promise<SubmissionData | null> {
+  if (!token || token.length < 16) return null;
+  try {
+    const app = getAdminApp();
+    const db = admin.firestore(app);
+    const snap = await db.collection("strategy_evaluations").where("magicToken", "==", token).limit(1).get();
+    if (snap.empty) return null;
+    const docSnap = snap.docs[0];
+    const data = docSnap.data();
+
+    // First-visit verification flip — fire-and-forget; we don't await
+    // because failure shouldn't block the page render.
+    if (data.emailVerified !== true) {
+      void docSnap.ref
+        .update({
+          emailVerified: true,
+          emailVerifiedAt: admin.firestore.FieldValue.serverTimestamp(),
+        })
+        .catch((err) => {
+          console.error("[strategy-evaluation/status] emailVerified flip failed", err);
+        });
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { magicToken: _t, ...rest } = data;
+    const submittedAt =
+      data.submittedAt && typeof data.submittedAt.toDate === "function"
+        ? data.submittedAt.toDate().toISOString()
+        : data.submittedAt;
+
+    return {
+      id: docSnap.id,
+      ...rest,
+      submittedAt,
+    } as SubmissionData;
+  } catch (err) {
+    console.error("[strategy-evaluation/status] load failed", err);
+    return null;
+  }
+}
+
+export default async function StrategyEvaluationStatusPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ token?: string | string[] }>;
+}) {
+  const params = await searchParams;
+  const tokenRaw = params.token;
+  const token = Array.isArray(tokenRaw) ? tokenRaw[0] : tokenRaw;
+  const data = token ? await loadSubmission(token) : null;
+
+  if (!token || !data) {
     return (
       <div className="max-w-3xl mx-auto px-4 py-12 md:px-6">
         <div className="rounded-xl border border-border bg-card p-8 space-y-4">
@@ -100,7 +134,11 @@ export default function StrategyEvaluationStatusPage() {
             <AlertCircle className="size-5 text-destructive" />
             <h1 className="text-xl font-semibold">Couldn&rsquo;t load this submission</h1>
           </div>
-          <p className="text-muted-foreground">{error ?? "Submission not found."}</p>
+          <p className="text-muted-foreground">
+            {!token
+              ? "No access token in URL."
+              : "This link is invalid or has expired. Please refile the form to receive a fresh link."}
+          </p>
           <div className="flex gap-3 pt-2">
             <Button asChild>
               <Link href="/strategy-evaluation">Start a new submission</Link>
@@ -164,6 +202,12 @@ export default function StrategyEvaluationStatusPage() {
             <dt className="text-muted-foreground">Submission ID</dt>
             <dd className="font-mono text-xs">{data.id}</dd>
           </div>
+          {data.parentSubmissionId && (
+            <div>
+              <dt className="text-muted-foreground">Refile of</dt>
+              <dd className="font-mono text-xs">{data.parentSubmissionId}</dd>
+            </div>
+          )}
         </dl>
       </div>
 
@@ -208,7 +252,7 @@ export default function StrategyEvaluationStatusPage() {
         </p>
         <div className="flex flex-wrap gap-3">
           <Button asChild>
-            <Link href={token ? `/strategy-evaluation?token=${encodeURIComponent(token)}` : "/strategy-evaluation"}>
+            <Link href={`/strategy-evaluation?token=${encodeURIComponent(token)}`}>
               <ExternalLink className="size-4 mr-1.5" />
               Refile / edit and resubmit
             </Link>
@@ -219,11 +263,9 @@ export default function StrategyEvaluationStatusPage() {
         </div>
       </div>
 
-      {token && (
-        <p className="text-xs text-muted-foreground">
-          This page is private to you. Don&rsquo;t share the URL — it bypasses the email confirmation.
-        </p>
-      )}
+      <p className="text-xs text-muted-foreground">
+        This page is private to you. Don&rsquo;t share the URL — it bypasses the email confirmation.
+      </p>
     </div>
   );
 }

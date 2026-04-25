@@ -359,7 +359,7 @@ export default function StrategyEvaluationPage() {
     const token = sp.get("token");
     if (token) {
       setEditingFromToken(token);
-      fetch(`/api/strategy-evaluation/status?token=${encodeURIComponent(token)}`)
+      fetch(`/api/strategy-evaluation/status?token=${encodeURIComponent(token)}`, { cache: "no-store" })
         .then(async (res) => {
           if (!res.ok) return null;
           return res.json() as Promise<Record<string, unknown> & { id?: string }>;
@@ -729,41 +729,13 @@ export default function StrategyEvaluationPage() {
             )}
           </div>
 
-          <div className="space-y-1">
-            <Label className="text-sm font-medium">Preferred capital structure</Label>
-            <p className="text-xs text-muted-foreground">
-              What structure are you targeting or open to? Select the closest match.
-            </p>
-            <div className="flex flex-wrap gap-x-4 gap-y-2 mt-1">
-              {(
-                [
-                  { value: "prop", label: "Proprietary / principal capital" },
-                  { value: "sma", label: "Separately Managed Account (SMA)" },
-                  { value: "fund", label: "Pooled fund / AIF" },
-                  { value: "other", label: "Open to options / not yet decided" },
-                ] as { value: string; label: string }[]
-              ).map(({ value, label }) => (
-                <label key={value} className="flex items-center gap-2 text-sm cursor-pointer">
-                  <input
-                    type="radio"
-                    name="entityStructure"
-                    value={value}
-                    checked={form.entityStructure === value}
-                    onChange={() => setField("entityStructure", value)}
-                  />
-                  {label}
-                </label>
-              ))}
-            </div>
-          </div>
-
           <div className="space-y-2">
             <Label className="text-sm font-medium">Where is the management entity based (or planned to be)?</Label>
             <p className="text-xs text-muted-foreground">
               The firm / operating entity itself, not the fund vehicle. If the entity doesn&rsquo;t exist yet, select
               the intended jurisdiction.
             </p>
-            <div className="flex flex-wrap gap-x-4 gap-y-2">
+            <div className="flex flex-wrap gap-x-6 gap-y-3 mt-2">
               {(
                 [
                   { value: "uk", label: "UK" },
@@ -791,16 +763,41 @@ export default function StrategyEvaluationPage() {
                 </label>
               ))}
             </div>
-            {(form.entityLocation === "eu" ||
-              form.entityLocation === "us" ||
-              form.entityLocation === "other" ||
-              form.entityLocation === "exploring") && (
+            {(form.entityLocation === "eu" || form.entityLocation === "us" || form.entityLocation === "other") && (
               <Input
-                placeholder="e.g. Luxembourg, Delaware, or 'planning UK with FCA application Q3'"
+                placeholder="e.g. Luxembourg or Delaware"
                 value={form.entityLocationNotes}
                 onChange={(e) => setField("entityLocationNotes", e.target.value)}
               />
             )}
+          </div>
+
+          <div className="space-y-1">
+            <Label className="text-sm font-medium">Preferred capital structure</Label>
+            <p className="text-xs text-muted-foreground">
+              What structure are you targeting or open to? Select the closest match.
+            </p>
+            <div className="flex flex-wrap gap-x-6 gap-y-3 mt-2">
+              {(
+                [
+                  { value: "prop", label: "Proprietary / principal capital" },
+                  { value: "sma", label: "Separately Managed Account (SMA)" },
+                  { value: "fund", label: "Pooled fund / AIF" },
+                  { value: "other", label: "Open to options / not yet decided" },
+                ] as { value: string; label: string }[]
+              ).map(({ value, label }) => (
+                <label key={value} className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input
+                    type="radio"
+                    name="entityStructure"
+                    value={value}
+                    checked={form.entityStructure === value}
+                    onChange={() => setField("entityStructure", value)}
+                  />
+                  {label}
+                </label>
+              ))}
+            </div>
           </div>
 
           {form.entityStructure === "fund" && (
@@ -874,7 +871,7 @@ export default function StrategyEvaluationPage() {
 
               <div className="space-y-2">
                 <Label className="text-sm font-medium">Do you plan to raise external capital yourself?</Label>
-                <div className="flex flex-wrap gap-x-4 gap-y-2">
+                <div className="flex flex-wrap gap-x-6 gap-y-3">
                   {(
                     [
                       { value: "yes", label: "Yes — we'll fundraise independently" },
@@ -1005,7 +1002,7 @@ export default function StrategyEvaluationPage() {
           </p>
           {getError("commercialPath") && <FieldError message={getError("commercialPath")!} />}
 
-          <div id="commercialPath" className="space-y-3">
+          <div id="commercialPath" className="space-y-5">
             {(
               [
                 {
@@ -1029,8 +1026,12 @@ export default function StrategyEvaluationPage() {
               ] as { value: "A" | "B" | "C"; label: string; description: string }[]
             ).map(({ value, label, description }) => {
               const isPrimary = form.commercialPath === value;
-              const isSecondary = !isPrimary && form.commercialPathSecondary.has(value);
-              const isTertiary = !isPrimary && !isSecondary && form.commercialPathTertiary.has(value);
+              // Across all paths there is at most ONE secondary and ONE tertiary —
+              // selecting Secondary on path X removes it from any other path.
+              const secondaryPath = Array.from(form.commercialPathSecondary)[0];
+              const tertiaryPath = Array.from(form.commercialPathTertiary)[0];
+              const isSecondary = !isPrimary && secondaryPath === value;
+              const isTertiary = !isPrimary && !isSecondary && tertiaryPath === value;
               const borderClass = isPrimary
                 ? "border-foreground"
                 : isSecondary || isTertiary
@@ -1039,7 +1040,7 @@ export default function StrategyEvaluationPage() {
               return (
                 <div key={value} className={`rounded-lg border ${borderClass} p-4 transition-colors`}>
                   <div className="flex items-start gap-3">
-                    <div className="flex flex-col gap-1 mt-0.5 min-w-[100px]">
+                    <div className="flex flex-col gap-1.5 mt-0.5 min-w-[100px]">
                       <label className="flex items-center gap-1.5 text-[11px] font-medium cursor-pointer">
                         <input
                           type="radio"
@@ -1066,8 +1067,13 @@ export default function StrategyEvaluationPage() {
                               type="checkbox"
                               checked={isSecondary}
                               onChange={() => {
-                                if (isTertiary) toggleSetItem("commercialPathTertiary", value);
-                                toggleSetItem("commercialPathSecondary", value);
+                                setForm((prev) => {
+                                  const sec = new Set<string>();
+                                  const ter = new Set(prev.commercialPathTertiary);
+                                  ter.delete(value);
+                                  if (!isSecondary) sec.add(value);
+                                  return { ...prev, commercialPathSecondary: sec, commercialPathTertiary: ter };
+                                });
                               }}
                             />
                             Secondary
@@ -1077,8 +1083,13 @@ export default function StrategyEvaluationPage() {
                               type="checkbox"
                               checked={isTertiary}
                               onChange={() => {
-                                if (isSecondary) toggleSetItem("commercialPathSecondary", value);
-                                toggleSetItem("commercialPathTertiary", value);
+                                setForm((prev) => {
+                                  const sec = new Set(prev.commercialPathSecondary);
+                                  sec.delete(value);
+                                  const ter = new Set<string>();
+                                  if (!isTertiary) ter.add(value);
+                                  return { ...prev, commercialPathSecondary: sec, commercialPathTertiary: ter };
+                                });
                               }}
                             />
                             Tertiary
@@ -1192,7 +1203,7 @@ export default function StrategyEvaluationPage() {
 
           <div className="space-y-1">
             <Label className="text-sm font-medium">Asset groups</Label>
-            <div className="flex flex-wrap gap-x-4 gap-y-2">
+            <div className="flex flex-wrap gap-x-6 gap-y-3">
               {(
                 [
                   { label: "Traditional Finance", termId: "tradfi" },
@@ -1218,7 +1229,7 @@ export default function StrategyEvaluationPage() {
             <Label className="text-sm font-medium">
               <Term id="spot">Instrument</Term> types
             </Label>
-            <div className="flex flex-wrap gap-x-4 gap-y-2">
+            <div className="flex flex-wrap gap-x-6 gap-y-3">
               {(
                 [
                   { label: "Spot", termId: "spot" },
@@ -1247,7 +1258,7 @@ export default function StrategyEvaluationPage() {
             <Label className="text-sm font-medium">
               Primary <Term id="strategy-family">strategy family</Term>
             </Label>
-            <div className="flex flex-wrap gap-x-4 gap-y-2">
+            <div className="flex flex-wrap gap-x-6 gap-y-3">
               {(
                 [
                   { label: "ML Directional", termId: "ml-directional" },
@@ -1279,7 +1290,7 @@ export default function StrategyEvaluationPage() {
               <Term id="archetype">Archetype</Term> / style markers{" "}
               <span className="text-muted-foreground font-normal text-xs">(select all that apply)</span>
             </Label>
-            <div className="flex flex-wrap gap-x-4 gap-y-2">
+            <div className="flex flex-wrap gap-x-6 gap-y-3">
               {(
                 [
                   { label: "ML directional (continuous)", termId: "ml-directional" },
@@ -1329,7 +1340,7 @@ export default function StrategyEvaluationPage() {
 
           <div className="space-y-2 rounded-md border border-border/60 bg-card/40 px-4 py-3">
             <Label className="text-sm font-medium">Has this strategy been backtested?</Label>
-            <div className="flex flex-wrap gap-x-4 gap-y-2">
+            <div className="flex flex-wrap gap-x-6 gap-y-3">
               {(
                 [
                   { value: "yes", label: "Yes — full backtest completed" },
@@ -2234,7 +2245,7 @@ export default function StrategyEvaluationPage() {
 
           <div className="space-y-2 rounded-md border border-border/60 bg-card/40 px-4 py-3">
             <Label className="text-sm font-medium">Has this strategy been paper traded?</Label>
-            <div className="flex flex-wrap gap-x-4 gap-y-2">
+            <div className="flex flex-wrap gap-x-6 gap-y-3">
               {(
                 [
                   { value: "yes", label: "Yes — ran in a paper / shadow environment" },
@@ -2263,7 +2274,7 @@ export default function StrategyEvaluationPage() {
 
           {form.hasPaperTraded === "yes" && (
             <>
-              <div className="flex flex-wrap gap-x-4 gap-y-2">
+              <div className="flex flex-wrap gap-x-6 gap-y-3">
                 <label className="flex items-center gap-2 text-sm cursor-pointer">
                   <input
                     type="checkbox"
@@ -2308,7 +2319,7 @@ export default function StrategyEvaluationPage() {
 
           <div className="space-y-2 rounded-md border border-border/60 bg-card/40 px-4 py-3">
             <Label className="text-sm font-medium">Has this strategy been live traded?</Label>
-            <div className="flex flex-wrap gap-x-4 gap-y-2">
+            <div className="flex flex-wrap gap-x-6 gap-y-3">
               {(
                 [
                   { value: "yes", label: "Yes — traded with real capital" },
@@ -2337,7 +2348,7 @@ export default function StrategyEvaluationPage() {
 
           {form.hasLiveTraded === "yes" && (
             <>
-              <div className="flex flex-wrap gap-x-4 gap-y-2">
+              <div className="flex flex-wrap gap-x-6 gap-y-3">
                 <label className="flex items-center gap-2 text-sm cursor-pointer">
                   <input
                     type="checkbox"
