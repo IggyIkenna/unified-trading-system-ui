@@ -1,10 +1,11 @@
 /**
  * API client for onboarding request management.
  * Used by internal/admin users within UTS to review and approve/reject signups.
+ *
+ * Calls the portal's same-origin /api/v1/* native routes (Admin SDK +
+ * Firestore) — the legacy user-management-api Cloud Run service is being
+ * retired in favour of native routes.
  */
-
-const USER_MGMT_API =
-  process.env.NEXT_PUBLIC_USER_MGMT_API_URL || "http://localhost:8017";
 
 async function authHeaders(token: string): Promise<HeadersInit> {
   return {
@@ -40,7 +41,7 @@ export async function fetchOnboardingRequests(
   const params = new URLSearchParams();
   if (status) params.set("status", status);
   const res = await fetch(
-    `${USER_MGMT_API}/api/v1/onboarding-requests?${params.toString()}`,
+    `/api/v1/onboarding-requests?${params.toString()}`,
     { headers: await authHeaders(token) },
   );
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -52,7 +53,7 @@ export async function fetchRequestDetail(
   id: string,
 ): Promise<OnboardingRequest> {
   const res = await fetch(
-    `${USER_MGMT_API}/api/v1/onboarding-requests/${id}`,
+    `/api/v1/onboarding-requests/${id}`,
     { headers: await authHeaders(token) },
   );
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -65,7 +66,7 @@ export async function fetchUserDocuments(
   uid: string,
 ): Promise<{ documents: Array<{ id: string; doc_type: string; file_name: string; storage_path: string; review_status: string }> }> {
   const res = await fetch(
-    `${USER_MGMT_API}/api/v1/users/${uid}/documents`,
+    `/api/v1/users/${uid}/documents`,
     { headers: await authHeaders(token) },
   );
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -78,7 +79,7 @@ export async function approveRequest(
   options: { note?: string; role?: string; app_grants?: AppGrant[] },
 ): Promise<void> {
   const res = await fetch(
-    `${USER_MGMT_API}/api/v1/onboarding-requests/${id}/approve`,
+    `/api/v1/onboarding-requests/${id}/approve`,
     {
       method: "POST",
       headers: await authHeaders(token),
@@ -94,7 +95,7 @@ export async function rejectRequest(
   options: { note?: string; delete_user?: boolean },
 ): Promise<void> {
   const res = await fetch(
-    `${USER_MGMT_API}/api/v1/onboarding-requests/${id}/reject`,
+    `/api/v1/onboarding-requests/${id}/reject`,
     {
       method: "POST",
       headers: await authHeaders(token),
@@ -108,7 +109,7 @@ export async function fetchRegisteredApps(
   token: string,
 ): Promise<{ applications: Array<{ app_id: string; name: string; category: string }> }> {
   const res = await fetch(
-    `${USER_MGMT_API}/api/v1/apps`,
+    `/api/v1/apps`,
     { headers: await authHeaders(token) },
   );
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
