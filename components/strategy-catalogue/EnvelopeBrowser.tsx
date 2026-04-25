@@ -71,8 +71,14 @@ export function EnvelopeBrowser(): React.ReactElement {
     Promise.all([loadEnvelope(), loadStrategyInstruments()])
       .then(([env, inst]) => {
         if (cancelled) return;
+        // Mock mode intercepts the GCS proxy route and may return undefined
+        // or malformed payloads. Validate shape before rendering.
+        if (!env || typeof env !== "object" || !env.categories || typeof env.categories !== "object") {
+          setError("Catalogue unavailable in mock mode — switch to real-data mode or run regen-catalogue.sh.");
+          return;
+        }
         setEnvelope(env);
-        setInstruments(inst);
+        setInstruments(inst && typeof inst === "object" && inst.slots ? inst : { schema_version: "0.0.0", generated_at: "", source_script: "", resolver: "missing", slot_count: 0, slots: {} });
       })
       .catch((e: unknown) => {
         if (cancelled) return;
