@@ -5,7 +5,7 @@ import type { OverviewData } from "./overview-data-context";
 import type { ServiceHealth } from "@/components/trading/health-status-grid";
 import type { PnLComponent } from "@/components/trading/pnl-attribution-panel";
 import { useValueFormat } from "@/components/trading/value-format-toggle";
-import { useAlerts } from "@/hooks/api/use-alerts";
+import { useAlertsData } from "@/components/widgets/alerts/alerts-data-context";
 import { useOrders } from "@/hooks/api/use-orders";
 import { usePositions } from "@/hooks/api/use-positions";
 import { useServiceHealth } from "@/hooks/api/use-service-status";
@@ -19,11 +19,7 @@ import {
   type StrategyPerformanceRow,
 } from "@/hooks/api/use-trading";
 import { useWebSocket } from "@/hooks/use-websocket";
-import {
-  getAggregatedPnlForScope,
-  getAlertsForScope,
-  getStrategiesForScope,
-} from "@/lib/mocks/fixtures/mock-data-index";
+import { getAggregatedPnlForScope, getStrategiesForScope } from "@/lib/mocks/fixtures/mock-data-index";
 import type { SeedStrategy } from "@/lib/mocks/fixtures/mock-data-seed";
 import type { TradingClient, TradingOrganization } from "@/lib/types/trading";
 import type { PnLBreakdown, TimeSeriesPoint } from "@/lib/mocks/fixtures/trading-data";
@@ -107,7 +103,13 @@ export function useOverviewPageData(): OverviewPageResult {
     error: liveBatchError,
     refetch: refetchLiveBatch,
   } = useTradingLiveBatchDelta();
-  const { data: alertsData, isLoading: alertsLoading, error: alertsError, refetch: refetchAlerts } = useAlerts();
+  const {
+    filteredAlerts: alertsFromContext,
+    isLoading: alertsLoading,
+    isError: alertsHasError,
+    refetch: refetchAlerts,
+  } = useAlertsData();
+  const alertsError = alertsHasError ? new Error("Alerts fetch failed") : null;
   const { data: ordersData, isLoading: ordersLoading, refetch: refetchOrders } = useOrders();
   const { error: positionsError, refetch: refetchPositions } = usePositions();
   const { data: healthData, error: healthError, refetch: refetchHealth } = useServiceHealth();
@@ -146,26 +148,17 @@ export function useOverviewPageData(): OverviewPageResult {
     orgsData?.data ?? orgsData?.organizations ?? (mockDataMode ? ORGANIZATIONS : []);
   const clients: TradingClient[] = clientsData?.data ?? clientsData?.clients ?? (mockDataMode ? CLIENTS : []);
 
-  const alertsRaw = alertsData as Record<string, unknown> | undefined;
-  const apiAlerts = (alertsRaw?.data ?? alertsRaw?.alerts ?? []) as Array<{
-    id: string;
-    message: string;
-    severity: "critical" | "high" | "medium" | "low";
-    timestamp: string;
-    source: string;
-  }>;
-  const mockAlerts =
-    apiAlerts.length > 0
-      ? apiAlerts
-      : mockDataMode
-        ? getAlertsForScope(wsScope.organizationIds, wsScope.clientIds, wsScope.strategyIds).map((a) => ({
-            id: a.id,
-            message: a.message,
-            severity: a.severity,
-            timestamp: a.timestamp,
-            source: a.source,
-          }))
-        : [];
+  const mockAlerts = React.useMemo(
+    () =>
+      alertsFromContext.map((a) => ({
+        id: a.id,
+        message: a.title || a.description,
+        severity: a.severity,
+        timestamp: a.timestamp,
+        source: a.source,
+      })),
+    [alertsFromContext],
+  );
 
   const healthRaw = healthData as Record<string, unknown> | undefined;
   const allMockServices: ServiceHealth[] = (healthRaw?.data ??
@@ -318,8 +311,8 @@ export function useOverviewPageData(): OverviewPageResult {
   const totalExposure = kpiStrategies.reduce((sum, s) => sum + (s.exposure ?? 0), 0);
   const liveStrategies = kpiStrategies.filter((s) => s.status === "live").length;
   const warningStrategies = kpiStrategies.filter((s) => s.status === "warning").length;
-  const criticalAlerts = mockAlerts.filter((a) => a.severity === "critical").length;
-  const highAlerts = mockAlerts.filter((a) => a.severity === "high").length;
+  const criticalAlerts = alertsFromContext.filter((a) => a.severity === "critical" && a.status === "active").length;
+  const highAlerts = alertsFromContext.filter((a) => a.severity === "high" && a.status === "active").length;
 
   const safeDivide = (num: number, denom: number): number => {
     if (!denom || denom === 0 || !isFinite(num) || !isFinite(denom)) return 0;

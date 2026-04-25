@@ -84,7 +84,13 @@ export function LiveBatchComparison({
   const allValues = [...liveValues, ...batchValues];
   const deltaValues = combinedData.map((d) => d.delta);
 
-  const renderChart = (data: TimeSeriesPoint[], color: string, label: string, yDomain?: [number, number]) => (
+  const renderChart = (
+    data: TimeSeriesPoint[],
+    color: string,
+    label: string,
+    animate = true,
+    yDomain?: [number, number],
+  ) => (
     <ResponsiveContainer width="100%" height={height}>
       <AreaChart key={animId} data={data} margin={{ top: 10, right: 0, left: 10, bottom: 0 }}>
         <defs>
@@ -128,7 +134,8 @@ export function LiveBatchComparison({
           stroke={color}
           strokeWidth={2}
           fill={`url(#gradient-${label})`}
-          animationId={animId}
+          isAnimationActive={animate}
+          animationDuration={900}
         />
       </AreaChart>
     </ResponsiveContainer>
@@ -179,15 +186,7 @@ export function LiveBatchComparison({
           labelFormatter={(label) => `Time: ${label}`}
         />
         <ReferenceLine y={0} stroke="var(--border)" strokeDasharray="3 3" />
-        <Area
-          type="monotone"
-          dataKey="live"
-          name="live"
-          stroke="var(--status-live)"
-          strokeWidth={2}
-          fill="url(#gradient-live)"
-          animationId={animId}
-        />
+        {/* Batch renders instantly so live can animate over it */}
         <Area
           type="monotone"
           dataKey="batchAbove"
@@ -197,7 +196,7 @@ export function LiveBatchComparison({
           fill="url(#gradient-batch-above)"
           strokeDasharray="5 5"
           connectNulls={false}
-          animationId={animId}
+          isAnimationActive={false}
         />
         <Area
           type="monotone"
@@ -208,7 +207,17 @@ export function LiveBatchComparison({
           fill="url(#gradient-batch-below)"
           strokeDasharray="5 5"
           connectNulls={false}
-          animationId={animId}
+          isAnimationActive={false}
+        />
+        <Area
+          type="monotone"
+          dataKey="live"
+          name="live"
+          stroke="var(--status-live)"
+          strokeWidth={2}
+          fill="url(#gradient-live)"
+          isAnimationActive
+          animationDuration={900}
         />
       </AreaChart>
     </ResponsiveContainer>

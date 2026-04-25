@@ -11,10 +11,10 @@ import { render, screen } from "@testing-library/react";
 import * as React from "react";
 
 // Overview widgets that use useOverviewDataSafe
-import { RecentFillsWidget } from "@/components/widgets/overview/bottom-widgets";
-import { PnLAttributionWidget } from "@/components/widgets/overview/bottom-widgets";
-import { AlertsPreviewWidget } from "@/components/widgets/overview/bottom-widgets";
-import { HealthGridWidget } from "@/components/widgets/overview/bottom-widgets";
+import { RecentFillsWidget } from "@/components/widgets/overview/recent-fills-widget";
+import { PnLAttributionWidget } from "@/components/widgets/overview/pnl-attribution-widget";
+import { AlertsPreviewWidget } from "@/components/widgets/overview/alerts-preview-widget";
+import { HealthGridWidget } from "@/components/widgets/overview/health-grid-widget";
 
 describe("Cross-tab widget rendering (no provider)", () => {
   it("RecentFillsWidget shows placeholder when outside OverviewDataProvider", () => {

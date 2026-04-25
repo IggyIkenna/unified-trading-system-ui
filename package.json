@@ -15,6 +15,7 @@
   "scripts": {
     "dev": "next dev --webpack",
     "dev:turbo": "next dev --turbo",
+    "dev:mock": "NEXT_PUBLIC_MOCK_API=true NEXT_PUBLIC_AUTH_PROVIDER=demo next dev --webpack",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",

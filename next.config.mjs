@@ -16,6 +16,23 @@ const nextConfig = {
   experimental: {
     turbopackFileSystemCacheForBuild: true,
   },
+  webpack: (config, { dev }) => {
+    if (dev) {
+      config.watchOptions = {
+        ...config.watchOptions,
+        ignored: [
+          "**/.git/**",
+          "**/.claude/**",
+          "**/node_modules/**",
+          "**/.next/**",
+          "**/tests/**",
+          "**/playwright-report/**",
+          "**/test-results/**",
+        ],
+      };
+    }
+    return config;
+  },
   images: {
     unoptimized: true,
   },

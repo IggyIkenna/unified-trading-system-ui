@@ -1,5 +1,5 @@
 /**
- * L1.5 widget harness — pnl-attribution (overview/bottom-widgets).
+ * L1.5 widget harness — pnl-attribution (overview/pnl-attribution-widget).
  *
  * Scope:
  * - Renders PnLAttributionPanel with component rows + total
@@ -24,7 +24,7 @@ vi.mock("next/link", () => ({
     React.createElement("a", { href, ...rest }, children),
 }));
 
-import { PnLAttributionWidget } from "@/components/widgets/overview/bottom-widgets";
+import { PnLAttributionWidget } from "@/components/widgets/overview/pnl-attribution-widget";
 
 describe("pnl-attribution — L1.5 harness", () => {
   beforeEach(() => {
@@ -67,7 +67,7 @@ describe("pnl-attribution — L1.5 harness", () => {
     vi.doMock("@/components/widgets/overview/overview-data-context", () => ({
       useOverviewDataSafe: () => null,
     }));
-    const mod = await import("@/components/widgets/overview/bottom-widgets");
+    const mod = await import("@/components/widgets/overview/pnl-attribution-widget");
     render(<mod.PnLAttributionWidget {...({} as never)} />);
     expect(screen.getByText(/Navigate to Overview tab/i)).toBeTruthy();
     vi.doUnmock("@/components/widgets/overview/overview-data-context");

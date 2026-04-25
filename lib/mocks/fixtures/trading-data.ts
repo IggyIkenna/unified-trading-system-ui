@@ -22,7 +22,10 @@ import {
 } from "@/lib/taxonomy";
 
 // Import canonical strategy instances (v2 UAC-sourced) as the single source of truth
-import { STRATEGIES as REGISTRY_STRATEGIES, type Strategy as RegistryStrategy } from "@/lib/mocks/fixtures/strategy-instances";
+import {
+  STRATEGIES as REGISTRY_STRATEGIES,
+  type Strategy as RegistryStrategy,
+} from "@/lib/mocks/fixtures/strategy-instances";
 import type { TradingClient, TradingOrganization } from "@/lib/types/trading";
 
 // Re-export taxonomy types for convenience
@@ -475,7 +478,7 @@ export const STRATEGIES: TradingStrategy[] = [
     venues: ["BINANCE", "OKX", "HYPERLIQUID"],
     baseCapital: 900000,
     expectedSharpe: 2.4,
-    expectedVolatility: 0.10,
+    expectedVolatility: 0.1,
   },
   {
     id: "desmond-xex-price-dispersion",
@@ -659,7 +662,9 @@ function generateIntradayTimeSeries(
   mode: "live" | "batch",
   numPoints: number = 96, // 15-minute intervals
 ): StrategyTimeSeries {
-  const seed = `${strategy.id}-${date}-${mode}-ts`;
+  // Same seed for live and batch so both modes share the underlying random walk;
+  // batch then gets a small offset applied below to model snapshot drift, not divergence.
+  const seed = `${strategy.id}-${date}-ts`;
   const rand = seededRandom(seed);
 
   const client = CLIENTS.find((c) => c.id === strategy.clientId)!;
@@ -1057,4 +1062,101 @@ export function getFilteredAlerts(alerts: Alert[], filter: FilterContext): Alert
     if (alert.assetClass && !assetClasses.has(alert.assetClass as TradingStrategy["assetClass"])) return false;
     return true;
   });
+}
+
+// =============================================================================
+// MONTHLY TIME SERIES — daily resolution, 2026-03-01 onwards
+// Generates realistic P&L / NAV / Exposure data with seeded random walk.
+// Deterministic: same date + mode always produces identical values.
+// =============================================================================
+
+export const MONTHLY_TS_START = "2026-03-01";
+
+function monthlyDateLabel(dateStr: string): string {
+  const [, m, d] = dateStr.split("-");
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  return `${months[parseInt(m, 10) - 1]} ${d}`;
+}
+
+/**
+ * Generates one data point per calendar day from MONTHLY_TS_START through
+ * endDateStr for all three metrics (pnl, nav, exposure).
+ *
+ * Design parameters:
+ *   BASE_NAV      = $50 M — starting portfolio NAV
+ *   DAILY_VOL     = $130 k — daily P&L ±1σ (≈ 0.26 % of NAV, ~4 % ann. vol)
+ *   DAILY_DRIFT   = $7 k  — positive expected return (~3.5 % annual)
+ *   REGIME_PERIOD = 7 days — week-long bullish/bearish runs
+ *
+ * Batch mode adds a small systematic offset and per-day noise to model
+ * EOD-batch vs real-time calculation discrepancies.
+ */
+export function generateMonthlyTimeSeries(
+  endDateStr: string,
+  mode: "live" | "batch",
+): { pnl: TimeSeriesPoint[]; nav: TimeSeriesPoint[]; exposure: TimeSeriesPoint[] } {
+  const start = new Date(MONTHLY_TS_START + "T00:00:00Z");
+  const end = new Date(endDateStr + "T00:00:00Z");
+
+  // Build list of calendar dates from start to end (inclusive)
+  const dates: string[] = [];
+  const cur = new Date(start);
+  while (cur <= end) {
+    dates.push(cur.toISOString().split("T")[0]);
+    cur.setUTCDate(cur.getUTCDate() + 1);
+  }
+  if (dates.length === 0) return { pnl: [], nav: [], exposure: [] };
+
+  const BASE_NAV = 50_000_000;
+  const DAILY_VOL = 130_000;
+  const DAILY_DRIFT = 7_000;
+  const BASE_EXPOSURE = 33_000_000;
+
+  // Batch: persistent systematic offset simulating EOD-batch calc differences
+  const sysRand = seededRandom(`sys-offset-${mode}`);
+  const batchSysOffset = mode === "batch" ? (sysRand() - 0.4) * DAILY_VOL * 7 : 0;
+
+  let cumPnl = 0;
+  let exposure = BASE_EXPOSURE;
+
+  const pnlPts: TimeSeriesPoint[] = [];
+  const navPts: TimeSeriesPoint[] = [];
+  const expPts: TimeSeriesPoint[] = [];
+
+  for (let i = 0; i < dates.length; i++) {
+    const date = dates[i];
+    const rand = seededRandom(`monthly-pnl-${date}`);
+
+    // Approximate N(0,1) via sum of 12 uniform draws (CLT; σ≈1)
+    let z = 0;
+    for (let k = 0; k < 12; k++) z += rand();
+    z -= 6;
+
+    // Week-long regime: bullish (+3×drift) → neutral → bearish (−2×drift)
+    const regimePeriod = Math.floor(i / 7);
+    const regimeRand = seededRandom(`regime-${regimePeriod}`);
+    const regimeVal = regimeRand();
+    const regimeBias = regimeVal < 0.35 ? DAILY_DRIFT * 3.5 : regimeVal < 0.65 ? 0 : -DAILY_DRIFT * 2.5;
+
+    // Soft mean-reversion: gently pull P&L back if it drifts too far
+    const meanReversion = -cumPnl * 0.025;
+
+    cumPnl += DAILY_DRIFT + regimeBias + z * DAILY_VOL + meanReversion;
+
+    // Exposure: mean-reverts to base with mild daily noise
+    const expRand = seededRandom(`monthly-exp-${date}`);
+    exposure += (BASE_EXPOSURE - exposure) * 0.04 + (expRand() - 0.5) * 1_400_000;
+    exposure = Math.max(20_000_000, Math.min(45_000_000, exposure));
+
+    // Batch-specific per-day noise (on top of systematic offset)
+    const batchNoise = mode === "batch" ? (seededRandom(`batch-noise-${date}`)() - 0.5) * DAILY_VOL * 0.14 : 0;
+    const effectivePnl = cumPnl + batchSysOffset + batchNoise;
+
+    const label = monthlyDateLabel(date);
+    pnlPts.push({ timestamp: label, value: Math.round(effectivePnl) });
+    navPts.push({ timestamp: label, value: Math.round(BASE_NAV + effectivePnl) });
+    expPts.push({ timestamp: label, value: Math.round(exposure) });
+  }
+
+  return { pnl: pnlPts, nav: navPts, exposure: expPts };
 }

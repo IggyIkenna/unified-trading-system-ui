@@ -5,10 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/shared/spinner";
-import { CollapsibleSection } from "@/components/shared/collapsible-section";
 import { AlertTriangle, CheckCircle2, ShieldCheck, ShieldX, TrendingDown, TrendingUp, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { BOOK_ALGO_OPTIONS, BOOK_VENUES_BY_CATEGORY, type BookCategoryTab } from "@/lib/config/services/trading.config";
@@ -119,35 +118,34 @@ export function BookOrderEntryWidget(_props: WidgetComponentProps) {
           </Tabs>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-            <Card>
-              <CardHeader className="pb-2 pt-3 px-3">
-                <span className="text-xs font-medium text-muted-foreground">Instrument & size</span>
-              </CardHeader>
-              <CardContent className="space-y-3 px-3 pb-3">
-                <div className="space-y-1">
-                  <label className="text-caption text-muted-foreground">Venue</label>
-                  <Select value={venue} onValueChange={setVenue}>
-                    <SelectTrigger className="h-8 text-xs">
-                      <SelectValue placeholder="Select venue" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {(BOOK_VENUES_BY_CATEGORY[category] ?? []).map((v) => (
-                        <SelectItem key={v} value={v}>
-                          {v}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+            <Card className="py-0 gap-0">
+              <CardContent className="space-y-3 p-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <label className="text-caption text-muted-foreground">Venue</label>
+                    <Select value={venue} onValueChange={setVenue}>
+                      <SelectTrigger className="h-8 text-xs">
+                        <SelectValue placeholder="Select venue" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {(BOOK_VENUES_BY_CATEGORY[category] ?? []).map((v) => (
+                          <SelectItem key={v} value={v}>
+                            {v}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                <div className="space-y-1">
-                  <label className="text-caption text-muted-foreground">Instrument</label>
-                  <Input
-                    value={instrument}
-                    onChange={(e) => setInstrument(e.target.value)}
-                    placeholder={category === "cefi_spot" ? "BTC/USDT" : category === "tradfi" ? "AAPL" : "ETH/USDC"}
-                    className="h-8 font-mono text-xs"
-                  />
+                  <div className="space-y-1">
+                    <label className="text-caption text-muted-foreground">Instrument</label>
+                    <Input
+                      value={instrument}
+                      onChange={(e) => setInstrument(e.target.value)}
+                      placeholder={category === "cefi_spot" ? "BTC/USDT" : category === "tradfi" ? "AAPL" : "ETH/USDC"}
+                      className="h-8 font-mono text-xs"
+                    />
+                  </div>
                 </div>
 
                 {isDefiCategory ? (
@@ -204,37 +202,36 @@ export function BookOrderEntryWidget(_props: WidgetComponentProps) {
                   </div>
                 )}
 
-                <div className="space-y-1">
-                  <label className="text-caption text-muted-foreground">Quantity</label>
-                  <Input
-                    type="number"
-                    placeholder="0.00"
-                    value={quantity}
-                    onChange={(e) => setQuantity(e.target.value)}
-                    className="h-8 font-mono text-xs"
-                  />
-                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <label className="text-caption text-muted-foreground">Quantity</label>
+                    <Input
+                      type="number"
+                      placeholder="0.00"
+                      value={quantity}
+                      onChange={(e) => setQuantity(e.target.value)}
+                      className="h-8 font-mono text-xs"
+                    />
+                  </div>
 
-                <div className="space-y-1">
-                  <label className="text-caption text-muted-foreground">Price</label>
-                  <Input
-                    type="number"
-                    placeholder="0.00"
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
-                    className="h-8 font-mono text-xs"
-                  />
+                  <div className="space-y-1">
+                    <label className="text-caption text-muted-foreground">Price</label>
+                    <Input
+                      type="number"
+                      placeholder="0.00"
+                      value={price}
+                      onChange={(e) => setPrice(e.target.value)}
+                      className="h-8 font-mono text-xs"
+                    />
+                  </div>
                 </div>
               </CardContent>
             </Card>
 
             <div className="space-y-3">
               {showDefiInstruction && (
-                <Card>
-                  <CardHeader className="pb-2 pt-3 px-3">
-                    <span className="text-xs font-medium text-muted-foreground">DeFi instruction & algo</span>
-                  </CardHeader>
-                  <CardContent className="space-y-3 px-3 pb-3">
+                <Card className="py-0 gap-0">
+                  <CardContent className="space-y-3 p-3">
                     <div className="space-y-1">
                       <label className="text-caption text-muted-foreground">Instruction Type</label>
                       <Select
@@ -334,139 +331,135 @@ export function BookOrderEntryWidget(_props: WidgetComponentProps) {
               )}
 
               {showCefiAlgoParams && (
-                <CollapsibleSection title="TWAP, VWAP & routing parameters" defaultOpen>
-                  <Card className="border-0 shadow-none">
-                    <CardContent className="space-y-3 pt-1 px-2 pb-2">
-                      <div className="space-y-1">
-                        <label className="text-caption text-muted-foreground">Algorithm</label>
-                        <Select value={algo} onValueChange={(v) => setAlgo(v as BookAlgoType)}>
-                          <SelectTrigger className="h-8 text-xs">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {BOOK_ALGO_OPTIONS.map((a) => (
-                              <SelectItem key={a} value={a}>
-                                {a}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
+                <Card className="py-0 gap-0">
+                  <CardContent className="space-y-3 p-3">
+                    <div className="space-y-1">
+                      <label className="text-caption text-muted-foreground">Algorithm</label>
+                      <Select value={algo} onValueChange={(v) => setAlgo(v as BookAlgoType)}>
+                        <SelectTrigger className="h-8 text-xs">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {BOOK_ALGO_OPTIONS.map((a) => (
+                            <SelectItem key={a} value={a}>
+                              {a}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-                      {(algo === "TWAP" || algo === "VWAP") && (
-                        <>
-                          <div className="space-y-1">
-                            <label className="text-caption text-muted-foreground">Duration (seconds)</label>
-                            <Input
-                              type="number"
-                              placeholder="3600"
-                              value={algoParams.duration}
-                              onChange={(e) => setAlgoParam("duration", e.target.value)}
-                              className="h-8 font-mono text-xs"
-                            />
-                          </div>
-                          <div className="space-y-1">
-                            <label className="text-caption text-muted-foreground">Slices</label>
-                            <Input
-                              type="number"
-                              placeholder="10"
-                              value={algoParams.slices}
-                              onChange={(e) => setAlgoParam("slices", e.target.value)}
-                              className="h-8 font-mono text-xs"
-                            />
-                          </div>
-                        </>
-                      )}
-
-                      {algo === "ICEBERG" && (
+                    {(algo === "TWAP" || algo === "VWAP") && (
+                      <>
                         <div className="space-y-1">
-                          <label className="text-caption text-muted-foreground">Display Quantity</label>
+                          <label className="text-caption text-muted-foreground">Duration (seconds)</label>
                           <Input
                             type="number"
-                            placeholder="0.00"
-                            value={algoParams.displayQty}
-                            onChange={(e) => setAlgoParam("displayQty", e.target.value)}
+                            placeholder="3600"
+                            value={algoParams.duration}
+                            onChange={(e) => setAlgoParam("duration", e.target.value)}
                             className="h-8 font-mono text-xs"
                           />
                         </div>
-                      )}
-
-                      {algo === "BENCHMARK_FILL" && (
                         <div className="space-y-1">
-                          <label className="text-caption text-muted-foreground">Benchmark</label>
-                          <Select value={algoParams.benchmark} onValueChange={(v) => setAlgoParam("benchmark", v)}>
-                            <SelectTrigger className="h-8 text-xs">
-                              <SelectValue placeholder="Select benchmark" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="ARRIVAL">Arrival Price</SelectItem>
-                              <SelectItem value="CLOSE">Close Price</SelectItem>
-                              <SelectItem value="OPEN">Open Price</SelectItem>
-                              <SelectItem value="VWAP">VWAP</SelectItem>
-                            </SelectContent>
-                          </Select>
+                          <label className="text-caption text-muted-foreground">Slices</label>
+                          <Input
+                            type="number"
+                            placeholder="10"
+                            value={algoParams.slices}
+                            onChange={(e) => setAlgoParam("slices", e.target.value)}
+                            className="h-8 font-mono text-xs"
+                          />
                         </div>
-                      )}
+                      </>
+                    )}
 
-                      {algo === "SOR" && (
-                        <p className="text-caption text-muted-foreground">
-                          Smart Order Routing splits this order across configured venues based on top-of-book liquidity.
-                          Per-venue limits and routing rules are managed in the venue registry.
-                        </p>
-                      )}
-
-                      {algo === "BEST_PRICE" && (
-                        <p className="text-caption text-muted-foreground">
-                          Routes the full order to the single venue showing the best price at submission time. No
-                          additional parameters required.
-                        </p>
-                      )}
-
-                      {algo === "MARKET" && (
-                        <p className="text-caption text-muted-foreground">
-                          Marketable order at the best available price. Price field may be left empty.
-                        </p>
-                      )}
-                    </CardContent>
-                  </Card>
-                </CollapsibleSection>
-              )}
-
-              {showRecordDetails && (
-                <CollapsibleSection title="Off-book reference & fees" defaultOpen>
-                  <Card className="border-0 shadow-none">
-                    <CardContent className="space-y-3 pt-1 px-2 pb-2">
+                    {algo === "ICEBERG" && (
                       <div className="space-y-1">
-                        <label className="text-caption text-muted-foreground">Counterparty</label>
-                        <Input
-                          value={counterparty}
-                          onChange={(e) => setCounterparty(e.target.value)}
-                          placeholder="e.g. Goldman Sachs, Jump Trading"
-                          className="h-8 text-xs"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-caption text-muted-foreground">Source Reference</label>
-                        <Input
-                          value={sourceReference}
-                          onChange={(e) => setSourceReference(e.target.value)}
-                          placeholder="e.g. Bloomberg ticket ID, chat reference"
-                          className="h-8 text-xs"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-caption text-muted-foreground">Fee</label>
+                        <label className="text-caption text-muted-foreground">Display Quantity</label>
                         <Input
                           type="number"
-                          value={fee}
-                          onChange={(e) => setFee(e.target.value)}
                           placeholder="0.00"
+                          value={algoParams.displayQty}
+                          onChange={(e) => setAlgoParam("displayQty", e.target.value)}
                           className="h-8 font-mono text-xs"
                         />
                       </div>
-                    </CardContent>
-                  </Card>
-                </CollapsibleSection>
+                    )}
+
+                    {algo === "BENCHMARK_FILL" && (
+                      <div className="space-y-1">
+                        <label className="text-caption text-muted-foreground">Benchmark</label>
+                        <Select value={algoParams.benchmark} onValueChange={(v) => setAlgoParam("benchmark", v)}>
+                          <SelectTrigger className="h-8 text-xs">
+                            <SelectValue placeholder="Select benchmark" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="ARRIVAL">Arrival Price</SelectItem>
+                            <SelectItem value="CLOSE">Close Price</SelectItem>
+                            <SelectItem value="OPEN">Open Price</SelectItem>
+                            <SelectItem value="VWAP">VWAP</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+
+                    {algo === "SOR" && (
+                      <p className="text-caption text-muted-foreground">
+                        Smart Order Routing splits this order across configured venues based on top-of-book liquidity.
+                        Per-venue limits and routing rules are managed in the venue registry.
+                      </p>
+                    )}
+
+                    {algo === "BEST_PRICE" && (
+                      <p className="text-caption text-muted-foreground">
+                        Routes the full order to the single venue showing the best price at submission time. No
+                        additional parameters required.
+                      </p>
+                    )}
+
+                    {algo === "MARKET" && (
+                      <p className="text-caption text-muted-foreground">
+                        Marketable order at the best available price. Price field may be left empty.
+                      </p>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
+
+              {showRecordDetails && (
+                <Card className="py-0 gap-0">
+                  <CardContent className="space-y-3 p-3">
+                    <div className="space-y-1">
+                      <label className="text-caption text-muted-foreground">Counterparty</label>
+                      <Input
+                        value={counterparty}
+                        onChange={(e) => setCounterparty(e.target.value)}
+                        placeholder="e.g. Goldman Sachs, Jump Trading"
+                        className="h-8 text-xs"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-caption text-muted-foreground">Source Reference</label>
+                      <Input
+                        value={sourceReference}
+                        onChange={(e) => setSourceReference(e.target.value)}
+                        placeholder="e.g. Bloomberg ticket ID, chat reference"
+                        className="h-8 text-xs"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-caption text-muted-foreground">Fee</label>
+                      <Input
+                        type="number"
+                        value={fee}
+                        onChange={(e) => setFee(e.target.value)}
+                        placeholder="0.00"
+                        className="h-8 font-mono text-xs"
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
               )}
             </div>
           </div>

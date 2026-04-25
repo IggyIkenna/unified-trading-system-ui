@@ -1,7 +1,10 @@
 import { ArrowRightLeft, BarChart3, Bell, LayoutGrid, LineChart, PieChart, Server, Table2 } from "lucide-react";
 import { registerPresets } from "../preset-registry";
 import { registerWidget } from "../widget-registry";
-import { AlertsPreviewWidget, HealthGridWidget, PnLAttributionWidget, RecentFillsWidget } from "./bottom-widgets";
+import { AlertsPreviewWidget } from "./alerts-preview-widget";
+import { HealthGridWidget } from "./health-grid-widget";
+import { PnLAttributionWidget } from "./pnl-attribution-widget";
+import { RecentFillsWidget } from "./recent-fills-widget";
 import { KPIStripWidget } from "./kpi-strip-widget";
 import { PnLChartWidget } from "./pnl-chart-widget";
 import { ScopeSummaryWidget } from "./scope-summary-widget";
@@ -67,8 +70,8 @@ registerWidget({
   label: "P&L / NAV / Exposure Charts",
   description: "Live vs batch time series comparison with drift analysis.",
   icon: LineChart,
-  minW: 6,
-  minH: 2,
+  minW: 4,
+  minH: 4,
   defaultW: 24,
   defaultH: 4,
   requiredEntitlements: [{ domain: "trading-common", tier: "basic" }],

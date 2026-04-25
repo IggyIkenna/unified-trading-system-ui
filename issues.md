@@ -12,3 +12,6 @@
 ## overall look and feel
 
 - the colors, font-size and all similar css properties should be defined and declared in a single file so that we can change a single file and propegate the changes all over the places.
+-
+-
+- overview tab -> pnl widget. when switching between PNL and NAV, the chart animation does not occur, switching from exposure tab it is working.

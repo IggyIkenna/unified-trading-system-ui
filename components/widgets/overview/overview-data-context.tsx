@@ -19,7 +19,7 @@ export interface OverviewData {
   mockAlerts: Array<{
     id: string;
     message: string;
-    severity: "critical" | "high" | "medium" | "low";
+    severity: "critical" | "high" | "medium" | "low" | "info";
     timestamp: string;
     source: string;
   }>;

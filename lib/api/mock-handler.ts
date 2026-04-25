@@ -87,7 +87,6 @@ import {
   STRATEGIES,
   getAggregatedPnL,
   getAggregatedTimeSeries,
-  getLiveBatchDelta,
   getStrategyPerformance,
 } from "@/lib/mocks/fixtures/trading-data";
 import { MOCK_TRANSFER_HISTORY } from "@/lib/mocks/fixtures/transfer-history";
@@ -399,7 +398,10 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     return json(paginatedMockResponse(enriched, pg));
   }
   if (route === "/api/trading/live-batch-delta") {
-    return json(getLiveBatchDelta(defaultFilter));
+    // Consumers (overview page) plug this response in as batchTimeSeries on the
+    // P&L chart. Return the batch-mode time series so the "Batch" line plots
+    // actual batch values, not the live-vs-batch delta.
+    return json(getAggregatedTimeSeries({ ...defaultFilter, mode: "batch" }));
   }
 
   // --- Market Data ---
@@ -3033,6 +3035,8 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
           shardsComplete: 48,
           shardsTotal: 48,
           shardsFailed: 0,
+          freshness: 5,
+          sla: 30,
           latencyP50: 8,
           latencyP99: 28,
           errorRate: 0,
@@ -3054,6 +3058,8 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
           shardsComplete: 120,
           shardsTotal: 122,
           shardsFailed: 0,
+          freshness: 2,
+          sla: 10,
           latencyP50: 5,
           latencyP99: 22,
           errorRate: 0,
@@ -3075,6 +3081,8 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
           shardsComplete: 95,
           shardsTotal: 98,
           shardsFailed: 1,
+          freshness: 12,
+          sla: 30,
           latencyP50: 22,
           latencyP99: 85,
           errorRate: 0.3,
@@ -3096,6 +3104,8 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
           shardsComplete: 24,
           shardsTotal: 24,
           shardsFailed: 0,
+          freshness: 8,
+          sla: 30,
           latencyP50: 18,
           latencyP99: 62,
           errorRate: 0,
@@ -3118,6 +3128,8 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
           shardsComplete: 16,
           shardsTotal: 16,
           shardsFailed: 0,
+          freshness: 1,
+          sla: 10,
           latencyP50: 12,
           latencyP99: 45,
           errorRate: 0.1,
@@ -3140,6 +3152,8 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
           shardsComplete: 18,
           shardsTotal: 20,
           shardsFailed: 2,
+          freshness: 25,
+          sla: 15,
           latencyP50: 35,
           latencyP99: 180,
           errorRate: 1.2,
@@ -3163,6 +3177,8 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
           shardsComplete: 8,
           shardsTotal: 8,
           shardsFailed: 0,
+          freshness: 3,
+          sla: 30,
           latencyP50: 10,
           latencyP99: 38,
           errorRate: 0,
@@ -3184,6 +3200,8 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
           shardsComplete: 32,
           shardsTotal: 32,
           shardsFailed: 0,
+          freshness: 4,
+          sla: 15,
           latencyP50: 20,
           latencyP99: 65,
           errorRate: 0.2,
@@ -3205,6 +3223,8 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
           shardsComplete: 28,
           shardsTotal: 30,
           shardsFailed: 0,
+          freshness: 15,
+          sla: 30,
           latencyP50: 30,
           latencyP99: 120,
           errorRate: 0.5,
@@ -3226,6 +3246,8 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
           shardsComplete: 10,
           shardsTotal: 10,
           shardsFailed: 0,
+          freshness: 6,
+          sla: 30,
           latencyP50: 15,
           latencyP99: 55,
           errorRate: 0,
@@ -3247,6 +3269,8 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
           shardsComplete: 4,
           shardsTotal: 4,
           shardsFailed: 0,
+          freshness: 10,
+          sla: 60,
           latencyP50: 25,
           latencyP99: 95,
           errorRate: 0,
@@ -3268,6 +3292,8 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
           shardsComplete: 2,
           shardsTotal: 2,
           shardsFailed: 0,
+          freshness: 30,
+          sla: 60,
           latencyP50: 40,
           latencyP99: 150,
           errorRate: 0,

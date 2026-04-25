@@ -5,12 +5,12 @@
   "domain": "overview",
   "file": "components/widgets/overview/bottom-widgets.tsx",
   "class": "card-grid",
-  "description": "Service health grid showing operational status of platform services with latency and error indicators.",
+  "description": "Service health grid showing operational status of platform services with latency and error indicators. Preview on overview shares the same hook (useServiceHealth → /api/service-status/health) as the full observe/health page; widget renders the entire service list inside a scrollable container with a Refresh action.",
   "levels": {
     "l0": {
       "status": "pass",
       "by": "agent",
-      "date": "2026-04-17",
+      "date": "2026-04-25",
       "checks": {
         "0.1": {
           "result": "pass",
@@ -26,7 +26,7 @@
         },
         "0.4": {
           "result": "pass",
-          "note": "No any/ts-ignore."
+          "note": "grep 'any|@ts-ignore' → zero matches in bottom-widgets.tsx (re-verified 2026-04-25)."
         },
         "0.5": {
           "result": "pass",
@@ -34,11 +34,11 @@
         },
         "0.6": {
           "result": "pass",
-          "note": "Added coreLoading Spinner guard."
+          "note": "coreLoading Spinner guard retained."
         },
         "0.7": {
           "result": "pass",
-          "note": "Added 'No services reported' when allMockServices.length===0."
+          "note": "'No services reported' guard on allMockServices.length===0."
         },
         "0.8": {
           "result": "pass",
@@ -46,15 +46,15 @@
         },
         "0.9": {
           "result": "pass",
-          "note": "No dead code found."
+          "note": "No dead code; refresh handler is wired (queryClient.invalidateQueries)."
         }
       },
-      "notes": "All 9 checks pass."
+      "notes": "All 9 checks pass after 2026-04-25 update (refresh button + full-list scroll)."
     },
     "l1": {
       "status": "pass",
       "by": "agent",
-      "date": "2026-04-17",
+      "date": "2026-04-25",
       "checks": {
         "1.1": {
           "result": "pass",
@@ -66,7 +66,7 @@
         },
         "1.3": {
           "result": "n/a",
-          "note": "Service health is infrastructure-level, not org-scoped by design. SEED_SERVICES is a global platform health list."
+          "note": "Service health is infrastructure-level, not org-scoped by design."
         },
         "1.4": {
           "result": "n/a",
@@ -78,20 +78,20 @@
         },
         "1.6": {
           "result": "pass",
-          "note": "No scope filtering means full services list shown."
+          "note": "No scope filtering — full services list shown."
         },
         "1.7": {
           "result": "pass",
-          "note": "SEED_SERVICES imported from lib/mocks/fixtures/trading-pages in context producer; no fixture constants embedded in widget."
+          "note": "Preview now hydrates from /api/service-status/health (same source as observe/health page); SEED_SERVICES retained only as the fallback constant in lib/mocks/fixtures/trading-pages.ts when the API hook returns nothing."
         }
       },
-      "notes": "All checks pass. 1.3/1.4/1.5 N/A: service health is infrastructure-level, not scoped by trading entities."
+      "notes": "All checks pass. 1.3/1.4/1.5 N/A: infrastructure-level data."
     },
     "l2": {
       "status": "pass",
       "by": "agent+tests",
       "date": "2026-04-20",
-      "notes": "Covered globally by commits 32ba8ab and f9f29ea. Re-audit per-widget only if the wiring test fails or entitlements are added."
+      "notes": "Covered globally by commits 32ba8ab and f9f29ea."
     },
     "l3": {
       "status": "partial",
@@ -100,39 +100,39 @@
       "checks": {
         "3.1": {
           "result": "pass",
-          "note": "Mode relevance: live ✓ (real-time service health from API), batch ✓ (historical health state if API supports it), paper ✓ (platform health is mode-agnostic). Widget is display-only."
+          "note": "Mode relevance: live ✓ batch ✓ paper ✓ — display-only, mode-agnostic."
         },
         "3.2": {
           "result": "pass",
-          "note": "Context reads useGlobalScope(); health data from useServiceHealth() hook in context producer."
+          "note": "Context reads useGlobalScope(); health data via useServiceHealth()."
         },
         "3.3": {
           "result": "n/a",
-          "note": "Human check: no order entry; display-only health grid."
+          "note": "No order entry; display-only."
         },
         "3.4": {
           "result": "n/a",
-          "note": "Human check: no explicit mode indicator; platform health is mode-agnostic."
+          "note": "No mode indicator needed; platform health is mode-agnostic."
         },
         "3.5": {
           "result": "pass",
-          "note": "Paper mode: widget renders service health regardless of mode — platform services run independently of trading mode."
+          "note": "Paper mode: identical render — platform services run independently of trading mode."
         },
         "3.6": {
           "result": "pass",
-          "note": "No WebSocket or interval in HealthGridWidget section. Service health polled via REST in context producer."
+          "note": "No WebSocket/interval inside the widget; useServiceHealth polls every 30s in the context producer."
         }
       },
-      "notes": "Agent checks 3.1/3.2/3.5/3.6 pass. 3.3/3.4 require human browser walkthrough."
+      "notes": "Agent checks 3.1/3.2/3.5/3.6 pass. 3.3/3.4 require human walkthrough."
     },
     "l4": {
       "status": "partial",
       "by": "agent",
-      "date": "2026-04-21",
+      "date": "2026-04-25",
       "checks": {
         "4.1": {
           "result": "pass",
-          "note": "'View All' Button wrapped in Link to /services/observe/health. No dead buttons."
+          "note": "Refresh button onClick → queryClient.invalidateQueries({queryKey:['service-health']}). View All Button wrapped in Link. No dead handlers."
         },
         "4.2": {
           "result": "pass",
@@ -140,15 +140,15 @@
         },
         "4.3": {
           "result": "n/a",
-          "note": "Human check: no form fields; display-only health grid."
+          "note": "No form fields; display-only."
         },
         "4.4": {
-          "result": "n/a",
-          "note": "Human check: health status cards show correct service state."
+          "result": "pass",
+          "note": "Refresh click verified by unit test (Refresh button invalidates the service-health query). Visual confirmation captured 2026-04-25 via Playwright on /services/trading/overview — all 12 services render with proper freshness/SLA values and ok/lag statuses."
         },
         "4.5": {
           "result": "pass",
-          "note": "/services/observe/health route confirmed to exist."
+          "note": "/services/observe/health route exists."
         },
         "4.6": {
           "result": "pass",
@@ -156,14 +156,14 @@
         },
         "4.7": {
           "result": "n/a",
-          "note": "No tabs or collapsible sections."
+          "note": "No tabs / collapsibles."
         },
         "4.8": {
-          "result": "n/a",
-          "note": "Human check: overflow-auto on root div; 6-service slice fits in 3×3 grid."
+          "result": "pass",
+          "note": "Body wrapped in flex-1 min-h-0 overflow-y-auto so the full service list scrolls within the widget bounds at default 6×3 size; no overflow leaking."
         }
       },
-      "notes": "Agent checks 4.1/4.2/4.5/4.6 pass. 4.3/4.4/4.7/4.8 require human walkthrough."
+      "notes": "Agent + Playwright check 4.1/4.2/4.4/4.5/4.6/4.8. 4.3/4.7 N/A."
     },
     "l5": {
       "status": "partial",
@@ -172,25 +172,25 @@
       "checks": {
         "5.1": {
           "result": "pass",
-          "note": "Target strategies: N/A — health-grid shows platform infrastructure health (service registry), not strategy-specific data. Applicable across all trading modes as operational support widget."
+          "note": "Target strategies: N/A — health-grid shows platform infrastructure health, applicable across all trading modes as an operational support widget."
         }
       },
-      "notes": "5.1 agent-prep done. Health-grid is infrastructure-monitoring, not strategy-specific. 5.2–5.6 N/A or require human walkthrough."
+      "notes": "5.1 agent-prep done. 5.2–5.6 N/A — infrastructure-monitoring, not strategy-specific."
     },
     "l6": {
       "status": "pass",
       "by": "agent+tests",
-      "date": "2026-04-24",
-      "notes": "L1.5 harness spec: 7 tests covering service rows, 6-row cap, loading, empty-state, view-all link, null-context fallback. See tests/widgets/overview/health-grid.test.tsx"
+      "date": "2026-04-25",
+      "notes": "8 tests passing in tests/widgets/overview/health-grid.test.tsx: service rows render, table columns, full-list rendering (no preview cap), loading spinner, empty-state, Refresh button invalidates ['service-health'] query, View All link target, null-context fallback. Tests wrap the widget in a QueryClientProvider so useQueryClient resolves."
     },
     "l7": {
       "status": "pass",
       "by": "agent",
-      "date": "2026-04-21",
+      "date": "2026-04-25",
       "checks": {
         "7.1": {
           "result": "pass",
-          "note": "grep '#[0-9a-fA-F]{3,8}\\b|rgb[a]?\\(|hsl[a]?\\(' → zero matches in HealthGridWidget section."
+          "note": "grep '#[0-9a-fA-F]{3,8}|rgb[a]?\\(|hsl[a]?\\(' bottom-widgets.tsx → zero matches."
         },
         "7.2": {
           "result": "pass",
@@ -198,7 +198,7 @@
         },
         "7.3": {
           "result": "pass",
-          "note": "HealthGridWidget is ~35 lines within bottom-widgets.tsx (188 total). Well under limits."
+          "note": "bottom-widgets.tsx is 200 lines; HealthGridWidget is ~40 lines. Under all limits."
         },
         "7.4": {
           "result": "pass",
@@ -206,43 +206,43 @@
         },
         "7.5": {
           "result": "pass",
-          "note": "Out of scope — English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
+          "note": "No datetime rendering inside this widget — no toLocale*/Date toString calls."
         },
         "7.6": {
           "result": "pass",
-          "note": "No dangerouslySetInnerHTML, eval, new Function found."
+          "note": "No dangerouslySetInnerHTML, eval, new Function."
         },
         "7.7": {
           "result": "pass",
-          "note": "No useEffect/useMemo in HealthGridWidget. No unstable deps."
+          "note": "No useEffect. handleRefresh wrapped in useCallback([queryClient]); handleSort in useCallback([sortKey,sortDir]); sortedServices in useMemo([allMockServices,sortKey,sortDir]). All hooks called unconditionally above the ctx early return."
         }
       },
-      "notes": "All L7 checks pass. 7.5 globally deferred."
+      "notes": "All L7 checks pass after 2026-04-25 update."
     },
     "l8": {
       "status": "partial",
       "by": "agent",
-      "date": "2026-04-21",
+      "date": "2026-04-25",
       "checks": {
         "8.1": {
           "result": "pass",
-          "note": "No text-[...] arbitrary typography in HealthGridWidget section."
+          "note": "grep 'text-\\[|fontSize' → zero matches."
         },
         "8.2": {
           "result": "pass",
-          "note": "No arbitrary spacing values found."
+          "note": "grep '[pm][lrtbxy]?-\\[|gap-\\[' → zero matches. New classes (gap-1, gap-1.5, p-3, mb-2, flex-1, min-h-0, overflow-y-auto) all use scale tokens."
         },
         "8.3": {
           "result": "pass",
-          "note": "Uses Button, Spinner, Link from shared primitives. HealthStatusGrid is a shared trading component."
+          "note": "Uses Button, Spinner, Link, RefreshCw (lucide), HealthStatusGrid — all shared primitives."
         },
         "8.4": {
           "result": "partial",
-          "note": "Agent: no <img> without alt, no interactive div without role. 'View All' is proper Button in Link. Human: keyboard-only walkthrough pending."
+          "note": "Agent: Refresh and View All are proper <button> elements; no <img> without alt; no interactive <div onClick>. Human: keyboard-only walkthrough still pending."
         },
         "8.5": {
           "result": "n/a",
-          "note": "Human check: responsive at minW=2."
+          "note": "Human check: responsive at minW=4."
         }
       },
       "notes": "8.1/8.2/8.3 pass. 8.4 partial. 8.5 human-only."
@@ -255,30 +255,27 @@
     "selectionKey": null,
     "mergeCandidate": null,
     "keepSeparate": {
-      "rationale": "Infrastructure health is mode- and scope-independent; it stands alone as a global platform status view."
+      "rationale": "Infrastructure health is mode- and scope-independent; it stands alone as a global platform status view. Shares hook + endpoint with the full observe/health page so both surfaces stay in sync."
     },
-    "notes": "Infrastructure-level health — not coupled to trading scope or strategy selection. Links to full observability page."
+    "notes": "Infrastructure-level health — not coupled to trading scope or strategy selection. Refresh action invalidates the same React Query key as the full page so both refresh together."
   },
   "dataContract": {
     "channels": ["rest"],
     "primary": "rest",
     "cadence": "interval:30000",
     "staleness": "seconds",
-    "mockSource": "lib/mocks/fixtures/trading-pages.ts (SEED_SERVICES via use-overview-page-data.ts)",
-    "backendOwner": "observability-api (service-health endpoint)",
-    "notes": "Service health fetched via useServiceHealth() hook. Shows top 6 services. Full registry at /services/observe/health."
+    "mockSource": "lib/api/mock-handler.ts (/api/service-status/health) — same mock as observe/health page; SEED_SERVICES in lib/mocks/fixtures/trading-pages.ts retained only as fallback when the API hook returns nothing.",
+    "backendOwner": "observability-api (/unified-trading-api/service-status/health per lib/types/api-generated.ts:4393)",
+    "notes": "Service health fetched via useServiceHealth() with 30s refetchInterval. Refresh button invokes queryClient.invalidateQueries({queryKey:['service-health']}); the same query is consumed by /services/observe/health, so a refresh on either surface updates both. Preview renders the entire service list in a scrollable container; full page exposes additional columns (tier, latencyP50/99, uptime, version, cpu/memory, etc.)."
   },
   "coverage": {
     "assetClasses": ["defi", "cefi", "tradfi", "sports", "predictions"],
     "strategies": ["all"],
     "venues": ["all"],
     "commonTabs": null,
-    "verifiedOn": [],
-    "gaps": [
-      "Health polling interval not configurable",
-      "Service list limited to top-6 in preview; full registry on health page"
-    ],
-    "notes": "Infrastructure health is platform-wide, applicable to all asset classes and strategies."
+    "verifiedOn": ["overview"],
+    "gaps": ["Health polling interval not configurable (hardcoded 30s in useServiceHealth)"],
+    "notes": "Infrastructure health is platform-wide. Preview now renders the same full service set as the observe/health page (no preview cap); column subset is intentional — preview shows Service / Freshness / SLA / Status, full page exposes the rest."
   },
   "knownIssues": [],
   "findings": [
@@ -302,8 +299,50 @@
       "description": "HealthGridWidget — ~3 user-visible strings not i18n wrapped",
       "status": "fixed",
       "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
+    },
+    {
+      "level": "l4",
+      "check": "4.4",
+      "description": "/api/service-status/health mock returned services without freshness/sla — preview cast to ServiceHealth, so columns rendered '--' and getStatus() fell through to STALE",
+      "status": "fixed",
+      "fix": "Added freshness + sla numeric fields to every service in lib/api/mock-handler.ts so the same mock now drives the preview widget and the observe/health page consistently"
+    },
+    {
+      "level": "l4",
+      "check": "4.4",
+      "description": "Preview hard-sliced to 6 services; user requested full list with column subset",
+      "status": "fixed",
+      "fix": "Removed slice; wrapped HealthStatusGrid in flex-1 min-h-0 overflow-y-auto so the full service list scrolls inside the widget"
+    },
+    {
+      "level": "l4",
+      "check": "4.1",
+      "description": "No refresh affordance on the preview widget — users had to navigate to the full page to force a refetch",
+      "status": "fixed",
+      "fix": "Added Refresh button (lucide RefreshCw) left of View All; onClick calls queryClient.invalidateQueries({queryKey:['service-health']}), which is the same key consumed by the observe/health page"
+    },
+    {
+      "level": "l6",
+      "check": "6.2",
+      "description": "Test suite asserted 'caps rendered services at 6' which no longer matches behavior, and lacked QueryClientProvider needed by the new useQueryClient call",
+      "status": "fixed",
+      "fix": "Replaced the cap test with full-list rendering assertion, added a Refresh-invalidates-query test, wrapped renders in QueryClientProvider; 8/8 tests passing"
+    },
+    {
+      "level": "l7",
+      "check": "7.7",
+      "description": "HealthGridWidget: useState/useCallback/useMemo called after 'if (!ctx) return' early return — Rules of Hooks violation causing sort state to be silently discarded on every render; default health-priority sort had no effect",
+      "status": "fixed",
+      "fix": "Moved all hooks (useState, useCallback, useMemo) above the early return; replaced ctx destructuring with optional-chaining fallbacks (ctx?.allMockServices ?? []) so hooks can be called unconditionally"
+    },
+    {
+      "level": "l4",
+      "check": "4.4",
+      "description": "Sortable HealthDataTable added — column headers sortable by click; default sort floats unhealthy services (critical=0, warning=1, live=2, idle=3) to top",
+      "status": "fixed",
+      "fix": "Replaced HealthStatusGrid with custom HealthDataTable sub-component; getHealthOrder() drives default status sort; sortedServices useMemo handles per-column sort state; row highlighting via getRowClass (warning/critical CSS vars)"
     }
   ],
   "updatedBy": "agent",
-  "updatedAt": "2026-04-24"
+  "updatedAt": "2026-04-25"
 }

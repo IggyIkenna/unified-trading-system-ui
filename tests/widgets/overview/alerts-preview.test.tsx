@@ -1,5 +1,5 @@
 /**
- * L1.5 widget harness — alerts-preview (overview/bottom-widgets).
+ * L1.5 widget harness — alerts-preview (overview/alerts-preview-widget).
  *
  * Scope:
  * - Renders recent-alert rows (up to 4)
@@ -24,7 +24,7 @@ vi.mock("next/link", () => ({
     React.createElement("a", { href, ...rest }, children),
 }));
 
-import { AlertsPreviewWidget } from "@/components/widgets/overview/bottom-widgets";
+import { AlertsPreviewWidget } from "@/components/widgets/overview/alerts-preview-widget";
 
 describe("alerts-preview — L1.5 harness", () => {
   beforeEach(() => {
@@ -91,7 +91,7 @@ describe("alerts-preview — L1.5 harness", () => {
     vi.doMock("@/components/widgets/overview/overview-data-context", () => ({
       useOverviewDataSafe: () => null,
     }));
-    const mod = await import("@/components/widgets/overview/bottom-widgets");
+    const mod = await import("@/components/widgets/overview/alerts-preview-widget");
     render(<mod.AlertsPreviewWidget {...({} as never)} />);
     expect(screen.getByText(/Navigate to Overview tab/i)).toBeTruthy();
     vi.doUnmock("@/components/widgets/overview/overview-data-context");

@@ -1,5 +1,5 @@
 /**
- * L1.5 widget harness — recent-fills (overview/bottom-widgets).
+ * L1.5 widget harness — recent-fills (overview/recent-fills-widget).
  *
  * Scope:
  * - Renders up to 5 fill rows
@@ -24,7 +24,7 @@ vi.mock("next/link", () => ({
     React.createElement("a", { href, ...rest }, children),
 }));
 
-import { RecentFillsWidget } from "@/components/widgets/overview/bottom-widgets";
+import { RecentFillsWidget } from "@/components/widgets/overview/recent-fills-widget";
 
 describe("recent-fills — L1.5 harness", () => {
   beforeEach(() => {
