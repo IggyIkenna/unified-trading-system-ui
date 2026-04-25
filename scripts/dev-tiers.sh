@@ -47,6 +47,23 @@ WORKSPACE="$(cd "$UI_ROOT/.." && pwd)"
 PID_DIR="$UI_ROOT/.local-dev-cache/pids"
 LOG_DIR="$UI_ROOT/.local-dev-cache/logs"
 
+# Firebase emulators (Firestore + Storage) are JVM apps — they need a real
+# JRE on PATH or they crash with "Process `java -version` has exited with
+# code 1". macOS ships a shim at /usr/bin/java that only prompts the install
+# dialog, so we can't trust `command -v java`. Prefer the brew openjdk
+# whenever it's installed (keg-only by default → not auto-symlinked); fall
+# back to existing PATH otherwise.
+if ! /usr/bin/env java -version >/dev/null 2>&1; then
+  for jdk_dir in /opt/homebrew/opt/openjdk@21 /opt/homebrew/opt/openjdk \
+                 /usr/local/opt/openjdk@21 /usr/local/opt/openjdk; do
+    if [[ -x "$jdk_dir/bin/java" ]]; then
+      export PATH="$jdk_dir/bin:$PATH"
+      export JAVA_HOME="${JAVA_HOME:-$jdk_dir/libexec/openjdk.jdk/Contents/Home}"
+      break
+    fi
+  done
+fi
+
 TIER=""
 REAL_MODE=false
 # Firebase Emulator Suite is ON by default for every local tier — keeps
