@@ -11,7 +11,7 @@
  * AND maturity ≥ `paper_stable` (`allowsAllocationCta`).
  */
 
-import { ArrowRight, ArrowUpRight, Lock } from "lucide-react";
+import { ArrowRight, ArrowUpRight, CheckCircle2, FileText, Lock } from "lucide-react";
 import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
@@ -30,6 +30,7 @@ import type {
   StrategyArchetype,
   StrategyFamily,
 } from "@/lib/architecture-v2";
+import type { StrategyAccess } from "@/lib/entitlements/strategy-route";
 import { formatArchetype, formatFamily, getArchetypePlanTier } from "@/lib/strategy-display";
 
 import { PerformanceOverlay } from "./PerformanceOverlay";
@@ -51,6 +52,16 @@ export interface FomoInstanceSummary {
 export interface FomoTearsheetCardProps {
   readonly instance: FomoInstanceSummary;
   readonly onRequestAllocation?: (instanceId: string) => void;
+  /** Per-instance access state from `resolveSlotAccess`. Drives lock badge,
+   * card opacity, and allocation-CTA gating. Defaults to "terminal" so
+   * legacy callers that don't pass it render the unlocked allocation flow.
+   * The grid (StrategyCatalogueSurface) computes access per-instance and
+   * passes it through. */
+  readonly access?: StrategyAccess;
+  /** Whether the viewer's org is already subscribed to this instance.
+   * Subscribed instances render with a green checkmark badge instead of the
+   * upgrade lock. */
+  readonly isSubscribed?: boolean;
   /** Test-only: pre-computed series, bypasses the live fetch. */
   readonly performanceOverride?: PerformanceSeriesResponse;
 }
@@ -63,16 +74,23 @@ function formatStat(value: number | null, suffix: string, digits = 2): string {
 export function FomoTearsheetCard({
   instance,
   onRequestAllocation,
+  access = "terminal",
+  isSubscribed = false,
   performanceOverride,
 }: FomoTearsheetCardProps) {
   const ctaEnabled = allowsAllocationCta(instance.maturityPhase);
   const planTier = getArchetypePlanTier(instance.archetype);
+  const isTerminalAccess = access === "terminal";
+  const isReportsOnly = access === "reports-only";
+  const isLockedVisible = access === "locked-visible";
 
   return (
     <Card
       data-testid="fomo-tearsheet-card"
       data-instance-id={instance.instanceId}
-      className="gap-4 py-4"
+      data-access={access}
+      data-subscribed={isSubscribed ? "true" : "false"}
+      className={`gap-4 py-4 ${isLockedVisible ? "opacity-60" : ""}`}
     >
       <CardHeader className="gap-2">
         <div className="flex items-start justify-between gap-2">
@@ -86,14 +104,29 @@ export function FomoTearsheetCard({
             <Badge variant="outline" className="font-mono text-[10px]">
               {MATURITY_PHASE_LABEL[instance.maturityPhase]}
             </Badge>
-            {planTier === "full-only" ? (
+            {isSubscribed ? (
+              <Badge className="gap-0.5 border-emerald-300 bg-emerald-100 text-[10px] text-emerald-800">
+                <CheckCircle2 className="size-2.5" aria-hidden />
+                Subscribed
+              </Badge>
+            ) : isTerminalAccess ? (
+              <Badge className="border-emerald-200 bg-emerald-50 text-[10px] text-emerald-700">
+                Available
+              </Badge>
+            ) : isReportsOnly ? (
+              <Badge className="gap-0.5 border-amber-200 bg-amber-50 text-[10px] text-amber-700">
+                <FileText className="size-2.5" aria-hidden />
+                Reports only
+              </Badge>
+            ) : planTier === "full-only" ? (
               <Badge className="gap-0.5 border-amber-200 bg-amber-50 text-[10px] text-amber-700">
                 <Lock className="size-2.5" aria-hidden />
                 DART Full only
               </Badge>
             ) : (
-              <Badge className="border-emerald-200 bg-emerald-50 text-[10px] text-emerald-700">
-                Full + Signals-In
+              <Badge className="gap-0.5 border-zinc-300 bg-zinc-100 text-[10px] text-zinc-600">
+                <Lock className="size-2.5" aria-hidden />
+                Locked
               </Badge>
             )}
           </div>
@@ -136,16 +169,28 @@ export function FomoTearsheetCard({
           </div>
         </dl>
         <div className="flex gap-2">
-          <Button
-            size="sm"
-            className="flex-1"
-            disabled={!ctaEnabled || !onRequestAllocation}
-            onClick={() => onRequestAllocation?.(instance.instanceId)}
-            data-testid="fomo-request-allocation-cta"
-          >
-            Request allocation
-            <ArrowUpRight className="ml-1 size-3" aria-hidden />
-          </Button>
+          {isLockedVisible ? (
+            <Button size="sm" className="flex-1" variant="outline" asChild>
+              <Link
+                href={`/contact?service=dart-full&action=unlock&instance=${encodeURIComponent(instance.instanceId)}`}
+                data-testid="fomo-contact-unlock-cta"
+              >
+                Contact us to unlock
+                <ArrowUpRight className="ml-1 size-3" aria-hidden />
+              </Link>
+            </Button>
+          ) : (
+            <Button
+              size="sm"
+              className="flex-1"
+              disabled={!ctaEnabled || !onRequestAllocation || isSubscribed}
+              onClick={() => onRequestAllocation?.(instance.instanceId)}
+              data-testid="fomo-request-allocation-cta"
+            >
+              {isSubscribed ? "Already subscribed" : "Request allocation"}
+              {!isSubscribed ? <ArrowUpRight className="ml-1 size-3" aria-hidden /> : null}
+            </Button>
+          )}
           <Button size="sm" variant="outline" asChild>
             <Link
               href={`/services/reports/strategy/${instance.instanceId}`}
@@ -156,7 +201,7 @@ export function FomoTearsheetCard({
             </Link>
           </Button>
         </div>
-        {!ctaEnabled ? (
+        {!ctaEnabled && !isLockedVisible && !isSubscribed ? (
           <p className="text-[10px] text-muted-foreground">
             Allocation opens at paper-stable maturity or later.
           </p>

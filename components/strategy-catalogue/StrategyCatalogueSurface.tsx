@@ -29,6 +29,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
 import { getArchetypePlanTier } from "@/lib/strategy-display";
 import {
+  resolveSlotAccess,
+  type StrategyAccess,
+} from "@/lib/entitlements/strategy-route";
+import {
   EMPTY_CATALOGUE_FILTER,
   matchesFilter,
   type StrategyCatalogueFilter,
@@ -202,11 +206,36 @@ export function StrategyCatalogueSurface({
     if (viewMode === "client-reality") {
       return filtered.filter((i) => subs.has(i.instanceId));
     }
-    if (viewMode === "client-fomo") {
-      return filtered.filter((i) => !subs.has(i.instanceId));
-    }
+    // client-fomo + admin-universe + admin-editor: show every instance, drop
+    // the legacy "hide subscribed" filter on FOMO. Lock badges per-instance
+    // (resolveSlotAccess) communicate which strategies are terminal-accessible
+    // vs reports-only vs locked-visible — see access-aware lock states.
     return filtered;
   }, [filtered, subscribedInstanceIds, viewMode]);
+
+  const subscribedSet = useMemo(
+    () => new Set(subscribedInstanceIds ?? []),
+    [subscribedInstanceIds],
+  );
+
+  // Resolve access per-instance for client-fomo so each tearsheet renders the
+  // right lock badge (terminal / reports-only / locked-visible).
+  const accessByInstance = useMemo(() => {
+    if (viewMode !== "client-fomo") return new Map<string, StrategyAccess>();
+    const map = new Map<string, StrategyAccess>();
+    // Defensive: resolveSlotAccess reads user.entitlements; if the auth context
+    // is mid-init (or a test stubs out a partial shape) we treat it as a fully
+    // unauthenticated viewer and skip the resolution rather than crashing.
+    const safeUser = user && Array.isArray(user.entitlements) ? user : null;
+    for (const inst of visible) {
+      // slotKey shape used by the entitlement-fallback branch: archetype@<scope>.
+      // The static catalogue's instanceId already encodes archetype + venue
+      // scope + share class, so it's a usable closed-form key.
+      const slotKey = `${inst.archetype}@${inst.instanceId}`;
+      map.set(inst.instanceId, resolveSlotAccess(safeUser, slotKey));
+    }
+    return map;
+  }, [viewMode, visible, user]);
 
   return (
     <div className="space-y-4" data-testid={`strategy-catalogue-surface-${viewMode}`}>
@@ -280,6 +309,8 @@ export function StrategyCatalogueSurface({
           })() : null}
           <FomoGrid
             instances={visible}
+            accessByInstance={accessByInstance}
+            subscribedSet={subscribedSet}
             onInstanceSelect={onInstanceSelect}
             onRequestAllocation={onRequestAllocation}
           />
@@ -722,12 +753,16 @@ function RealityGrid({ instances, onInstanceSelect }: RealityGridProps) {
 
 interface FomoGridProps {
   readonly instances: readonly StrategyInstance[];
+  readonly accessByInstance: ReadonlyMap<string, StrategyAccess>;
+  readonly subscribedSet: ReadonlySet<string>;
   readonly onInstanceSelect?: (instanceId: string) => void;
   readonly onRequestAllocation?: (instanceId: string) => void;
 }
 
 function FomoGrid({
   instances,
+  accessByInstance,
+  subscribedSet,
   onInstanceSelect,
   onRequestAllocation,
 }: FomoGridProps) {
@@ -763,6 +798,8 @@ function FomoGrid({
           maxDrawdownPct: perf.maxDrawdownPct,
           cagrPct: perf.cagrPct,
         };
+        const access = accessByInstance.get(instance.instanceId) ?? "locked-visible";
+        const isSubscribed = subscribedSet.has(instance.instanceId);
         return (
           <div
             key={instance.instanceId}
@@ -772,6 +809,8 @@ function FomoGrid({
           >
             <FomoTearsheetCard
               instance={summary}
+              access={access}
+              isSubscribed={isSubscribed}
               onRequestAllocation={onRequestAllocation}
             />
           </div>

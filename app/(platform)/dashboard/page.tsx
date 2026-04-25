@@ -214,7 +214,7 @@ export default function DashboardPage() {
           description={
             <>
               {user.displayName} &middot; <span className="capitalize">{user.role}</span> &middot;{" "}
-              {visibleServices.length} of {allServices.length} services
+              {allServices.length} {allServices.length === 1 ? "service" : "services"}
             </>
           }
         />
@@ -231,14 +231,8 @@ export default function DashboardPage() {
             <Shield className="size-4 shrink-0 text-primary/50" />
             <span>
               <strong className="text-foreground/80">{user.org.name}</strong> has access to{" "}
-              <strong className="text-foreground/80">{visibleServices.length} services</strong> across{" "}
-              {visibleStages.length} lifecycle stages.
-              {allServices.length - visibleServices.length > 0 && (
-                <>
-                  {" "}
-                  {allServices.length - visibleServices.length} additional service{allServices.length - visibleServices.length > 1 ? "s are" : " is"} available on upgrade.
-                </>
-              )}
+              <strong className="text-foreground/80">{allServices.length} {allServices.length === 1 ? "service" : "services"}</strong> across{" "}
+              {visibleStages.length} lifecycle {visibleStages.length === 1 ? "stage" : "stages"}.
             </span>
           </div>
         )}

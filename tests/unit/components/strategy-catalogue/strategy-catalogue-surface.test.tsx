@@ -92,7 +92,11 @@ describe("<StrategyCatalogueSurface> viewMode rendering", () => {
     expect(cards[0]).toHaveAttribute("data-instance-id", first.instanceId);
   });
 
-  it("client-fomo hides rows the viewer has already subscribed to", () => {
+  it("client-fomo shows every instance and tags subscribed rows with data-subscribed", () => {
+    // Behaviour change 2026-04-25: FOMO grid now renders the full universe
+    // with per-card lock badges (terminal / reports-only / locked / subscribed)
+    // instead of pre-filtering subscribed rows out. Lets the user see
+    // everything they could be on and how to get to it.
     const catalogue = loadStrategyCatalogue();
     const [first] = catalogue;
     expect(first).toBeDefined();
@@ -105,9 +109,17 @@ describe("<StrategyCatalogueSurface> viewMode rendering", () => {
     );
     const grid = screen.getByTestId("fomo-grid");
     const cards = within(grid).getAllByTestId("fomo-tearsheet-card");
-    expect(cards.length).toBe(catalogue.length - 1);
-    for (const card of cards) {
-      expect(card).not.toHaveAttribute("data-instance-id", first.instanceId);
+    expect(cards.length).toBe(catalogue.length);
+    const subscribedCard = cards.find(
+      (c) => c.getAttribute("data-instance-id") === first.instanceId,
+    );
+    expect(subscribedCard).toBeDefined();
+    expect(subscribedCard).toHaveAttribute("data-subscribed", "true");
+    const otherCards = cards.filter(
+      (c) => c.getAttribute("data-instance-id") !== first.instanceId,
+    );
+    for (const card of otherCards) {
+      expect(card).toHaveAttribute("data-subscribed", "false");
     }
   });
 
