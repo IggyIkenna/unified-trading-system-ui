@@ -2,14 +2,23 @@
 
 import { LiveBatchComparison, type ViewMode } from "@/components/trading/live-batch-comparison";
 import { StatusDot } from "@/components/shared/status-badge";
-import { ValueFormatToggle, useValueFormat } from "@/components/trading/value-format-toggle";
+import { type ValueFormat, useValueFormat } from "@/components/trading/value-format-toggle";
 import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/shared/spinner";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import { cn } from "@/lib/utils";
 import { formatPercent } from "@/lib/utils/formatters";
-import { ArrowLeftRight, Calendar, Database, Minus, Radio, SplitSquareVertical } from "lucide-react";
+import {
+  ArrowLeftRight,
+  Calendar,
+  Database,
+  DollarSign,
+  Minus,
+  Percent,
+  Radio,
+  SplitSquareVertical,
+} from "lucide-react";
 import * as React from "react";
 import type { WidgetComponentProps } from "../widget-registry";
 import { useOverviewDataSafe } from "./overview-data-context";
@@ -237,78 +246,43 @@ export function PnLChartWidget(_props: WidgetComponentProps) {
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
-          <div className="h-8 flex items-center">
-            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as MetricKey)}>
-              <TabsList className="h-8">
-                <TabsTrigger value="pnl">P&L</TabsTrigger>
-                <TabsTrigger value="nav">NAV</TabsTrigger>
-                <TabsTrigger value="exposure">Exposure</TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </div>
-          <div className="h-8">
-            <ValueFormatToggle format={valueFormat} onFormatChange={setValueFormat} />
-          </div>
-          <div className="h-8 flex items-center border border-border rounded-md overflow-hidden">
-            <button
-              onClick={() => setViewMode("live")}
-              className={cn(
-                "flex items-center gap-1 px-2 py-1 text-xs transition-colors",
-                viewMode === "live"
-                  ? "bg-[var(--status-live)]/10 text-[var(--status-live)]"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              <Radio className="size-3" />
-              Live
-            </button>
-            <button
-              onClick={() => setViewMode("batch")}
-              className={cn(
-                "flex items-center gap-1 px-2 py-1 text-xs transition-colors",
-                viewMode === "batch" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              <Database className="size-3" />
-              Batch
-            </button>
-            <button
-              onClick={() => setViewMode("split")}
-              style={
-                viewMode === "split"
-                  ? {
-                      backgroundColor: "color-mix(in oklab, var(--chart-5) 15%, transparent)",
-                      color: "var(--chart-5)",
-                    }
-                  : undefined
-              }
-              className={cn(
-                "flex items-center gap-1 px-2 py-1 text-xs transition-colors",
-                viewMode !== "split" && "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              <SplitSquareVertical className="size-3" />
-              Split
-            </button>
-            <button
-              onClick={() => setViewMode("delta")}
-              style={
-                viewMode === "delta"
-                  ? {
-                      backgroundColor: "color-mix(in oklab, var(--pnl-negative) 15%, transparent)",
-                      color: "var(--pnl-negative)",
-                    }
-                  : undefined
-              }
-              className={cn(
-                "flex items-center gap-1 px-2 py-1 text-xs transition-colors",
-                viewMode !== "delta" && "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              <Minus className="size-3" />
-              Delta
-            </button>
-          </div>
+          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as MetricKey)}>
+            <TabsList className="h-8">
+              <TabsTrigger value="pnl">P&L</TabsTrigger>
+              <TabsTrigger value="nav">NAV</TabsTrigger>
+              <TabsTrigger value="exposure">Exposure</TabsTrigger>
+            </TabsList>
+          </Tabs>
+          <Tabs value={valueFormat} onValueChange={(v) => setValueFormat(v as ValueFormat)}>
+            <TabsList className="h-8">
+              <TabsTrigger value="dollar" className="gap-1">
+                <DollarSign className="size-3" />
+              </TabsTrigger>
+              <TabsTrigger value="percent" className="gap-1">
+                <Percent className="size-3" />
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+          <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as ViewMode)}>
+            <TabsList className="h-8">
+              <TabsTrigger value="live" className="gap-1">
+                <Radio className="size-3" />
+                Live
+              </TabsTrigger>
+              <TabsTrigger value="batch" className="gap-1">
+                <Database className="size-3" />
+                Batch
+              </TabsTrigger>
+              <TabsTrigger value="split" className="gap-1">
+                <SplitSquareVertical className="size-3" />
+                Split
+              </TabsTrigger>
+              <TabsTrigger value="delta" className="gap-1">
+                <Minus className="size-3" />
+                Delta
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
           <div className="h-8 flex items-center gap-1.5 px-2 py-1 border border-border rounded-md">
             <Calendar className="size-3 text-muted-foreground" />
             <input
