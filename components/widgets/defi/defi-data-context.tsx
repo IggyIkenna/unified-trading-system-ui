@@ -77,26 +77,7 @@ import * as React from "react";
 
 const MOCK_WALLET = "0x7a23c0ffeebee4f91deadbeef1234567890abcd";
 
-const INITIAL_FLASH_STEPS: FlashLoanStep[] = [
-  {
-    id: "step-1",
-    operationType: "SWAP",
-    algo_type: "SOR_DEX",
-    asset: "ETH",
-    amount: "100",
-    venue: "UNISWAPV3-ETHEREUM",
-    max_slippage_bps: 50,
-  },
-  {
-    id: "step-2",
-    operationType: "SWAP",
-    algo_type: "SOR_DEX",
-    asset: "USDC",
-    amount: "345600",
-    venue: "CURVE-ETHEREUM",
-    max_slippage_bps: 50,
-  },
-];
+const INITIAL_FLASH_STEPS: FlashLoanStep[] = [];
 
 export interface DeFiDataContextValue {
   connectedWallet: string | null;
@@ -575,6 +556,7 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
       if (base[key] < 0) base[key] = 0;
     }
     return base;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPaper, hasDefiDesk, ledgerVersion]);
 
   // Batch mode: mark protocols as historical; org scope: empty if no DeFi desk

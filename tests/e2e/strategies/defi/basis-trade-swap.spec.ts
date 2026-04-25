@@ -56,14 +56,17 @@ test.describe("DeFi Basis Trade Swap — trader workflow", () => {
     expect(bodyText).toContain("USDT");
     expect(bodyText).toContain("ETH");
 
-    // All metrics a basis-trade operator cares about must be present.
+    // Basis trade metrics only render once an amount is entered.
+    await page.locator("[data-testid='capital-input']").fill("1000");
+    await page.waitForTimeout(300);
     await expect(swap().getByText("Basis Trade Metrics")).toBeVisible();
     await expect(swap().getByText("Funding APY")).toBeVisible();
     await expect(swap().getByText("Cost of Carry")).toBeVisible();
     await expect(swap().getByText("Net APY")).toBeVisible();
+    await page.locator("[data-testid='capital-input']").fill("");
 
     // Swap button present but disabled before an amount is entered.
-    await expect(page.locator("button:has-text('Swap')").first()).toBeDisabled();
+    await expect(swap().locator('[data-testid="execute-button"]')).toBeDisabled();
   });
 
   // ── Trade execution ────────────────────────────────────────────────────────
@@ -88,13 +91,11 @@ test.describe("DeFi Basis Trade Swap — trader workflow", () => {
     const classes = await netApyValue.getAttribute("class");
     expect(classes?.includes("green-600") || classes?.includes("red-500")).toBeTruthy();
 
-    // Execute the swap and verify a trade row appears in history.
-    const beforeRows = await page.locator('[data-testid="trade-history-row"]').count();
-    await expect(page.locator("button:has-text('Swap')").first()).toBeEnabled();
-    await page.locator("button:has-text('Swap')").first().click();
-    await page.waitForTimeout(500);
-    await expect
-      .poll(() => page.locator('[data-testid="trade-history-row"]').count(), { timeout: 5_000 })
-      .toBeGreaterThanOrEqual(beforeRows + 1);
+    // Execute the swap — carry-basis page has no trade-history widget; verify
+    // via toast + form clear. Trade row is verified in carry-basis-perp.spec.ts.
+    await expect(swap().locator('[data-testid="execute-button"]')).toBeEnabled();
+    await swap().locator('[data-testid="execute-button"]').click();
+    await page.waitForSelector("text=submitted", { timeout: 5_000 });
+    await expect.poll(() => page.locator("[data-testid='capital-input']").inputValue(), { timeout: 8_000 }).toBe("");
   });
 });

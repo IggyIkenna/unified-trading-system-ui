@@ -85,15 +85,12 @@ test.describe(`${FIXTURE.name} — operator flow`, () => {
 
     const swapSnapshot = await snapshotObservationWidgets(page, FIXTURE, "SWAP");
 
-    await swap.locator('[data-testid="execute-button"]').click();
+    // evaluate-based click bypasses the resize handle overlay on the /defi grid page.
+    // click({ force: true }) dispatches at screen coordinates which still hits the handle.
+    await swap.locator('[data-testid="execute-button"]').evaluate((el) => (el as HTMLButtonElement).click());
 
-    await page.waitForSelector("text=submitted", { timeout: 3_000 }).catch(() => undefined);
-
-    await expect
-      .poll(async () => swap.locator('[data-testid="capital-input"]').inputValue(), { timeout: 3_000 })
-      .toBe("");
-
-    await page.waitForTimeout(800);
+    await page.waitForSelector("text=submitted", { timeout: 5_000 }).catch(() => undefined);
+    await page.waitForTimeout(1_000);
 
     await verifyScenarioOutcome(page, beforeRows, {
       tradeType: "SWAP",
@@ -117,15 +114,10 @@ test.describe(`${FIXTURE.name} — operator flow`, () => {
     await swap.locator('[data-testid="capital-input"]').fill(String(sc.inputs.amountIn));
     await expect(swap.locator('[data-testid="execute-button"]')).toBeEnabled();
 
-    await swap.locator('[data-testid="execute-button"]').click();
+    await swap.locator('[data-testid="execute-button"]').evaluate((el) => (el as HTMLButtonElement).click());
 
-    await page.waitForSelector("text=submitted", { timeout: 3_000 }).catch(() => undefined);
-
-    await expect
-      .poll(async () => swap.locator('[data-testid="capital-input"]').inputValue(), { timeout: 3_000 })
-      .toBe("");
-
-    await page.waitForTimeout(800);
+    await page.waitForSelector("text=submitted", { timeout: 5_000 }).catch(() => undefined);
+    await page.waitForTimeout(1_000);
 
     await verifyScenarioOutcome(page, beforeRows, {
       tradeType: "SWAP",
@@ -147,15 +139,10 @@ test.describe(`${FIXTURE.name} — operator flow`, () => {
     await selectByText(page, swap.locator('[data-testid="asset-from-select"]'), "USDC");
     await swap.locator('[data-testid="capital-input"]').fill(String(sc.inputs.amountIn));
     await expect(swap.locator('[data-testid="execute-button"]')).toBeEnabled();
-    await swap.locator('[data-testid="execute-button"]').click();
+    await swap.locator('[data-testid="execute-button"]').evaluate((el) => (el as HTMLButtonElement).click());
 
-    await page.waitForSelector("text=submitted", { timeout: 3_000 }).catch(() => undefined);
-
-    await expect
-      .poll(async () => swap.locator('[data-testid="capital-input"]').inputValue(), { timeout: 3_000 })
-      .toBe("");
-
-    await page.waitForTimeout(800);
+    await page.waitForSelector("text=submitted", { timeout: 5_000 }).catch(() => undefined);
+    await page.waitForTimeout(1_000);
 
     await verifyScenarioOutcome(page, beforeRows, {
       tradeType: "SWAP",

@@ -19,14 +19,16 @@ import { countTradeRows, verifyObservationWidgetsVisible, verifyScenarioOutcome 
  *   4. asserting the P&L preview panel is reactive
  *
  * Uses /services/trading/defi which co-renders DeFiFlashLoansWidget and
- * DeFiTradeHistoryWidget. The flash loans widget is at grid row y:36 — Playwright
+ * DeFiTradeHistoryWidget. The flash loans widget is at grid row y:36 in the
+ * "defi-full" preset — we seed localStorage to activate that preset on load.
  * scrollIntoViewIfNeeded() handles the scroll automatically.
  */
 
 const FIXTURE = loadStrategyFixture("liquidation-capture");
 const BASE_URL = "http://localhost:3100";
 
-test.describe.configure({ mode: "serial" });
+// timeout covers beforeAll (page load of heavy /defi grid) + each test
+test.describe.configure({ mode: "serial", timeout: 180_000 });
 
 test.describe(`${FIXTURE.name} — operator flow`, () => {
   test.setTimeout(180_000);
@@ -35,14 +37,36 @@ test.describe(`${FIXTURE.name} — operator flow`, () => {
   let flash: Locator;
 
   test.beforeAll(async ({ browser }) => {
+    // Extend this hook's timeout — /defi grid is heavy; default 30s is too short.
+    test.setTimeout(180_000);
     const context = await browser.newContext();
     page = await context.newPage();
     await seedPersona(page, FIXTURE.persona);
+    // Seed the "defi-full" preset as the active workspace so the flash loans widget
+    // (at grid y:36 in defi-full) is mounted on page load. The default preset
+    // ("defi-default") does not include defi-flash-loans.
+    await page.addInitScript(() => {
+      localStorage.setItem(
+        "unified-workspace-layouts",
+        JSON.stringify({
+          state: {
+            workspaces: {},
+            activeWorkspaceId: { defi: "defi-full" },
+            editMode: true,
+            customPanels: [],
+            snapshots: {},
+            profiles: [],
+            activeProfileId: "",
+          },
+          version: 3,
+        }),
+      );
+    });
     await page.goto(`${BASE_URL}${FIXTURE.route}`, { waitUntil: "domcontentloaded", timeout: 60_000 });
     await page.keyboard.press("Escape").catch(() => undefined);
-    // Wait for the flash loans widget — it's at grid row y:36 but the testid
-    // is present in the DOM from mount; scrollIntoViewIfNeeded handles visibility.
-    await page.waitForSelector(FIXTURE.rootSelector, { timeout: 30_000 });
+    // Flash widget at y:36 renders lazily — wait for any top-level widget first,
+    // then let each test call scrollIntoViewIfNeeded() before interacting.
+    await page.waitForSelector('[data-testid="defi-swap-widget"]', { timeout: 60_000 });
     flash = page.locator(FIXTURE.rootSelector);
   });
 
@@ -75,8 +99,8 @@ test.describe(`${FIXTURE.name} — operator flow`, () => {
   test(FIXTURE.scenarios[1]!.name, async () => {
     await flash.scrollIntoViewIfNeeded();
 
-    // Add one step — this enables the Execute bundle button.
-    await flash.locator('[data-testid="flash-add-step-button"]').click();
+    // evaluate-based click bypasses resize handle overlay on the /defi grid page.
+    await flash.locator('[data-testid="flash-add-step-button"]').evaluate((el) => (el as HTMLButtonElement).click());
 
     // A step card should appear in the operations list.
     await expect(flash.locator("text=Step 1")).toBeVisible({ timeout: 3_000 });
@@ -95,7 +119,7 @@ test.describe(`${FIXTURE.name} — operator flow`, () => {
     const beforeRows = await countTradeRows(page);
 
     await flash.scrollIntoViewIfNeeded();
-    await flash.locator('[data-testid="flash-execute-button"]').click();
+    await flash.locator('[data-testid="flash-execute-button"]').evaluate((el) => (el as HTMLButtonElement).click());
 
     await page.waitForSelector("text=Flash loan executed", { timeout: 5_000 }).catch(() => undefined);
 
@@ -116,7 +140,7 @@ test.describe(`${FIXTURE.name} — operator flow`, () => {
     await flash.scrollIntoViewIfNeeded();
 
     // Add another step to confirm the P&L preview panel stays reactive.
-    await flash.locator('[data-testid="flash-add-step-button"]').click();
+    await flash.locator('[data-testid="flash-add-step-button"]').evaluate((el) => (el as HTMLButtonElement).click());
 
     // P&L preview section shows gross profit, flash fee, gas estimate, net P&L.
     await expect(flash.locator("text=P&L preview")).toBeVisible({ timeout: 3_000 });
