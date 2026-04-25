@@ -14,7 +14,7 @@ import { CheckCircle2, ChevronDown, ChevronRight, Grid3X3, Lock, Settings2, Zap 
 
 // ─── Instruction Constraints (from UAC instruction_constraints.py) ──────────
 
-/** Maps instruction_type → allowed venue categories (from backend) */
+/** Maps instruction_type → allowed venue asset groups (from backend) */
 export const INSTRUCTION_VENUE_CONSTRAINTS: Record<string, Set<string>> = {
   TRADE: new Set(["CeFi", "TradFi"]),
   SWAP: new Set(["DeFi"]),
@@ -35,8 +35,8 @@ export const ARCHETYPE_INSTRUCTION_TYPES: Record<string, string[]> = {
   value_betting: ["TRADE"],
 };
 
-/** Given an archetype, returns which venue categories are valid */
-export function getValidVenueCategories(archetype: string): Set<string> {
+/** Given an archetype, returns which venue asset groups are valid */
+export function getValidVenueAssetGroups(archetype: string): Set<string> {
   const instructionTypes = ARCHETYPE_INSTRUCTION_TYPES[archetype] ?? ["TRADE"];
   const valid = new Set<string>();
   for (const it of instructionTypes) {

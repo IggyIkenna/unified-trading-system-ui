@@ -102,11 +102,7 @@ export const MOCK_ALLOCATOR_INSTANCES: readonly AllocatorInstance[] = [
     cadence: "WEEKLY",
     share_class: "USD",
     status: "ACTIVE",
-    managed_strategy_instance_ids: [
-      "si-carry-basis-dated-eth-v2",
-      "si-ml-dir-spy-v1",
-      "si-stat-arb-mm-cross-v1",
-    ],
+    managed_strategy_instance_ids: ["si-carry-basis-dated-eth-v2", "si-ml-dir-spy-v1", "si-stat-arb-mm-cross-v1"],
     guard_rails: {
       max_weight: 0.33,
       min_weight: 0.1,
@@ -133,8 +129,18 @@ export const MOCK_DIRECTIVE_HISTORY: readonly AllocationDirective[] = [
     equity_directives: [
       { strategy_instance_id: "si-ml-dir-btc-v3", target_equity_usd: 3_100_000, weight: 0.365, previous_weight: 0.35 },
       { strategy_instance_id: "si-ml-dir-eth-v3", target_equity_usd: 2_350_000, weight: 0.276, previous_weight: 0.3 },
-      { strategy_instance_id: "si-carry-basis-perp-btc-v2", target_equity_usd: 1_900_000, weight: 0.224, previous_weight: 0.2 },
-      { strategy_instance_id: "si-stat-arb-eth-sol-v1", target_equity_usd: 1_150_000, weight: 0.135, previous_weight: 0.15 },
+      {
+        strategy_instance_id: "si-carry-basis-perp-btc-v2",
+        target_equity_usd: 1_900_000,
+        weight: 0.224,
+        previous_weight: 0.2,
+      },
+      {
+        strategy_instance_id: "si-stat-arb-eth-sol-v1",
+        target_equity_usd: 1_150_000,
+        weight: 0.135,
+        previous_weight: 0.15,
+      },
     ],
     total_nav_usd: 8_500_000,
     approved: true,
@@ -153,8 +159,18 @@ export const MOCK_DIRECTIVE_HISTORY: readonly AllocationDirective[] = [
     equity_directives: [
       { strategy_instance_id: "si-ml-dir-btc-v3", target_equity_usd: 2_975_000, weight: 0.35, previous_weight: 0.32 },
       { strategy_instance_id: "si-ml-dir-eth-v3", target_equity_usd: 2_550_000, weight: 0.3, previous_weight: 0.28 },
-      { strategy_instance_id: "si-carry-basis-perp-btc-v2", target_equity_usd: 1_700_000, weight: 0.2, previous_weight: 0.22 },
-      { strategy_instance_id: "si-stat-arb-eth-sol-v1", target_equity_usd: 1_275_000, weight: 0.15, previous_weight: 0.18 },
+      {
+        strategy_instance_id: "si-carry-basis-perp-btc-v2",
+        target_equity_usd: 1_700_000,
+        weight: 0.2,
+        previous_weight: 0.22,
+      },
+      {
+        strategy_instance_id: "si-stat-arb-eth-sol-v1",
+        target_equity_usd: 1_275_000,
+        weight: 0.15,
+        previous_weight: 0.18,
+      },
     ],
     total_nav_usd: 8_500_000,
     approved: true,
@@ -172,7 +188,12 @@ export const MOCK_DIRECTIVE_HISTORY: readonly AllocationDirective[] = [
     share_class: "USDT",
     equity_directives: [
       { strategy_instance_id: "si-vol-options-btc-v1", target_equity_usd: 750_000, weight: 0.6, previous_weight: 0.45 },
-      { strategy_instance_id: "si-event-driven-macro-v2", target_equity_usd: 500_000, weight: 0.4, previous_weight: 0.55 },
+      {
+        strategy_instance_id: "si-event-driven-macro-v2",
+        target_equity_usd: 500_000,
+        weight: 0.4,
+        previous_weight: 0.55,
+      },
     ],
     total_nav_usd: 1_250_000,
     approved: false,
@@ -206,7 +227,7 @@ export const MOCK_VENUE_CAPABILITIES: readonly VenueCapabilityView[] = [
   {
     venue: "BINANCE",
     display_name: "Binance",
-    category: "CEFI",
+    assetGroup: "CEFI",
     routing_mode: "SOR_AT_EXECUTION",
     features: ["SPOT_TRADING", "PERPS_TRADING", "CROSS_MARGIN", "PORTFOLIO_MARGIN"],
     collateral_rules: {
@@ -239,7 +260,7 @@ export const MOCK_VENUE_CAPABILITIES: readonly VenueCapabilityView[] = [
   {
     venue: "HYPERLIQUID",
     display_name: "Hyperliquid",
-    category: "DEFI",
+    assetGroup: "DEFI",
     routing_mode: "SOR_AT_EXECUTION",
     features: ["PERPS_TRADING", "CROSS_MARGIN"],
     collateral_rules: {
@@ -263,7 +284,7 @@ export const MOCK_VENUE_CAPABILITIES: readonly VenueCapabilityView[] = [
   {
     venue: "AAVE_V3",
     display_name: "Aave V3",
-    category: "DEFI",
+    assetGroup: "DEFI",
     routing_mode: "STRATEGY_PICKED",
     features: ["FLASH_LOAN", "LP_PROVISION"],
     collateral_rules: {
@@ -292,7 +313,7 @@ export const MOCK_VENUE_CAPABILITIES: readonly VenueCapabilityView[] = [
   {
     venue: "UNITY",
     display_name: "Unity (meta-broker)",
-    category: "SPORTS",
+    assetGroup: "SPORTS",
     routing_mode: "META_BROKER",
     features: ["BACK_LAY_EXCHANGE"],
     collateral_rules: {
@@ -316,7 +337,7 @@ export const MOCK_VENUE_CAPABILITIES: readonly VenueCapabilityView[] = [
   {
     venue: "IBKR",
     display_name: "Interactive Brokers",
-    category: "TRADFI",
+    assetGroup: "TRADFI",
     routing_mode: "STRATEGY_PICKED",
     features: ["SPOT_TRADING", "OPTIONS_TRADING"],
     collateral_rules: {

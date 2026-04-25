@@ -116,9 +116,9 @@ export const ALLOCATOR_ARCHETYPES: readonly AllocatorArchetype[] = [
   "MANUAL",
 ] as const;
 
-export type VenueCategoryV2 = "CEFI" | "DEFI" | "SPORTS" | "TRADFI" | "PREDICTION";
+export type VenueAssetGroupV2 = "CEFI" | "DEFI" | "SPORTS" | "TRADFI" | "PREDICTION";
 
-export const VENUE_CATEGORIES_V2: readonly VenueCategoryV2[] = [
+export const VENUE_ASSET_GROUPS_V2: readonly VenueAssetGroupV2[] = [
   "CEFI",
   "DEFI",
   "SPORTS",
@@ -128,23 +128,9 @@ export const VENUE_CATEGORIES_V2: readonly VenueCategoryV2[] = [
 
 export type VenueRoutingMode = "SOR_AT_EXECUTION" | "STRATEGY_PICKED" | "META_BROKER";
 
-export type CommissionStructureType =
-  | "FLAT"
-  | "TIERED"
-  | "PERCENT"
-  | "COMMISSION_ON_WIN"
-  | "MAKER_TAKER";
+export type CommissionStructureType = "FLAT" | "TIERED" | "PERCENT" | "COMMISSION_ON_WIN" | "MAKER_TAKER";
 
-export type ShareClass =
-  | "USDT"
-  | "USDC"
-  | "FDUSD"
-  | "USD"
-  | "GBP"
-  | "EUR"
-  | "ETH"
-  | "BTC"
-  | "SOL";
+export type ShareClass = "USDT" | "USDC" | "FDUSD" | "USD" | "GBP" | "EUR" | "ETH" | "BTC" | "SOL";
 
 export type InstructionActionV2 =
   | "TRADE"
@@ -182,10 +168,6 @@ export type KillSwitchReason =
   | "GREEK_LIMIT_BREACH"
   | "VENUE_UNAVAILABLE";
 
-export type RiskGateLayer =
-  | "STRATEGY_SELF_CHECK"
-  | "RISK_PREFLIGHT"
-  | "EXECUTION_PRETRADE"
-  | "VENUE_SIDE";
+export type RiskGateLayer = "STRATEGY_SELF_CHECK" | "RISK_PREFLIGHT" | "EXECUTION_PRETRADE" | "VENUE_SIDE";
 
 export type RiskGateDecision = "APPROVED" | "REJECTED" | "RESIZED" | "DEFERRED";

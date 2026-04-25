@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   INSTRUCTION_VENUE_CONSTRAINTS,
   ARCHETYPE_INSTRUCTION_TYPES,
-  getValidVenueCategories,
+  getValidVenueAssetGroups,
 } from "@/components/research/shared/grid-config-panel";
 
 describe("Instruction Venue Constraints", () => {
@@ -42,29 +42,29 @@ describe("Archetype Instruction Types", () => {
   });
 });
 
-describe("getValidVenueCategories", () => {
+describe("getValidVenueAssetGroups", () => {
   it("momentum → CeFi + TradFi (TRADE instruction)", () => {
-    const cats = getValidVenueCategories("momentum");
+    const cats = getValidVenueAssetGroups("momentum");
     expect(cats.has("CeFi")).toBe(true);
     expect(cats.has("TradFi")).toBe(true);
     expect(cats.has("DeFi")).toBe(false);
   });
 
   it("yield → DeFi only (LEND + SWAP + STAKE instructions)", () => {
-    const cats = getValidVenueCategories("yield");
+    const cats = getValidVenueAssetGroups("yield");
     expect(cats.has("DeFi")).toBe(true);
     expect(cats.has("CeFi")).toBe(false);
     expect(cats.has("TradFi")).toBe(false);
   });
 
   it("statistical_arb → CeFi + TradFi", () => {
-    const cats = getValidVenueCategories("statistical_arb");
+    const cats = getValidVenueAssetGroups("statistical_arb");
     expect(cats.has("CeFi")).toBe(true);
     expect(cats.has("TradFi")).toBe(true);
   });
 
   it("unknown archetype defaults to TRADE → CeFi + TradFi", () => {
-    const cats = getValidVenueCategories("nonexistent_archetype");
+    const cats = getValidVenueAssetGroups("nonexistent_archetype");
     expect(cats.has("CeFi")).toBe(true);
     expect(cats.has("TradFi")).toBe(true);
   });

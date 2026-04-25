@@ -2,14 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import type { VenueCapabilityView } from "@/lib/architecture-v2";
 import { MOCK_VENUE_CAPABILITIES } from "@/lib/mocks/fixtures/architecture-v2-fixtures";
 import { formatNumber } from "@/lib/utils/formatters";
@@ -42,9 +35,8 @@ export function VenueCapabilityViewer() {
         <div className="space-y-2">
           <h1 className="text-page-title font-semibold tracking-tight">Venue capabilities</h1>
           <p className="text-body text-muted-foreground max-w-2xl">
-            View of <code>VenueCapabilityV2</code> from UAC — LTV / haircut per asset, margin
-            mode, max leverage, commission structure. Execution-service consults this registry
-            before routing every instruction.
+            View of <code>VenueCapabilityV2</code> from UAC — LTV / haircut per asset, margin mode, max leverage,
+            commission structure. Execution-service consults this registry before routing every instruction.
           </p>
         </div>
         <Card>
@@ -70,7 +62,7 @@ export function VenueCapabilityViewer() {
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline" className="text-[10px]">
-                        {v.category}
+                        {v.assetGroup}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-xs">{v.routing_mode}</TableCell>

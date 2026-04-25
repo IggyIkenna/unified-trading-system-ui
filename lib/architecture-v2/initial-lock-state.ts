@@ -24,7 +24,7 @@
  * update this file + the matrix doc in the same PR.
  */
 
-import type { StrategyArchetype, VenueCategoryV2 } from "./enums";
+import type { StrategyArchetype, VenueAssetGroupV2 } from "./enums";
 import type { InstrumentTypeV2 } from "./coverage";
 import type { LockState, StrategyAvailabilityEntry, StrategyMaturity } from "./availability";
 import { ARCHETYPE_COVERAGE } from "./coverage";
@@ -34,21 +34,19 @@ const SNAPSHOT_DATE_ISO = "2026-04-20T00:00:00Z";
 /** Human-stable slot label format — keep aligned with strategy-service. */
 export function slotLabelFor(
   archetype: StrategyArchetype,
-  category: VenueCategoryV2,
+  assetGroup: VenueAssetGroupV2,
   instrumentType: InstrumentTypeV2,
 ): string {
-  return `${archetype}/${category}/${instrumentType}`;
+  return `${archetype}/${assetGroup}/${instrumentType}`;
 }
 
 /**
  * Cells that are PUBLIC in the 2026-04-20 snapshot. Drives the "everything
  * else is IM_RESERVED" default rule.
  *
- * Format: (archetype, category, instrumentType).
+ * Format: (archetype, assetGroup, instrumentType).
  */
-const PUBLIC_CELLS: ReadonlyArray<
-  readonly [StrategyArchetype, VenueCategoryV2, InstrumentTypeV2]
-> = [
+const PUBLIC_CELLS: ReadonlyArray<readonly [StrategyArchetype, VenueAssetGroupV2, InstrumentTypeV2]> = [
   // Crypto mean-reversion — existing live IM, 1yr+ track record, no
   // exclusivity signed with any client. Offerable to DART prospects.
   ["STAT_ARB_PAIRS_FIXED", "CEFI", "spot"],
@@ -62,42 +60,42 @@ const PUBLIC_CELLS: ReadonlyArray<
  */
 const IM_LIVE_CELLS: ReadonlyArray<{
   readonly archetype: StrategyArchetype;
-  readonly category: VenueCategoryV2;
+  readonly assetGroup: VenueAssetGroupV2;
   readonly instrumentType: InstrumentTypeV2;
   readonly maturity: StrategyMaturity;
   readonly reason: string;
 }> = [
   {
     archetype: "ML_DIRECTIONAL_CONTINUOUS",
-    category: "CEFI",
+    assetGroup: "CEFI",
     instrumentType: "spot",
     maturity: "LIVE_ALLOCATED",
     reason: "BTC ML IM — 10 clients from Jun 2026 (2026-04-20 snapshot)",
   },
   {
     archetype: "ML_DIRECTIONAL_CONTINUOUS",
-    category: "CEFI",
+    assetGroup: "CEFI",
     instrumentType: "perp",
     maturity: "LIVE_ALLOCATED",
     reason: "BTC ML IM — 10 clients from Jun 2026 (2026-04-20 snapshot)",
   },
   {
     archetype: "ML_DIRECTIONAL_CONTINUOUS",
-    category: "TRADFI",
+    assetGroup: "TRADFI",
     instrumentType: "dated_future",
     maturity: "PAPER_TRADING_VALIDATED",
     reason: "CME S&P co-invest — Sept 2026 go-live (2026-04-20 snapshot)",
   },
   {
     archetype: "VOL_TRADING_OPTIONS",
-    category: "TRADFI",
+    assetGroup: "TRADFI",
     instrumentType: "option",
     maturity: "PAPER_TRADING_VALIDATED",
     reason: "India Options delta-trading — Oct 2026 go-live (2026-04-20 snapshot)",
   },
   {
     archetype: "ML_DIRECTIONAL_EVENT_SETTLED",
-    category: "SPORTS",
+    assetGroup: "SPORTS",
     instrumentType: "event_settled",
     maturity: "LIVE_ALLOCATED",
     reason: "Sports ML — 2 IM clients from Jun 2026, capacity-bound (2026-04-20 snapshot)",
@@ -116,15 +114,10 @@ const IM_LIVE_CELLS: ReadonlyArray<{
  */
 export function buildInitialRegistry(): readonly StrategyAvailabilityEntry[] {
   const entries: StrategyAvailabilityEntry[] = [];
-  const publicSet = new Set(
-    PUBLIC_CELLS.map(([a, c, i]) => slotLabelFor(a, c, i)),
-  );
+  const publicSet = new Set(PUBLIC_CELLS.map(([a, c, i]) => slotLabelFor(a, c, i)));
   const imLiveByLabel = new Map<string, (typeof IM_LIVE_CELLS)[number]>();
   for (const entry of IM_LIVE_CELLS) {
-    imLiveByLabel.set(
-      slotLabelFor(entry.archetype, entry.category, entry.instrumentType),
-      entry,
-    );
+    imLiveByLabel.set(slotLabelFor(entry.archetype, entry.assetGroup, entry.instrumentType), entry);
   }
 
   for (const archetype of Object.keys(ARCHETYPE_COVERAGE) as StrategyArchetype[]) {
@@ -135,11 +128,7 @@ export function buildInitialRegistry(): readonly StrategyAvailabilityEntry[] {
       // their own status.
       if (cell.status === "NOT_APPLICABLE" || cell.status === "BLOCKED") continue;
 
-      const label = slotLabelFor(
-        cell.archetype,
-        cell.category,
-        cell.instrumentType,
-      );
+      const label = slotLabelFor(cell.archetype, cell.assetGroup, cell.instrumentType);
 
       if (publicSet.has(label)) {
         entries.push({
@@ -149,8 +138,7 @@ export function buildInitialRegistry(): readonly StrategyAvailabilityEntry[] {
           exclusiveClientId: null,
           reservingBusinessUnitId: null,
           changedAtUtc: SNAPSHOT_DATE_ISO,
-          reason:
-            "PUBLIC per 2026-04-20 lock matrix (crypto mean-rev, no exclusivity)",
+          reason: "PUBLIC per 2026-04-20 lock matrix (crypto mean-rev, no exclusivity)",
           expiresAtUtc: null,
           baseSlotLabel: null,
         });
@@ -160,9 +148,7 @@ export function buildInitialRegistry(): readonly StrategyAvailabilityEntry[] {
       const imLive = imLiveByLabel.get(label);
       const lockState: LockState = "INVESTMENT_MANAGEMENT_RESERVED";
       const maturity: StrategyMaturity = imLive?.maturity ?? "BACKTESTED";
-      const reason =
-        imLive?.reason ??
-        "IM_RESERVED forward-plan default per 2026-04-20 lock matrix";
+      const reason = imLive?.reason ?? "IM_RESERVED forward-plan default per 2026-04-20 lock matrix";
 
       entries.push({
         slotLabel: label,
@@ -182,13 +168,9 @@ export function buildInitialRegistry(): readonly StrategyAvailabilityEntry[] {
 }
 
 /** Expose the PUBLIC-cell set for test assertions and documentation. */
-export const PUBLIC_CELL_LABELS: ReadonlySet<string> = new Set(
-  PUBLIC_CELLS.map(([a, c, i]) => slotLabelFor(a, c, i)),
-);
+export const PUBLIC_CELL_LABELS: ReadonlySet<string> = new Set(PUBLIC_CELLS.map(([a, c, i]) => slotLabelFor(a, c, i)));
 
 /** Expose the IM-live list for test assertions. */
 export const IM_LIVE_CELL_LABELS: ReadonlySet<string> = new Set(
-  IM_LIVE_CELLS.map((e) =>
-    slotLabelFor(e.archetype, e.category, e.instrumentType),
-  ),
+  IM_LIVE_CELLS.map((e) => slotLabelFor(e.archetype, e.assetGroup, e.instrumentType)),
 );

@@ -5,7 +5,7 @@ import { notFound, useParams } from "next/navigation";
 import { ArrowUpRight, Code2, GitBranch, ListChecks, Settings2, Users } from "lucide-react";
 
 import {
-  CategoryChip,
+  AssetGroupChip,
   InstrumentTypeChip,
   LockStateBadge,
   MaturityBadge,
@@ -153,7 +153,7 @@ export default function StrategyDetailPage() {
               Archetype: <span className="font-mono text-foreground">{archetype}</span>
               {cell ? (
                 <div className="mt-2 flex flex-wrap gap-1">
-                  <CategoryChip category={cell.assetGroup} />
+                  <AssetGroupChip assetGroup={cell.assetGroup} />
                   <InstrumentTypeChip instrumentType={cell.instrumentType} />
                   <StatusBadge status={cell.status} />
                   {cell.rollMode !== "n/a" ? <RollModeBadge rollMode={cell.rollMode} /> : null}

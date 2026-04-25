@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 
 import {
-  CategoryChip,
+  AssetGroupChip,
   FamilyArchetypePicker,
   InstrumentTypeChip,
   RollModeBadge,
@@ -35,7 +35,7 @@ import type {
   CoverageCell,
   CoverageStatus,
   InstrumentTypeV2,
-  VenueCategoryV2,
+  VenueAssetGroupV2,
   StrategyArchetype,
 } from "@/lib/architecture-v2";
 import {
@@ -46,7 +46,7 @@ import {
 } from "@/lib/architecture-v2";
 import { cn } from "@/lib/utils";
 
-const CATEGORIES: readonly VenueCategoryV2[] = [
+const ASSET_GROUPS: readonly VenueAssetGroupV2[] = [
   "CEFI",
   "DEFI",
   "TRADFI",
@@ -54,8 +54,8 @@ const CATEGORIES: readonly VenueCategoryV2[] = [
   "PREDICTION",
 ] as const;
 
-const CATEGORY_FILTER_VALUES = ["ALL", ...CATEGORIES] as const;
-type CategoryFilter = (typeof CATEGORY_FILTER_VALUES)[number];
+const ASSET_GROUP_FILTER_VALUES = ["ALL", ...ASSET_GROUPS] as const;
+type AssetGroupFilter = (typeof ASSET_GROUP_FILTER_VALUES)[number];
 
 const STATUS_FILTER_VALUES = [
   "ALL",
@@ -67,11 +67,11 @@ type StatusFilter = (typeof STATUS_FILTER_VALUES)[number];
 
 function findCell(
   coverage: ArchetypeCoverage,
-  category: VenueCategoryV2,
+  assetGroup: VenueAssetGroupV2,
   instrumentType: InstrumentTypeV2,
 ): CoverageCell | undefined {
   return coverage.cells.find(
-    (cell) => cell.assetGroup === category && cell.instrumentType === instrumentType,
+    (cell) => cell.assetGroup === assetGroup && cell.instrumentType === instrumentType,
   );
 }
 
@@ -93,7 +93,7 @@ const STATUS_CELL_STYLES: Record<CoverageStatus, string> = {
 
 export default function StrategyCatalogueCoveragePage() {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("ALL");
-  const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>("ALL");
+  const [assetGroupFilter, setAssetGroupFilter] = useState<AssetGroupFilter>("ALL");
   const [selectedCell, setSelectedCell] = useState<CoverageCell | null>(null);
   const [familyFilter, setFamilyFilter] = useState<StrategyFamily | undefined>(
     undefined,
@@ -102,12 +102,12 @@ export default function StrategyCatalogueCoveragePage() {
     StrategyArchetype | undefined
   >(undefined);
 
-  const visibleCategories = useMemo<readonly VenueCategoryV2[]>(
+  const visibleAssetGroups = useMemo<readonly VenueAssetGroupV2[]>(
     () =>
-      categoryFilter === "ALL"
-        ? CATEGORIES
-        : [categoryFilter as VenueCategoryV2],
-    [categoryFilter],
+      assetGroupFilter === "ALL"
+        ? ASSET_GROUPS
+        : [assetGroupFilter as VenueAssetGroupV2],
+    [assetGroupFilter],
   );
 
   const archetypesByFamily = useMemo(() => {
@@ -130,7 +130,7 @@ export default function StrategyCatalogueCoveragePage() {
       <div className="platform-page-width space-y-6 p-6">
         <PageHeader
           title="Coverage matrix"
-          description="Archetypes × (category × instrument type). Every cell is a capability statement. Click a cell to inspect venues, signal variants, roll mode, and representative slot labels."
+          description="Archetypes × (asset group × instrument type). Every cell is a capability statement. Click a cell to inspect venues, signal variants, roll mode, and representative slot labels."
         >
           <SsotLink codexPath="09-strategy/architecture-v2/category-instrument-coverage.md" />
         </PageHeader>
@@ -160,19 +160,19 @@ export default function StrategyCatalogueCoveragePage() {
         <div className="flex flex-wrap items-center gap-3">
           <span className="text-sm text-muted-foreground">Filter:</span>
           <Select
-            value={categoryFilter}
-            onValueChange={(value) => setCategoryFilter(value as CategoryFilter)}
+            value={assetGroupFilter}
+            onValueChange={(value) => setAssetGroupFilter(value as AssetGroupFilter)}
           >
             <SelectTrigger
               className="w-40"
-              data-testid="coverage-category-filter"
+              data-testid="coverage-asset-group-filter"
             >
-              <SelectValue placeholder="All categories" />
+              <SelectValue placeholder="All asset groups" />
             </SelectTrigger>
             <SelectContent>
-              {CATEGORY_FILTER_VALUES.map((value) => (
+              {ASSET_GROUP_FILTER_VALUES.map((value) => (
                 <SelectItem key={value} value={value}>
-                  {value === "ALL" ? "All categories" : value}
+                  {value === "ALL" ? "All asset groups" : value}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -216,14 +216,14 @@ export default function StrategyCatalogueCoveragePage() {
                   <th className="sticky left-0 z-10 bg-muted/40 p-2 text-left font-medium">
                     Archetype
                   </th>
-                  {visibleCategories.flatMap((category) =>
+                  {visibleAssetGroups.flatMap((assetGroup) =>
                     INSTRUMENT_TYPES_V2.map((instrumentType) => (
                       <th
-                        key={`${category}-${instrumentType}`}
+                        key={`${assetGroup}-${instrumentType}`}
                         className="p-1 text-center font-medium"
                       >
                         <div className="flex flex-col items-center gap-1">
-                          <CategoryChip category={category} />
+                          <AssetGroupChip assetGroup={assetGroup} />
                           <InstrumentTypeChip instrumentType={instrumentType} />
                         </div>
                       </th>
@@ -237,7 +237,7 @@ export default function StrategyCatalogueCoveragePage() {
                     key={family}
                     family={family}
                     archetypes={archetypes}
-                    categories={visibleCategories}
+                    assetGroups={visibleAssetGroups}
                     statusFilter={statusFilter}
                     onCellClick={setSelectedCell}
                     activeCell={selectedCell}
@@ -255,7 +255,7 @@ export default function StrategyCatalogueCoveragePage() {
                     {selectedCell.archetype}
                   </CardTitle>
                   <CardDescription className="flex gap-2">
-                    <CategoryChip category={selectedCell.category} />
+                    <AssetGroupChip assetGroup={selectedCell.assetGroup} />
                     <InstrumentTypeChip instrumentType={selectedCell.instrumentType} />
                     <StatusBadge status={selectedCell.status} />
                   </CardDescription>
@@ -342,14 +342,14 @@ export default function StrategyCatalogueCoveragePage() {
   function ArchetypeFamilyRows({
     family,
     archetypes,
-    categories,
+    assetGroups,
     statusFilter,
     onCellClick,
     activeCell,
   }: {
     family: string;
     archetypes: StrategyArchetype[];
-    categories: readonly VenueCategoryV2[];
+    assetGroups: readonly VenueAssetGroupV2[];
     statusFilter: StatusFilter;
     onCellClick: (cell: CoverageCell) => void;
     activeCell: CoverageCell | null;
@@ -359,7 +359,7 @@ export default function StrategyCatalogueCoveragePage() {
       <>
         <tr className="bg-muted/10">
           <th
-            colSpan={categories.length * INSTRUMENT_TYPES_V2.length + 1}
+            colSpan={assetGroups.length * INSTRUMENT_TYPES_V2.length + 1}
             className="px-2 py-1 text-left text-[0.65rem] font-medium uppercase tracking-wide text-muted-foreground"
           >
             {familyMeta?.label ?? family}
@@ -372,19 +372,19 @@ export default function StrategyCatalogueCoveragePage() {
               <th className="sticky left-0 z-10 whitespace-nowrap bg-background px-2 py-1 text-left font-normal">
                 {archetype}
               </th>
-              {categories.flatMap((category) =>
+              {assetGroups.flatMap((assetGroup) =>
                 INSTRUMENT_TYPES_V2.map((instrumentType) => {
-                  const cell = findCell(coverage, category, instrumentType);
+                  const cell = findCell(coverage, assetGroup, instrumentType);
                   const status = cellStatus(cell);
                   const isActive =
                     activeCell &&
                     activeCell.archetype === archetype &&
-                    activeCell.category === category &&
+                    activeCell.assetGroup === assetGroup &&
                     activeCell.instrumentType === instrumentType;
                   const render = shouldRender(status, statusFilter);
                   return (
                     <td
-                      key={`${category}-${instrumentType}`}
+                      key={`${assetGroup}-${instrumentType}`}
                       className={cn(
                         "border p-0 transition-colors",
                         STATUS_CELL_STYLES[status],
@@ -400,7 +400,7 @@ export default function StrategyCatalogueCoveragePage() {
                           "flex h-8 w-full items-center justify-center text-[0.6rem] uppercase tracking-wide",
                           cell ? "cursor-pointer hover:bg-background/30" : "cursor-default",
                         )}
-                        aria-label={`${archetype} × ${category} × ${instrumentType}: ${status}`}
+                        aria-label={`${archetype} × ${assetGroup} × ${instrumentType}: ${status}`}
                       >
                         {status === "SUPPORTED"
                           ? "·"

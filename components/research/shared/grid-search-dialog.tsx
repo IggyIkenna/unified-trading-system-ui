@@ -11,7 +11,7 @@ import {
   GridConfigPanel,
   type GridParameter,
   type SubscriptionItem,
-  getValidVenueCategories,
+  getValidVenueAssetGroups,
 } from "./grid-config-panel";
 
 // ─── Per-archetype strategy params (from strategy-service TypedDicts) ──────
@@ -986,7 +986,7 @@ export function GridSearchDialog({ open, onClose, domain }: { open: boolean; onC
 
     // For strategy domain: filter venues by instruction_type constraints
     if (domain === "strategy") {
-      const validCats = getValidVenueCategories(selectedType);
+      const validAssetGroups = getValidVenueAssetGroups(selectedType);
       setSubs((prev) =>
         prev.map((sub) => {
           if (sub.title !== "Venues") return sub;
@@ -995,9 +995,9 @@ export function GridSearchDialog({ open, onClose, domain }: { open: boolean; onC
             items: sub.items.map((item) => ({
               ...item,
               // Auto-deselect venues not valid for this archetype's instruction types
-              selected: item.enabled && validCats.has(item.category),
-              // Visually disable (but don't lock) venues outside valid categories
-              enabled: validCats.has(item.category) ? item.enabled : false,
+              selected: item.enabled && validAssetGroups.has(item.category),
+              // Visually disable (but don't lock) venues outside valid asset groups
+              enabled: validAssetGroups.has(item.category) ? item.enabled : false,
             })),
           };
         }),

@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import {
-  CategoryChip,
+  AssetGroupChip,
   InstrumentTypeChip,
   LockStateBadge,
   MaturityBadge,
@@ -34,15 +34,8 @@ describe("LockStateBadge", () => {
   });
 
   it("tooltip exposes reservingBusinessUnitId on IM_RESERVED", () => {
-    render(
-      <LockStateBadge
-        state="INVESTMENT_MANAGEMENT_RESERVED"
-        reservingBusinessUnitId="fund-alpha"
-      />,
-    );
-    const badge = screen.getByTestId(
-      "lock-state-badge-INVESTMENT_MANAGEMENT_RESERVED",
-    );
+    render(<LockStateBadge state="INVESTMENT_MANAGEMENT_RESERVED" reservingBusinessUnitId="fund-alpha" />);
+    const badge = screen.getByTestId("lock-state-badge-INVESTMENT_MANAGEMENT_RESERVED");
     expect(badge.getAttribute("title")).toContain("fund-alpha");
   });
 });
@@ -66,45 +59,33 @@ describe("MaturityBadge", () => {
   });
 });
 
-describe("StatusBadge + CategoryChip + InstrumentTypeChip + SignalVariantBadge + RollModeBadge", () => {
+describe("StatusBadge + AssetGroupChip + InstrumentTypeChip + SignalVariantBadge + RollModeBadge", () => {
   it("StatusBadge renders each state", () => {
     const { rerender } = render(<StatusBadge status="SUPPORTED" />);
-    expect(screen.getByTestId("status-badge-SUPPORTED")).toHaveTextContent(
-      "Supported",
-    );
+    expect(screen.getByTestId("status-badge-SUPPORTED")).toHaveTextContent("Supported");
     rerender(<StatusBadge status="BLOCKED" />);
-    expect(screen.getByTestId("status-badge-BLOCKED")).toHaveTextContent(
-      "Blocked",
-    );
+    expect(screen.getByTestId("status-badge-BLOCKED")).toHaveTextContent("Blocked");
   });
 
-  it("CategoryChip formats venue category", () => {
-    render(<CategoryChip category="DEFI" />);
-    expect(screen.getByTestId("category-chip-DEFI")).toHaveTextContent("DeFi");
+  it("AssetGroupChip formats venue asset group", () => {
+    render(<AssetGroupChip assetGroup="DEFI" />);
+    expect(screen.getByTestId("asset-group-chip-DEFI")).toHaveTextContent("DeFi");
   });
 
   it("InstrumentTypeChip uses the short label", () => {
     render(<InstrumentTypeChip instrumentType="dated_future" />);
-    expect(screen.getByTestId("instrument-chip-dated_future")).toHaveTextContent(
-      "Dated fut",
-    );
+    expect(screen.getByTestId("instrument-chip-dated_future")).toHaveTextContent("Dated fut");
   });
 
   it("SignalVariantBadge renders for every known variant", () => {
     render(<SignalVariantBadge variant="funding_rate" />);
-    expect(
-      screen.getByTestId("signal-variant-badge-funding_rate"),
-    ).toHaveTextContent("Funding");
+    expect(screen.getByTestId("signal-variant-badge-funding_rate")).toHaveTextContent("Funding");
   });
 
   it("RollModeBadge shows rolling vs fixed vs both", () => {
     const { rerender } = render(<RollModeBadge rollMode="rolling" />);
-    expect(screen.getByTestId("roll-mode-badge-rolling")).toHaveTextContent(
-      "Rolling",
-    );
+    expect(screen.getByTestId("roll-mode-badge-rolling")).toHaveTextContent("Rolling");
     rerender(<RollModeBadge rollMode="both" />);
-    expect(screen.getByTestId("roll-mode-badge-both")).toHaveTextContent(
-      "Rolling + fixed",
-    );
+    expect(screen.getByTestId("roll-mode-badge-both")).toHaveTextContent("Rolling + fixed");
   });
 });

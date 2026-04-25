@@ -4,7 +4,7 @@ import {
   ARCHETYPE_TO_FAMILY,
   STRATEGY_ARCHETYPES_V2,
   STRATEGY_FAMILIES_V2,
-  VENUE_CATEGORIES_V2,
+  VENUE_ASSET_GROUPS_V2,
 } from "@/lib/architecture-v2";
 
 describe("architecture-v2 enums (UAC mirror)", () => {
@@ -20,8 +20,8 @@ describe("architecture-v2 enums (UAC mirror)", () => {
     expect(ALLOCATOR_ARCHETYPES).toHaveLength(8);
   });
 
-  it("exposes 5 venue categories", () => {
-    expect(VENUE_CATEGORIES_V2).toHaveLength(5);
+  it("exposes 5 venue asset groups", () => {
+    expect(VENUE_ASSET_GROUPS_V2).toHaveLength(5);
   });
 
   it("maps every archetype to exactly one family and every family has archetypes", () => {

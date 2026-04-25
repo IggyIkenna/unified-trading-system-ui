@@ -2,12 +2,12 @@ import { Term } from "@/components/marketing/term";
 import { ARCHETYPE_COVERAGE } from "@/lib/architecture-v2/coverage";
 import { cn } from "@/lib/utils";
 import type { ArchetypeCoverage, CoverageCell, CoverageStatus } from "@/lib/architecture-v2/coverage";
-import type { StrategyArchetype, VenueCategoryV2 } from "@/lib/architecture-v2/enums";
+import type { StrategyArchetype, VenueAssetGroupV2 } from "@/lib/architecture-v2/enums";
 
 /**
- * Strategy-family × category coverage matrix for the briefings surface.
+ * Strategy-family × asset group coverage matrix for the briefings surface.
  *
- * Renders the full archetype × category map so a prospect reading a briefing
+ * Renders the full archetype × asset group map so a prospect reading a briefing
  * can see the breadth of what Odum actually runs across asset classes. Pulls
  * from `ARCHETYPE_COVERAGE` (SSOT — auto-generated from UAC manifest). No
  * venue names, no slot labels, no pricing — the matrix conveys shape only.
@@ -18,9 +18,9 @@ import type { StrategyArchetype, VenueCategoryV2 } from "@/lib/architecture-v2/e
  * Codex: unified-trading-pm/codex/09-strategy/architecture-v2/category-instrument-coverage.md
  */
 
-const CATEGORIES: readonly VenueCategoryV2[] = ["CEFI", "DEFI", "TRADFI", "SPORTS", "PREDICTION"];
+const ASSET_GROUPS: readonly VenueAssetGroupV2[] = ["CEFI", "DEFI", "TRADFI", "SPORTS", "PREDICTION"];
 
-const CATEGORY_GLOSSARY_ID: Readonly<Record<VenueCategoryV2, string | null>> = {
+const ASSET_GROUP_GLOSSARY_ID: Readonly<Record<VenueAssetGroupV2, string | null>> = {
   CEFI: "cefi",
   DEFI: "defi",
   TRADFI: "tradfi",
@@ -28,7 +28,7 @@ const CATEGORY_GLOSSARY_ID: Readonly<Record<VenueCategoryV2, string | null>> = {
   PREDICTION: null,
 };
 
-const CATEGORY_LABELS: Readonly<Record<VenueCategoryV2, string>> = {
+const ASSET_GROUP_LABELS: Readonly<Record<VenueAssetGroupV2, string>> = {
   CEFI: "CeFi",
   DEFI: "DeFi",
   TRADFI: "TradFi",
@@ -57,9 +57,9 @@ const ARCHETYPE_LABELS: Readonly<Record<StrategyArchetype, string>> = {
   STAT_ARB_CROSS_SECTIONAL: "Cross-sectional stat-arb",
 };
 
-function bestStatusForCell(archetype: StrategyArchetype, category: VenueCategoryV2): CoverageStatus | null {
+function bestStatusForCell(archetype: StrategyArchetype, assetGroup: VenueAssetGroupV2): CoverageStatus | null {
   const coverage: ArchetypeCoverage = ARCHETYPE_COVERAGE[archetype];
-  const matching = coverage.cells.filter((c: CoverageCell) => c.category === category);
+  const matching = coverage.cells.filter((c: CoverageCell) => c.assetGroup === assetGroup);
   if (matching.length === 0) return null;
   if (matching.some((c) => c.status === "SUPPORTED")) return "SUPPORTED";
   if (matching.some((c) => c.status === "PARTIAL")) return "PARTIAL";
@@ -96,7 +96,7 @@ function statusGlyph(status: CoverageStatus | null): {
   return {
     symbol: "·",
     className: "text-muted-foreground/20",
-    title: "Not applicable in this category.",
+    title: "Not applicable in this asset group.",
   };
 }
 
@@ -136,11 +136,11 @@ export function StrategyCoverageMatrix({ archetypes }: StrategyCoverageMatrixPro
               >
                 Strategy family
               </th>
-              {CATEGORIES.map((c) => {
-                const glossaryId = CATEGORY_GLOSSARY_ID[c];
+              {ASSET_GROUPS.map((c) => {
+                const glossaryId = ASSET_GROUP_GLOSSARY_ID[c];
                 return (
                   <th key={c} className={cn(stickyTopTh, "whitespace-nowrap")}>
-                    {glossaryId ? <Term id={glossaryId}>{CATEGORY_LABELS[c]}</Term> : CATEGORY_LABELS[c]}
+                    {glossaryId ? <Term id={glossaryId}>{ASSET_GROUP_LABELS[c]}</Term> : ASSET_GROUP_LABELS[c]}
                   </th>
                 );
               })}
@@ -161,11 +161,11 @@ export function StrategyCoverageMatrix({ archetypes }: StrategyCoverageMatrixPro
                   >
                     {ARCHETYPE_LABELS[archetype]}
                   </td>
-                  {CATEGORIES.map((category) => {
-                    const status = bestStatusForCell(archetype, category);
+                  {ASSET_GROUPS.map((assetGroup) => {
+                    const status = bestStatusForCell(archetype, assetGroup);
                     const glyph = statusGlyph(status);
                     return (
-                      <td key={category} className={cn("px-3 py-2 text-center", rowBorder)} title={glyph.title}>
+                      <td key={assetGroup} className={cn("px-3 py-2 text-center", rowBorder)} title={glyph.title}>
                         <span className={`font-mono ${glyph.className}`}>{glyph.symbol}</span>
                       </td>
                     );
@@ -191,7 +191,7 @@ export function StrategyCoverageMatrix({ archetypes }: StrategyCoverageMatrixPro
         </span>
       </div>
       <p className="text-xs text-muted-foreground leading-relaxed">
-        Hover the column headers for what each category covers.
+        Hover the column headers for what each asset group covers.
       </p>
     </div>
   );

@@ -25,11 +25,8 @@
  */
 
 import type { QuestionnaireResponse } from "@/lib/questionnaire/types";
-import type {
-  CoverageStatus,
-  StrategyCatalogueFilter,
-} from "@/lib/architecture-v2/catalogue-filter";
-import type { ShareClass, StrategyFamily, VenueCategoryV2 } from "@/lib/architecture-v2/enums";
+import type { CoverageStatus, StrategyCatalogueFilter } from "@/lib/architecture-v2/catalogue-filter";
+import type { ShareClass, StrategyFamily, VenueAssetGroupV2 } from "@/lib/architecture-v2/enums";
 
 export type ResolvedPersonaId =
   | "prospect-dart"
@@ -48,9 +45,7 @@ export type ResolvedPersonaId =
  * provider can seed a live user without adding new personas in the same
  * wave. `prospect-generic` falls back to `prospect-dart` (broad safe view).
  */
-export const RESOLVED_PERSONA_TO_AUTH_ID: Readonly<
-  Record<ResolvedPersonaId, string>
-> = {
+export const RESOLVED_PERSONA_TO_AUTH_ID: Readonly<Record<ResolvedPersonaId, string>> = {
   "prospect-dart": "prospect-dart",
   "prospect-im-sma": "client-im-sma",
   "prospect-im-pooled": "client-im-pooled",
@@ -73,32 +68,18 @@ function isDartSignalsIn(response: QuestionnaireResponse): boolean {
   // A DART Signals-In prospect only ticks execution + data-style styles and
   // does NOT pick ml_directional / rules_directional / event_driven (which
   // require DART Full research + model build).
-  const researchStyles = new Set([
-    "ml_directional",
-    "rules_directional",
-    "event_driven",
-    "stat_arb",
-    "vol_trading",
-  ]);
-  const hasResearchStyle = response.strategy_style.some((s) =>
-    researchStyles.has(s),
-  );
+  const researchStyles = new Set(["ml_directional", "rules_directional", "event_driven", "stat_arb", "vol_trading"]);
+  const hasResearchStyle = response.strategy_style.some((s) => researchStyles.has(s));
   if (hasResearchStyle) return false;
 
   // Signals-In prospects typically pick carry / arbitrage / market_making —
   // strategies the client is prepared to run on their own signals but needs
   // Odum to execute + report.
   const execOnlyStyles = new Set(["carry", "arbitrage", "market_making"]);
-  const allExecOnly = response.strategy_style.every((s) =>
-    execOnlyStyles.has(s),
-  );
+  const allExecOnly = response.strategy_style.every((s) => execOnlyStyles.has(s));
   // Heuristic: only route to signals-only when the prospect picked execution
   // oriented styles AND service_family is DART (not combo which is broader).
-  return (
-    response.service_family === "DART" &&
-    response.strategy_style.length > 0 &&
-    allExecOnly
-  );
+  return response.service_family === "DART" && response.strategy_style.length > 0 && allExecOnly;
 }
 
 /**
@@ -109,22 +90,15 @@ function isDartSignalsIn(response: QuestionnaireResponse): boolean {
  * unlocked and everything else scoped away.
  */
 function isPerpFundingArbShape(response: QuestionnaireResponse): boolean {
-  const regOrCombo =
-    response.service_family === "RegUmbrella" ||
-    response.service_family === "combo";
+  const regOrCombo = response.service_family === "RegUmbrella" || response.service_family === "combo";
   if (!regOrCombo) return false;
   const hasPerp = response.instrument_types.includes("perp");
-  const hasArbStyle =
-    response.strategy_style.includes("arbitrage") ||
-    response.strategy_style.includes("carry");
-  const hasCrossExchangeCats =
-    response.categories.includes("CeFi") || response.categories.includes("DeFi");
+  const hasArbStyle = response.strategy_style.includes("arbitrage") || response.strategy_style.includes("carry");
+  const hasCrossExchangeCats = response.categories.includes("CeFi") || response.categories.includes("DeFi");
   return hasPerp && hasArbStyle && hasCrossExchangeCats;
 }
 
-export function resolvePersonaFromQuestionnaire(
-  response: QuestionnaireResponse,
-): ResolvedPersonaId {
+export function resolvePersonaFromQuestionnaire(response: QuestionnaireResponse): ResolvedPersonaId {
   // Desmond-shape route takes precedence over the generic family switch —
   // a RegUmbrella prospect who specifically answered perp + arbitrage gets
   // the perp-funding demo surface rather than the bare regulatory one.
@@ -180,9 +154,7 @@ export function readResolvedPersona(): ResolvedPersonaId | null {
       "prospect-perp-funding",
       "prospect-generic",
     ];
-    return valid.includes(raw as ResolvedPersonaId)
-      ? (raw as ResolvedPersonaId)
-      : null;
+    return valid.includes(raw as ResolvedPersonaId) ? (raw as ResolvedPersonaId) : null;
   } catch {
     return null;
   }
@@ -197,7 +169,7 @@ export function clearResolvedPersona(): void {
   }
 }
 
-const CATEGORY_TO_VENUE: Record<string, VenueCategoryV2> = {
+const CATEGORY_TO_ASSET_GROUP: Record<string, VenueAssetGroupV2> = {
   CeFi: "CEFI",
   DeFi: "DEFI",
   TradFi: "TRADFI",
@@ -228,30 +200,26 @@ const SHARE_CLASS_MAP: Record<string, readonly ShareClass[]> = {
  * also surfaces `ARBITRAGE_STRUCTURAL` (structural arb is market-neutral
  * by construction and closely related to carry strategies).
  */
-export function seedFiltersFromQuestionnaire(
-  r: QuestionnaireResponse,
-): StrategyCatalogueFilter {
+export function seedFiltersFromQuestionnaire(r: QuestionnaireResponse): StrategyCatalogueFilter {
   const filter: {
     families?: readonly StrategyFamily[];
-    venueCategories?: readonly VenueCategoryV2[];
+    venueAssetGroups?: readonly VenueAssetGroupV2[];
     shareClasses?: readonly ShareClass[];
     coverageStatuses?: readonly CoverageStatus[];
   } = {};
 
-  // categories → venue_category
+  // categories → venue asset_group
   if (r.categories?.length) {
     const mapped = r.categories
-      .map((c) => CATEGORY_TO_VENUE[c])
-      .filter((v): v is VenueCategoryV2 => v !== undefined);
-    if (mapped.length) filter.venueCategories = mapped;
+      .map((c) => CATEGORY_TO_ASSET_GROUP[c])
+      .filter((v): v is VenueAssetGroupV2 => v !== undefined);
+    if (mapped.length) filter.venueAssetGroups = mapped;
   }
 
   // strategy_style → families
   let families: StrategyFamily[] = [];
   if (r.strategy_style?.length) {
-    families = r.strategy_style
-      .map((s) => STYLE_TO_FAMILY[s])
-      .filter((f): f is StrategyFamily => f !== undefined);
+    families = r.strategy_style.map((s) => STYLE_TO_FAMILY[s]).filter((f): f is StrategyFamily => f !== undefined);
   }
 
   // market_neutral expansion — if no styles chosen, derive from neutrality
@@ -279,9 +247,7 @@ export function seedFiltersFromQuestionnaire(
 
   // share_class_preferences → shareClasses (union all selected, empty = no filter)
   if (r.share_class_preferences && r.share_class_preferences.length > 0) {
-    const allClasses = r.share_class_preferences.flatMap(
-      (p) => SHARE_CLASS_MAP[p] ?? [],
-    );
+    const allClasses = r.share_class_preferences.flatMap((p) => SHARE_CLASS_MAP[p] ?? []);
     const unique = [...new Set(allClasses)] as ShareClass[];
     if (unique.length) filter.shareClasses = unique;
   }

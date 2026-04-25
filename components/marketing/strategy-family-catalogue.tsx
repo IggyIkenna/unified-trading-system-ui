@@ -3,12 +3,12 @@ import type { ReactElement } from "react";
 import { LockStateBadge } from "@/components/architecture-v2";
 import { ARCHETYPE_COVERAGE } from "@/lib/architecture-v2/coverage";
 import type { ArchetypeCoverage, CoverageCell, CoverageStatus, InstrumentTypeV2 } from "@/lib/architecture-v2/coverage";
-import type { LockState, StrategyArchetype, StrategyFamily, VenueCategoryV2 } from "@/lib/architecture-v2";
+import type { LockState, StrategyArchetype, StrategyFamily, VenueAssetGroupV2 } from "@/lib/architecture-v2";
 import { listFamiliesOrdered, type FamilyMetadata } from "@/lib/architecture-v2/families";
 import { cn } from "@/lib/utils";
 
 /**
- * Strategy-family × archetype × (category × instrument-type) catalogue.
+ * Strategy-family × archetype × (asset group × instrument-type) catalogue.
  *
  * Grid: rows = archetypes (grouped by family band), columns = instrument types only.
  * Each cell aggregates all asset classes (CeFi, DeFi, …): marker color = asset class,
@@ -20,9 +20,9 @@ import { cn } from "@/lib/utils";
 
 type CellLockState = LockState | "NEEDS_BUILD";
 
-const CATEGORIES: readonly VenueCategoryV2[] = ["CEFI", "DEFI", "TRADFI", "SPORTS", "PREDICTION"] as const;
+const ASSET_GROUPS: readonly VenueAssetGroupV2[] = ["CEFI", "DEFI", "TRADFI", "SPORTS", "PREDICTION"] as const;
 
-const CATEGORY_LABELS: Readonly<Record<VenueCategoryV2, string>> = {
+const ASSET_GROUP_LABELS: Readonly<Record<VenueAssetGroupV2, string>> = {
   CEFI: "Crypto",
   DEFI: "DeFi",
   TRADFI: "Traditional",
@@ -34,7 +34,7 @@ const CATEGORY_LABELS: Readonly<Record<VenueCategoryV2, string>> = {
  * Marker colour per asset class — same hex tokens as `public/homepage.html` explorer
  * nav dots (:root --emerald, --violet, --cyan, --amber, --rose).
  */
-const CATEGORY_GLYPH_CLASS: Readonly<Record<VenueCategoryV2, string>> = {
+const ASSET_GROUP_GLYPH_CLASS: Readonly<Record<VenueAssetGroupV2, string>> = {
   CEFI: "text-[#4ade80]",
   DEFI: "text-[#a78bfa]",
   TRADFI: "text-[#22d3ee]",
@@ -106,11 +106,11 @@ function lockSummary(lock: CellLockState, status: CoverageStatus | "NONE"): stri
 
 function getCell(
   archetype: StrategyArchetype,
-  category: VenueCategoryV2,
+  assetGroup: VenueAssetGroupV2,
   instrumentType: InstrumentTypeV2,
 ): CoverageCell | null {
   const coverage: ArchetypeCoverage = ARCHETYPE_COVERAGE[archetype];
-  return coverage.cells.find((c) => c.category === category && c.instrumentType === instrumentType) ?? null;
+  return coverage.cells.find((c) => c.assetGroup === assetGroup && c.instrumentType === instrumentType) ?? null;
 }
 
 function cellStatus(cell: CoverageCell | null): CoverageStatus | "NONE" {
@@ -148,16 +148,16 @@ const CATALOGUE_MARKER_PLAIN_WRAP = "inline-flex items-center justify-center";
 
 /** Single implementation for matrix dots + public ring — cells and legend must use this only. */
 function CatalogueMatrixMarker({
-  category,
+  assetGroup,
   symbol,
   variant,
 }: {
-  category: VenueCategoryV2;
+  assetGroup: VenueAssetGroupV2;
   symbol: string;
   variant: "public" | "im_reserved";
 }) {
   const inner = (
-    <span className={cn(CATALOGUE_MARKER_GLYPH, CATEGORY_GLYPH_CLASS[category])} aria-hidden>
+    <span className={cn(CATALOGUE_MARKER_GLYPH, ASSET_GROUP_GLYPH_CLASS[assetGroup])} aria-hidden>
       {symbol}
     </span>
   );
@@ -180,8 +180,8 @@ function InstrumentAggregateCell({ archetype, instrumentType }: InstrumentAggreg
   const markers: ReactElement[] = [];
   const tipParts: string[] = [];
 
-  for (const category of CATEGORIES) {
-    const cell = getCell(archetype, category, instrumentType);
+  for (const assetGroup of ASSET_GROUPS) {
+    const cell = getCell(archetype, assetGroup, instrumentType);
     const status = cellStatus(cell);
     if (status === "BLOCKED" || status === "NONE") continue;
 
@@ -196,7 +196,7 @@ function InstrumentAggregateCell({ archetype, instrumentType }: InstrumentAggreg
 
     const lockLine = lockSummary(lock, status);
     const markerTitle = [
-      `${CATEGORY_LABELS[category]} · ${INSTRUMENT_TYPE_LABELS[instrumentType]}`,
+      `${ASSET_GROUP_LABELS[assetGroup]} · ${INSTRUMENT_TYPE_LABELS[instrumentType]}`,
       shape.label,
       lockLine,
     ]
@@ -207,18 +207,18 @@ function InstrumentAggregateCell({ archetype, instrumentType }: InstrumentAggreg
 
     const glyph = (
       <CatalogueMatrixMarker
-        category={category}
+        assetGroup={assetGroup}
         symbol={shape.symbol}
         variant={lock === "PUBLIC" ? "public" : "im_reserved"}
       />
     );
 
     const body = href ? (
-      <a key={category} href={href} title={markerTitle} className={CATALOGUE_MARKER_LINK}>
+      <a key={assetGroup} href={href} title={markerTitle} className={CATALOGUE_MARKER_LINK}>
         {glyph}
       </a>
     ) : (
-      <span key={category} title={markerTitle} className={CATALOGUE_MARKER_PLAIN_WRAP}>
+      <span key={assetGroup} title={markerTitle} className={CATALOGUE_MARKER_PLAIN_WRAP}>
         {glyph}
       </span>
     );
@@ -397,10 +397,10 @@ export function StrategyFamilyCatalogue() {
         </div>
         <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Marker colours</p>
         <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-muted-foreground">
-          {CATEGORIES.map((c) => (
+          {ASSET_GROUPS.map((c) => (
             <span key={c} className="inline-flex items-center gap-2">
-              <span className={cn(CATALOGUE_MARKER_GLYPH, CATEGORY_GLYPH_CLASS[c])}>{"\u25CF"}</span>
-              {CATEGORY_LABELS[c]}
+              <span className={cn(CATALOGUE_MARKER_GLYPH, ASSET_GROUP_GLYPH_CLASS[c])}>{"\u25CF"}</span>
+              {ASSET_GROUP_LABELS[c]}
             </span>
           ))}
         </div>
@@ -412,8 +412,8 @@ export function StrategyFamilyCatalogue() {
           </p>
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
             <span className="inline-flex items-center gap-2" aria-hidden>
-              <CatalogueMatrixMarker category="CEFI" symbol={"\u25CF"} variant="public" />
-              <CatalogueMatrixMarker category="CEFI" symbol={"\u25CF"} variant="im_reserved" />
+              <CatalogueMatrixMarker assetGroup="CEFI" symbol={"\u25CF"} variant="public" />
+              <CatalogueMatrixMarker assetGroup="CEFI" symbol={"\u25CF"} variant="im_reserved" />
             </span>
             <span className="text-muted-foreground/60" aria-hidden>
               ·

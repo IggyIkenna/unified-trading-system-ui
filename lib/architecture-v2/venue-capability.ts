@@ -1,8 +1,4 @@
-import type {
-  CommissionStructureType,
-  VenueCategoryV2,
-  VenueRoutingMode,
-} from "./enums";
+import type { CommissionStructureType, VenueAssetGroupV2, VenueRoutingMode } from "./enums";
 
 /**
  * VenueCapabilityV2 UI view model.
@@ -52,7 +48,7 @@ export interface CollateralRulesView {
 export interface VenueCapabilityView {
   venue: string;
   display_name: string;
-  category: VenueCategoryV2;
+  assetGroup: VenueAssetGroupV2;
   routing_mode: VenueRoutingMode;
   features: readonly string[];
   collateral_rules: CollateralRulesView;

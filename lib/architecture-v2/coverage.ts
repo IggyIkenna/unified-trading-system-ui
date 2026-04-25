@@ -4,7 +4,7 @@
 // SSOT: unified-api-contracts/unified_api_contracts/internal/architecture_v2/archetype_capability_manifest.json
 // Codex narrative: unified-trading-pm/codex/09-strategy/architecture-v2/category-instrument-coverage.md
 
-import type { StrategyArchetype, VenueCategoryV2 } from "./enums";
+import type { StrategyArchetype, VenueAssetGroupV2 } from "./enums";
 
 export type InstrumentTypeV2 =
   | "spot"
@@ -49,7 +49,7 @@ export type RollMode = "rolling" | "fixed" | "both" | "n/a";
 
 export interface CoverageCell {
   archetype: StrategyArchetype;
-  category: VenueCategoryV2;
+  assetGroup: VenueAssetGroupV2;
   instrumentType: InstrumentTypeV2;
   status: CoverageStatus;
   representativeVenueIds: readonly string[];
@@ -72,7 +72,7 @@ const ml_directional_continuous: ArchetypeCoverage = {
   cells: [
     {
       archetype: "ML_DIRECTIONAL_CONTINUOUS",
-      category: "CEFI",
+      assetGroup: "CEFI",
       instrumentType: "spot",
       status: "SUPPORTED",
       representativeVenueIds: ["binance", "okx", "bybit", "hyperliquid"],
@@ -84,7 +84,7 @@ const ml_directional_continuous: ArchetypeCoverage = {
     },
     {
       archetype: "ML_DIRECTIONAL_CONTINUOUS",
-      category: "CEFI",
+      assetGroup: "CEFI",
       instrumentType: "perp",
       status: "SUPPORTED",
       representativeVenueIds: ["binance", "okx", "bybit", "hyperliquid", "deribit"],
@@ -92,11 +92,14 @@ const ml_directional_continuous: ArchetypeCoverage = {
       rollMode: "n/a",
       notes: "",
       blockListRefs: [],
-      representativeSlotLabels: ["ML_DIRECTIONAL_CONTINUOUS@binance-btc-perp-5m-usdt-prod", "ML_DIRECTIONAL_CONTINUOUS@hyperliquid-eth-perp-5m-usdt-v2-prod"],
+      representativeSlotLabels: [
+        "ML_DIRECTIONAL_CONTINUOUS@binance-btc-perp-5m-usdt-prod",
+        "ML_DIRECTIONAL_CONTINUOUS@hyperliquid-eth-perp-5m-usdt-v2-prod",
+      ],
     },
     {
       archetype: "ML_DIRECTIONAL_CONTINUOUS",
-      category: "CEFI",
+      assetGroup: "CEFI",
       instrumentType: "dated_future",
       status: "PARTIAL",
       representativeVenueIds: ["deribit"],
@@ -108,7 +111,7 @@ const ml_directional_continuous: ArchetypeCoverage = {
     },
     {
       archetype: "ML_DIRECTIONAL_CONTINUOUS",
-      category: "CEFI",
+      assetGroup: "CEFI",
       instrumentType: "option",
       status: "PARTIAL",
       representativeVenueIds: ["deribit", "okx"],
@@ -120,7 +123,7 @@ const ml_directional_continuous: ArchetypeCoverage = {
     },
     {
       archetype: "ML_DIRECTIONAL_CONTINUOUS",
-      category: "DEFI",
+      assetGroup: "DEFI",
       instrumentType: "spot",
       status: "PARTIAL",
       representativeVenueIds: ["uniswap_v3", "balancer"],
@@ -132,7 +135,7 @@ const ml_directional_continuous: ArchetypeCoverage = {
     },
     {
       archetype: "ML_DIRECTIONAL_CONTINUOUS",
-      category: "DEFI",
+      assetGroup: "DEFI",
       instrumentType: "perp",
       status: "SUPPORTED",
       representativeVenueIds: ["hyperliquid", "gmx_v2", "drift"],
@@ -144,7 +147,7 @@ const ml_directional_continuous: ArchetypeCoverage = {
     },
     {
       archetype: "ML_DIRECTIONAL_CONTINUOUS",
-      category: "DEFI",
+      assetGroup: "DEFI",
       instrumentType: "dated_future",
       status: "BLOCKED",
       representativeVenueIds: [],
@@ -156,7 +159,7 @@ const ml_directional_continuous: ArchetypeCoverage = {
     },
     {
       archetype: "ML_DIRECTIONAL_CONTINUOUS",
-      category: "DEFI",
+      assetGroup: "DEFI",
       instrumentType: "option",
       status: "BLOCKED",
       representativeVenueIds: [],
@@ -168,7 +171,7 @@ const ml_directional_continuous: ArchetypeCoverage = {
     },
     {
       archetype: "ML_DIRECTIONAL_CONTINUOUS",
-      category: "TRADFI",
+      assetGroup: "TRADFI",
       instrumentType: "spot",
       status: "PARTIAL",
       representativeVenueIds: ["ibkr"],
@@ -180,7 +183,7 @@ const ml_directional_continuous: ArchetypeCoverage = {
     },
     {
       archetype: "ML_DIRECTIONAL_CONTINUOUS",
-      category: "TRADFI",
+      assetGroup: "TRADFI",
       instrumentType: "dated_future",
       status: "PARTIAL",
       representativeVenueIds: ["cme", "ice"],
@@ -188,11 +191,14 @@ const ml_directional_continuous: ArchetypeCoverage = {
       rollMode: "both",
       notes: "Adapter batch-tested only for ES / NQ / CL; roll service required (BL-10).",
       blockListRefs: ["BL-10"],
-      representativeSlotLabels: ["ML_DIRECTIONAL_CONTINUOUS@cme-es-dated-1m-usd-prod", "ML_DIRECTIONAL_CONTINUOUS@ice-brent-dated-daily-usd-prod"],
+      representativeSlotLabels: [
+        "ML_DIRECTIONAL_CONTINUOUS@cme-es-dated-1m-usd-prod",
+        "ML_DIRECTIONAL_CONTINUOUS@ice-brent-dated-daily-usd-prod",
+      ],
     },
     {
       archetype: "ML_DIRECTIONAL_CONTINUOUS",
-      category: "TRADFI",
+      assetGroup: "TRADFI",
       instrumentType: "option",
       status: "PARTIAL",
       representativeVenueIds: ["cboe"],
@@ -211,19 +217,26 @@ const ml_directional_event_settled: ArchetypeCoverage = {
   cells: [
     {
       archetype: "ML_DIRECTIONAL_EVENT_SETTLED",
-      category: "SPORTS",
+      assetGroup: "SPORTS",
       instrumentType: "event_settled",
       status: "SUPPORTED",
       representativeVenueIds: ["unity", "betfair_direct", "matchbook_direct"],
       signalVariants: ["odds"],
       rollMode: "n/a",
-      notes: "Value-betting (edge_method=VALUE_PROB_VS_IMPLIED) is a config axis on this archetype, not a separate archetype. See codex value-betting-archetype-decision.md.",
+      notes:
+        "Value-betting (edge_method=VALUE_PROB_VS_IMPLIED) is a config axis on this archetype, not a separate archetype. See codex value-betting-archetype-decision.md.",
       blockListRefs: [],
-      representativeSlotLabels: ["ML_DIRECTIONAL_EVENT_SETTLED@unity-epl-1x2-usd-prod", "ML_DIRECTIONAL_EVENT_SETTLED@unity-nba-moneyline-usd-prod", "ML_DIRECTIONAL_EVENT_SETTLED@unity-nfl-moneyline-value-usd-prod", "ML_DIRECTIONAL_EVENT_SETTLED@unity-mlb-moneyline-value-usd-prod", "ML_DIRECTIONAL_EVENT_SETTLED@betfair-direct-epl-1x2-gbp-prod"],
+      representativeSlotLabels: [
+        "ML_DIRECTIONAL_EVENT_SETTLED@unity-epl-1x2-usd-prod",
+        "ML_DIRECTIONAL_EVENT_SETTLED@unity-nba-moneyline-usd-prod",
+        "ML_DIRECTIONAL_EVENT_SETTLED@unity-nfl-moneyline-value-usd-prod",
+        "ML_DIRECTIONAL_EVENT_SETTLED@unity-mlb-moneyline-value-usd-prod",
+        "ML_DIRECTIONAL_EVENT_SETTLED@betfair-direct-epl-1x2-gbp-prod",
+      ],
     },
     {
       archetype: "ML_DIRECTIONAL_EVENT_SETTLED",
-      category: "PREDICTION",
+      assetGroup: "PREDICTION",
       instrumentType: "event_settled",
       status: "SUPPORTED",
       representativeVenueIds: ["polymarket"],
@@ -235,7 +248,7 @@ const ml_directional_event_settled: ArchetypeCoverage = {
     },
     {
       archetype: "ML_DIRECTIONAL_EVENT_SETTLED",
-      category: "PREDICTION",
+      assetGroup: "PREDICTION",
       instrumentType: "event_settled",
       status: "BLOCKED",
       representativeVenueIds: ["kalshi"],
@@ -254,7 +267,7 @@ const rules_directional_continuous: ArchetypeCoverage = {
   cells: [
     {
       archetype: "RULES_DIRECTIONAL_CONTINUOUS",
-      category: "CEFI",
+      assetGroup: "CEFI",
       instrumentType: "spot",
       status: "SUPPORTED",
       representativeVenueIds: ["binance", "okx", "bybit", "hyperliquid"],
@@ -266,7 +279,7 @@ const rules_directional_continuous: ArchetypeCoverage = {
     },
     {
       archetype: "RULES_DIRECTIONAL_CONTINUOUS",
-      category: "CEFI",
+      assetGroup: "CEFI",
       instrumentType: "perp",
       status: "SUPPORTED",
       representativeVenueIds: ["binance", "okx", "bybit", "hyperliquid"],
@@ -274,11 +287,14 @@ const rules_directional_continuous: ArchetypeCoverage = {
       rollMode: "n/a",
       notes: "",
       blockListRefs: [],
-      representativeSlotLabels: ["RULES_DIRECTIONAL_CONTINUOUS@binance-btc-perp-15m-ta-funding-usdt-prod", "RULES_DIRECTIONAL_CONTINUOUS@hyperliquid-btc-perp-5m-vwap-usdt-prod"],
+      representativeSlotLabels: [
+        "RULES_DIRECTIONAL_CONTINUOUS@binance-btc-perp-15m-ta-funding-usdt-prod",
+        "RULES_DIRECTIONAL_CONTINUOUS@hyperliquid-btc-perp-5m-vwap-usdt-prod",
+      ],
     },
     {
       archetype: "RULES_DIRECTIONAL_CONTINUOUS",
-      category: "CEFI",
+      assetGroup: "CEFI",
       instrumentType: "dated_future",
       status: "PARTIAL",
       representativeVenueIds: ["deribit"],
@@ -290,7 +306,7 @@ const rules_directional_continuous: ArchetypeCoverage = {
     },
     {
       archetype: "RULES_DIRECTIONAL_CONTINUOUS",
-      category: "CEFI",
+      assetGroup: "CEFI",
       instrumentType: "option",
       status: "BLOCKED",
       representativeVenueIds: [],
@@ -302,7 +318,7 @@ const rules_directional_continuous: ArchetypeCoverage = {
     },
     {
       archetype: "RULES_DIRECTIONAL_CONTINUOUS",
-      category: "DEFI",
+      assetGroup: "DEFI",
       instrumentType: "spot",
       status: "PARTIAL",
       representativeVenueIds: ["uniswap_v3"],
@@ -314,7 +330,7 @@ const rules_directional_continuous: ArchetypeCoverage = {
     },
     {
       archetype: "RULES_DIRECTIONAL_CONTINUOUS",
-      category: "DEFI",
+      assetGroup: "DEFI",
       instrumentType: "perp",
       status: "PARTIAL",
       representativeVenueIds: ["gmx_v2", "drift", "hyperliquid"],
@@ -326,7 +342,7 @@ const rules_directional_continuous: ArchetypeCoverage = {
     },
     {
       archetype: "RULES_DIRECTIONAL_CONTINUOUS",
-      category: "TRADFI",
+      assetGroup: "TRADFI",
       instrumentType: "spot",
       status: "PARTIAL",
       representativeVenueIds: ["ibkr"],
@@ -338,7 +354,7 @@ const rules_directional_continuous: ArchetypeCoverage = {
     },
     {
       archetype: "RULES_DIRECTIONAL_CONTINUOUS",
-      category: "TRADFI",
+      assetGroup: "TRADFI",
       instrumentType: "dated_future",
       status: "PARTIAL",
       representativeVenueIds: ["cme", "ice"],
@@ -350,7 +366,7 @@ const rules_directional_continuous: ArchetypeCoverage = {
     },
     {
       archetype: "RULES_DIRECTIONAL_CONTINUOUS",
-      category: "TRADFI",
+      assetGroup: "TRADFI",
       instrumentType: "option",
       status: "BLOCKED",
       representativeVenueIds: [],
@@ -369,7 +385,7 @@ const rules_directional_event_settled: ArchetypeCoverage = {
   cells: [
     {
       archetype: "RULES_DIRECTIONAL_EVENT_SETTLED",
-      category: "SPORTS",
+      assetGroup: "SPORTS",
       instrumentType: "event_settled",
       status: "PARTIAL",
       representativeVenueIds: ["unity", "betfair_direct"],
@@ -377,11 +393,14 @@ const rules_directional_event_settled: ArchetypeCoverage = {
       rollMode: "n/a",
       notes: "Engine code complete; docs + example instances minor gap.",
       blockListRefs: [],
-      representativeSlotLabels: ["RULES_DIRECTIONAL_EVENT_SETTLED@unity-epl-xg-diff-usd-prod", "RULES_DIRECTIONAL_EVENT_SETTLED@unity-nba-rest-days-rule-usd-prod"],
+      representativeSlotLabels: [
+        "RULES_DIRECTIONAL_EVENT_SETTLED@unity-epl-xg-diff-usd-prod",
+        "RULES_DIRECTIONAL_EVENT_SETTLED@unity-nba-rest-days-rule-usd-prod",
+      ],
     },
     {
       archetype: "RULES_DIRECTIONAL_EVENT_SETTLED",
-      category: "PREDICTION",
+      assetGroup: "PREDICTION",
       instrumentType: "event_settled",
       status: "PARTIAL",
       representativeVenueIds: ["polymarket"],
@@ -400,7 +419,7 @@ const carry_basis_dated: ArchetypeCoverage = {
   cells: [
     {
       archetype: "CARRY_BASIS_DATED",
-      category: "CEFI",
+      assetGroup: "CEFI",
       instrumentType: "dated_future",
       status: "SUPPORTED",
       representativeVenueIds: ["binance", "coinbase", "deribit"],
@@ -408,11 +427,14 @@ const carry_basis_dated: ArchetypeCoverage = {
       rollMode: "both",
       notes: "Spot + dated combo. Default rolls with front; expiry-targeted uses -fixed-.",
       blockListRefs: [],
-      representativeSlotLabels: ["CARRY_BASIS_DATED@binance-deribit-btc-dated-usdt-prod", "CARRY_BASIS_DATED@binance-deribit-btc-fixed-dec25-usdt-prod"],
+      representativeSlotLabels: [
+        "CARRY_BASIS_DATED@binance-deribit-btc-dated-usdt-prod",
+        "CARRY_BASIS_DATED@binance-deribit-btc-fixed-dec25-usdt-prod",
+      ],
     },
     {
       archetype: "CARRY_BASIS_DATED",
-      category: "CEFI",
+      assetGroup: "CEFI",
       instrumentType: "option",
       status: "PARTIAL",
       representativeVenueIds: ["deribit"],
@@ -424,7 +446,7 @@ const carry_basis_dated: ArchetypeCoverage = {
     },
     {
       archetype: "CARRY_BASIS_DATED",
-      category: "DEFI",
+      assetGroup: "DEFI",
       instrumentType: "dated_future",
       status: "BLOCKED",
       representativeVenueIds: [],
@@ -436,7 +458,7 @@ const carry_basis_dated: ArchetypeCoverage = {
     },
     {
       archetype: "CARRY_BASIS_DATED",
-      category: "TRADFI",
+      assetGroup: "TRADFI",
       instrumentType: "dated_future",
       status: "PARTIAL",
       representativeVenueIds: ["ibkr", "cme", "ice"],
@@ -444,7 +466,10 @@ const carry_basis_dated: ArchetypeCoverage = {
       rollMode: "both",
       notes: "IBKR ↔ CME cross-venue routing policy not declared (UAC gap #10).",
       blockListRefs: ["BL-10"],
-      representativeSlotLabels: ["CARRY_BASIS_DATED@ibkr-cme-spy-es-dated-usd-prod", "CARRY_BASIS_DATED@ibkr-ice-brent-fixed-feb26-usd-prod"],
+      representativeSlotLabels: [
+        "CARRY_BASIS_DATED@ibkr-cme-spy-es-dated-usd-prod",
+        "CARRY_BASIS_DATED@ibkr-ice-brent-fixed-feb26-usd-prod",
+      ],
     },
   ],
 };
@@ -455,7 +480,7 @@ const carry_basis_perp: ArchetypeCoverage = {
   cells: [
     {
       archetype: "CARRY_BASIS_PERP",
-      category: "CEFI",
+      assetGroup: "CEFI",
       instrumentType: "perp",
       status: "SUPPORTED",
       representativeVenueIds: ["binance", "okx", "bybit", "hyperliquid", "deribit"],
@@ -463,11 +488,14 @@ const carry_basis_perp: ArchetypeCoverage = {
       rollMode: "n/a",
       notes: "Single-venue netted (most capital-efficient) or cross-venue LEADER_HEDGE.",
       blockListRefs: [],
-      representativeSlotLabels: ["CARRY_BASIS_PERP@binance-btc-usdt-prod", "CARRY_BASIS_PERP@binance-bybit-btc-usdt-prod"],
+      representativeSlotLabels: [
+        "CARRY_BASIS_PERP@binance-btc-usdt-prod",
+        "CARRY_BASIS_PERP@binance-bybit-btc-usdt-prod",
+      ],
     },
     {
       archetype: "CARRY_BASIS_PERP",
-      category: "DEFI",
+      assetGroup: "DEFI",
       instrumentType: "perp",
       status: "SUPPORTED",
       representativeVenueIds: ["uniswap_v3", "hyperliquid", "gmx_v2", "drift", "lido"],
@@ -475,7 +503,10 @@ const carry_basis_perp: ArchetypeCoverage = {
       rollMode: "n/a",
       notes: "Same-chain SUPPORTED; cross-chain PARTIAL (bridge latency).",
       blockListRefs: [],
-      representativeSlotLabels: ["CARRY_BASIS_PERP@uniswap-hyperliquid-eth-usdt-prod", "CARRY_BASIS_PERP@lido-hyperliquid-steth-usdt-prod"],
+      representativeSlotLabels: [
+        "CARRY_BASIS_PERP@uniswap-hyperliquid-eth-usdt-prod",
+        "CARRY_BASIS_PERP@lido-hyperliquid-steth-usdt-prod",
+      ],
     },
   ],
 };
@@ -486,15 +517,29 @@ const carry_staked_basis: ArchetypeCoverage = {
   cells: [
     {
       archetype: "CARRY_STAKED_BASIS",
-      category: "DEFI",
+      assetGroup: "DEFI",
       instrumentType: "staking",
       status: "SUPPORTED",
-      representativeVenueIds: ["lido", "rocketpool", "jito", "marinade", "aave_v3", "kamino", "hyperliquid", "gmx_v2", "drift"],
+      representativeVenueIds: [
+        "lido",
+        "rocketpool",
+        "jito",
+        "marinade",
+        "aave_v3",
+        "kamino",
+        "hyperliquid",
+        "gmx_v2",
+        "drift",
+      ],
       signalVariants: ["staking_yield", "funding_rate", "rate_spread"],
       rollMode: "n/a",
-      notes: "3-leg ATOMIC (stake + lending + perp). Ethereum (Lido/RocketPool + Aave + HL/GMX) and Solana (Jito/Marinade + Kamino + Drift).",
+      notes:
+        "3-leg ATOMIC (stake + lending + perp). Ethereum (Lido/RocketPool + Aave + HL/GMX) and Solana (Jito/Marinade + Kamino + Drift).",
       blockListRefs: [],
-      representativeSlotLabels: ["CARRY_STAKED_BASIS@lido-aave-hyperliquid-eth-prod", "CARRY_STAKED_BASIS@jito-kamino-drift-sol-usdc-prod"],
+      representativeSlotLabels: [
+        "CARRY_STAKED_BASIS@lido-aave-hyperliquid-eth-prod",
+        "CARRY_STAKED_BASIS@jito-kamino-drift-sol-usdc-prod",
+      ],
     },
   ],
 };
@@ -505,7 +550,7 @@ const carry_recursive_staked: ArchetypeCoverage = {
   cells: [
     {
       archetype: "CARRY_RECURSIVE_STAKED",
-      category: "DEFI",
+      assetGroup: "DEFI",
       instrumentType: "staking",
       status: "SUPPORTED",
       representativeVenueIds: ["lido", "rocketpool", "jito", "marinade", "aave_v3", "kamino"],
@@ -513,7 +558,10 @@ const carry_recursive_staked: ArchetypeCoverage = {
       rollMode: "n/a",
       notes: "Recursive lending loop (up to 6 loops). Per-protocol bonus schedule gap in UAC (#4).",
       blockListRefs: [],
-      representativeSlotLabels: ["CARRY_RECURSIVE_STAKED@lido-aave-steth-ltv70-ethereum-prod", "CARRY_RECURSIVE_STAKED@jito-kamino-jitosol-ltv70-solana-prod"],
+      representativeSlotLabels: [
+        "CARRY_RECURSIVE_STAKED@lido-aave-steth-ltv70-ethereum-prod",
+        "CARRY_RECURSIVE_STAKED@jito-kamino-jitosol-ltv70-solana-prod",
+      ],
     },
   ],
 };
@@ -524,7 +572,7 @@ const yield_rotation_lending: ArchetypeCoverage = {
   cells: [
     {
       archetype: "YIELD_ROTATION_LENDING",
-      category: "CEFI",
+      assetGroup: "CEFI",
       instrumentType: "lending",
       status: "BLOCKED",
       representativeVenueIds: [],
@@ -536,7 +584,7 @@ const yield_rotation_lending: ArchetypeCoverage = {
     },
     {
       archetype: "YIELD_ROTATION_LENDING",
-      category: "DEFI",
+      assetGroup: "DEFI",
       instrumentType: "lending",
       status: "SUPPORTED",
       representativeVenueIds: ["aave_v3", "compound_v3", "euler", "morpho", "kamino"],
@@ -544,7 +592,11 @@ const yield_rotation_lending: ArchetypeCoverage = {
       rollMode: "n/a",
       notes: "Multi-chain via Circle CCTP / LayerZero Stargate. Bridge cost + latency modeled.",
       blockListRefs: [],
-      representativeSlotLabels: ["YIELD_ROTATION_LENDING@aave-multichain-usdc-prod", "YIELD_ROTATION_LENDING@aave-compound-morpho-usdc-ethereum-prod", "YIELD_ROTATION_LENDING@kamino-solana-usdc-prod"],
+      representativeSlotLabels: [
+        "YIELD_ROTATION_LENDING@aave-multichain-usdc-prod",
+        "YIELD_ROTATION_LENDING@aave-compound-morpho-usdc-ethereum-prod",
+        "YIELD_ROTATION_LENDING@kamino-solana-usdc-prod",
+      ],
     },
   ],
 };
@@ -555,7 +607,7 @@ const yield_staking_simple: ArchetypeCoverage = {
   cells: [
     {
       archetype: "YIELD_STAKING_SIMPLE",
-      category: "DEFI",
+      assetGroup: "DEFI",
       instrumentType: "staking",
       status: "SUPPORTED",
       representativeVenueIds: ["lido", "rocketpool", "etherfi", "jito", "marinade"],
@@ -563,7 +615,10 @@ const yield_staking_simple: ArchetypeCoverage = {
       rollMode: "n/a",
       notes: "Pure staking, no hedge. Ethereum (stETH / rETH / eETH) and Solana (JitoSOL / mSOL).",
       blockListRefs: [],
-      representativeSlotLabels: ["YIELD_STAKING_SIMPLE@lido-steth-ethereum-eth-prod", "YIELD_STAKING_SIMPLE@jito-jitosol-solana-sol-prod"],
+      representativeSlotLabels: [
+        "YIELD_STAKING_SIMPLE@lido-steth-ethereum-eth-prod",
+        "YIELD_STAKING_SIMPLE@jito-jitosol-solana-sol-prod",
+      ],
     },
   ],
 };
@@ -574,7 +629,7 @@ const arbitrage_price_dispersion: ArchetypeCoverage = {
   cells: [
     {
       archetype: "ARBITRAGE_PRICE_DISPERSION",
-      category: "CEFI",
+      assetGroup: "CEFI",
       instrumentType: "spot",
       status: "SUPPORTED",
       representativeVenueIds: ["binance", "okx", "bybit", "hyperliquid"],
@@ -586,7 +641,7 @@ const arbitrage_price_dispersion: ArchetypeCoverage = {
     },
     {
       archetype: "ARBITRAGE_PRICE_DISPERSION",
-      category: "CEFI",
+      assetGroup: "CEFI",
       instrumentType: "perp",
       status: "PARTIAL",
       representativeVenueIds: ["binance", "okx", "bybit", "hyperliquid", "deribit"],
@@ -594,11 +649,14 @@ const arbitrage_price_dispersion: ArchetypeCoverage = {
       rollMode: "n/a",
       notes: "UAC lacks funding_arb flag distinct from price-arb (gap #2).",
       blockListRefs: [],
-      representativeSlotLabels: ["ARBITRAGE_PRICE_DISPERSION@binance-bybit-btc-perp-usdt-prod", "ARBITRAGE_PRICE_DISPERSION@multi-cex-btc-funding-usdt-prod"],
+      representativeSlotLabels: [
+        "ARBITRAGE_PRICE_DISPERSION@binance-bybit-btc-perp-usdt-prod",
+        "ARBITRAGE_PRICE_DISPERSION@multi-cex-btc-funding-usdt-prod",
+      ],
     },
     {
       archetype: "ARBITRAGE_PRICE_DISPERSION",
-      category: "CEFI",
+      assetGroup: "CEFI",
       instrumentType: "option",
       status: "PARTIAL",
       representativeVenueIds: ["deribit", "okx"],
@@ -610,7 +668,7 @@ const arbitrage_price_dispersion: ArchetypeCoverage = {
     },
     {
       archetype: "ARBITRAGE_PRICE_DISPERSION",
-      category: "DEFI",
+      assetGroup: "DEFI",
       instrumentType: "spot",
       status: "SUPPORTED",
       representativeVenueIds: ["uniswap_v3", "balancer", "curve", "sushiswap"],
@@ -622,7 +680,7 @@ const arbitrage_price_dispersion: ArchetypeCoverage = {
     },
     {
       archetype: "ARBITRAGE_PRICE_DISPERSION",
-      category: "DEFI",
+      assetGroup: "DEFI",
       instrumentType: "perp",
       status: "SUPPORTED",
       representativeVenueIds: ["hyperliquid", "gmx_v2", "drift"],
@@ -634,7 +692,7 @@ const arbitrage_price_dispersion: ArchetypeCoverage = {
     },
     {
       archetype: "ARBITRAGE_PRICE_DISPERSION",
-      category: "DEFI",
+      assetGroup: "DEFI",
       instrumentType: "lp",
       status: "PARTIAL",
       representativeVenueIds: ["uniswap_v3"],
@@ -646,7 +704,7 @@ const arbitrage_price_dispersion: ArchetypeCoverage = {
     },
     {
       archetype: "ARBITRAGE_PRICE_DISPERSION",
-      category: "DEFI",
+      assetGroup: "DEFI",
       instrumentType: "option",
       status: "BLOCKED",
       representativeVenueIds: [],
@@ -658,7 +716,7 @@ const arbitrage_price_dispersion: ArchetypeCoverage = {
     },
     {
       archetype: "ARBITRAGE_PRICE_DISPERSION",
-      category: "TRADFI",
+      assetGroup: "TRADFI",
       instrumentType: "spot",
       status: "PARTIAL",
       representativeVenueIds: ["ibkr", "cme"],
@@ -670,7 +728,7 @@ const arbitrage_price_dispersion: ArchetypeCoverage = {
     },
     {
       archetype: "ARBITRAGE_PRICE_DISPERSION",
-      category: "TRADFI",
+      assetGroup: "TRADFI",
       instrumentType: "dated_future",
       status: "PARTIAL",
       representativeVenueIds: ["cme", "ice"],
@@ -678,11 +736,14 @@ const arbitrage_price_dispersion: ArchetypeCoverage = {
       rollMode: "both",
       notes: "Cross-product routing policy not declared in UAC (gap #10).",
       blockListRefs: ["BL-10"],
-      representativeSlotLabels: ["ARBITRAGE_PRICE_DISPERSION@cme-es-nq-dated-ratio-usd-prod", "ARBITRAGE_PRICE_DISPERSION@cme-es-calendar-fixed-dec25-mar26-usd-prod"],
+      representativeSlotLabels: [
+        "ARBITRAGE_PRICE_DISPERSION@cme-es-nq-dated-ratio-usd-prod",
+        "ARBITRAGE_PRICE_DISPERSION@cme-es-calendar-fixed-dec25-mar26-usd-prod",
+      ],
     },
     {
       archetype: "ARBITRAGE_PRICE_DISPERSION",
-      category: "TRADFI",
+      assetGroup: "TRADFI",
       instrumentType: "option",
       status: "PARTIAL",
       representativeVenueIds: ["cboe"],
@@ -694,7 +755,7 @@ const arbitrage_price_dispersion: ArchetypeCoverage = {
     },
     {
       archetype: "ARBITRAGE_PRICE_DISPERSION",
-      category: "SPORTS",
+      assetGroup: "SPORTS",
       instrumentType: "event_settled",
       status: "SUPPORTED",
       representativeVenueIds: ["unity", "betfair_direct"],
@@ -702,11 +763,14 @@ const arbitrage_price_dispersion: ArchetypeCoverage = {
       rollMode: "n/a",
       notes: "Unity single-wallet makes cross-book arb near-atomic.",
       blockListRefs: [],
-      representativeSlotLabels: ["ARBITRAGE_PRICE_DISPERSION@unity-epl-1x2-usd-prod", "ARBITRAGE_PRICE_DISPERSION@betfair-matchbook-epl-1x2-gbp-prod"],
+      representativeSlotLabels: [
+        "ARBITRAGE_PRICE_DISPERSION@unity-epl-1x2-usd-prod",
+        "ARBITRAGE_PRICE_DISPERSION@betfair-matchbook-epl-1x2-gbp-prod",
+      ],
     },
     {
       archetype: "ARBITRAGE_PRICE_DISPERSION",
-      category: "PREDICTION",
+      assetGroup: "PREDICTION",
       instrumentType: "event_settled",
       status: "SUPPORTED",
       representativeVenueIds: ["polymarket", "unity", "betfair_direct"],
@@ -725,7 +789,7 @@ const liquidation_capture: ArchetypeCoverage = {
   cells: [
     {
       archetype: "LIQUIDATION_CAPTURE",
-      category: "CEFI",
+      assetGroup: "CEFI",
       instrumentType: "perp",
       status: "PARTIAL",
       representativeVenueIds: ["hyperliquid"],
@@ -737,7 +801,7 @@ const liquidation_capture: ArchetypeCoverage = {
     },
     {
       archetype: "LIQUIDATION_CAPTURE",
-      category: "DEFI",
+      assetGroup: "DEFI",
       instrumentType: "lending",
       status: "SUPPORTED",
       representativeVenueIds: ["aave_v3", "kamino"],
@@ -745,11 +809,15 @@ const liquidation_capture: ArchetypeCoverage = {
       rollMode: "n/a",
       notes: "Flash-loan receiver contract required per-chain. Aave V3 + Kamino primary.",
       blockListRefs: [],
-      representativeSlotLabels: ["LIQUIDATION_CAPTURE@aave-ethereum-eth-usdc-prod", "LIQUIDATION_CAPTURE@aave-arbitrum-eth-usdc-prod", "LIQUIDATION_CAPTURE@kamino-solana-sol-usdc-prod"],
+      representativeSlotLabels: [
+        "LIQUIDATION_CAPTURE@aave-ethereum-eth-usdc-prod",
+        "LIQUIDATION_CAPTURE@aave-arbitrum-eth-usdc-prod",
+        "LIQUIDATION_CAPTURE@kamino-solana-sol-usdc-prod",
+      ],
     },
     {
       archetype: "LIQUIDATION_CAPTURE",
-      category: "DEFI",
+      assetGroup: "DEFI",
       instrumentType: "perp",
       status: "PARTIAL",
       representativeVenueIds: ["gmx_v2"],
@@ -768,7 +836,7 @@ const market_making_continuous: ArchetypeCoverage = {
   cells: [
     {
       archetype: "MARKET_MAKING_CONTINUOUS",
-      category: "CEFI",
+      assetGroup: "CEFI",
       instrumentType: "spot",
       status: "SUPPORTED",
       representativeVenueIds: ["binance", "okx", "bybit", "hyperliquid"],
@@ -780,7 +848,7 @@ const market_making_continuous: ArchetypeCoverage = {
     },
     {
       archetype: "MARKET_MAKING_CONTINUOUS",
-      category: "CEFI",
+      assetGroup: "CEFI",
       instrumentType: "perp",
       status: "SUPPORTED",
       representativeVenueIds: ["binance", "okx", "bybit", "hyperliquid", "deribit"],
@@ -792,7 +860,7 @@ const market_making_continuous: ArchetypeCoverage = {
     },
     {
       archetype: "MARKET_MAKING_CONTINUOUS",
-      category: "CEFI",
+      assetGroup: "CEFI",
       instrumentType: "option",
       status: "PARTIAL",
       representativeVenueIds: ["deribit", "okx"],
@@ -804,7 +872,7 @@ const market_making_continuous: ArchetypeCoverage = {
     },
     {
       archetype: "MARKET_MAKING_CONTINUOUS",
-      category: "DEFI",
+      assetGroup: "DEFI",
       instrumentType: "lp",
       status: "SUPPORTED",
       representativeVenueIds: ["uniswap_v3", "uniswap_v4", "orca", "raydium", "curve", "balancer", "uniswap_v2"],
@@ -812,11 +880,14 @@ const market_making_continuous: ArchetypeCoverage = {
       rollMode: "n/a",
       notes: "Active LP (Uniswap V3/V4, Orca, Raydium) + Passive LP (Curve, Balancer, Uniswap V2).",
       blockListRefs: [],
-      representativeSlotLabels: ["MARKET_MAKING_CONTINUOUS@uniswap-v3-weth-usdc-ethereum-active-usdc-prod", "MARKET_MAKING_CONTINUOUS@curve-3pool-ethereum-passive-usdc-prod"],
+      representativeSlotLabels: [
+        "MARKET_MAKING_CONTINUOUS@uniswap-v3-weth-usdc-ethereum-active-usdc-prod",
+        "MARKET_MAKING_CONTINUOUS@curve-3pool-ethereum-passive-usdc-prod",
+      ],
     },
     {
       archetype: "MARKET_MAKING_CONTINUOUS",
-      category: "DEFI",
+      assetGroup: "DEFI",
       instrumentType: "perp",
       status: "BLOCKED",
       representativeVenueIds: [],
@@ -828,7 +899,7 @@ const market_making_continuous: ArchetypeCoverage = {
     },
     {
       archetype: "MARKET_MAKING_CONTINUOUS",
-      category: "DEFI",
+      assetGroup: "DEFI",
       instrumentType: "option",
       status: "BLOCKED",
       representativeVenueIds: [],
@@ -840,7 +911,7 @@ const market_making_continuous: ArchetypeCoverage = {
     },
     {
       archetype: "MARKET_MAKING_CONTINUOUS",
-      category: "TRADFI",
+      assetGroup: "TRADFI",
       instrumentType: "spot",
       status: "PARTIAL",
       representativeVenueIds: ["ibkr"],
@@ -852,7 +923,7 @@ const market_making_continuous: ArchetypeCoverage = {
     },
     {
       archetype: "MARKET_MAKING_CONTINUOUS",
-      category: "TRADFI",
+      assetGroup: "TRADFI",
       instrumentType: "dated_future",
       status: "PARTIAL",
       representativeVenueIds: ["cme"],
@@ -864,7 +935,7 @@ const market_making_continuous: ArchetypeCoverage = {
     },
     {
       archetype: "MARKET_MAKING_CONTINUOUS",
-      category: "SPORTS",
+      assetGroup: "SPORTS",
       instrumentType: "event_settled",
       status: "PARTIAL",
       representativeVenueIds: ["betfair_direct", "unity"],
@@ -883,7 +954,7 @@ const market_making_event_settled: ArchetypeCoverage = {
   cells: [
     {
       archetype: "MARKET_MAKING_EVENT_SETTLED",
-      category: "SPORTS",
+      assetGroup: "SPORTS",
       instrumentType: "event_settled",
       status: "SUPPORTED",
       representativeVenueIds: ["betfair_direct"],
@@ -891,11 +962,14 @@ const market_making_event_settled: ArchetypeCoverage = {
       rollMode: "n/a",
       notes: "Primary — lay-native.",
       blockListRefs: [],
-      representativeSlotLabels: ["MARKET_MAKING_EVENT_SETTLED@betfair-direct-epl-1x2-mm-gbp-prod", "MARKET_MAKING_EVENT_SETTLED@betfair-direct-atp-match-winner-mm-gbp-prod"],
+      representativeSlotLabels: [
+        "MARKET_MAKING_EVENT_SETTLED@betfair-direct-epl-1x2-mm-gbp-prod",
+        "MARKET_MAKING_EVENT_SETTLED@betfair-direct-atp-match-winner-mm-gbp-prod",
+      ],
     },
     {
       archetype: "MARKET_MAKING_EVENT_SETTLED",
-      category: "SPORTS",
+      assetGroup: "SPORTS",
       instrumentType: "event_settled",
       status: "PARTIAL",
       representativeVenueIds: ["matchbook_direct"],
@@ -907,7 +981,7 @@ const market_making_event_settled: ArchetypeCoverage = {
     },
     {
       archetype: "MARKET_MAKING_EVENT_SETTLED",
-      category: "SPORTS",
+      assetGroup: "SPORTS",
       instrumentType: "event_settled",
       status: "BLOCKED",
       representativeVenueIds: ["unity"],
@@ -919,7 +993,7 @@ const market_making_event_settled: ArchetypeCoverage = {
     },
     {
       archetype: "MARKET_MAKING_EVENT_SETTLED",
-      category: "PREDICTION",
+      assetGroup: "PREDICTION",
       instrumentType: "event_settled",
       status: "PARTIAL",
       representativeVenueIds: ["polymarket"],
@@ -931,7 +1005,7 @@ const market_making_event_settled: ArchetypeCoverage = {
     },
     {
       archetype: "MARKET_MAKING_EVENT_SETTLED",
-      category: "PREDICTION",
+      assetGroup: "PREDICTION",
       instrumentType: "event_settled",
       status: "BLOCKED",
       representativeVenueIds: ["kalshi"],
@@ -950,7 +1024,7 @@ const event_driven: ArchetypeCoverage = {
   cells: [
     {
       archetype: "EVENT_DRIVEN",
-      category: "CEFI",
+      assetGroup: "CEFI",
       instrumentType: "spot",
       status: "PARTIAL",
       representativeVenueIds: ["binance", "okx"],
@@ -962,7 +1036,7 @@ const event_driven: ArchetypeCoverage = {
     },
     {
       archetype: "EVENT_DRIVEN",
-      category: "CEFI",
+      assetGroup: "CEFI",
       instrumentType: "perp",
       status: "PARTIAL",
       representativeVenueIds: ["binance", "hyperliquid", "bybit"],
@@ -974,7 +1048,7 @@ const event_driven: ArchetypeCoverage = {
     },
     {
       archetype: "EVENT_DRIVEN",
-      category: "CEFI",
+      assetGroup: "CEFI",
       instrumentType: "option",
       status: "PARTIAL",
       representativeVenueIds: ["deribit"],
@@ -986,7 +1060,7 @@ const event_driven: ArchetypeCoverage = {
     },
     {
       archetype: "EVENT_DRIVEN",
-      category: "DEFI",
+      assetGroup: "DEFI",
       instrumentType: "spot",
       status: "PARTIAL",
       representativeVenueIds: ["uniswap_v3"],
@@ -998,7 +1072,7 @@ const event_driven: ArchetypeCoverage = {
     },
     {
       archetype: "EVENT_DRIVEN",
-      category: "DEFI",
+      assetGroup: "DEFI",
       instrumentType: "perp",
       status: "PARTIAL",
       representativeVenueIds: ["hyperliquid", "gmx_v2"],
@@ -1010,7 +1084,7 @@ const event_driven: ArchetypeCoverage = {
     },
     {
       archetype: "EVENT_DRIVEN",
-      category: "DEFI",
+      assetGroup: "DEFI",
       instrumentType: "lending",
       status: "PARTIAL",
       representativeVenueIds: ["aave_v3"],
@@ -1022,7 +1096,7 @@ const event_driven: ArchetypeCoverage = {
     },
     {
       archetype: "EVENT_DRIVEN",
-      category: "DEFI",
+      assetGroup: "DEFI",
       instrumentType: "staking",
       status: "PARTIAL",
       representativeVenueIds: ["lido"],
@@ -1034,7 +1108,7 @@ const event_driven: ArchetypeCoverage = {
     },
     {
       archetype: "EVENT_DRIVEN",
-      category: "TRADFI",
+      assetGroup: "TRADFI",
       instrumentType: "spot",
       status: "PARTIAL",
       representativeVenueIds: ["ibkr"],
@@ -1046,7 +1120,7 @@ const event_driven: ArchetypeCoverage = {
     },
     {
       archetype: "EVENT_DRIVEN",
-      category: "TRADFI",
+      assetGroup: "TRADFI",
       instrumentType: "dated_future",
       status: "PARTIAL",
       representativeVenueIds: ["cme"],
@@ -1058,7 +1132,7 @@ const event_driven: ArchetypeCoverage = {
     },
     {
       archetype: "EVENT_DRIVEN",
-      category: "TRADFI",
+      assetGroup: "TRADFI",
       instrumentType: "option",
       status: "PARTIAL",
       representativeVenueIds: ["cboe"],
@@ -1070,7 +1144,7 @@ const event_driven: ArchetypeCoverage = {
     },
     {
       archetype: "EVENT_DRIVEN",
-      category: "SPORTS",
+      assetGroup: "SPORTS",
       instrumentType: "event_settled",
       status: "PARTIAL",
       representativeVenueIds: ["unity"],
@@ -1082,7 +1156,7 @@ const event_driven: ArchetypeCoverage = {
     },
     {
       archetype: "EVENT_DRIVEN",
-      category: "PREDICTION",
+      assetGroup: "PREDICTION",
       instrumentType: "event_settled",
       status: "PARTIAL",
       representativeVenueIds: ["polymarket"],
@@ -1101,7 +1175,7 @@ const vol_trading_options: ArchetypeCoverage = {
   cells: [
     {
       archetype: "VOL_TRADING_OPTIONS",
-      category: "CEFI",
+      assetGroup: "CEFI",
       instrumentType: "option",
       status: "SUPPORTED",
       representativeVenueIds: ["deribit", "okx"],
@@ -1109,11 +1183,14 @@ const vol_trading_options: ArchetypeCoverage = {
       rollMode: "n/a",
       notes: "Full Deribit surface support; multi-leg ATOMIC supported.",
       blockListRefs: [],
-      representativeSlotLabels: ["VOL_TRADING_OPTIONS@deribit-btc-vol-usdt-prod", "VOL_TRADING_OPTIONS@deribit-btc-skew-usdt-prod"],
+      representativeSlotLabels: [
+        "VOL_TRADING_OPTIONS@deribit-btc-vol-usdt-prod",
+        "VOL_TRADING_OPTIONS@deribit-btc-skew-usdt-prod",
+      ],
     },
     {
       archetype: "VOL_TRADING_OPTIONS",
-      category: "DEFI",
+      assetGroup: "DEFI",
       instrumentType: "option",
       status: "BLOCKED",
       representativeVenueIds: [],
@@ -1125,7 +1202,7 @@ const vol_trading_options: ArchetypeCoverage = {
     },
     {
       archetype: "VOL_TRADING_OPTIONS",
-      category: "TRADFI",
+      assetGroup: "TRADFI",
       instrumentType: "option",
       status: "PARTIAL",
       representativeVenueIds: ["cboe"],
@@ -1144,7 +1221,7 @@ const stat_arb_pairs_fixed: ArchetypeCoverage = {
   cells: [
     {
       archetype: "STAT_ARB_PAIRS_FIXED",
-      category: "CEFI",
+      assetGroup: "CEFI",
       instrumentType: "spot",
       status: "SUPPORTED",
       representativeVenueIds: ["binance", "okx", "bybit"],
@@ -1156,7 +1233,7 @@ const stat_arb_pairs_fixed: ArchetypeCoverage = {
     },
     {
       archetype: "STAT_ARB_PAIRS_FIXED",
-      category: "CEFI",
+      assetGroup: "CEFI",
       instrumentType: "perp",
       status: "SUPPORTED",
       representativeVenueIds: ["binance", "okx", "bybit", "hyperliquid"],
@@ -1168,7 +1245,7 @@ const stat_arb_pairs_fixed: ArchetypeCoverage = {
     },
     {
       archetype: "STAT_ARB_PAIRS_FIXED",
-      category: "DEFI",
+      assetGroup: "DEFI",
       instrumentType: "spot",
       status: "PARTIAL",
       representativeVenueIds: ["uniswap_v3"],
@@ -1180,7 +1257,7 @@ const stat_arb_pairs_fixed: ArchetypeCoverage = {
     },
     {
       archetype: "STAT_ARB_PAIRS_FIXED",
-      category: "DEFI",
+      assetGroup: "DEFI",
       instrumentType: "perp",
       status: "PARTIAL",
       representativeVenueIds: ["hyperliquid", "gmx_v2", "drift"],
@@ -1192,19 +1269,24 @@ const stat_arb_pairs_fixed: ArchetypeCoverage = {
     },
     {
       archetype: "STAT_ARB_PAIRS_FIXED",
-      category: "TRADFI",
+      assetGroup: "TRADFI",
       instrumentType: "spot",
       status: "PARTIAL",
       representativeVenueIds: ["ibkr"],
       signalVariants: ["zscore_reversion"],
       rollMode: "n/a",
-      notes: "Pair pre-declaration config path fine; no batch-tested instances. Treasury ETFs (TLT/IEF/SHY) are spot equities on IBKR — bond is not a separate instrument_type (see codex tradfi-bond-instrument-type-decision.md).",
+      notes:
+        "Pair pre-declaration config path fine; no batch-tested instances. Treasury ETFs (TLT/IEF/SHY) are spot equities on IBKR — bond is not a separate instrument_type (see codex tradfi-bond-instrument-type-decision.md).",
       blockListRefs: [],
-      representativeSlotLabels: ["STAT_ARB_PAIRS_FIXED@ibkr-goog-meta-daily-usd-prod", "STAT_ARB_PAIRS_FIXED@ibkr-aapl-msft-1h-usd-prod", "STAT_ARB_PAIRS_FIXED@ibkr-tlt-ief-daily-usd-prod"],
+      representativeSlotLabels: [
+        "STAT_ARB_PAIRS_FIXED@ibkr-goog-meta-daily-usd-prod",
+        "STAT_ARB_PAIRS_FIXED@ibkr-aapl-msft-1h-usd-prod",
+        "STAT_ARB_PAIRS_FIXED@ibkr-tlt-ief-daily-usd-prod",
+      ],
     },
     {
       archetype: "STAT_ARB_PAIRS_FIXED",
-      category: "TRADFI",
+      assetGroup: "TRADFI",
       instrumentType: "dated_future",
       status: "PARTIAL",
       representativeVenueIds: ["cme", "ice"],
@@ -1212,7 +1294,10 @@ const stat_arb_pairs_fixed: ArchetypeCoverage = {
       rollMode: "rolling",
       notes: "Calendar / cross-product pairs; roll service required (BL-10).",
       blockListRefs: ["BL-10"],
-      representativeSlotLabels: ["STAT_ARB_PAIRS_FIXED@cme-es-nq-dated-zscore-usd-prod", "STAT_ARB_PAIRS_FIXED@ice-brent-cme-wti-dated-usd-prod"],
+      representativeSlotLabels: [
+        "STAT_ARB_PAIRS_FIXED@cme-es-nq-dated-zscore-usd-prod",
+        "STAT_ARB_PAIRS_FIXED@ice-brent-cme-wti-dated-usd-prod",
+      ],
     },
   ],
 };
@@ -1223,7 +1308,7 @@ const stat_arb_cross_sectional: ArchetypeCoverage = {
   cells: [
     {
       archetype: "STAT_ARB_CROSS_SECTIONAL",
-      category: "CEFI",
+      assetGroup: "CEFI",
       instrumentType: "spot",
       status: "PARTIAL",
       representativeVenueIds: ["binance"],
@@ -1235,7 +1320,7 @@ const stat_arb_cross_sectional: ArchetypeCoverage = {
     },
     {
       archetype: "STAT_ARB_CROSS_SECTIONAL",
-      category: "CEFI",
+      assetGroup: "CEFI",
       instrumentType: "perp",
       status: "PARTIAL",
       representativeVenueIds: ["hyperliquid", "bybit"],
@@ -1247,7 +1332,7 @@ const stat_arb_cross_sectional: ArchetypeCoverage = {
     },
     {
       archetype: "STAT_ARB_CROSS_SECTIONAL",
-      category: "DEFI",
+      assetGroup: "DEFI",
       instrumentType: "spot",
       status: "BLOCKED",
       representativeVenueIds: [],
@@ -1259,7 +1344,7 @@ const stat_arb_cross_sectional: ArchetypeCoverage = {
     },
     {
       archetype: "STAT_ARB_CROSS_SECTIONAL",
-      category: "DEFI",
+      assetGroup: "DEFI",
       instrumentType: "perp",
       status: "PARTIAL",
       representativeVenueIds: ["hyperliquid", "gmx_v2", "drift"],
@@ -1271,7 +1356,7 @@ const stat_arb_cross_sectional: ArchetypeCoverage = {
     },
     {
       archetype: "STAT_ARB_CROSS_SECTIONAL",
-      category: "TRADFI",
+      assetGroup: "TRADFI",
       instrumentType: "spot",
       status: "PARTIAL",
       representativeVenueIds: ["ibkr"],
@@ -1279,11 +1364,14 @@ const stat_arb_cross_sectional: ArchetypeCoverage = {
       rollMode: "n/a",
       notes: "Batch-order capability not declared for IBKR; basket of 50–500 legs.",
       blockListRefs: [],
-      representativeSlotLabels: ["STAT_ARB_CROSS_SECTIONAL@ibkr-sp500-momentum-usd-prod", "STAT_ARB_CROSS_SECTIONAL@ibkr-sp500-sector-rotation-usd-prod"],
+      representativeSlotLabels: [
+        "STAT_ARB_CROSS_SECTIONAL@ibkr-sp500-momentum-usd-prod",
+        "STAT_ARB_CROSS_SECTIONAL@ibkr-sp500-sector-rotation-usd-prod",
+      ],
     },
     {
       archetype: "STAT_ARB_CROSS_SECTIONAL",
-      category: "TRADFI",
+      assetGroup: "TRADFI",
       instrumentType: "dated_future",
       status: "BLOCKED",
       representativeVenueIds: [],

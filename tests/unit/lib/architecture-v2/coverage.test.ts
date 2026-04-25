@@ -35,7 +35,7 @@ describe("allCoverageCells", () => {
   it("every cell has required fields", () => {
     for (const c of allCoverageCells()) {
       expect(c.archetype).toBeDefined();
-      expect(c.category).toBeDefined();
+      expect(c.assetGroup).toBeDefined();
       expect(c.instrumentType).toBeDefined();
       expect(c.status).toBeDefined();
       expect(Array.isArray(c.representativeVenueIds)).toBe(true);
@@ -61,10 +61,10 @@ describe("coverageForArchetype", () => {
 
 describe("cellsMatching", () => {
   it("filters cells by predicate", () => {
-    const cefiCells = cellsMatching((c) => c.category === "CEFI");
+    const cefiCells = cellsMatching((c) => c.assetGroup === "CEFI");
     expect(cefiCells.length).toBeGreaterThan(0);
     for (const c of cefiCells) {
-      expect(c.category).toBe("CEFI");
+      expect(c.assetGroup).toBe("CEFI");
     }
   });
 

@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 
 import {
-  CategoryChip,
+  AssetGroupChip,
   InstrumentTypeChip,
   RollModeBadge,
   StatusBadge,
@@ -24,13 +24,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { CoverageCell, InstrumentTypeV2, VenueCategoryV2 } from "@/lib/architecture-v2";
+import type { CoverageCell, InstrumentTypeV2, VenueAssetGroupV2 } from "@/lib/architecture-v2";
 import {
   INSTRUMENT_TYPES_V2,
   cellsForInstrumentPair,
 } from "@/lib/architecture-v2";
 
-const CATEGORIES: readonly VenueCategoryV2[] = [
+const ASSET_GROUPS: readonly VenueAssetGroupV2[] = [
   "CEFI",
   "DEFI",
   "TRADFI",
@@ -39,16 +39,16 @@ const CATEGORIES: readonly VenueCategoryV2[] = [
 ] as const;
 
 interface LegPick {
-  readonly category: VenueCategoryV2 | "ANY";
+  readonly assetGroup: VenueAssetGroupV2 | "ANY";
   readonly instrumentType: InstrumentTypeV2;
 }
 
-function matchesCategory(
+function matchesAssetGroup(
   cell: CoverageCell,
   pick: LegPick,
 ): boolean {
-  if (pick.category === "ANY") return true;
-  return cell.assetGroup === pick.category;
+  if (pick.assetGroup === "ANY") return true;
+  return cell.assetGroup === pick.assetGroup;
 }
 
 function filterByLeg(
@@ -56,7 +56,7 @@ function filterByLeg(
   pick: LegPick,
 ): readonly CoverageCell[] {
   return cells.filter(
-    (cell) => cell.instrumentType === pick.instrumentType && matchesCategory(cell, pick),
+    (cell) => cell.instrumentType === pick.instrumentType && matchesAssetGroup(cell, pick),
   );
 }
 
@@ -66,11 +66,11 @@ function encodeSlotLabel(slot: string): string {
 
 export default function CombinatoricDiscoveryPage() {
   const [legA, setLegA] = useState<LegPick>({
-    category: "CEFI",
+    assetGroup: "CEFI",
     instrumentType: "perp",
   });
   const [legB, setLegB] = useState<LegPick>({
-    category: "CEFI",
+    assetGroup: "CEFI",
     instrumentType: "perp",
   });
 
@@ -108,7 +108,7 @@ export default function CombinatoricDiscoveryPage() {
       <div className="platform-page-width space-y-6 p-6">
         <PageHeader
           title="Combinatoric discovery"
-          description="Pair-capable archetypes (ARBITRAGE_PRICE_DISPERSION, CARRY_BASIS_*, STAT_ARB_PAIRS_FIXED, STAT_ARB_CROSS_SECTIONAL, CARRY_STAKED_BASIS) indexed by two-leg combinations. Select a category × instrument type for each leg to see every archetype that supports the combination."
+          description="Pair-capable archetypes (ARBITRAGE_PRICE_DISPERSION, CARRY_BASIS_*, STAT_ARB_PAIRS_FIXED, STAT_ARB_CROSS_SECTIONAL, CARRY_STAKED_BASIS) indexed by two-leg combinations. Select an asset group × instrument type for each leg to see every archetype that supports the combination."
         />
 
         <div
@@ -187,21 +187,21 @@ function LegPicker({
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="space-y-1">
-          <label className="text-xs text-muted-foreground">Category</label>
+          <label className="text-xs text-muted-foreground">Asset group</label>
           <Select
-            value={value.category}
+            value={value.assetGroup}
             onValueChange={(v) =>
-              onChange({ ...value, category: v as VenueCategoryV2 | "ANY" })
+              onChange({ ...value, assetGroup: v as VenueAssetGroupV2 | "ANY" })
             }
           >
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="ANY">Any category</SelectItem>
-              {CATEGORIES.map((category) => (
-                <SelectItem key={category} value={category}>
-                  {category}
+              <SelectItem value="ANY">Any asset group</SelectItem>
+              {ASSET_GROUPS.map((assetGroup) => (
+                <SelectItem key={assetGroup} value={assetGroup}>
+                  {assetGroup}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -240,7 +240,7 @@ function LegSummary({ title, cell }: { title: string; cell: CoverageCell }) {
         <StatusBadge status={cell.status} />
       </div>
       <div className="mt-1 flex flex-wrap gap-1">
-        <CategoryChip category={cell.assetGroup} />
+        <AssetGroupChip assetGroup={cell.assetGroup} />
         <InstrumentTypeChip instrumentType={cell.instrumentType} />
         {cell.rollMode !== "n/a" ? <RollModeBadge rollMode={cell.rollMode} /> : null}
       </div>

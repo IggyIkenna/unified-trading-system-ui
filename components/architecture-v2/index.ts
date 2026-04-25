@@ -8,14 +8,11 @@
 export { LockStateBadge } from "./lock-state-badge";
 export { MaturityBadge } from "./maturity-badge";
 export { StatusBadge } from "./status-badge";
-export { CategoryChip } from "./category-chip";
+export { AssetGroupChip } from "./category-chip";
 export { InstrumentTypeChip } from "./instrument-type-chip";
 export { SignalVariantBadge } from "./signal-variant-badge";
 export { RollModeBadge } from "./roll-mode-badge";
 export { FamilyArchetypePicker } from "./family-archetype-picker";
-export type {
-  FamilyArchetypePickerProps,
-  FamilyArchetypeSelection,
-} from "./family-archetype-picker";
+export type { FamilyArchetypePickerProps, FamilyArchetypeSelection } from "./family-archetype-picker";
 export { TradingFamilyFilterBanner } from "./trading-family-filter-banner";
 export type { TradingFamilyFilterBannerProps } from "./trading-family-filter-banner";

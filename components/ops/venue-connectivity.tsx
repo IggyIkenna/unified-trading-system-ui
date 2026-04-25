@@ -4,27 +4,16 @@ import * as React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import {
-  Activity,
-  Wifi,
-  WifiOff,
-  Clock,
-  Gauge,
-  AlertTriangle,
-  CheckCircle2,
-  Zap,
-  Database,
-  Radio,
-} from "lucide-react";
+import { Activity, Wifi, WifiOff, Clock, Gauge, AlertTriangle, CheckCircle2, Zap, Database, Radio } from "lucide-react";
 
 type ConnectionType = "websocket" | "rest" | "batch" | "graphql" | "rpc";
 type CircuitState = "CLOSED" | "DEGRADED" | "OPEN";
-type VenueCategory = "CeFi" | "TradFi" | "DeFi" | "Sports";
+type VenueAssetGroup = "CeFi" | "TradFi" | "DeFi" | "Sports";
 
 interface VenueConnection {
   id: string;
   name: string;
-  category: VenueCategory;
+  assetGroup: VenueAssetGroup;
   connectionType: ConnectionType;
   status: "connected" | "disconnected" | "degraded";
   latency: { p50: number; p99: number };
@@ -42,7 +31,7 @@ const VENUE_CONNECTIONS: VenueConnection[] = [
   {
     id: "binance",
     name: "Binance",
-    category: "CeFi",
+    assetGroup: "CeFi",
     connectionType: "websocket",
     status: "connected",
     latency: { p50: 2, p99: 12 },
@@ -53,7 +42,7 @@ const VENUE_CONNECTIONS: VenueConnection[] = [
   {
     id: "okx",
     name: "OKX",
-    category: "CeFi",
+    assetGroup: "CeFi",
     connectionType: "websocket",
     status: "degraded",
     latency: { p50: 8, p99: 45 },
@@ -64,7 +53,7 @@ const VENUE_CONNECTIONS: VenueConnection[] = [
   {
     id: "bybit",
     name: "Bybit",
-    category: "CeFi",
+    assetGroup: "CeFi",
     connectionType: "websocket",
     status: "connected",
     latency: { p50: 3, p99: 18 },
@@ -75,7 +64,7 @@ const VENUE_CONNECTIONS: VenueConnection[] = [
   {
     id: "deribit",
     name: "Deribit",
-    category: "CeFi",
+    assetGroup: "CeFi",
     connectionType: "websocket",
     status: "connected",
     latency: { p50: 5, p99: 25 },
@@ -86,7 +75,7 @@ const VENUE_CONNECTIONS: VenueConnection[] = [
   {
     id: "hyperliquid",
     name: "Hyperliquid",
-    category: "CeFi",
+    assetGroup: "CeFi",
     connectionType: "websocket",
     status: "connected",
     latency: { p50: 1, p99: 8 },
@@ -97,7 +86,7 @@ const VENUE_CONNECTIONS: VenueConnection[] = [
   {
     id: "coinbase",
     name: "Coinbase",
-    category: "CeFi",
+    assetGroup: "CeFi",
     connectionType: "websocket",
     status: "connected",
     latency: { p50: 4, p99: 22 },
@@ -109,7 +98,7 @@ const VENUE_CONNECTIONS: VenueConnection[] = [
   {
     id: "ibkr",
     name: "IBKR",
-    category: "TradFi",
+    assetGroup: "TradFi",
     connectionType: "rest",
     status: "connected",
     latency: { p50: 45, p99: 120 },
@@ -120,7 +109,7 @@ const VENUE_CONNECTIONS: VenueConnection[] = [
   {
     id: "databento",
     name: "Databento",
-    category: "TradFi",
+    assetGroup: "TradFi",
     connectionType: "batch",
     status: "connected",
     latency: { p50: 0, p99: 0 },
@@ -131,7 +120,7 @@ const VENUE_CONNECTIONS: VenueConnection[] = [
   {
     id: "tardis",
     name: "Tardis",
-    category: "TradFi",
+    assetGroup: "TradFi",
     connectionType: "batch",
     status: "connected",
     latency: { p50: 0, p99: 0 },
@@ -143,7 +132,7 @@ const VENUE_CONNECTIONS: VenueConnection[] = [
   {
     id: "aave",
     name: "Aave V3",
-    category: "DeFi",
+    assetGroup: "DeFi",
     connectionType: "rpc",
     status: "connected",
     latency: { p50: 150, p99: 450 },
@@ -156,7 +145,7 @@ const VENUE_CONNECTIONS: VenueConnection[] = [
   {
     id: "uniswap",
     name: "Uniswap V3",
-    category: "DeFi",
+    assetGroup: "DeFi",
     connectionType: "rpc",
     status: "connected",
     latency: { p50: 120, p99: 380 },
@@ -169,7 +158,7 @@ const VENUE_CONNECTIONS: VenueConnection[] = [
   {
     id: "morpho",
     name: "Morpho",
-    category: "DeFi",
+    assetGroup: "DeFi",
     connectionType: "rpc",
     status: "connected",
     latency: { p50: 140, p99: 420 },
@@ -183,7 +172,7 @@ const VENUE_CONNECTIONS: VenueConnection[] = [
   {
     id: "betfair",
     name: "Betfair",
-    category: "Sports",
+    assetGroup: "Sports",
     connectionType: "rest",
     status: "connected",
     latency: { p50: 85, p99: 250 },
@@ -194,7 +183,7 @@ const VENUE_CONNECTIONS: VenueConnection[] = [
   {
     id: "pinnacle",
     name: "Pinnacle",
-    category: "Sports",
+    assetGroup: "Sports",
     connectionType: "rest",
     status: "degraded",
     latency: { p50: 120, p99: 450 },
@@ -205,7 +194,7 @@ const VENUE_CONNECTIONS: VenueConnection[] = [
   {
     id: "oddsapi",
     name: "Odds API",
-    category: "Sports",
+    assetGroup: "Sports",
     connectionType: "rest",
     status: "connected",
     latency: { p50: 200, p99: 600 },
@@ -246,23 +235,21 @@ interface VenueConnectivityProps {
 }
 
 export function VenueConnectivity({ className }: VenueConnectivityProps) {
-  // Group venues by category
+  // Group venues by asset group
   const groupedVenues = React.useMemo(() => {
-    const groups: Record<VenueCategory, VenueConnection[]> = {
+    const groups: Record<VenueAssetGroup, VenueConnection[]> = {
       CeFi: [],
       TradFi: [],
       DeFi: [],
       Sports: [],
     };
     VENUE_CONNECTIONS.forEach((v) => {
-      groups[v.category].push(v);
+      groups[v.assetGroup].push(v);
     });
     return groups;
   }, []);
 
-  const healthyCount = VENUE_CONNECTIONS.filter(
-    (v) => v.status === "connected" && v.circuitState === "CLOSED",
-  ).length;
+  const healthyCount = VENUE_CONNECTIONS.filter((v) => v.status === "connected" && v.circuitState === "CLOSED").length;
 
   return (
     <Card className={className}>
@@ -276,23 +263,15 @@ export function VenueConnectivity({ className }: VenueConnectivityProps) {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        {(
-          Object.entries(groupedVenues) as [VenueCategory, VenueConnection[]][]
-        ).map(([category, venues]) => (
-          <div key={category}>
-            <h4 className="text-sm font-medium text-muted-foreground mb-2">
-              {category}
-            </h4>
+        {(Object.entries(groupedVenues) as [VenueAssetGroup, VenueConnection[]][]).map(([assetGroup, venues]) => (
+          <div key={assetGroup}>
+            <h4 className="text-sm font-medium text-muted-foreground mb-2">{assetGroup}</h4>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
               {venues.map((venue) => {
-                const connConfig = getConnectionTypeConfig(
-                  venue.connectionType,
-                );
+                const connConfig = getConnectionTypeConfig(venue.connectionType);
                 const ConnIcon = connConfig.icon;
                 const circuitColor = getCircuitStateColor(venue.circuitState);
-                const isHealthy =
-                  venue.status === "connected" &&
-                  venue.circuitState === "CLOSED";
+                const isHealthy = venue.status === "connected" && venue.circuitState === "CLOSED";
 
                 return (
                   <div
@@ -322,14 +301,8 @@ export function VenueConnectivity({ className }: VenueConnectivityProps) {
 
                     {/* Connection Type */}
                     <div className="flex items-center gap-1.5 mb-2">
-                      <ConnIcon
-                        className="size-3"
-                        style={{ color: connConfig.color }}
-                      />
-                      <span
-                        className="text-xs"
-                        style={{ color: connConfig.color }}
-                      >
+                      <ConnIcon className="size-3" style={{ color: connConfig.color }} />
+                      <span className="text-xs" style={{ color: connConfig.color }}>
                         {connConfig.label}
                       </span>
                     </div>
@@ -347,17 +320,12 @@ export function VenueConnectivity({ className }: VenueConnectivityProps) {
 
                       {venue.rateLimitUsed > 0 && (
                         <div className="flex justify-between">
-                          <span className="text-muted-foreground">
-                            Rate limit:
-                          </span>
+                          <span className="text-muted-foreground">Rate limit:</span>
                           <span
                             className={cn(
                               "font-mono",
-                              venue.rateLimitUsed > 80 &&
-                                "text-[var(--status-error)]",
-                              venue.rateLimitUsed > 60 &&
-                                venue.rateLimitUsed <= 80 &&
-                                "text-[var(--status-warning)]",
+                              venue.rateLimitUsed > 80 && "text-[var(--status-error)]",
+                              venue.rateLimitUsed > 60 && venue.rateLimitUsed <= 80 && "text-[var(--status-warning)]",
                             )}
                           >
                             {venue.rateLimitUsed}% used
@@ -367,10 +335,7 @@ export function VenueConnectivity({ className }: VenueConnectivityProps) {
 
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Circuit:</span>
-                        <span
-                          className="font-mono"
-                          style={{ color: circuitColor }}
-                        >
+                        <span className="font-mono" style={{ color: circuitColor }}>
                           {venue.circuitState}
                         </span>
                       </div>
@@ -384,17 +349,13 @@ export function VenueConnectivity({ className }: VenueConnectivityProps) {
                       {venue.blockHeight && (
                         <div className="flex justify-between text-muted-foreground pt-1 border-t border-border/50 mt-1">
                           <span>Block:</span>
-                          <span className="font-mono">
-                            {venue.blockHeight.toLocaleString()}
-                          </span>
+                          <span className="font-mono">{venue.blockHeight.toLocaleString()}</span>
                         </div>
                       )}
                       {venue.gasPrice && (
                         <div className="flex justify-between text-muted-foreground">
                           <span>Gas:</span>
-                          <span className="font-mono">
-                            {venue.gasPrice} gwei
-                          </span>
+                          <span className="font-mono">{venue.gasPrice} gwei</span>
                         </div>
                       )}
                     </div>

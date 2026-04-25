@@ -12,7 +12,7 @@ describe("architecture-v2 facade (index.ts)", () => {
     expect(facade.STRATEGY_FAMILIES_V2).toBeDefined();
     expect(facade.STRATEGY_ARCHETYPES_V2).toBeDefined();
     expect(facade.ALLOCATOR_ARCHETYPES).toBeDefined();
-    expect(facade.VENUE_CATEGORIES_V2).toBeDefined();
+    expect(facade.VENUE_ASSET_GROUPS_V2).toBeDefined();
     expect(facade.ARCHETYPE_TO_FAMILY).toBeDefined();
   });
 

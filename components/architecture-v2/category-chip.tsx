@@ -1,13 +1,13 @@
 import { Badge } from "@/components/ui/badge";
-import type { VenueCategoryV2 } from "@/lib/architecture-v2";
+import type { VenueAssetGroupV2 } from "@/lib/architecture-v2";
 import { cn } from "@/lib/utils";
 
-interface CategoryChipProps {
-  category: VenueCategoryV2;
+interface AssetGroupChipProps {
+  assetGroup: VenueAssetGroupV2;
   className?: string;
 }
 
-const CATEGORY_STYLES: Readonly<Record<VenueCategoryV2, string>> = {
+const ASSET_GROUP_STYLES: Readonly<Record<VenueAssetGroupV2, string>> = {
   CEFI: "border-transparent bg-blue-500/15 text-blue-600 dark:text-blue-400",
   DEFI: "border-transparent bg-violet-500/15 text-violet-600 dark:text-violet-400",
   TRADFI: "border-transparent bg-slate-500/15 text-slate-700 dark:text-slate-300",
@@ -15,7 +15,7 @@ const CATEGORY_STYLES: Readonly<Record<VenueCategoryV2, string>> = {
   PREDICTION: "border-transparent bg-rose-500/15 text-rose-600 dark:text-rose-400",
 };
 
-const CATEGORY_LABEL: Readonly<Record<VenueCategoryV2, string>> = {
+const ASSET_GROUP_LABEL: Readonly<Record<VenueAssetGroupV2, string>> = {
   CEFI: "CeFi",
   DEFI: "DeFi",
   TRADFI: "TradFi",
@@ -23,13 +23,13 @@ const CATEGORY_LABEL: Readonly<Record<VenueCategoryV2, string>> = {
   PREDICTION: "Prediction",
 };
 
-export function CategoryChip({ category, className }: CategoryChipProps) {
+export function AssetGroupChip({ assetGroup, className }: AssetGroupChipProps) {
   return (
     <Badge
-      data-testid={`category-chip-${category}`}
-      className={cn(CATEGORY_STYLES[category], "font-mono text-[0.65rem]", className)}
+      data-testid={`asset-group-chip-${assetGroup}`}
+      className={cn(ASSET_GROUP_STYLES[assetGroup], "font-mono text-[0.65rem]", className)}
     >
-      {CATEGORY_LABEL[category]}
+      {ASSET_GROUP_LABEL[assetGroup]}
     </Badge>
   );
 }

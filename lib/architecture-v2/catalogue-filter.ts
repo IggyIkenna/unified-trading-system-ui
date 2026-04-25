@@ -10,23 +10,10 @@
  * filter state is local to the surface.
  */
 
-import type {
-  ProductRouting,
-  StrategyMaturityPhase,
-  VenueSetVariantId,
-} from "./lifecycle";
-import type {
-  ShareClass,
-  StrategyArchetype,
-  StrategyFamily,
-  VenueCategoryV2,
-} from "./enums";
+import type { ProductRouting, StrategyMaturityPhase, VenueSetVariantId } from "./lifecycle";
+import type { ShareClass, StrategyArchetype, StrategyFamily, VenueAssetGroupV2 } from "./enums";
 
-export type AllocationStatus =
-  | "subscribed"
-  | "available"
-  | "coming_soon"
-  | "not_routed";
+export type AllocationStatus = "subscribed" | "available" | "coming_soon" | "not_routed";
 
 export type CoverageStatus = "SUPPORTED" | "PARTIAL" | "BLOCKED";
 
@@ -35,6 +22,13 @@ export interface StrategyCatalogueFilter {
   /** Multi-family filter — used by questionnaire seeding. Superset of `family`. */
   readonly families?: readonly StrategyFamily[];
   readonly archetype?: StrategyArchetype;
+  /**
+   * 4-tier cascade leaf — instance / slot identifier (e.g. specific
+   * archetype@venue-instrument-timeframe slot). Optional; consumers may
+   * filter on any subset of family → archetype → instance.
+   * TODO 4-tier: wire instance-level matching when slot identity stabilises.
+   */
+  readonly instance?: string;
   readonly venueSetVariant?: VenueSetVariantId;
   readonly shareClass?: ShareClass;
   /** Multi-share-class filter from questionnaire share_class_preference. */
@@ -42,8 +36,8 @@ export interface StrategyCatalogueFilter {
   readonly maturityPhase?: StrategyMaturityPhase;
   readonly productRouting?: ProductRouting;
   readonly allocationStatus?: AllocationStatus;
-  /** Venue category filter — from questionnaire categories axis. */
-  readonly venueCategories?: readonly VenueCategoryV2[];
+  /** Venue asset-group filter — from questionnaire categories axis. */
+  readonly venueAssetGroups?: readonly VenueAssetGroupV2[];
   /** Coverage status filter — from questionnaire risk_profile axis. */
   readonly coverageStatuses?: readonly CoverageStatus[];
 }
@@ -54,9 +48,7 @@ export const EMPTY_CATALOGUE_FILTER: StrategyCatalogueFilter = {};
  * Serialise a filter into a `URLSearchParams`-compatible record. Empty fields
  * are omitted so the resulting query string is minimal.
  */
-export function serialiseCatalogueFilter(
-  filter: StrategyCatalogueFilter,
-): Record<string, string> {
+export function serialiseCatalogueFilter(filter: StrategyCatalogueFilter): Record<string, string> {
   const out: Record<string, string> = {};
   if (filter.family) out.family = filter.family;
   if (filter.families?.length) out.families = filter.families.join(",");
@@ -67,7 +59,7 @@ export function serialiseCatalogueFilter(
   if (filter.maturityPhase) out.maturity = filter.maturityPhase;
   if (filter.productRouting) out.routing = filter.productRouting;
   if (filter.allocationStatus) out.allocation = filter.allocationStatus;
-  if (filter.venueCategories?.length) out.venue_categories = filter.venueCategories.join(",");
+  if (filter.venueAssetGroups?.length) out.venue_asset_groups = filter.venueAssetGroups.join(",");
   if (filter.coverageStatuses?.length) out.coverage_statuses = filter.coverageStatuses.join(",");
   return out;
 }
@@ -97,7 +89,7 @@ export function parseCatalogueFilter(
     maturityPhase?: StrategyMaturityPhase;
     productRouting?: ProductRouting;
     allocationStatus?: AllocationStatus;
-    venueCategories?: readonly VenueCategoryV2[];
+    venueAssetGroups?: readonly VenueAssetGroupV2[];
     coverageStatuses?: readonly CoverageStatus[];
   } = {};
 
@@ -135,18 +127,15 @@ export function parseCatalogueFilter(
   }
 
   const allocation = get("allocation");
-  if (
-    allocation &&
-    ["subscribed", "available", "coming_soon", "not_routed"].includes(allocation)
-  ) {
+  if (allocation && ["subscribed", "available", "coming_soon", "not_routed"].includes(allocation)) {
     out.allocationStatus = allocation as AllocationStatus;
   }
 
-  const venueCatsRaw = get("venue_categories");
-  if (venueCatsRaw) {
+  const venueAgRaw = get("venue_asset_groups") ?? get("venue_categories");
+  if (venueAgRaw) {
     const valid: string[] = ["CEFI", "DEFI", "SPORTS", "TRADFI", "PREDICTION"];
-    const parsed = venueCatsRaw.split(",").filter((c) => valid.includes(c));
-    if (parsed.length) out.venueCategories = parsed as VenueCategoryV2[];
+    const parsed = venueAgRaw.split(",").filter((c) => valid.includes(c));
+    if (parsed.length) out.venueAssetGroups = parsed as VenueAssetGroupV2[];
   }
 
   const coverageRaw = get("coverage_statuses");
@@ -173,25 +162,18 @@ export function matchesFilter(
     readonly maturityPhase?: StrategyMaturityPhase;
     readonly productRouting?: ProductRouting;
     readonly allocationStatus?: AllocationStatus;
-    readonly venueCategory?: VenueCategoryV2 | null;
+    readonly venueAssetGroup?: VenueAssetGroupV2 | null;
     readonly coverageStatus?: CoverageStatus | null;
   },
 ): boolean {
   if (filter.family && instance.family !== filter.family) return false;
   if (filter.families?.length && !filter.families.includes(instance.family)) return false;
   if (filter.archetype && instance.archetype !== filter.archetype) return false;
-  if (
-    filter.venueSetVariant &&
-    instance.venueSetVariantId !== filter.venueSetVariant
-  ) {
+  if (filter.venueSetVariant && instance.venueSetVariantId !== filter.venueSetVariant) {
     return false;
   }
   if (filter.shareClass && instance.shareClass !== filter.shareClass) return false;
-  if (
-    filter.shareClasses?.length &&
-    instance.shareClass &&
-    !filter.shareClasses.includes(instance.shareClass)
-  ) {
+  if (filter.shareClasses?.length && instance.shareClass && !filter.shareClasses.includes(instance.shareClass)) {
     return false;
   }
   if (filter.maturityPhase && instance.maturityPhase !== filter.maturityPhase) {
@@ -200,16 +182,13 @@ export function matchesFilter(
   if (filter.productRouting && instance.productRouting !== filter.productRouting) {
     return false;
   }
-  if (
-    filter.allocationStatus &&
-    instance.allocationStatus !== filter.allocationStatus
-  ) {
+  if (filter.allocationStatus && instance.allocationStatus !== filter.allocationStatus) {
     return false;
   }
   if (
-    filter.venueCategories?.length &&
-    instance.venueCategory &&
-    !filter.venueCategories.includes(instance.venueCategory)
+    filter.venueAssetGroups?.length &&
+    instance.venueAssetGroup &&
+    !filter.venueAssetGroups.includes(instance.venueAssetGroup)
   ) {
     return false;
   }
