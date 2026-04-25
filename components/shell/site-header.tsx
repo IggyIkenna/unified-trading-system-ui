@@ -172,47 +172,69 @@ export function SiteHeader() {
                 </Link>
               ))}
               <div className="mt-3 border-t border-border/40 pt-3">
-                <p className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70">
-                  Deep Dive
-                </p>
-                {DEEP_DIVE_HEADLINE.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={() => setMobileOpen(false)}
-                    className={cn(
-                      "block rounded-md px-3 py-1.5 text-sm transition-colors hover:bg-accent hover:text-accent-foreground",
-                      isNavItemActive(pathname, hash, item.href)
-                        ? "bg-accent font-medium text-accent-foreground"
-                        : "text-muted-foreground",
-                    )}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
+                {/*
+                  Deep Dive — single bordered lock card. Pre-unlock: shows
+                  the lock icon, an "ACCESS CODE REQUIRED" tag, and a
+                  "Request access →" link to /questionnaire. Post-unlock:
+                  chevron expands to reveal the briefings hub + per-pillar
+                  list + non-prod sign-out. One affordance, easy to grok.
+                */}
                 <button
                   type="button"
                   onClick={() => setBriefingsExpanded((v) => !v)}
                   aria-expanded={briefingsExpanded}
-                  aria-controls="deep-dive-briefings-list"
-                  className="flex w-full items-center justify-between rounded-md px-3 py-1.5 text-left text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                  data-testid="deep-dive-briefings-toggle"
+                  aria-controls="deep-dive-content"
+                  data-testid="deep-dive-toggle"
+                  className={cn(
+                    "flex w-full items-center justify-between rounded-md border px-3 py-2 text-left text-sm transition-colors hover:bg-accent hover:text-accent-foreground",
+                    briefingSessionActive ? "border-border/50 text-foreground" : "border-amber-500/40 text-foreground",
+                  )}
                 >
                   <span className="flex items-center gap-2">
-                    Briefings
-                    {briefingSessionActive ? null : (
-                      <Lock className="size-3 text-muted-foreground/60" aria-label="Locked — request access code" />
-                    )}
+                    {briefingSessionActive ? null : <Lock className="size-4 text-amber-500" aria-hidden />}
+                    <span className="font-semibold">Deep Dive</span>
                   </span>
                   {briefingsExpanded ? (
-                    <ChevronDown className="size-3.5" aria-hidden />
+                    <ChevronDown className="size-4 text-muted-foreground" aria-hidden />
                   ) : (
-                    <ChevronRight className="size-3.5" aria-hidden />
+                    <ChevronRight className="size-4 text-muted-foreground" aria-hidden />
                   )}
                 </button>
+                {!briefingSessionActive && !briefingsExpanded ? (
+                  <div className="mt-1 flex flex-col gap-0.5 px-3" data-testid="deep-dive-locked-summary">
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-amber-500">
+                      Access code required
+                    </span>
+                    <Link
+                      href="/questionnaire"
+                      onClick={() => setMobileOpen(false)}
+                      className="text-sm font-medium text-cyan-400 hover:underline"
+                      data-testid="deep-dive-request-access"
+                    >
+                      Request access →
+                    </Link>
+                  </div>
+                ) : null}
                 {briefingsExpanded ? (
-                  <div id="deep-dive-briefings-list" className="ml-2 border-l border-border/30 pl-2">
-                    {DEEP_DIVE_BRIEFINGS.map((item) => (
+                  <div id="deep-dive-content" className="mt-1">
+                    {!briefingSessionActive ? (
+                      <div className="mb-2 rounded-md bg-amber-500/5 px-3 py-2">
+                        <p className="text-[10px] font-semibold uppercase tracking-wider text-amber-500">
+                          Access code required
+                        </p>
+                        <Link
+                          href="/questionnaire"
+                          onClick={() => setMobileOpen(false)}
+                          className="mt-0.5 inline-block text-sm font-medium text-cyan-400 hover:underline"
+                        >
+                          Request access →
+                        </Link>
+                      </div>
+                    ) : null}
+                    {DEEP_DIVE_HEADLINE.filter((item) =>
+                      // Hide "Request access code" once unlocked — they don't need that path anymore.
+                      briefingSessionActive ? item.href !== "/questionnaire" : true,
+                    ).map((item) => (
                       <Link
                         key={item.href}
                         href={item.href}
@@ -227,10 +249,27 @@ export function SiteHeader() {
                         {item.label}
                       </Link>
                     ))}
+                    <div className="mt-1 ml-2 border-l border-border/30 pl-2">
+                      {DEEP_DIVE_BRIEFINGS.map((item) => (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          onClick={() => setMobileOpen(false)}
+                          className={cn(
+                            "block rounded-md px-3 py-1.5 text-sm transition-colors hover:bg-accent hover:text-accent-foreground",
+                            isNavItemActive(pathname, hash, item.href)
+                              ? "bg-accent font-medium text-accent-foreground"
+                              : "text-muted-foreground",
+                          )}
+                        >
+                          {item.label}
+                        </Link>
+                      ))}
+                    </div>
+                    {/* Non-prod-only "Sign out of Briefings" — clears localStorage flag for testers. */}
+                    <BriefingSignOutLink className="mt-1" />
                   </div>
                 ) : null}
-                {/* Non-prod-only "Sign out of Briefings" — clears localStorage flag for testers / shared computers. */}
-                <BriefingSignOutLink className="mt-1" />
               </div>
               <div className="mt-3 border-t border-border/40 pt-3">
                 {NAV_SECONDARY.map((item) => (

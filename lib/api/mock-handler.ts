@@ -6157,8 +6157,25 @@ export function installMockHandler(): void {
   window.fetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
     const url = typeof input === "string" ? input : input instanceof URL ? input.toString() : input.url;
     if (url.startsWith("/api/")) {
-      // Let real Next.js API routes pass through to the server
-      if (url.startsWith("/api/onboarding/")) {
+      // Let real Next.js API routes pass through to the server.
+      // These routes have actual server-side handlers (Admin SDK / Resend /
+      // Firestore writes) and must NOT be intercepted by the mock layer:
+      //   /api/onboarding/*       — KYC document upload + signed-URL download
+      //   /api/questionnaire/*    — Resend email send (sandbox-routed locally)
+      //   /api/strategy-evaluation/* — magic-link submit + status + draft
+      //   /api/auth/*             — send-reset / send-verification
+      //   /api/admin/set-claims   — Firebase custom claims
+      //   /api/v1/*               — native admin SDK + Firestore CRUD surface
+      //                              (replaces retired user-management-api)
+      const realRoutePrefixes = [
+        "/api/onboarding/",
+        "/api/questionnaire/",
+        "/api/strategy-evaluation/",
+        "/api/auth/",
+        "/api/admin/",
+        "/api/v1/",
+      ];
+      if (realRoutePrefixes.some((prefix) => url.startsWith(prefix))) {
         return originalFetch(input, init);
       }
       const mockResponse = mockRoute(url, init);

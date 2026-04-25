@@ -11,8 +11,20 @@
 
 import { NextResponse } from "next/server";
 import { sendEmail, getSenderFor, escapeHtml } from "@/lib/email/resend";
+import { CALENDLY_URL } from "@/lib/marketing/calendly";
 
 const INTERNAL_ADDRESS = "info@odum-research.com";
+
+/**
+ * Returns the global Deep Dive access code if one is configured for the
+ * current build, otherwise null. We expose this in the confirmation email
+ * so a returning visitor on a different browser can paste it into the
+ * /briefings gate without needing to re-fill the form.
+ */
+function getDeepDiveAccessCode(): string | null {
+  const code = process.env.NEXT_PUBLIC_BRIEFING_ACCESS_CODE ?? "";
+  return code.length > 0 ? code : null;
+}
 
 const SERVICE_FAMILY_LABELS: Record<string, string> = {
   DART: "DART — Data Analytics, Research & Trading",
@@ -153,26 +165,50 @@ export async function POST(request: Request) {
     )
     .join("");
 
+  const accessCode = getDeepDiveAccessCode();
+  const accessCodeBlock = accessCode
+    ? `
+      <div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:6px;padding:14px 16px;margin:20px 0;font-size:14px">
+        <p style="margin:0;font-weight:600;color:#92400e">Your Deep Dive access code</p>
+        <p style="margin:8px 0 0;font-family:'SF Mono',Menlo,monospace;font-size:18px;letter-spacing:0.04em;color:#451a03;font-weight:600">
+          ${escapeHtml(accessCode)}
+        </p>
+        <p style="margin:8px 0 0;color:#78350f;font-size:13px">
+          This browser is already unlocked. Use this code to open the briefings hub from
+          any other device.
+        </p>
+      </div>`
+    : "";
+
   const html = `
     <div style="font-family:sans-serif;max-width:640px;margin:0 auto;color:#111">
       <h2 style="margin-bottom:4px">Thanks for your questionnaire</h2>
       <p style="color:#6b7280;margin-top:0">
-        Below is what we received for <strong>${escapeHtml(serviceName)}</strong>${
+        ${escapeHtml(serviceName)}${
           body.firmName ? ` (${escapeHtml(body.firmName)})` : ""
-        }. A copy of this email has been sent to our team — we'll review it and be in touch.
+        } — your submission is in. Here's what happens next.
       </p>
-      <table style="border-collapse:collapse;width:100%;font-family:sans-serif;font-size:14px;margin-top:16px;border:1px solid #e5e7eb;border-radius:6px;overflow:hidden">
-        ${tableRows}
-      </table>
-      <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px;padding:14px 16px;margin:24px 0;font-size:14px">
-        <p style="margin:0;font-weight:600;color:#15803d">After our intro call</p>
-        <p style="margin:6px 0 0;color:#166534">
-          We'll set you up in our sandbox at
-          <a href="https://uat.odum-research.com" style="color:#15803d;font-weight:600">uat.odum-research.com</a>
-          — a curated demo environment configured to your stack so you can see the
-          platform end-to-end before any commitment.
+      ${accessCodeBlock}
+      <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:6px;padding:14px 16px;margin:20px 0;font-size:14px">
+        <p style="margin:0;font-weight:600;color:#1d4ed8">Book a 30-minute walk-through call</p>
+        <p style="margin:8px 0 0;color:#1e40af">
+          <a href="${CALENDLY_URL}" style="color:#1d4ed8;font-weight:600">Pick a slot on the calendar →</a>
         </p>
       </div>
+      <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;padding:14px 16px;margin:20px 0;font-size:14px;color:#374151">
+        <p style="margin:0;font-weight:600;color:#111">What happens after the call</p>
+        <ol style="margin:8px 0 0 18px;padding:0;color:#374151;line-height:1.6">
+          <li>Strategy Evaluation pack — a deeper questionnaire about your specific strategies + risk model.</li>
+          <li>Curated Sandbox demo — your stack, your strategies, mocked data, end-to-end on uat.odum-research.com.</li>
+          <li>Production onboarding — sign engagement docs, then live access.</li>
+        </ol>
+      </div>
+      <details style="margin:20px 0;color:#6b7280;font-size:13px">
+        <summary style="cursor:pointer;font-weight:600;color:#374151">What you submitted</summary>
+        <table style="border-collapse:collapse;width:100%;font-family:sans-serif;font-size:13px;margin-top:8px;border:1px solid #e5e7eb;border-radius:6px;overflow:hidden">
+          ${tableRows}
+        </table>
+      </details>
       <p style="color:#6b7280;font-size:13px;margin-top:24px">
         Anything you'd like to clarify or change? Reply to this email or contact us at
         <a href="mailto:info@odum-research.com" style="color:#111">info@odum-research.com</a>.

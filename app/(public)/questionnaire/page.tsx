@@ -35,12 +35,14 @@
 
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 
-import Link from "next/link";
-import { setBriefingSessionActive } from "@/lib/briefings/session";
 import { readConsent } from "@/components/marketing/cookie-consent-banner";
+import { Term } from "@/components/marketing/term";
+import { setBriefingSessionActive } from "@/lib/briefings/session";
+import { persistResolvedPersona, resolvePersonaFromQuestionnaire } from "@/lib/questionnaire/resolve-persona";
+import { fingerprintAccessCode, submitQuestionnaire, type SubmitResult } from "@/lib/questionnaire/submit";
 import type {
   QuestionnaireCategory,
   QuestionnaireEnvelope,
@@ -62,9 +64,8 @@ import {
   QUESTIONNAIRE_SERVICE_FAMILIES,
   QUESTIONNAIRE_STRATEGY_STYLES,
 } from "@/lib/questionnaire/types";
-import { fingerprintAccessCode, submitQuestionnaire, type SubmitResult } from "@/lib/questionnaire/submit";
-import { persistResolvedPersona, resolvePersonaFromQuestionnaire } from "@/lib/questionnaire/resolve-persona";
-import { Term } from "@/components/marketing/term";
+import { Lock } from "lucide-react";
+import Link from "next/link";
 
 /**
  * Map of strategy_style enum values to glossary IDs (lib/glossary.ts).
@@ -303,8 +304,8 @@ function QuestionnaireForm() {
         sink: "localStorage",
         error:
           consent === "declined"
-            ? "Please accept the cookie banner at the bottom of the page to continue — we need to store a small flag in your browser so the access code we send unlocks the briefings hub on your next visit."
-            : "Please accept the cookie banner at the bottom of the page to continue.",
+            ? "Please accept the consent banner at the bottom of the page to continue — we need to store a small flag in your browser so the access code we send unlocks the briefings hub on your next visit."
+            : "Please accept the consent banner at the bottom of the page to continue.",
       });
       // Scroll to the banner so it's visible if they missed it.
       if (typeof window !== "undefined") {
@@ -408,25 +409,46 @@ function QuestionnaireForm() {
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-12" data-testid="questionnaire-page">
+      {/* "Already have a code?" affordance — top of the page so a returning
+          visitor on a different browser sees it before scrolling the form. */}
       <div
         data-testid="questionnaire-have-code-affordance"
         className="mb-6 flex items-center justify-between rounded-md border border-border/60 bg-muted/30 px-4 py-3 text-sm"
       >
-        <span className="text-muted-foreground">Already have a Deep Dive access code?</span>
+        <span className="flex items-center gap-2 text-muted-foreground">
+          <span aria-hidden className="text-base">
+            🔑
+          </span>
+          Already have an access code?
+        </span>
         <Link
           href="/briefings"
-          className="font-medium text-foreground underline-offset-4 hover:underline"
+          className="font-medium text-cyan-400 hover:text-cyan-300 hover:underline"
           data-testid="questionnaire-enter-code-link"
         >
-          Enter it →
+          Click here →
         </Link>
       </div>
 
-      <h1 className="text-3xl font-semibold">Tell us about your strategy</h1>
-      <p className="mt-2 text-slate-500">
-        Six quick questions (plus a Regulatory Umbrella branch if you need FCA cover). Submit and we&apos;ll email you a
-        Deep Dive access code + a calendar link to book a first call.
-      </p>
+      {/* Hero card explaining what this page is + what happens on submit.
+          Matches the layout the operator preferred in the previous version
+          of the website — clear gating rationale up front, sets expectation
+          before the form. */}
+      <div data-testid="questionnaire-hero-card" className="mb-8 rounded-md border border-border/60 px-6 py-5">
+        <h1 className="flex items-center gap-3 text-2xl font-semibold">
+          <Lock className="size-6 text-amber-500" aria-hidden />
+          Deep Dive — request access
+        </h1>
+        <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+          For confidentiality, the briefings, developer docs, founder story, and the live Sandbox demo are gated. Tell
+          us about your firm and stack below — six quick questions — and we&apos;ll tailor what you see.
+        </p>
+        <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+          On submit you&apos;ll unlock the Deep Dive immediately, get an emailed code for return visits, and a Calendly
+          link to book a 30-minute walk-through call. The Strategy Evaluation pack is the next step after that —
+          required to unlock the curated Sandbox demo.
+        </p>
+      </div>
 
       <form onSubmit={onSubmit} className="mt-8 space-y-8" data-testid="questionnaire-form">
         {/* 1. Categories */}
