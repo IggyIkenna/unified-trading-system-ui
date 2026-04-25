@@ -44,6 +44,13 @@ function isDevSink(): boolean {
   return window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
 }
 
+/** Strip the optional `submissionId` field — Firestore rejects undefined. */
+function stripSubmissionId(envelope: QuestionnaireEnvelope): Omit<QuestionnaireEnvelope, "submissionId"> {
+  const { submissionId: _omit, ...rest } = envelope;
+  void _omit;
+  return rest;
+}
+
 async function submitToFirestore(
   response: QuestionnaireResponse,
   envelope: QuestionnaireEnvelope | null,
@@ -62,11 +69,13 @@ async function submitToFirestore(
         error: "Firebase is not configured in this environment",
       };
     }
+    // Peel `submissionId` off before writing — Firestore rejects undefined
+    // values with "Unsupported field value: undefined", and the doc id is
+    // what we'd be storing the submissionId AS, so it's redundant anyway.
+    const submittedBy = envelope !== null ? stripSubmissionId(envelope) : null;
     const docRef = await addDoc(collection(db, "questionnaires"), {
       ...response,
-      ...(envelope !== null
-        ? { submitted_by: { ...envelope, submissionId: undefined } }
-        : {}),
+      ...(submittedBy !== null ? { submitted_by: submittedBy } : {}),
       submittedAt: serverTimestamp(),
     });
     if (envelope !== null && typeof window !== "undefined") {
@@ -94,10 +103,7 @@ async function submitToFirestore(
   }
 }
 
-function submitToLocalStorage(
-  response: QuestionnaireResponse,
-  envelope: QuestionnaireEnvelope | null,
-): SubmitResult {
+function submitToLocalStorage(response: QuestionnaireResponse, envelope: QuestionnaireEnvelope | null): SubmitResult {
   try {
     const submissionId = `q-local-${Date.now()}`;
     const payload = {
@@ -153,10 +159,9 @@ export function readLocalSubmission(): QuestionnaireResponse | null {
     if (!raw) return null;
     const parsed = JSON.parse(raw) as QuestionnaireResponse & { submissionId?: string };
     // Strip helper fields before returning the pure response.
-    const { categories, instrument_types, venue_scope, strategy_style, service_family, fund_structure } =
-      parsed;
+    const { categories, instrument_types, venue_scope, strategy_style, service_family, fund_structure } = parsed;
     // fund_structure was stored as a string in older records; normalise to array.
-    const normFundStructure = Array.isArray(fund_structure) ? fund_structure : (fund_structure ? [fund_structure] : []);
+    const normFundStructure = Array.isArray(fund_structure) ? fund_structure : fund_structure ? [fund_structure] : [];
     return {
       categories,
       instrument_types,
