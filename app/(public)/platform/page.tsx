@@ -7,23 +7,30 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 /**
- * Public engagement-route page for DART Trading Infrastructure.
+ * Public DART Trading Infrastructure page — controlled institutional overview.
  *
- * Phase 2 of marketing_site_three_route_consolidation_2026_04_26 collapsed
- * /platform/signals-in, /platform/full, and /signals into in-page anchors on
- * this single page. The legacy URLs 301-redirect here:
- *   /platform/signals-in → /platform#signals-in-capability
- *   /platform/full       → /platform#full-stack-capability
- *   /signals             → /platform#signals-capability
+ * Per `marketing_site_three_route_consolidation_2026_04_26.plan.md` Phase 6 + user
+ * review 2026-04-26: this page does ONE job — explain that DART is the
+ * infrastructure layer behind Odum-managed strategies, available to selected
+ * clients in three workflow shapes (client signals / full pipeline / Odum
+ * signals).
  *
- * The page is intentionally slim — depth lives behind the briefings access
- * code at /briefings/dart-trading-infrastructure. Public copy stays minimal
- * per Completion Patch §C (1,000–1,400 word budget).
+ * Public copy MUST NOT include: "eight-field schema", "your code never crosses
+ * the wire", "strategy catalogue / maturity ladder / promotion ledger" detail,
+ * "client-exclusivity applies" commercial framing, "Unified Trading API" or
+ * /docs links, "Odum's own capital" framing. That material lives in:
+ *   /briefings/dart-trading-infrastructure — gated buyer education
+ *   /strategy-review                       — prospect-specific structure
+ *   signed-in DART surfaces / docs         — implementation detail
+ *
+ * In-page anchors (#signals-in-capability, #full-stack-capability,
+ * #signals-capability) are preserved so legacy 301 redirects still land on
+ * meaningful sections.
  */
 export const metadata: Metadata = {
   title: `${SERVICE_LABELS.dart.marketing} | Odum Research`,
   description:
-    "DART is the trading infrastructure Odum uses to build, research, execute, and monitor its own systematic strategies. Available to clients with research-to-execution workflow, signals capability (client-provided / Odum-provided / hybrid), and reporting overlay.",
+    "DART is the infrastructure layer behind Odum-managed strategies, available to selected clients who need a controlled path from research to execution, monitoring, and reporting.",
 };
 
 export default function MarketingPlatformPage() {
@@ -38,80 +45,76 @@ export default function MarketingPlatformPage() {
             </Badge>
             <h1 className="text-3xl font-bold">{SERVICE_LABELS.dart.marketing}</h1>
             <p className="mt-4 text-lg text-muted-foreground">
-              The infrastructure layer behind Odum&apos;s own systematic strategies, available to selected clients who
-              need a controlled path from research to execution, monitoring, and reporting.
+              DART is the infrastructure layer behind {SERVICE_LABELS.investment.marketing}, available to selected
+              clients who need a controlled path from research to execution, monitoring, and reporting.
             </p>
             <div className="mt-6 flex flex-wrap justify-center gap-3">
               <Button asChild>
-                <Link href={`/briefings/${BRIEFING_SLUGS.dart}`}>
-                  Read the DART briefing <ArrowRight className="ml-2 size-4" />
+                <Link href={PUBLIC_ROUTE_PATHS.startYourReview}>
+                  Start Your Review <ArrowRight className="ml-2 size-4" />
                 </Link>
               </Button>
               <Button asChild variant="outline">
-                <Link href={PUBLIC_ROUTE_PATHS.startYourReview}>Start Your Review</Link>
+                <Link href={PUBLIC_ROUTE_PATHS.contact}>Contact Odum</Link>
               </Button>
             </div>
             <p className="mt-3 text-xs text-muted-foreground">
-              Briefings are gated. Start your review to receive an access code.
+              Briefings are gated. Start your review to receive access to the relevant DART briefing.
             </p>
           </div>
 
           {/* Three DART capabilities — in-page anchors target legacy redirects */}
           <div className="mb-12">
-            <h2 className="mb-6 text-center text-2xl font-semibold">DART capabilities</h2>
+            <h2 className="mb-3 text-center text-2xl font-semibold">DART capabilities</h2>
             <p className="mb-8 text-center text-sm text-muted-foreground">
-              DART supports client-provided signals, Odum-provided signals, or hybrid workflows depending on the agreed
-              engagement scope.
+              DART can support client-provided signals, Odum-provided signals, or hybrid workflows depending on the
+              agreed engagement scope.
             </p>
 
             <div className="space-y-6">
-              {/* Signals-In capability */}
+              {/* Client-provided signals */}
               <Card id="signals-in-capability" className="scroll-mt-24">
                 <CardHeader>
                   <Badge variant="outline" className="w-fit mb-2">
                     Client &rarr; Odum
                   </Badge>
-                  <CardTitle>Signals-In</CardTitle>
+                  <CardTitle>Client-provided signals</CardTitle>
                   <CardDescription>
-                    Your strategy runs on your infrastructure; structured instructions flow into Odum&apos;s execution,
-                    reconciliation, and reporting stack. Your code never crosses the wire.
+                    For teams that want to keep research and signal generation on their own infrastructure while using
+                    Odum for execution, reconciliation, monitoring, and reporting.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-2 text-sm text-muted-foreground">
-                    <li>Structured instructions against an eight-field schema.</li>
-                    <li>Odum runs execution, reconciliation, positions, and reporting.</li>
-                    <li>Research and backtest layers stay with your team.</li>
+                    <li>Your research stack stays with your team.</li>
+                    <li>Odum receives structured trading instructions.</li>
+                    <li>Execution, positions, reconciliation, and reporting run through DART.</li>
                   </ul>
                 </CardContent>
               </Card>
 
-              {/* Full DART capability */}
+              {/* Full research-to-execution */}
               <Card id="full-stack-capability" className="scroll-mt-24">
                 <CardHeader>
                   <Badge variant="outline" className="w-fit mb-2">
                     Research &rarr; Execution
                   </Badge>
-                  <CardTitle>Full research-to-execution pipeline</CardTitle>
+                  <CardTitle>Full research-to-execution workflow</CardTitle>
                   <CardDescription>
-                    Research, promote through paper, and run live on the same stack Odum uses for its own capital.
+                    For teams that want to use more of the DART stack, from research and testing through to live trading
+                    and observation.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-2 text-sm text-muted-foreground">
-                    <li>
-                      Enriched data services, research, backtesting, promotion, execution, trading, and observation.
-                    </li>
-                    <li>The strategy catalogue, maturity ladder, and promotion ledger are visible end-to-end.</li>
-                    <li>
-                      <strong>Your IP stays yours:</strong> client-exclusivity applies where appropriate &mdash; Odum
-                      does not run your strategy on its own book, and other clients do not run it either.
-                    </li>
+                    <li>Research, testing, promotion, and live trading in one controlled workflow.</li>
+                    <li>Shared monitoring and reporting across the engagement.</li>
+                    <li>Suitable where the client wants a more integrated operating model.</li>
                   </ul>
                 </CardContent>
               </Card>
 
-              {/* Odum-provided signals capability */}
+              {/* Odum-provided signals */}
               <Card id="signals-capability" className="scroll-mt-24">
                 <CardHeader>
                   <Badge variant="outline" className="w-fit mb-2">
@@ -119,64 +122,85 @@ export default function MarketingPlatformPage() {
                   </Badge>
                   <CardTitle>Odum-provided signals</CardTitle>
                   <CardDescription>
-                    Where appropriate, DART can supply Odum-generated signals to counterparties who execute on their own
-                    infrastructure. Available by separate agreement.
+                    Where appropriate, DART can support Odum-generated signals for counterparties or clients who execute
+                    through their own approved infrastructure.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-2 text-sm text-muted-foreground">
-                    <li>Counterparty receives signals; execution stays with the counterparty.</li>
-                    <li>Delivery, observability, and acknowledgement reporting included.</li>
-                    <li>Engagement scope and counterparty fit assessed case by case.</li>
+                    <li>Signals are delivered under an agreed scope.</li>
+                    <li>Execution can remain with the counterparty.</li>
+                    <li>Reporting and acknowledgement workflows are agreed case by case.</li>
                   </ul>
                 </CardContent>
               </Card>
             </div>
           </div>
 
-          {/* Dashboard vs API — operating model context */}
-          <div className="mb-12 rounded-lg border border-border bg-card/50 p-6">
-            <h2 className="text-lg font-semibold">Dashboard vs API</h2>
-            <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-              Day-to-day work runs in the authenticated platform: the post-login services portal (dashboard, data,
-              research, trading, observe, reports &mdash; sliced to your entitlements). The same operations are
-              available programmatically where we ship endpoints: the Unified Trading API and service REST APIs,
-              documented at{" "}
-              <Link href="/docs" className="font-medium text-foreground underline-offset-4 hover:underline">
-                /docs
-              </Link>
-              .
-            </p>
-          </div>
+          {/* Dashboard and API access — high-level only */}
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle>Dashboard and API access</CardTitle>
+              <CardDescription>
+                Day-to-day work happens inside the authenticated platform, with access scoped to the agreed engagement.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="text-sm text-muted-foreground">
+              <p>
+                Where available, selected workflows can also be accessed programmatically through documented APIs.
+                Detailed documentation is provided inside the appropriate gated or signed-in area.
+              </p>
+            </CardContent>
+          </Card>
 
           {/* Adjacent engagement routes */}
-          <div className="rounded-lg border border-border bg-card/50 p-6">
-            <h2 className="text-lg font-semibold">Adjacent engagement routes</h2>
+          <div className="rounded-lg border border-border bg-card/30 p-6">
+            <h2 className="text-sm font-semibold text-foreground">Adjacent engagement routes</h2>
             <p className="mt-2 text-sm text-muted-foreground">DART is one of three public engagement routes:</p>
             <ul className="mt-4 space-y-2 text-sm">
               <li>
                 <Link
-                  href="/investment-management"
+                  href={PUBLIC_ROUTE_PATHS.investment}
                   className="font-medium text-foreground underline-offset-4 hover:underline"
                 >
                   {SERVICE_LABELS.investment.marketing}
                 </Link>
                 <span className="text-muted-foreground">
                   {" "}
-                  &mdash; allocate capital to Odum-run strategies under the same reporting surface.
+                  &mdash; for clients allocating to selected systematic strategies managed by Odum.
                 </span>
               </li>
               <li>
-                <Link href="/regulatory" className="font-medium text-foreground underline-offset-4 hover:underline">
+                <Link
+                  href={PUBLIC_ROUTE_PATHS.regulatory}
+                  className="font-medium text-foreground underline-offset-4 hover:underline"
+                >
                   {SERVICE_LABELS.regulatory.marketing}
                 </Link>
                 <span className="text-muted-foreground">
                   {" "}
-                  &mdash; structure the engagement around the right governance, permissions, and reporting where
-                  required.
+                  &mdash; for engagements that require additional governance, reporting, permissions, or
+                  affiliate-supported structuring.
                 </span>
               </li>
             </ul>
+          </div>
+
+          {/* Final CTA */}
+          <div className="mt-10 rounded-lg border border-border bg-card/50 p-6 text-center">
+            <h2 className="text-lg font-semibold">Start with a review</h2>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Start with a review so we can understand whether DART, {SERVICE_LABELS.investment.marketing}, or a{" "}
+              {SERVICE_LABELS.regulatory.marketing.toLowerCase()} is the right route.
+            </p>
+            <div className="mt-4 flex flex-wrap justify-center gap-3">
+              <Button asChild>
+                <Link href={PUBLIC_ROUTE_PATHS.startYourReview}>Start Your Review</Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href={`/briefings/${BRIEFING_SLUGS.dart}`}>Open the DART briefing (gated)</Link>
+              </Button>
+            </div>
           </div>
         </div>
       </main>

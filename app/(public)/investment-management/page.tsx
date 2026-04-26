@@ -1,5 +1,3 @@
-import { FundSmaHierarchyDiagram } from "@/components/marketing/fund-sma-hierarchy-diagram";
-import { Term } from "@/components/marketing/term";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,23 +7,28 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 /**
- * Investment Management — public marketing page.
+ * Public Odum-Managed Strategies page — controlled institutional overview.
  *
- * Content axes: custody mechanic (Odum never custodies; execute+read API key
- * for SMA; fund admin via regulated affiliate for Pooled), client-slice
- * visibility framing, performance-fee mechanic (no numbers), same-system
- * claim. Fund/SMA hierarchy diagram is tracked separately.
+ * Per `marketing_site_three_route_consolidation_2026_04_26.plan.md` Phase 6 + user
+ * review 2026-04-26: this page does ONE job — explain that Odum acts as investment
+ * manager for selected systematic strategies through SMA or fund-route structures
+ * where appropriate, with reporting and governance scoped per mandate.
  *
- * Codex SSOT:
- *   codex/14-playbooks/_ssot-rules/03-same-system-principle.md
- *   codex/14-playbooks/_ssot-rules/im-profit-share-structures.md
- *   codex/14-playbooks/shared-core/fund-administration-and-custody.md
- *   codex/14-playbooks/playbooks/04-investment-management.md
+ * Public copy MUST NOT include: Fund/SMA hierarchy diagram, "same codebase /
+ * partitioned views" language, detailed custody mechanics (scoped API keys,
+ * no-withdrawal authority), client-confidentiality data-layer detail, maturity
+ * ladder detail, stress-scenario detail, fee-structure mechanics (band /
+ * crystallisation), share-class mechanics, "second call" / "dashboard our traders
+ * look at every morning" framing, or strategy catalogue exposure. That material
+ * lives in:
+ *   /briefings/investment-management — gated allocator briefing
+ *   /strategy-review                 — prospect-specific structure
+ *   signed-in allocator/onboarding   — implementation detail
  */
 export const metadata: Metadata = {
   title: `${SERVICE_LABELS.investment.marketing} | Odum Research`,
   description:
-    "Allocate capital to selected systematic strategies managed by Odum across digital assets, traditional markets, sports, and prediction markets. FCA-regulated. Same reporting surface Odum uses internally; client-slice visibility only.",
+    "Allocate capital to selected systematic strategies managed by Odum. Eligible clients can engage through SMA or fund-route structures where appropriate. Mandate terms reviewed case by case.",
 };
 
 export default function InvestmentManagementPage() {
@@ -36,208 +39,191 @@ export default function InvestmentManagementPage() {
           {/* Hero */}
           <div className="mb-12">
             <div className="mb-3 flex flex-wrap items-center gap-2">
-              <Badge variant="outline">
-                <Term id="im">Investment Management</Term>
-              </Badge>
-              <Badge variant="outline">
-                <Term id="pooled">Pooled</Term> fund or <Term id="sma">SMA</Term>
-              </Badge>
+              <Badge variant="outline">Allocator route</Badge>
+              <Badge variant="outline">Pooled fund or SMA</Badge>
             </div>
             <h1 className="text-3xl font-bold">{SERVICE_LABELS.investment.marketing}</h1>
             <p className="mt-4 text-lg text-muted-foreground">
-              Allocate capital to selected systematic strategies managed by Odum across digital assets, traditional
-              markets, sports, and prediction markets. The allocator-facing reporting surface is the same one Odum uses
-              to run the strategies &mdash; one system, one codebase, partitioned views.
+              Allocate to selected systematic strategies managed by Odum.
+            </p>
+            <p className="mt-3 text-sm text-muted-foreground">
+              Odum acts as investment manager for selected systematic strategies available to eligible clients through
+              SMA or fund-route structures where appropriate. Strategies may be developed by Odum, shaped with partners,
+              or operated through Odum&rsquo;s infrastructure where the structure, governance, and risk controls are
+              suitable.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Button asChild>
-                <Link href={`/briefings/${BRIEFING_SLUGS.investment}`}>
-                  Read the briefing <ArrowRight className="ml-2 size-4" />
-                </Link>
-              </Button>
-              <Button asChild variant="outline">
-                <Link href={PUBLIC_ROUTE_PATHS.startYourReview}>Start Your Review</Link>
-              </Button>
-            </div>
-            <p className="mt-3 text-xs text-muted-foreground">
-              Briefings are gated. Start your review to receive an access code.
-            </p>
-          </div>
-
-          {/* Custody — short pointer to /regulatory which carries the depth */}
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle>Custody</CardTitle>
-              <CardDescription>
-                Odum does not take custody. Capital stays under your own venue relationships (SMA) or with a qualified
-                third-party custodian (Pooled).
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm text-muted-foreground">
-              <p>
-                The custody mechanic is shared across {SERVICE_LABELS.investment.marketing} and{" "}
-                <Link href="/regulatory" className="text-primary underline-offset-4 hover:underline">
-                  {SERVICE_LABELS.regulatory.marketing}
-                </Link>{" "}
-                — scoped venue API keys with no withdrawal authority, ever. Read the full custody walk-through on the{" "}
-                {SERVICE_LABELS.regulatory.marketing} page.
-              </p>
-            </CardContent>
-          </Card>
-
-          {/* Client confidentiality */}
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle>Client confidentiality is enforced at the system level</CardTitle>
-              <CardDescription>
-                Your slice is your slice. Other clients&apos; positions are not visible, not queryable, and not
-                inferable from any surface you can reach.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm text-muted-foreground">
-              <p>
-                Reporting partitions on your client record at the data layer — not just at the UI layer. Pooled fund
-                allocators see only their share-class slice; SMA allocators see only their own book. Aggregation,
-                attribution, risk exposure, and NAV all run against your slice.
-              </p>
-              <p>
-                Confidentiality is built in, not opted into: there is no cross-client view at any UI layer, and the same
-                rule binds Odum&apos;s internal staff sharing the system — operational visibility is bounded by the same
-                partitions that bound your view of others.
-              </p>
-            </CardContent>
-          </Card>
-
-          {/* Fund / SMA hierarchy diagram — Phase 4 visual */}
-          <FundSmaHierarchyDiagram />
-
-          {/* Strategy lifecycle + evidence-led promotion */}
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle>Evidence-led promotion, backtest to live</CardTitle>
-              <CardDescription>
-                Every strategy capital is allocated to has been through the same research surface Odum uses internally.
-                The decision to go live is evidence-led, not hope-led.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm text-muted-foreground">
-              <p>
-                Strategies progress through a one-way maturity ladder &mdash; code-audited, backtested, paper-traded,
-                live-tiny, then live-allocated. Backtest, paper, and live results sit on the same timeline, so you see
-                the identical strategy behaving across all three regimes before any real money is at stake.
-              </p>
-              <p>
-                The research surface also runs parameterised stress scenarios &mdash; the shocks an allocator actually
-                worries about (venue outage, funding spike, liquidity drain, correlation break) tested on demand.
-                Allocators in the second call walk through the ladder state of every strategy in their mandate and the
-                stress responses that matter for their mandate shape.
-              </p>
-            </CardContent>
-          </Card>
-
-          {/* Performance fee framing (mechanic only, no numbers) */}
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle>How fees work</CardTitle>
-              <CardDescription>
-                No management fee &mdash; you pay for returns generated, plus a small platform fee you pick the shape of
-                at signing.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm text-muted-foreground">
-              <p>
-                You pay a share of the profit plus a small platform fee. At signing you choose how the platform fee
-                works: a slight uplift on the performance share (variable &mdash; you pay more when we perform), or a
-                fixed monthly amount (flat &mdash; predictable, useful if you prefer accounting clarity). Once chosen,
-                it locks for the term of the mandate.
-              </p>
-              <p>
-                The specific percentages, how the hurdle is defined, and how often fees crystallise all sit in the
-                mandate pack. We walk you through them at the second call &mdash; no surprises.
-              </p>
-            </CardContent>
-          </Card>
-
-          {/* Same-system callout */}
-          <div className="mb-8 rounded-lg border border-border bg-card/50 p-6">
-            <h2 className="text-lg font-semibold">You see the same system we use ourselves</h2>
-            <p className="mt-2 text-sm text-muted-foreground">
-              The dashboard you log into as an allocator is the same one our own traders look at every morning &mdash;
-              just filtered to your slice. Positions, P&amp;L, risk, reconciliation, audit trail: same components, same
-              data, same code path. {SERVICE_LABELS.regulatory.marketing} clients see the same dashboard too, filtered
-              to their activity. One operating system; different views per audience &mdash; not separate products
-              stitched together.
-            </p>
-          </div>
-
-          {/* CTA */}
-          <div className="rounded-lg border border-border bg-card/50 p-6 text-center">
-            <h2 className="text-lg font-semibold">Mandate depth and share-class mechanics</h2>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Fund / SMA structure, share-class mechanics, and the strategy catalogue available under IM mandates sit
-              behind the briefings access code. You can{" "}
-              <Link
-                href="/contact?service=investment-management&action=request-access"
-                className="text-primary underline-offset-4 hover:underline"
-              >
-                request a code here
-              </Link>
-              .
-            </p>
-            <div className="mt-4 flex flex-wrap justify-center gap-3">
-              <Button asChild>
-                <Link href={`/briefings/${BRIEFING_SLUGS.investment}`}>
-                  Open IM briefing <ArrowRight className="ml-2 size-4" />
+                <Link href={PUBLIC_ROUTE_PATHS.startYourReview}>
+                  Start Your Review <ArrowRight className="ml-2 size-4" />
                 </Link>
               </Button>
               <Button asChild variant="outline">
                 <Link href={PUBLIC_ROUTE_PATHS.contact}>Contact Odum</Link>
               </Button>
             </div>
+            <p className="mt-3 text-xs text-muted-foreground">
+              Briefings are gated. Start your review to receive access to the relevant allocator briefing.
+            </p>
           </div>
 
-          {/* Related */}
-          <div className="mt-10 rounded-lg border border-border bg-card/30 p-6">
-            <h2 className="text-sm font-semibold text-foreground">Related</h2>
+          {/* What this route is for */}
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle>What this route is for</CardTitle>
+              <CardDescription>
+                {SERVICE_LABELS.investment.marketing} are for eligible clients who want exposure to systematic trading
+                strategies managed by Odum, rather than building or operating the strategy themselves.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">This route may be suitable where a client wants:</p>
+              <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
+                <li>Exposure to selected systematic strategies.</li>
+                <li>An SMA or fund-route structure where appropriate.</li>
+                <li>Reporting, oversight, and governance around the mandate.</li>
+                <li>A managed route rather than direct platform operation.</li>
+              </ul>
+            </CardContent>
+          </Card>
+
+          {/* How strategies are selected */}
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle>How strategies are selected</CardTitle>
+              <CardDescription>
+                Odum reviews strategies through a structured research, testing, and live-readiness process before
+                allocating external capital.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="text-sm text-muted-foreground">
+              <p>
+                The level of information shared depends on the mandate, the strategy, and the stage of the review.
+                Detailed research history, stress testing, and mandate-specific materials are provided during the gated
+                briefing and Strategy Review process.
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Structure and reporting */}
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle>Structure and reporting</CardTitle>
+              <CardDescription>
+                {SERVICE_LABELS.investment.marketing} may be delivered through an SMA, fund route, or other approved
+                structure depending on the client and mandate.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="text-sm text-muted-foreground">
+              <p>
+                Reporting is scoped to the client, mandate, fund interest, or account. The detailed mechanics of
+                custody, share classes, permissions, and operational controls are reviewed during onboarding.
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Fees and mandate terms */}
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle>Fees and mandate terms</CardTitle>
+              <CardDescription>
+                Fees, hurdles, crystallisation timing, reporting frequency, and mandate terms are agreed in the relevant
+                mandate pack.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="text-sm text-muted-foreground">
+              <p>
+                The public page does not quote or imply standard terms. The specific structure is reviewed case by case.
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* How the process works */}
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle>How the process works</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ol className="space-y-3 text-sm text-muted-foreground">
+                <li>
+                  <strong className="text-foreground">Start Your Review.</strong> Tell us what you are looking to
+                  allocate to or evaluate.
+                </li>
+                <li>
+                  <strong className="text-foreground">Read the relevant briefing.</strong> We share the{" "}
+                  {SERVICE_LABELS.investment.marketing} briefing after the initial review.
+                </li>
+                <li>
+                  <strong className="text-foreground">Fit call.</strong> We confirm whether an Odum-managed route is
+                  appropriate.
+                </li>
+                <li>
+                  <strong className="text-foreground">Strategy Evaluation.</strong> We collect the information needed to
+                  assess mandate fit, structure, and reporting requirements.
+                </li>
+                <li>
+                  <strong className="text-foreground">Strategy Review.</strong> We present the proposed route and next
+                  steps.
+                </li>
+              </ol>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <Button asChild variant="outline" size="sm">
+                  <Link href={`/briefings/${BRIEFING_SLUGS.investment}`}>
+                    Open the {SERVICE_LABELS.investment.marketing} briefing (gated)
+                  </Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Adjacent engagement routes */}
+          <div className="rounded-lg border border-border bg-card/30 p-6">
+            <h2 className="text-sm font-semibold text-foreground">Adjacent engagement routes</h2>
             <ul className="mt-3 space-y-2 text-sm">
               <li>
-                <Link href="/regulatory" className="font-medium text-foreground underline-offset-4 hover:underline">
-                  {SERVICE_LABELS.regulatory.marketing}
-                </Link>
-                <span className="text-muted-foreground">
-                  {" "}
-                  &mdash; same custody + reporting model, FCA cover for client regulatory activity.
-                </span>
-              </li>
-              <li>
-                <Link href="/platform" className="font-medium text-foreground underline-offset-4 hover:underline">
+                <Link
+                  href={PUBLIC_ROUTE_PATHS.dart}
+                  className="font-medium text-foreground underline-offset-4 hover:underline"
+                >
                   {SERVICE_LABELS.dart.marketing}
                 </Link>
                 <span className="text-muted-foreground">
                   {" "}
-                  &mdash; the research-to-live stack that runs the strategies capital is allocated to.
+                  &mdash; for clients that want to build, run, monitor, or scale strategies through Odum&rsquo;s
+                  infrastructure.
                 </span>
               </li>
               <li>
                 <Link
-                  href="/briefings/investment-management"
+                  href={PUBLIC_ROUTE_PATHS.regulatory}
                   className="font-medium text-foreground underline-offset-4 hover:underline"
                 >
-                  IM briefing
+                  {SERVICE_LABELS.regulatory.marketing}
                 </Link>
                 <span className="text-muted-foreground">
                   {" "}
-                  &mdash; fund / SMA mechanics, performance-share structure, strategy catalogue behind the briefings
-                  access code.
+                  &mdash; for engagements that require additional governance, reporting, permissions, or
+                  affiliate-supported structuring.
                 </span>
               </li>
-              <li>
-                <Link href="/who-we-are" className="font-medium text-foreground underline-offset-4 hover:underline">
-                  Who We Are
-                </Link>
-                <span className="text-muted-foreground"> &mdash; team, operating history, FCA credentials.</span>
-              </li>
             </ul>
+          </div>
+
+          {/* Final CTA */}
+          <div className="mt-10 rounded-lg border border-border bg-card/50 p-6 text-center">
+            <h2 className="text-lg font-semibold">Start with a review</h2>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Tell us what you are looking to allocate to or evaluate. We will route you to the relevant briefing and
+              next step.
+            </p>
+            <div className="mt-4 flex flex-wrap justify-center gap-3">
+              <Button asChild>
+                <Link href={PUBLIC_ROUTE_PATHS.startYourReview}>Start Your Review</Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href={PUBLIC_ROUTE_PATHS.contact}>Contact Odum</Link>
+              </Button>
+            </div>
           </div>
         </div>
       </main>
