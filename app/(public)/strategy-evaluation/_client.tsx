@@ -22,6 +22,14 @@ interface FormState {
   engagementIntent: "" | "allocator" | "builder";
   /** Path B regulatory-wrapper sub-checkbox (replaces the old Path C primary option). */
   regulatoryWrapperNeeded: boolean;
+  /**
+   * Cross-cutting overlays for the engagement, picked alongside the primary
+   * commercial path. Replaces the Primary/Secondary/Tertiary hierarchy and
+   * the legalistic understanding-checkboxes — see Step 2 redesign 2026-04-26.
+   * Possible values: "regulatory" / "odum-signals" / "post-trade-reporting" /
+   * "fund-or-sma" / "not-sure".
+   */
+  engagementOverlays: Set<string>;
   // Allocator (Path A) fields — preference-shaped intake.
   allocatorInvestorType: string;
   allocatorAumBand: string;
@@ -152,6 +160,7 @@ type SerializedFormState = Omit<
   | "dataGranularities"
   | "orderTypes"
   | "feesAndCosts"
+  | "engagementOverlays"
 > & {
   assetGroups: string[];
   instrumentTypes: string[];
@@ -162,11 +171,13 @@ type SerializedFormState = Omit<
   dataGranularities: string[];
   orderTypes: string[];
   feesAndCosts: string[];
+  engagementOverlays: string[];
 };
 
 const INITIAL_STATE: FormState = {
   engagementIntent: "",
   regulatoryWrapperNeeded: false,
+  engagementOverlays: new Set(),
   allocatorInvestorType: "",
   allocatorAumBand: "",
   allocatorTargetSharpe: "",
@@ -295,13 +306,13 @@ interface StepConfig {
 
 const STEPS: readonly StepConfig[] = [
   { n: 1, title: "About you", sections: "A" },
-  { n: 2, title: "Path & relationship", sections: "B–C" },
-  { n: 3, title: "Strategy shape", sections: "D" },
-  { n: 4, title: "Backtest setup", sections: "E" },
-  { n: 5, title: "Evidence & metrics", sections: "F–G" },
-  { n: 6, title: "Strategy & risk", sections: "H–I" },
-  { n: 7, title: "Path-specific & ops", sections: "J/K/L–M" },
-  { n: 8, title: "Validation & readiness", sections: "N–P" },
+  { n: 2, title: "What you’re trying to do", sections: "B–C" },
+  { n: 3, title: "Strategy profile", sections: "D" },
+  { n: 4, title: "Evidence", sections: "E" },
+  { n: 5, title: "Operating setup", sections: "F" },
+  { n: 6, title: "Risk and controls", sections: "G" },
+  { n: 7, title: "Odum fit", sections: "H" },
+  { n: 8, title: "Readiness", sections: "I" },
 ] as const;
 
 const TOTAL_STEPS = STEPS.length;
@@ -333,6 +344,7 @@ function serializeState(state: FormState): SerializedFormState {
     dataGranularities: [...state.dataGranularities],
     orderTypes: [...state.orderTypes],
     feesAndCosts: [...state.feesAndCosts],
+    engagementOverlays: [...state.engagementOverlays],
   };
 }
 
@@ -355,6 +367,7 @@ function deserializeState(raw: SerializedFormState): FormState {
     commercialPathTertiary: new Set(raw.commercialPathTertiary ?? []),
     fundraisingChannels: new Set(raw.fundraisingChannels ?? []),
     dataGranularities: new Set(raw.dataGranularities ?? []),
+    engagementOverlays: new Set(raw.engagementOverlays ?? []),
     // Legacy drafts may still have strings where arrays are expected — guard.
     orderTypes: new Set(Array.isArray(raw.orderTypes) ? raw.orderTypes : []),
     feesAndCosts: new Set(Array.isArray(raw.feesAndCosts) ? raw.feesAndCosts : []),
@@ -893,36 +906,16 @@ export default function StrategyEvaluationFormClient({
         <Badge variant="outline" className="mb-3">
           Strategy Evaluation
         </Badge>
-        <h1 className="text-2xl font-bold">Odum Strategy Evaluation Pack</h1>
-        <p className="mt-2 text-muted-foreground">
-          We use this pack to assess whether a strategy is suitable for incubation inside Odum, for signal-based
-          integration into our execution stack, or for regulatory-umbrella coverage. This is not a request for
-          unrestricted IP transfer.
+        <h1 className="text-2xl font-bold tracking-tight md:text-3xl">Strategy Evaluation</h1>
+        <p className="mt-3 text-muted-foreground md:text-base">
+          Help us understand what you want to run, allocate to, or structure. We use this to prepare the right review
+          and walkthrough.
         </p>
-        <div className="mt-4 rounded-md border border-border/60 bg-card/40 px-4 py-3">
-          <p className="text-sm font-medium">No strategy yet? Fill it in anyway.</p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            If you&rsquo;re exploring rather than submitting a specific strategy, answer each section in terms of the{" "}
-            <em>kind</em> of strategy you&rsquo;d want to build or allocate to — asset groups, archetypes, typical
-            performance you&rsquo;d target, operational shape. We&rsquo;ll use it to tailor the demo and surface the
-            right capabilities.
-          </p>
-        </div>
-        <div className="mt-3 rounded-md border border-border/60 bg-card/40 px-4 py-3">
-          <p className="text-sm font-medium">Going DART Full? Leave details light if you prefer.</p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            If your primary interest is DART Full — where Odum rebuilds the strategy inside our stack — you can answer
-            the deep-detail sections with high-level preferences or options rather than finalised specifics. We&rsquo;ll
-            shape the rebuild together.
-          </p>
-        </div>
         <p className="mt-4 text-sm text-muted-foreground">
-          Fields marked <span className="text-destructive">*</span> are required. For anything else that doesn&rsquo;t
-          apply to your strategy, write <strong>N/A</strong> or leave it blank — don&rsquo;t force-fit an answer.
+          You do not need final details yet. High-level answers are enough at this stage. Fields marked{" "}
+          <span className="text-destructive">*</span> are required.
         </p>
       </div>
-
-      <p className="text-sm text-muted-foreground mb-8">Sections A–P below. Starred fields are required.</p>
 
       {editingFromToken && prefillState === "loading" && (
         <div className="mb-6 rounded-md border border-primary/30 bg-primary/5 px-4 py-3 text-sm">
@@ -1002,7 +995,7 @@ export default function StrategyEvaluationFormClient({
 
               <div className="space-y-1">
                 <Label htmlFor="strategyName" className="text-sm font-medium">
-                  Strategy / programme name
+                  Strategy or project name
                   <RequiredMarker />
                 </Label>
                 <Input
@@ -1016,7 +1009,7 @@ export default function StrategyEvaluationFormClient({
 
               <div className="space-y-1">
                 <Label htmlFor="leadResearcher" className="text-sm font-medium">
-                  Lead researcher / owner
+                  Main contact / strategy owner
                   <RequiredMarker />
                 </Label>
                 <Input
@@ -1143,17 +1136,15 @@ export default function StrategyEvaluationFormClient({
               </div>
 
               <div className="space-y-1">
-                <Label className="text-sm font-medium">Preferred capital structure</Label>
-                <p className="text-xs text-muted-foreground">
-                  What structure are you targeting or open to? Select the closest match.
-                </p>
+                <Label className="text-sm font-medium">Current or intended operating structure</Label>
+                <p className="text-xs text-muted-foreground">Select the closest match. You can refine this later.</p>
                 <div className="flex flex-wrap gap-x-6 gap-y-3 mt-2">
                   {(
                     [
-                      { value: "prop", label: "Proprietary / principal capital" },
-                      { value: "sma", label: "Separately Managed Account (SMA)" },
-                      { value: "fund", label: "Pooled fund / AIF" },
-                      { value: "other", label: "Open to options / not yet decided" },
+                      { value: "prop", label: "Own capital" },
+                      { value: "sma", label: "Client capital / SMA" },
+                      { value: "fund", label: "Fund or pooled vehicle" },
+                      { value: "other", label: "Not sure yet" },
                     ] as { value: string; label: string }[]
                   ).map(({ value, label }) => (
                     <label key={value} className="flex items-center gap-2 text-sm cursor-pointer">
@@ -1369,233 +1360,155 @@ export default function StrategyEvaluationFormClient({
         {/* === STEP 2 === */}
         {currentStep === 2 && (
           <>
-            {/* Section B */}
+            {/* Section B — single-select primary route. Replaces the previous
+                Primary/Secondary/Tertiary hierarchy + legalistic understanding-
+                checkboxes block. The 4 cards are plain-English; deep mechanics
+                belong in the gated briefing or Strategy Review, not the intake.
+                Picking the IM allocator card flips the wizard back to the
+                allocator branch (matches the pre-step gate). The four primary
+                routes are mutually exclusive; cross-cutting concerns (regulatory
+                wrapper, Odum-provided signals, fund/SMA setup) live in the
+                follow-up overlay group below. */}
             <section className="space-y-4 pt-0 first:pt-0">
-              <SectionHeading letter="B" title="Commercial paths" />
+              <SectionHeading letter="B" title="What are you trying to do?" />
               <p className="text-xs text-muted-foreground -mt-2">
-                Select your <span className="font-medium text-foreground">primary</span> interest first, then mark any
-                secondary or tertiary interest. This helps us design the right demo and understand where there may be
-                additional fit.
+                Choose the closest fit. You can add context later, and you can keep answers high-level &mdash; we use
+                this to prepare the right review, not to make a final decision from the form alone.
               </p>
               {getError("commercialPath") && <FieldError message={getError("commercialPath")!} />}
 
-              <div id="commercialPath" className="space-y-5">
+              <div id="commercialPath" className="space-y-3">
                 {(
                   [
                     {
-                      value: "A" as const,
-                      label: "DART Full — incubation and rebuild within Odum",
+                      value: "B" as const,
+                      label: "Send signals into Odum",
                       description:
-                        "Odum reconstructs the strategy inside the DART stack. We preserve the alpha thesis and operational methodology, then rebuild for production deployment within our regulated infrastructure. Strategy IP remains with the originating researcher, protected by NDA and an exclusivity agreement that prevents Odum from sharing any sensitive strategy information or running any trading operations — on its own capital or client capital — that conflict with the submitted strategy design. Full access to DART research, ML, strategy promotion, execution, analytics, and reporting surfaces.",
+                        "We receive your trading instructions and provide execution, monitoring, reconciliation, and reporting.",
                     },
                     {
-                      value: "B" as const,
-                      label: "DART Signals-In — client signals, Odum execution and analytics",
+                      value: "A" as const,
+                      label: "Run more of the strategy through DART",
                       description:
-                        "The researcher delivers signals via an agreed payload schema. Odum handles execution, position management, risk oversight, treasury management, and the full post-trade suite. This is not a standard OMS: DART provides advanced execution alpha through smart routing, latency optimisation, TCA, TWAP/VWAP algorithms, and real-time P&L analytics. Signal-generation IP stays entirely with the client.",
+                        "You want research, testing, promotion, execution, and reporting in one controlled workflow.",
                     },
                     {
                       value: "C" as const,
-                      label: "Regulatory Umbrella — FCA coverage and oversight",
+                      label: "Use Odum’s regulated operating model",
                       description:
-                        "Cross-cutting: Odum provides FCA regulatory coverage, reporting, and oversight. Compatible with any engagement shape — whether the client holds their own API keys and faces exchanges directly, or Odum operates the keys. The client retains full operational control; Odum acts as the appointed representative or regulatory anchor.",
+                        "You may need governance, reporting, permissions, SMA/fund structuring, or supervisory coverage.",
                     },
                     {
-                      value: "D" as const,
-                      label: "Odum Signals — Odum-generated signals, you execute elsewhere",
-                      description:
-                        "Direction reverses: Odum emits signals on a published payload schema; you execute on your own infrastructure (your venue accounts, your OMS, or another execution provider). Delivery via webhook push or REST pull, HMAC-signed, with idempotency keys. A distinct fourth path outside DART. See the deep-dive briefing at /briefings/signals-out for the full schema, delivery mechanics, and observability surface.",
+                      value: "ALLOCATOR" as const,
+                      label: "Evaluate Odum-managed strategies",
+                      description: "You are allocating to selected strategies managed by Odum.",
                     },
-                  ] as { value: "A" | "B" | "C" | "D"; label: string; description: string }[]
+                  ] as {
+                    value: "ALLOCATOR" | "A" | "B" | "C";
+                    label: string;
+                    description: string;
+                  }[]
                 ).map(({ value, label, description }) => {
-                  const isPrimary = form.commercialPath === value;
-                  // Across all paths there is at most ONE secondary and ONE tertiary —
-                  // selecting Secondary on path X removes it from any other path.
-                  const secondaryPath = Array.from(form.commercialPathSecondary)[0];
-                  const tertiaryPath = Array.from(form.commercialPathTertiary)[0];
-                  const isSecondary = !isPrimary && secondaryPath === value;
-                  const isTertiary = !isPrimary && !isSecondary && tertiaryPath === value;
-                  const borderClass = isPrimary
-                    ? "border-foreground"
-                    : isSecondary || isTertiary
-                      ? "border-border"
-                      : "border-border/60";
+                  const isSelected = value === "ALLOCATOR" ? false : form.commercialPath === value;
                   return (
-                    <div key={value} className={`rounded-lg border ${borderClass} p-4 transition-colors`}>
-                      <div className="flex items-start gap-3">
-                        <div className="flex flex-col gap-1.5 mt-0.5 min-w-[100px]">
-                          <label className="flex items-center gap-1.5 text-[11px] font-medium cursor-pointer">
-                            <input
-                              type="radio"
-                              name="commercialPath"
-                              value={value}
-                              checked={isPrimary}
-                              onChange={() => {
-                                setField("commercialPath", value);
-                                setForm((prev) => {
-                                  const sec = new Set(prev.commercialPathSecondary);
-                                  const ter = new Set(prev.commercialPathTertiary);
-                                  sec.delete(value);
-                                  ter.delete(value);
-                                  return { ...prev, commercialPathSecondary: sec, commercialPathTertiary: ter };
-                                });
-                              }}
-                            />
-                            Primary
-                          </label>
-                          {!isPrimary && (
-                            <>
-                              <label className="flex items-center gap-1.5 text-[11px] text-muted-foreground cursor-pointer">
-                                <input
-                                  type="checkbox"
-                                  checked={isSecondary}
-                                  onChange={() => {
-                                    setForm((prev) => {
-                                      const sec = new Set<string>();
-                                      const ter = new Set(prev.commercialPathTertiary);
-                                      ter.delete(value);
-                                      if (!isSecondary) sec.add(value);
-                                      return { ...prev, commercialPathSecondary: sec, commercialPathTertiary: ter };
-                                    });
-                                  }}
-                                />
-                                Secondary
-                              </label>
-                              <label className="flex items-center gap-1.5 text-[11px] text-muted-foreground cursor-pointer">
-                                <input
-                                  type="checkbox"
-                                  checked={isTertiary}
-                                  onChange={() => {
-                                    setForm((prev) => {
-                                      const sec = new Set(prev.commercialPathSecondary);
-                                      sec.delete(value);
-                                      const ter = new Set<string>();
-                                      if (!isTertiary) ter.add(value);
-                                      return { ...prev, commercialPathSecondary: sec, commercialPathTertiary: ter };
-                                    });
-                                  }}
-                                />
-                                Tertiary
-                              </label>
-                            </>
-                          )}
+                    <button
+                      type="button"
+                      key={value}
+                      onClick={() => {
+                        if (value === "ALLOCATOR") {
+                          // Bounce to the allocator wizard (same form state, different
+                          // top-level branch). Clears builder-only path selection so
+                          // the allocator wizard isn't carrying stale Path-X data.
+                          setForm((prev) => ({
+                            ...prev,
+                            engagementIntent: "allocator",
+                            commercialPath: "",
+                            commercialPathSecondary: new Set(),
+                            commercialPathTertiary: new Set(),
+                          }));
+                          return;
+                        }
+                        setField("commercialPath", value);
+                        // Clear residual secondary/tertiary from old hierarchy + auto-
+                        // tick the educational checkboxes so we don't fail validation
+                        // on a UX that no longer renders them.
+                        setForm((prev) => ({
+                          ...prev,
+                          commercialPathSecondary: new Set(),
+                          commercialPathTertiary: new Set(),
+                          understandFit: true,
+                          understandIncubation: true,
+                          understandSignals: true,
+                        }));
+                      }}
+                      className={`w-full rounded-lg border p-4 text-left transition-colors ${
+                        isSelected
+                          ? "border-foreground bg-foreground/5"
+                          : "border-border/60 hover:border-border hover:bg-card/30"
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="text-sm font-medium md:text-base">{label}</p>
+                          <p className="mt-1 text-xs leading-relaxed text-muted-foreground md:text-sm">{description}</p>
                         </div>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <p className="text-sm font-medium">{label}</p>
-                            {isPrimary && (
-                              <span className="text-[10px] font-semibold uppercase tracking-wide bg-foreground text-background rounded px-1.5 py-0.5">
-                                Primary
-                              </span>
-                            )}
-                            {isSecondary && (
-                              <span className="text-[10px] font-medium text-muted-foreground border border-border rounded px-1.5 py-0.5">
-                                Secondary
-                              </span>
-                            )}
-                            {isTertiary && (
-                              <span className="text-[10px] font-medium text-muted-foreground/80 border border-border/60 rounded px-1.5 py-0.5">
-                                Tertiary
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-xs text-muted-foreground mt-1">{description}</p>
-                        </div>
+                        {isSelected && (
+                          <span className="shrink-0 rounded bg-foreground px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-background">
+                            Selected
+                          </span>
+                        )}
                       </div>
-                    </div>
+                    </button>
                   );
                 })}
               </div>
-
-              <p className="text-xs text-muted-foreground border-l-2 border-border pl-3 py-1 mt-2">
-                <span className="font-medium text-foreground">Distribution assistance:</span> If requested by the
-                manager, Odum may engage in distribution assistance to help with fundraising, but not under contract and
-                with no standing expectation unless separately agreed.
-              </p>
             </section>
 
-            {/* Section C */}
-            <section className="space-y-4 pt-8 border-t border-border/40">
-              <SectionHeading letter="C" title="Relationship understanding" />
-
-              <div className="space-y-3">
-                <div>
-                  <label id="understandFit" className="flex items-start gap-3 cursor-pointer text-sm">
-                    <input
-                      type="checkbox"
-                      checked={form.understandFit}
-                      onChange={(e) => setField("understandFit", e.target.checked)}
-                      className="mt-0.5"
-                      aria-invalid={!!getError("understandFit")}
-                    />
-                    <span>
-                      I understand this process is intended to establish architectural fit, operating fit, and
-                      capital-allocation readiness.
-                      <RequiredMarker />
-                    </span>
-                  </label>
-                  {getError("understandFit") && <FieldError message={getError("understandFit")!} />}
-                </div>
-
-                <div>
-                  <label className="flex items-start gap-3 cursor-pointer text-sm">
-                    <input
-                      type="checkbox"
-                      checked={form.understandIncubation}
-                      onChange={(e) => setField("understandIncubation", e.target.checked)}
-                      className="mt-0.5"
-                      aria-invalid={!!getError("understandIncubation")}
-                    />
-                    <span>
-                      I understand that, where incubation applies, the objective is to preserve and operationalise the
-                      strategy.
-                      <RequiredMarker />
-                    </span>
-                  </label>
-                  {getError("understandIncubation") && <FieldError message={getError("understandIncubation")!} />}
-                </div>
-
-                <div>
-                  <label className="flex items-start gap-3 cursor-pointer text-sm">
-                    <input
-                      type="checkbox"
-                      checked={form.understandSignals}
-                      onChange={(e) => setField("understandSignals", e.target.checked)}
-                      className="mt-0.5"
-                      aria-invalid={!!getError("understandSignals")}
-                    />
-                    <span>
-                      I understand that, under <Term id="dart-signals-in">DART Signals-In</Term>, Odum may route or
-                      execute signals that map into the agreed payload schema, and display those signals and their
-                      analytics solely so that the client can use Odum&rsquo;s execution and post-trade software.
-                      <RequiredMarker />
-                    </span>
-                  </label>
-                  {getError("understandSignals") && <FieldError message={getError("understandSignals")!} />}
-                </div>
+            {/* Engagement overlays — replaces the Primary/Secondary/Tertiary
+                hierarchy with a single multi-select for cross-cutting concerns.
+                Plain-English options; sets the engagementOverlays Set + (when
+                applicable) flips regulatoryWrapperNeeded so legacy server logic
+                that still reads that flag continues to work. */}
+            <section className="space-y-3 pt-6">
+              <SectionHeading letter="C" title="What else may be relevant?" />
+              <p className="text-xs text-muted-foreground -mt-2">Optional. Tick anything that applies.</p>
+              <div className="space-y-2">
+                {(
+                  [
+                    { value: "execution-support", label: "Execution support" },
+                    { value: "reporting-reconciliation", label: "Reporting and reconciliation" },
+                    { value: "regulatory", label: "Regulatory or governance structure" },
+                    { value: "treasury-venues", label: "Treasury / venue operations" },
+                    { value: "research-backtesting", label: "Research and backtesting" },
+                    { value: "not-sure", label: "Not sure yet" },
+                  ] as { value: string; label: string }[]
+                ).map(({ value, label }) => {
+                  const checked = form.engagementOverlays.has(value);
+                  return (
+                    <label key={value} className="flex cursor-pointer items-start gap-2.5 text-sm">
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() => {
+                          setForm((prev) => {
+                            const next = new Set(prev.engagementOverlays);
+                            if (checked) next.delete(value);
+                            else next.add(value);
+                            // Mirror "regulatory" overlay onto the legacy
+                            // regulatoryWrapperNeeded flag so server-side
+                            // logic that still reads that field continues to
+                            // work without churn.
+                            const regNow = next.has("regulatory");
+                            return { ...prev, engagementOverlays: next, regulatoryWrapperNeeded: regNow };
+                          });
+                        }}
+                        className="mt-0.5"
+                      />
+                      <span className="text-foreground/85">{label}</span>
+                    </label>
+                  );
+                })}
               </div>
-            </section>
-
-            {/* Regulatory-wrapper sub-checkbox — replaces the previous Path C
-                primary commercialPath option (Funnel Coherence plan
-                Workstream A2). When ticked, Odum's regulatory cover applies
-                on top of the primary path the prospect picked above. Path D
-                (signals-out) stays as a sub-mode of Path B / DART. */}
-            <section className="space-y-3 rounded-md border border-border/60 bg-card/30 p-4">
-              <h3 className="text-sm font-semibold">Regulatory wrapper</h3>
-              <label className="flex items-start gap-2.5">
-                <input
-                  type="checkbox"
-                  checked={form.regulatoryWrapperNeeded}
-                  onChange={(e) => setField("regulatoryWrapperNeeded", e.target.checked)}
-                  className="mt-0.5"
-                />
-                <span className="text-sm text-foreground/85">
-                  Odum&rsquo;s regulatory cover applies to this engagement &mdash; we&rsquo;d like the wrapper alongside
-                  DART. Tick if your strategy needs Odum to act as Investment Manager / Adviser / AR; we&rsquo;ll cover
-                  the specifics in the operating-model conversation.
-                </span>
-              </label>
             </section>
           </>
         )}
@@ -1605,10 +1518,10 @@ export default function StrategyEvaluationFormClient({
           <>
             {/* Section D */}
             <section className="space-y-4 pt-0 first:pt-0">
-              <SectionHeading letter="D" title="Architecture fit and taxonomy" />
+              <SectionHeading letter="D" title="Strategy profile" />
               <p className="text-xs text-muted-foreground -mt-2">
-                Odum will conduct its own technical taxonomy mapping. Your selections here help us pre-route the
-                evaluation to the right team and design the demo to your use case. Hover any term for a definition.
+                These answers help us understand the markets, instruments, and style of the strategy so we can prepare
+                the right review and walkthrough. High-level answers are fine — hover any term for a definition.
               </p>
 
               <div className="space-y-1">
@@ -1784,9 +1697,13 @@ export default function StrategyEvaluationFormClient({
         {/* === STEP 4 === */}
         {currentStep === 4 && (
           <>
-            {/* Section E */}
+            {/* Section E — Evidence (simplified from "Backtest methodology") */}
             <section className="space-y-4 pt-0 first:pt-0">
-              <SectionHeading letter="E" title="Backtest methodology" />
+              <SectionHeading letter="E" title="Evidence" />
+              <p className="text-xs text-muted-foreground -mt-2">
+                What evidence exists today that the strategy works? It&rsquo;s fine if there&rsquo;s very little &mdash;
+                early-stage strategies are why we have a research environment. Be honest, not perfect.
+              </p>
 
               <div className="space-y-2 rounded-md border border-border/60 bg-card/40 px-4 py-3">
                 <Label className="text-sm font-medium">Has this strategy been backtested?</Label>
@@ -2242,7 +2159,7 @@ export default function StrategyEvaluationFormClient({
             {/* Section F — gated on backtest existing */}
             {form.hasBacktest !== "no" && form.hasBacktest !== "" && (
               <section className="space-y-4 pt-0 first:pt-0">
-                <SectionHeading letter="F" title="Tear sheet and evidence" />
+                <SectionHeading letter="F" title="Tear sheet, account statements, or other evidence" />
                 <p className="text-xs text-muted-foreground -mt-2">
                   Attach the supporting documents. Files cache in your browser until you submit — you can view /
                   download them immediately to verify they&rsquo;re correct. Upload to Odum&rsquo;s regulated storage
@@ -2383,12 +2300,19 @@ export default function StrategyEvaluationFormClient({
         {/* === STEP 6 === */}
         {currentStep === 6 && (
           <>
-            {/* Section H */}
+            {/* Section H — Risk and controls (was: Strategy documentation) */}
             <section className="space-y-4 pt-0 first:pt-0">
-              <SectionHeading letter="H" title="Strategy documentation" />
+              <SectionHeading letter="H" title="Risk and controls" />
+              <p className="text-xs text-muted-foreground -mt-2">
+                Short answers are fine. Tick &ldquo;not sure yet&rdquo; below if you&rsquo;d rather walk it through with
+                us on the call.
+              </p>
 
               <div className="space-y-1">
-                <Label className="text-sm font-medium">Strategy overview in plain English</Label>
+                <Label className="text-sm font-medium">In plain English, how does the strategy work?</Label>
+                <p className="text-xs text-muted-foreground">
+                  A few sentences is usually enough. We&rsquo;re looking for the shape of the idea, not a full deck.
+                </p>
                 <Textarea
                   rows={4}
                   value={form.strategyOverview}
@@ -2397,21 +2321,24 @@ export default function StrategyEvaluationFormClient({
               </div>
 
               <div className="space-y-1">
-                <Label className="text-sm font-medium">Alpha thesis / inefficiency exploited</Label>
-                <Textarea rows={4} value={form.alphaTesis} onChange={(e) => setField("alphaTesis", e.target.value)} />
+                <Label className="text-sm font-medium">Why does this strategy make money?</Label>
+                <Textarea rows={3} value={form.alphaTesis} onChange={(e) => setField("alphaTesis", e.target.value)} />
               </div>
 
               <div className="space-y-1">
-                <Label className="text-sm font-medium">Feature set / signal inputs / model logic</Label>
+                <Label className="text-sm font-medium">What inputs drive the decisions?</Label>
+                <p className="text-xs text-muted-foreground">
+                  E.g. price, volume, funding rates, on-chain data, alternative data, an ML model.
+                </p>
                 <Textarea
-                  rows={4}
+                  rows={3}
                   value={form.featureSetLogic}
                   onChange={(e) => setField("featureSetLogic", e.target.value)}
                 />
               </div>
 
               <div className="space-y-1">
-                <Label className="text-sm font-medium">Known weaknesses, failure modes, or regime dependencies</Label>
+                <Label className="text-sm font-medium">When does the strategy tend to perform badly?</Label>
                 <Textarea
                   rows={3}
                   value={form.knownWeaknesses}
@@ -2420,56 +2347,53 @@ export default function StrategyEvaluationFormClient({
               </div>
             </section>
 
-            {/* Section I */}
+            {/* Section I — Position-level risk controls (simplified) */}
             <section className="space-y-4 pt-8 border-t border-border/40">
-              <SectionHeading letter="I" title="Risk management" />
+              <SectionHeading letter="I" title="Position and order controls" />
 
               <div className="space-y-1">
-                <Label className="text-sm font-medium">Strategy-level controls</Label>
+                <Label className="text-sm font-medium">Position sizing, leverage, and drawdown</Label>
                 <p className="text-xs text-muted-foreground">
-                  Position sizing, concentration limits, drawdown controls, signal filters, leverage caps, and
-                  kill-switch logic built into the strategy decision layer.
+                  How big do positions get, what leverage do you allow, and what loss size triggers a pause?
                 </p>
                 <Textarea
-                  rows={4}
+                  rows={3}
                   value={form.riskManagement}
                   onChange={(e) => setField("riskManagement", e.target.value)}
                 />
               </div>
 
               <div className="space-y-1">
-                <Label className="text-sm font-medium">Execution-level controls</Label>
+                <Label className="text-sm font-medium">Order-level guardrails</Label>
                 <p className="text-xs text-muted-foreground">
-                  Order-level guardrails: fat-finger checks, max-order-size limits, pre-trade risk checks, venue-level
-                  exposure caps, or circuit breakers applied at the execution layer (separate from the strategy&rsquo;s
-                  own logic).
+                  Things like max order size, venue exposure caps, fat-finger checks, or circuit-breakers.
                 </p>
                 <Textarea
-                  rows={4}
-                  placeholder="e.g. max single-order size = 1% NAV, venue exposure cap $200k, hard stop if open P&L < -3% in a session."
+                  rows={3}
+                  placeholder="e.g. max single-order size = 1% NAV; venue exposure cap $200k; hard stop if open P&L < -3% in a session."
                   value={form.executionRiskControls}
                   onChange={(e) => setField("executionRiskControls", e.target.value)}
                 />
               </div>
 
               <div className="space-y-1">
-                <Label className="text-sm font-medium">Fee sensitivity</Label>
+                <Label className="text-sm font-medium">How sensitive is the strategy to trading costs?</Label>
                 <p className="text-xs text-muted-foreground">
-                  How sensitive is the strategy to trading costs? Does it require maker rebates, or can it absorb taker
-                  fees? Any constraints on commissions, funding rates, or gas costs.
+                  Maker rebates required? Funding-rate ceiling? Gas tolerance? &ldquo;Not very&rdquo; is also a fine
+                  answer.
                 </p>
                 <Textarea
                   rows={3}
-                  placeholder="e.g. strategy breaks even below 3bps per side; requires maker-only fills; funding cost must not exceed 0.01% per 8h."
+                  placeholder="e.g. breaks even below 3bps per side; requires maker-only fills; funding cost must not exceed 0.01% per 8h."
                   value={form.feeSensitivity}
                   onChange={(e) => setField("feeSensitivity", e.target.value)}
                 />
               </div>
             </section>
 
-            {/* Section I² — Treasury and operational flows */}
+            {/* Section I² — Capital, collateral, and venue setup (was: Treasury and operational flows) */}
             <section className="space-y-4 pt-8 border-t border-border/40">
-              <SectionHeading letter="I²" title="Treasury and operational flows" />
+              <SectionHeading letter="I²" title="Capital, collateral, and venue setup" />
 
               <div className="space-y-1">
                 <Label className="text-sm font-medium">
@@ -2559,7 +2483,7 @@ export default function StrategyEvaluationFormClient({
             {/* Section J — Path A only */}
             {form.commercialPath === "A" && (
               <section className="space-y-4 pt-0 first:pt-0">
-                <SectionHeading letter="J" title="Path A — DART Full specific" />
+                <SectionHeading letter="J" title="Running through DART — what we’d need" />
 
                 <div className="space-y-1">
                   <Label className="text-sm font-medium">
@@ -2588,7 +2512,7 @@ export default function StrategyEvaluationFormClient({
             {/* Section K — Path B only */}
             {form.commercialPath === "B" && (
               <section className="space-y-4 pt-8 border-t border-border/40">
-                <SectionHeading letter="K" title="Path B — DART Signals-In specific" />
+                <SectionHeading letter="K" title="Sending signals into Odum — how it would work" />
 
                 <div className="rounded-lg border border-border/60 bg-muted/30 p-4 text-sm space-y-2 text-muted-foreground">
                   <p>
@@ -2673,7 +2597,7 @@ export default function StrategyEvaluationFormClient({
             {/* Section L — Path C only */}
             {form.commercialPath === "C" && (
               <section className="space-y-4 pt-8 border-t border-border/40">
-                <SectionHeading letter="L" title="Path C — Regulatory Umbrella specific" />
+                <SectionHeading letter="L" title="Regulated operating model — what needs evidencing" />
 
                 <p className="text-sm text-muted-foreground">
                   The <Term id="regulatory-umbrella">Regulatory Umbrella</Term> is cross-cutting and does not prescribe
@@ -2740,7 +2664,7 @@ export default function StrategyEvaluationFormClient({
             {/* Section L₂ — Path D / Odum Signals only */}
             {form.commercialPath === "D" && (
               <section className="space-y-4 pt-8 border-t border-border/40">
-                <SectionHeading letter="L" title="Path D — Odum Signals specific" />
+                <SectionHeading letter="L" title="Odum-provided signals — delivery shape" />
 
                 <div className="rounded-md border border-primary/30 bg-primary/5 px-4 py-3 text-sm">
                   <p className="font-medium">Odum Signals payload schema</p>
@@ -2889,7 +2813,7 @@ export default function StrategyEvaluationFormClient({
 
             {/* Section M */}
             <section className="space-y-4 pt-8 border-t border-border/40">
-              <SectionHeading letter="M" title="Deployment and operational continuity" />
+              <SectionHeading letter="M" title="Current operating setup" />
 
               <div className="space-y-1">
                 <Label className="text-sm font-medium">
@@ -2910,7 +2834,7 @@ export default function StrategyEvaluationFormClient({
           <>
             {/* Section N */}
             <section className="space-y-4 pt-0 first:pt-0">
-              <SectionHeading letter="N" title="Paper trading validation" />
+              <SectionHeading letter="N" title="Paper trading — what you’ve done" />
 
               <div className="space-y-2 rounded-md border border-border/60 bg-card/40 px-4 py-3">
                 <Label className="text-sm font-medium">Has this strategy been paper traded?</Label>
@@ -2984,7 +2908,7 @@ export default function StrategyEvaluationFormClient({
 
             {/* Section O */}
             <section className="space-y-4 pt-8 border-t border-border/40">
-              <SectionHeading letter="O" title="Live trading validation" />
+              <SectionHeading letter="O" title="Live trading — what you’ve done" />
 
               <div className="space-y-2 rounded-md border border-border/60 bg-card/40 px-4 py-3">
                 <Label className="text-sm font-medium">Has this strategy been live traded?</Label>
@@ -3060,7 +2984,7 @@ export default function StrategyEvaluationFormClient({
 
             {/* Section P */}
             <section className="space-y-4 pt-8 border-t border-border/40">
-              <SectionHeading letter="P" title="Signal, reporting, and analytics readiness" />
+              <SectionHeading letter="P" title="What would need to be true to move forward with Odum?" />
 
               <div className="space-y-1">
                 <Label className="text-sm font-medium">
