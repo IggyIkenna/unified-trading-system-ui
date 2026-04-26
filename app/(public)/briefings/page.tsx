@@ -1,5 +1,4 @@
 import { BriefingHero } from "@/components/briefings/briefing-hero";
-import { renderWithTerms } from "@/components/marketing/render-with-terms";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BRIEFING_PILLARS, type BriefingPillar } from "@/lib/briefings/content";
@@ -8,7 +7,8 @@ import Link from "next/link";
 
 export const metadata = {
   title: "Briefings | Odum Research",
-  description: "Pre-commitment narrative: investment management, regulatory context, and platform depth.",
+  description:
+    "The depth behind Odum's three routes — Odum-Managed Strategies, DART Trading Infrastructure, and Regulated Operating Models.",
 };
 
 /**
@@ -20,6 +20,10 @@ export const metadata = {
  * reach this list. Risk-and-Governance and Working-with-Odum are NOT exposed
  * as pillars; their content folds into the existing pillars + the
  * "Working with Odum" inline section below per Decision 6 of the plan.
+ *
+ * Lobby copy: this hub is a routing concierge, not the briefing itself. Each
+ * card carries a single-sentence framing — the full TLDR + sectioned briefing
+ * lives one click away on /briefings/<slug>. Per user review 2026-04-26.
  */
 const DISPLAY_ORDER: readonly BriefingPillar["slug"][] = [
   "investment-management",
@@ -32,38 +36,44 @@ const ORDERED_PILLARS: readonly BriefingPillar[] = DISPLAY_ORDER.flatMap((slug) 
   return pillar ? [pillar] : [];
 });
 
+/**
+ * Single-sentence card descriptions for the lobby. Intentionally tighter
+ * than `BriefingPillar.tldr` — the full TLDR appears on the briefing page
+ * itself, not the routing hub.
+ */
+const PILLAR_CARD_BLURBS: Readonly<Record<BriefingPillar["slug"], string>> = {
+  "investment-management": "For allocators evaluating selected strategies managed by Odum.",
+  "dart-trading-infrastructure":
+    "For teams using Odum’s infrastructure to run, execute, monitor, or report systematic strategies.",
+  "regulated-operating-models":
+    "For engagements that need governance, reporting, permissions, or structure around the trading activity.",
+};
+
 export default function BriefingsHubPage() {
   return (
     <div className="container max-w-4xl px-4 py-12 md:px-6 space-y-10">
       <div className="space-y-2">
-        <div className="flex flex-wrap items-center gap-2">
-          <Badge variant="outline" className="text-xs">
-            Briefings
-          </Badge>
-          <span className="text-[11px] font-medium uppercase tracking-wide text-emerald-700 dark:text-emerald-400">
-            Access granted
-          </span>
-        </div>
+        <Badge variant="outline" className="text-xs">
+          Briefings
+        </Badge>
       </div>
 
       <BriefingHero
         title="Briefings"
-        tldr="How we invest, how we're regulated, and every path through our platform — from signals in, to Odum Signals."
+        tldr="Read the relevant route before the fit call. Start with the path closest to your situation; companion briefings are optional where they apply."
         cta={{ label: "Book a Fit Call", href: CALENDLY_URL }}
       />
 
       {/* By-route routing table — 2 rows that point each persona at the
-          briefing they should start with. Replaces the previous flat
-          equal-pillars treatment so a builder who walks in already knowing
-          they want DART doesn't read three briefings to find the one that
-          matters. Pillar grid stays below this table. */}
+          briefing they should start with. Plain labels (no parenthetical
+          "capital → Odum" / "your strategy" tags). */}
       <section className="space-y-3 rounded-lg border border-border/80 bg-card/30 p-5 md:p-6">
         <h2 className="text-xs font-semibold tracking-[0.12em] uppercase text-muted-foreground">By route</h2>
         <ul className="divide-y divide-border/60">
           <li className="grid gap-2 py-3 md:grid-cols-[200px_1fr] md:items-center md:gap-6">
-            <span className="text-sm font-medium text-foreground">Allocator (capital → Odum)</span>
+            <span className="text-sm font-medium text-foreground">Allocator</span>
             <span className="text-sm text-muted-foreground">
-              Start at{" "}
+              Start with{" "}
               <Link
                 href="/briefings/investment-management"
                 className="font-medium text-foreground underline decoration-muted-foreground/50 underline-offset-2 hover:decoration-foreground"
@@ -74,16 +84,16 @@ export default function BriefingsHubPage() {
             </span>
           </li>
           <li className="grid gap-2 py-3 md:grid-cols-[200px_1fr] md:items-center md:gap-6">
-            <span className="text-sm font-medium text-foreground">Builder / counterparty (your strategy)</span>
+            <span className="text-sm font-medium text-foreground">Builder / counterparty</span>
             <span className="text-sm text-muted-foreground">
-              Start at{" "}
+              Start with{" "}
               <Link
                 href="/briefings/dart-trading-infrastructure"
                 className="font-medium text-foreground underline decoration-muted-foreground/50 underline-offset-2 hover:decoration-foreground"
               >
                 DART Trading Infrastructure
               </Link>
-              . If a regulatory wrapper applies, companion read:{" "}
+              . If governance or regulatory structure matters, also read{" "}
               <Link
                 href="/briefings/regulated-operating-models"
                 className="font-medium text-foreground underline decoration-muted-foreground/50 underline-offset-2 hover:decoration-foreground"
@@ -97,9 +107,7 @@ export default function BriefingsHubPage() {
       </section>
 
       {/* Skip-ahead affordance — for prospects who already know what they want
-          and don't need to read three briefings before being specific. Tier
-          1 → Tier 2 escape hatch placed near the hero so it's visible
-          without scrolling past the pillar grid. */}
+          and don't need to read three briefings before being specific. */}
       <p className="text-xs text-muted-foreground">
         Already know what fits?{" "}
         <Link
@@ -117,7 +125,7 @@ export default function BriefingsHubPage() {
             <Card key={p.slug} className="border-border/60">
               <CardHeader>
                 <CardTitle className="text-lg">{p.title}</CardTitle>
-                <p className="text-sm text-foreground/85 leading-relaxed">{renderWithTerms(p.tldr)}</p>
+                <p className="text-sm text-foreground/85 leading-relaxed">{PILLAR_CARD_BLURBS[p.slug]}</p>
               </CardHeader>
               <CardContent>
                 <Link
@@ -132,25 +140,20 @@ export default function BriefingsHubPage() {
         </div>
       </section>
 
-      <section className="space-y-2">
-        <p className="text-sm text-muted-foreground">
-          <Link href="/docs" className="font-medium text-primary hover:underline">
-            Developer Documentation
-          </Link>
-          <span className="text-muted-foreground"> — API and integration reference.</span>
-        </p>
-      </section>
+      {/*
+        Developer Documentation link removed from the public briefings hub
+        per user review 2026-04-26 — it reads as a random technical escape
+        hatch on a commercial briefing lobby. Devs can reach it from the
+        DART briefing body, the public footer, or directly via /docs once
+        they're inside the funnel.
+      */}
 
-      {/* Forward CTA — next step after reading the briefings hub. By the time
-          a reader is here they've already submitted the questionnaire (it's
-          the gate that unlocked /briefings/*), so the next steps are the
-          initial call and, optionally, the deeper Strategy Evaluation. */}
+      {/* Forward CTA — single sentence, two CTAs, no "Back to home" tertiary. */}
       <section className="rounded-lg border border-border bg-card/30 p-6">
         <h2 className="text-sm font-semibold text-foreground">Next steps</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          You&apos;ve read the deep dives. The natural next step is a 30-minute initial call &mdash; targeted now that
-          you have the context, focused on which products actually fit. If you&rsquo;re ready to be specific on the
-          record, you can also submit our deeper Strategy Evaluation.
+          Read the relevant briefing, then book a fit call &mdash; or submit a Strategy Evaluation if you already know
+          what you want to run.
         </p>
         <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
           <a
@@ -166,12 +169,6 @@ export default function BriefingsHubPage() {
             className="inline-flex w-full items-center justify-center rounded-md border border-border bg-background px-4 py-2.5 text-sm font-medium text-foreground hover:bg-accent sm:w-auto sm:justify-start"
           >
             Submit a Strategy Evaluation →
-          </Link>
-          <Link
-            href="/"
-            className="inline-flex w-full items-center justify-center rounded-md border border-border bg-background px-4 py-2.5 text-sm font-medium text-foreground hover:bg-accent sm:w-auto sm:justify-start"
-          >
-            Back to home
           </Link>
         </div>
       </section>

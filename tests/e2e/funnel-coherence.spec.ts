@@ -62,9 +62,9 @@ test.describe("Funnel Coherence — public funnel", () => {
     await page.goto("/briefings", { waitUntil: "load" });
     await page.locator("header").first().waitFor({ state: "attached", timeout: 60_000 });
     await expect(page.getByRole("heading", { name: /^Briefings$/i })).toBeVisible({ timeout: 15_000 });
-    // By-route table.
-    await expect(page.getByText(/Allocator \(capital → Odum\)/i)).toBeVisible();
-    await expect(page.getByText(/Builder \/ counterparty \(your strategy\)/i)).toBeVisible();
+    // By-route table (single-word labels — no parenthetical tags).
+    await expect(page.getByText(/^Allocator$/i)).toBeVisible();
+    await expect(page.getByText(/^Builder \/ counterparty$/i)).toBeVisible();
     // Skip-ahead affordance.
     await expect(page.getByText(/Already know what fits\?/i)).toBeVisible();
   });
