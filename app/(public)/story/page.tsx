@@ -131,17 +131,18 @@ export default function MarketingStoryPage() {
               {/* Timeline */}
               <div>
                 <h2 className="mb-5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Timeline</h2>
-                <ol className="relative space-y-6 border-l border-border/60 pl-12">
+                <ol className="relative space-y-6 border-l border-border/60" style={{ paddingLeft: 48 }}>
                   {TIMELINE.map((entry) => (
                     <li key={entry.year} className="relative">
-                      {/* Circle bullet centred on the rail with generous
-                          clearance from the year text. pl-12 (48px) +
-                          left:-52px puts the 8px circle squarely on the
-                          border line at x≈-1 to +7, leaving ~40px of
-                          empty space before the "2011" caption starts. */}
+                      {/* Circle bullet on the rail. We bypass Tailwind for the
+                          left/top/size here because the dev-cycle CSS bundle
+                          drops arbitrary-value classes when this file gets
+                          edited mid-HMR — caused circles to overlap the leading
+                          digit of each year. Inline style is hot-reload-safe. */}
                       <span
                         aria-hidden
-                        className="absolute -left-[52px] top-2 size-2 rounded-full border border-primary/60 bg-background"
+                        className="absolute rounded-full border border-primary/60 bg-background"
+                        style={{ left: -52, top: 8, width: 8, height: 8 }}
                       />
                       <div className="font-mono text-[11px] uppercase tracking-wide text-primary/85">{entry.year}</div>
                       <div className="mt-1 text-sm font-semibold leading-tight text-foreground">{entry.title}</div>
