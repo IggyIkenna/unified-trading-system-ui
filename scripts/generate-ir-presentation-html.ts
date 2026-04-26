@@ -18,11 +18,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const outDir = join(root, "public/presentations");
 
 function buildHtml(opts: { filename: string; title: string; subtitle?: string; slides: unknown[] }): string {
-  const payload = JSON.stringify(
-    { title: opts.title, subtitle: opts.subtitle ?? "", slides: opts.slides },
-    null,
-    0,
-  );
+  const payload = JSON.stringify({ title: opts.title, subtitle: opts.subtitle ?? "", slides: opts.slides }, null, 0);
   return `<!doctype html>
 <html lang="en">
   <head>
@@ -75,7 +71,7 @@ const decks: Array<{ filename: string; title: string; subtitle?: string; slides:
   },
   {
     filename: "platform-presentation.html",
-    title: "Odum Research — Trading Platform as a Service",
+    title: "Odum Research — DART Trading Infrastructure",
     slides: platformSlides,
   },
   {
@@ -85,12 +81,12 @@ const decks: Array<{ filename: string; title: string; subtitle?: string; slides:
   },
   {
     filename: "investment-presentation.html",
-    title: "Odum Research — Investment Management",
+    title: "Odum Research — Odum-Managed Strategies",
     slides: investmentSlides,
   },
   {
     filename: "regulatory-presentation.html",
-    title: "Odum Research — Regulatory Umbrella",
+    title: "Odum Research — Regulated Operating Models",
     slides: regulatorySlides,
   },
 ];

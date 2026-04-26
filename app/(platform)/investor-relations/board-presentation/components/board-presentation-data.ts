@@ -106,7 +106,7 @@ export const slides = [
         problem:
           "Regulatory infrastructure is expensive, slow, and bolted on. An 18–24 month FCA cycle for anyone who wants to operate.",
         solution:
-          "FCA 975797 since January 2023. Same platform now hosts clients under our permissions \u2014 operational in weeks, not years.",
+          "FCA 975797 since January 2023. Same platform now hosts clients under our permissions where appropriate, with onboarding timing assessed case by case.",
       },
     ],
     differentiators: [

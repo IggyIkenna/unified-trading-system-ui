@@ -63,7 +63,7 @@ export const slides = [
       "Team personally traded across TradFi, crypto, and sports before Odum",
       "Platform runs $7.5M of our own capital \u2014 this is not a prototype",
     ],
-    conclusion: "You can build it. Or you can start trading in weeks.",
+    conclusion: "You can build it. Or you can start materially faster, subject to scope review.",
   },
 
   // ══════════════════════════════════════════════════════════════

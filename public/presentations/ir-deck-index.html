@@ -1,80 +1,78 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Odum Research — Investor relations (static HTML)</title>
+    <link rel="stylesheet" href="ir-deck.css" />
+    <style>
+      .idx {
+        max-width: 40rem;
+        margin: 0 auto;
+        padding: 32px 22px 48px;
+      }
 
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Odum Research — Investor relations (static HTML)</title>
-  <link rel="stylesheet" href="ir-deck.css" />
-  <style>
-    .idx {
-      max-width: 40rem;
-      margin: 0 auto;
-      padding: 32px 22px 48px;
-    }
+      .idx h1 {
+        font-size: 1.5rem;
+        margin: 0 0 8px;
+      }
 
-    .idx h1 {
-      font-size: 1.5rem;
-      margin: 0 0 8px;
-    }
+      .idx p {
+        color: var(--ir-muted);
+        margin: 0 0 22px;
+        line-height: 1.5;
+      }
 
-    .idx p {
-      color: var(--ir-muted);
-      margin: 0 0 22px;
-      line-height: 1.5;
-    }
+      .idx ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
 
-    .idx ul {
-      margin: 0;
-      padding: 0;
-      list-style: none;
-    }
+      .idx li {
+        margin-bottom: 10px;
+      }
 
-    .idx li {
-      margin-bottom: 10px;
-    }
+      .idx a {
+        font-weight: 600;
+      }
 
-    .idx a {
-      font-weight: 600;
-    }
+      .idx code {
+        font-size: 12px;
+        color: var(--ir-muted);
+      }
+    </style>
+  </head>
 
-    .idx code {
-      font-size: 12px;
-      color: var(--ir-muted);
-    }
-  </style>
-</head>
-
-<body>
-  <div class="ir-shell">
-    <header class="ir-header">
-      <div class="ir-brand">
-        <img src="../images/odum-logo.png" alt="Odum Research" width="28" height="28" />
-        <div>
-          <div class="ir-brand-title">ODUM<span class="dot">.</span></div>
-          <div class="ir-badge" style="margin-top: 6px">FCA 975797</div>
+  <body>
+    <div class="ir-shell">
+      <header class="ir-header">
+        <div class="ir-brand">
+          <img src="../images/odum-logo.png" alt="Odum Research" width="28" height="28" />
+          <div>
+            <div class="ir-brand-title">ODUM<span class="dot">.</span></div>
+            <div class="ir-badge" style="margin-top: 6px">FCA 975797</div>
+          </div>
         </div>
-      </div>
-    </header>
-    <main class="ir-main" style="display: block">
-      <div class="idx">
-        <h1>Static presentation exports</h1>
-        <p>
-          Generated slide decks share <code>ir-deck.css</code> and <code>ir-deck.js</code>. Rebuild HTML from app data
-          with <code>pnpm run generate:ir-html</code> in the UI repo.
-        </p>
-        <ul>
-          <li><a href="board-presentation.html">Board presentation</a></li>
-          <li><a href="platform-presentation.html">DART presentation</a></li>
-          <li><a href="plan-presentation.html">Plan &amp; longevity</a></li>
-          <li><a href="investment-presentation.html">Investment management</a></li>
-          <li><a href="regulatory-presentation.html">Regulatory umbrella</a></li>
-          <li><a href="disaster-recovery.html">Disaster recovery &amp; BCP</a> (Reveal.js)</li>
-          <li><a href="site-navigation.html">Portal &amp; website navigation</a></li>
-        </ul>
-      </div>
-    </main>
-  </div>
-</body>
-
+      </header>
+      <main class="ir-main" style="display: block">
+        <div class="idx">
+          <h1>Static presentation exports</h1>
+          <p>
+            Generated slide decks share <code>ir-deck.css</code> and <code>ir-deck.js</code>. Rebuild HTML from app data
+            with <code>pnpm run generate:ir-html</code> in the UI repo.
+          </p>
+          <ul>
+            <li><a href="board-presentation.html">Board presentation</a></li>
+            <li><a href="platform-presentation.html">DART Trading Infrastructure</a></li>
+            <li><a href="plan-presentation.html">Plan &amp; longevity</a></li>
+            <li><a href="investment-presentation.html">Odum-Managed Strategies (Investment Management)</a></li>
+            <li><a href="regulatory-presentation.html">Regulated Operating Models (Regulatory Umbrella)</a></li>
+            <li><a href="disaster-recovery.html">Disaster recovery &amp; BCP</a> (Reveal.js)</li>
+            <li><a href="site-navigation.html">Portal &amp; website navigation</a></li>
+          </ul>
+        </div>
+      </main>
+    </div>
+  </body>
 </html>
