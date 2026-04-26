@@ -3,6 +3,7 @@ import { Term } from "@/components/marketing/term";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { SERVICE_LABELS } from "@/lib/copy/service-labels";
 import { CALENDLY_URL } from "@/lib/marketing/calendly";
 import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
@@ -23,9 +24,9 @@ import Link from "next/link";
  *   codex/14-playbooks/playbooks/04-investment-management.md
  */
 export const metadata: Metadata = {
-  title: "Investment Management — Odum Research",
+  title: `${SERVICE_LABELS.investment.marketing} | Odum Research`,
   description:
-    "FCA-regulated investment management. Allocate capital to Odum-run systematic strategies across digital assets, traditional markets, sports, and prediction markets. Same reporting surface Odum uses internally; client-slice visibility only.",
+    "Allocate capital to selected systematic strategies managed by Odum across digital assets, traditional markets, sports, and prediction markets. FCA-regulated. Same reporting surface Odum uses internally; client-slice visibility only.",
 };
 
 export default function InvestmentManagementPage() {
@@ -46,11 +47,11 @@ export default function InvestmentManagementPage() {
                 <Term id="pooled">Pooled</Term> fund or <Term id="sma">SMA</Term>
               </Badge>
             </div>
-            <h1 className="text-3xl font-bold">Investment Management</h1>
+            <h1 className="text-3xl font-bold">{SERVICE_LABELS.investment.marketing}</h1>
             <p className="mt-4 text-lg text-muted-foreground">
-              Allocate capital to Odum-run systematic strategies across digital assets, traditional markets, sports, and
-              prediction markets. The allocator-facing reporting surface is the same one Odum uses to run the strategies
-              &mdash; one system, one codebase, partitioned views.
+              Allocate capital to selected systematic strategies managed by Odum across digital assets, traditional
+              markets, sports, and prediction markets. The allocator-facing reporting surface is the same one Odum uses
+              to run the strategies &mdash; one system, one codebase, partitioned views.
             </p>
             <p className="mt-3 text-sm text-muted-foreground">
               Odum operates as an FCA investment manager under FRN 975797 from <strong>January 2023</strong>.
@@ -132,19 +133,16 @@ export default function InvestmentManagementPage() {
             <CardHeader>
               <CardTitle>How fees work</CardTitle>
               <CardDescription>
-                No management fee. A performance share plus a platform fee you pick the shape of at signing.
+                No management fee &mdash; you pay for returns generated, plus a small platform fee you pick the shape of
+                at signing.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3 text-sm text-muted-foreground">
               <p>
-                We don&apos;t charge a management fee. You&apos;re not paying us for capital to sit &mdash; you&apos;re
-                paying us for the returns we generate.
-              </p>
-              <p>
-                What you pay is a share of the profit, plus a small platform fee. When you sign the mandate you pick how
-                the platform fee works: a slight uplift on the performance share (variable &mdash; you pay more when we
-                perform), or a fixed monthly amount (flat &mdash; predictable, useful if you prefer the accounting
-                clarity). Once chosen, it locks for the term of the mandate.
+                You pay a share of the profit plus a small platform fee. At signing you choose how the platform fee
+                works: a slight uplift on the performance share (variable &mdash; you pay more when we perform), or a
+                fixed monthly amount (flat &mdash; predictable, useful if you prefer accounting clarity). Once chosen,
+                it locks for the term of the mandate.
               </p>
               <p>
                 The specific percentages, how the hurdle is defined, and how often fees crystallise all sit in the
@@ -157,10 +155,11 @@ export default function InvestmentManagementPage() {
           <div className="mb-8 rounded-lg border border-border bg-card/50 p-6">
             <h2 className="text-lg font-semibold">You see the same system we use ourselves</h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              The dashboard you log into as an IM client is the same one our own traders look at every morning &mdash;
+              The dashboard you log into as an allocator is the same one our own traders look at every morning &mdash;
               just filtered to your slice. Positions, P&amp;L, risk, reconciliation, audit trail: same components, same
-              data, same code path. Regulatory Umbrella clients see the same dashboard too, filtered to their activity.
-              One operating system; different views per audience &mdash; not three separate products stitched together.
+              data, same code path. {SERVICE_LABELS.regulatory.marketing} clients see the same dashboard too, filtered
+              to their activity. One operating system; different views per audience &mdash; not separate products
+              stitched together.
             </p>
           </div>
 
@@ -198,7 +197,7 @@ export default function InvestmentManagementPage() {
             <ul className="mt-3 space-y-2 text-sm">
               <li>
                 <Link href="/regulatory" className="font-medium text-foreground underline-offset-4 hover:underline">
-                  Regulatory Umbrella
+                  {SERVICE_LABELS.regulatory.marketing}
                 </Link>
                 <span className="text-muted-foreground">
                   {" "}
@@ -206,8 +205,8 @@ export default function InvestmentManagementPage() {
                 </span>
               </li>
               <li>
-                <Link href="/platform/full" className="font-medium text-foreground underline-offset-4 hover:underline">
-                  DART Full
+                <Link href="/platform" className="font-medium text-foreground underline-offset-4 hover:underline">
+                  {SERVICE_LABELS.dart.marketing}
                 </Link>
                 <span className="text-muted-foreground">
                   {" "}
@@ -234,24 +233,6 @@ export default function InvestmentManagementPage() {
                 <span className="text-muted-foreground"> &mdash; team, operating history, FCA credentials.</span>
               </li>
             </ul>
-          </div>
-
-          <div className="mt-10 rounded-lg border border-border bg-card/30 p-5">
-            <p className="text-sm font-medium">Tell us what you&rsquo;re looking for</p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Answer a few questions about the strategy styles and market exposures you want, and we&rsquo;ll map you to
-              the right part of the platform.
-            </p>
-            <div className="mt-3 flex flex-wrap gap-3">
-              <Button asChild size="sm">
-                <Link href="/questionnaire">
-                  Get started <ArrowRight className="ml-1.5 size-3.5" />
-                </Link>
-              </Button>
-              <Button asChild variant="outline" size="sm">
-                <Link href="/contact">Book a call</Link>
-              </Button>
-            </div>
           </div>
         </div>
       </main>
