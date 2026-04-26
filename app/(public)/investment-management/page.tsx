@@ -117,7 +117,7 @@ export default function InvestmentManagementPage() {
   return (
     <div className="min-h-screen bg-background">
       <main className="container px-4 pb-20 pt-10 md:px-6 md:pb-24 md:pt-12">
-        <div className="mx-auto max-w-5xl">
+        <div className="mx-auto max-w-6xl">
           {/* Hero */}
           <div className="mb-14 max-w-3xl">
             <div className="mb-3 flex flex-wrap items-center gap-2">
