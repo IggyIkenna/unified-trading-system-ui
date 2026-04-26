@@ -1,4 +1,8 @@
 // Plan & Longevity Presentation \u2014 data for 13-slide capital-trajectory deck.
+// Marketing labels per SERVICE_LABELS SSOT (lib/copy/service-labels.ts):
+//   Odum-Managed Strategies (legal/contract: Investment Management)
+//   DART Trading Infrastructure (legal/contract: DART; signals capabilities collapse here)
+//   Regulated Operating Models (legal/contract: Regulatory Umbrella)
 // Last restructured: April 2026 \u2014 reframed around the $7.5M → $100M path,
 // strategy availability timelines, and why this compounds rather than scales.
 
@@ -9,7 +13,7 @@ export const slides = [
     type: "cover",
     title: "The Path To $100M",
     subtitle:
-      "Strategy availability, service readiness, and capital growth \u2014 the plan for the next 30 months. Not a plan from zero. A plan from $7.5M with demonstrated performance, live commercial traction across every service, and an FCA permission that has been authorised since January 2023.",
+      "Strategy availability, route readiness, and capital growth \u2014 the plan for the next 30 months. Not a plan from zero. A plan from $7.5M with demonstrated performance, live commercial traction across all three engagement routes (Odum-Managed Strategies, DART Trading Infrastructure, Regulated Operating Models), and an FCA permission that has been authorised since January 2023.",
     tagline: "Capital Trajectory Deck",
     stats: [
       { value: "$7.5M", label: "Today" },
@@ -25,31 +29,38 @@ export const slides = [
     type: "doctrine",
     title: "Why Breadth Exists",
     subtitle:
-      "We cannot build and scale every strategy ourselves. We do not have the manpower, the capital, or the distribution network. The breadth exists to power four revenue lines that feed each other.",
+      "We cannot build and scale every strategy ourselves. We do not have the manpower, the capital, or the distribution network. The breadth exists to power three engagement routes that feed each other.",
     points: [
       {
         problem: "We cannot trade everything ourselves \u2014 too many strategies, not enough capital.",
-        solution: "Breadth powers Investment Management \u2014 we pick the strategies we can run at scale, trade our own capital, and partition away our alpha. Co-investors join on identical terms.",
+        solution:
+          "Breadth powers Odum-Managed Strategies (Investment Management permission) \u2014 we pick the strategies we can run at scale, trade our own capital, and partition away our alpha. Co-investors join on identical terms.",
       },
       {
-        problem: "Clients want infrastructure, not just returns \u2014 but building it themselves is 18\u201324 months.",
-        solution: "Same breadth powers DART \u2014 Signals-In for clients who keep IP upstream, Full Pipeline for clients who want research and promote on Odum.",
+        problem:
+          "Clients want infrastructure, not just returns \u2014 but building it themselves is 18\u201324 months.",
+        solution:
+          "Same breadth powers DART Trading Infrastructure \u2014 one engagement route with capability options for client-provided signals (IP upstream), Odum-provided signals, or hybrid.",
       },
       {
         problem: "Research has value beyond our own trading \u2014 we produce more signal than we can deploy.",
-        solution: "Odum Signals \u2014 signal feeds to institutional counterparties who execute on their own infrastructure. Monetises research without sharing methodology.",
+        solution:
+          "DART Trading Infrastructure also offers an Odum-provided signal capability \u2014 signal feeds to institutional counterparties who execute on their own infrastructure. Monetises research without sharing methodology. (Legal/contract label: Odum Signals.)",
       },
       {
-        problem: "Regulated activity is a gate \u2014 firms stall 12\u201324 months waiting for direct FCA authorisation.",
-        solution: "Regulatory Umbrella \u2014 Odum's permissions cover client activity. Compliance infrastructure is the same one we operate ourselves.",
+        problem:
+          "Regulated activity is a gate \u2014 firms stall 12\u201324 months waiting for direct FCA authorisation.",
+        solution:
+          "Regulated Operating Models \u2014 Odum's permissions cover client activity where appropriate, assessed case by case. Compliance infrastructure is the same one we operate ourselves. (Legal/contract label: Regulatory Umbrella.)",
       },
     ],
     differentiators: [
-      "All four revenue lines run on one codebase \u2014 adding breadth compounds across all of them",
+      "Three engagement routes run on one codebase \u2014 adding breadth compounds across all of them",
       "Client strategies built on Odum stay with the client \u2014 contractual non-compete on bespoke territory",
       "Nothing ships that we would not trust with our own money",
     ],
-    conclusion: "Investment management grows through track record. DART grows through platform deployments. Odum Signals monetises research without sharing methodology. Regulatory Umbrella unblocks the first three. All four compound on the same infrastructure.",
+    conclusion:
+      "Odum-Managed Strategies grows through track record. DART Trading Infrastructure grows through platform deployments and Odum-provided signal counterparties. Regulated Operating Models unblocks both, where appropriate. All three compound on the same infrastructure.",
   },
 
   // ── Slide 3: From $7.5M To $100M ──────────────────────────
@@ -57,31 +68,37 @@ export const slides = [
     id: 3,
     type: "trajectory",
     title: "From $7.5M To $100M",
-    subtitle: "Capital follows demonstrated performance. Each stage is unlocked by track record, not by raise velocity.",
+    subtitle:
+      "Capital follows demonstrated performance. Each stage is unlocked by track record, not by raise velocity.",
     milestones: [
       {
         date: "Now",
         value: "$7.5M",
-        detail: "Crypto mean reversion (30%+, 1-yr TR) + BTC FoF (5-yr TR). First DART + Regulatory Umbrella clients live.",
+        detail:
+          "Crypto mean reversion (30%+, 1-yr TR) + BTC FoF (5-yr TR). First DART Trading Infrastructure + Regulated Operating Models clients live.",
         active: true,
       },
       {
         date: "End 2026",
         value: "$10M+",
-        detail: "Elysium DeFi DART live. BTC ML IM (10 × $500K). CME S&P co-invest (Sept, $500K + $50K Odum skin). India Options (Oct, $100K onboarding + $5\u201310M IM). 2 Odum Signals counterparties.",
+        detail:
+          "Elysium DeFi (DART Trading Infrastructure) live. BTC ML Odum-Managed Strategies (10 × $500K). CME S&P co-invest (Sept, $500K + $50K Odum skin). India Options (Oct, $100K onboarding + $5\u201310M Odum-Managed Strategies). 2 DART Odum-provided-signal counterparties.",
       },
       {
         date: "End 2027",
         value: "$25M+",
-        detail: "CME S&P scaled to $5M. India Options $5\u201310M live. 4 DART clients, 6 Regulatory Umbrella clients, 4 Odum Signals counterparties. Institutional allocator conversations on 18-month TRs.",
+        detail:
+          "CME S&P scaled to $5M. India Options $5\u201310M live. 4 DART Trading Infrastructure clients, 6 Regulated Operating Models clients, 4 DART Odum-provided-signal counterparties. Institutional allocator conversations on 18-month TRs.",
       },
       {
         date: "End 2028",
         value: "$100M",
-        detail: "9 DART clients, 11 Regulatory Umbrella clients, 6+ Odum Signals counterparties. BTC ML + sports ML + CME + India + DeFi strategies at full scale across IM and DART.",
+        detail:
+          "9 DART Trading Infrastructure clients, 11 Regulated Operating Models clients, 6+ DART Odum-provided-signal counterparties. BTC ML + sports ML + CME + India + DeFi strategies at full scale across Odum-Managed Strategies and DART Trading Infrastructure.",
       },
     ],
-    callout: "The unlock at each stage is track record. Every month of live trading compounds the evidence — and with four revenue lines funding operations, we are not racing against a runway clock.",
+    callout:
+      "The unlock at each stage is track record. Every month of live trading compounds the evidence — and with three engagement routes funding operations, we are not racing against a runway clock.",
   },
 
   // ── Slide 4: When Each Strategy Becomes Available ─────────
@@ -89,7 +106,8 @@ export const slides = [
     id: 4,
     type: "timeline-matrix",
     title: "When Each Strategy Becomes Available",
-    subtitle: "From internal testing through investment management to client deployment. Green = live. Amber = testing. Blue = available for client deployment.",
+    subtitle:
+      "From internal testing through Odum-Managed Strategies to client deployment. Green = live. Amber = testing. Blue = available for client deployment.",
     periods: ["Now", "May 2026", "Jun 2026", "Q3 2026", "Q4 2026", "Q2 2027"],
     strategies: [
       {
@@ -121,7 +139,7 @@ export const slides = [
         statuses: ["", "", "testing", "live", "live", "live"],
       },
       {
-        name: "Perp-funding arb (DART Signals-In)",
+        name: "Perp-funding arb (DART Trading Infrastructure, client-provided signals)",
         statuses: ["", "testing", "live", "live", "live", "live"],
       },
       {
@@ -137,8 +155,8 @@ export const slides = [
     type: "breadth-matrix",
     title: "What Is Available When, By Service",
     subtitle:
-      "Data and research are always first. Internal testing next. Investment management after track record forms. DART / bespoke builds anchored to commercial conversations.",
-    columns: ["Internal Testing", "Investment Management", "DART / Bespoke", "Data & Research"],
+      "Data and research are always first. Internal testing next. Odum-Managed Strategies after track record forms. DART / bespoke builds anchored to commercial conversations.",
+    columns: ["Internal Testing", "Odum-Managed Strategies", "DART / Bespoke", "Data & Research"],
     rows: [
       {
         asset: "Crypto mean reversion",
@@ -186,20 +204,28 @@ export const slides = [
     subtitle: "We partition strategies into two categories. The infrastructure is shared. The alpha is not.",
     points: [
       {
-        problem: "Internal alpha \u2014 strategies we run for our own IM and co-invest.",
-        solution: "Proprietary. Signal logic, feature weights, parameters never shared. Never licensed. Client-facing teams do not see the source.",
+        problem:
+          "Internal alpha \u2014 strategies we run for our own Odum-Managed Strategies (Investment Management) and co-invest.",
+        solution:
+          "Proprietary. Signal logic, feature weights, parameters never shared. Never licensed. Client-facing teams do not see the source.",
       },
       {
-        problem: "Bespoke client strategies \u2014 DART Full engagements where a client builds or contracts a build.",
-        solution: "Built on shared infrastructure, to the client's requirements. We do not trade the same strategy ourselves. Contractual non-compete on bespoke territory. If they leave, bespoke logic goes with them.",
+        problem:
+          "Bespoke client strategies \u2014 DART Trading Infrastructure (Odum-provided signal capability) engagements where a client builds or contracts a build.",
+        solution:
+          "Built on shared infrastructure, to the client's requirements. We do not trade the same strategy ourselves. Contractual non-compete on bespoke territory. If they leave, bespoke logic goes with them.",
       },
       {
-        problem: "DART Signals-In clients \u2014 strategy IP stays upstream at the client.",
-        solution: "Odum never sees the signal logic. We receive structured instructions and execute. Technical boundary enforced by the DART schema.",
+        problem:
+          "DART Trading Infrastructure (client-provided signals capability) clients \u2014 strategy IP stays upstream at the client.",
+        solution:
+          "Odum never sees the signal logic. We receive structured instructions and execute. Technical boundary enforced by the DART schema.",
       },
       {
-        problem: "Odum Signals counterparties \u2014 we generate, they execute elsewhere.",
-        solution: "Counterparty receives structured payloads via HMAC-signed envelopes. They never see the underlying model; we never see their execution venue.",
+        problem:
+          "DART Odum-provided-signal counterparties \u2014 we generate, they execute elsewhere. (Legal/contract label: Odum Signals.)",
+        solution:
+          "Counterparty receives structured payloads via HMAC-signed envelopes. They never see the underlying model; we never see their execution venue.",
       },
     ],
     differentiators: [
@@ -242,7 +268,7 @@ export const slides = [
         desc: "Client reporting and compliance tools. Your strategy stays entirely yours.",
       },
       {
-        name: "Full Platform (DART Full)",
+        name: "Full Platform (DART Trading Infrastructure, Odum-provided signal capability)",
         stages: ["Instruments & Data", "Research", "Decision", "Execution", "Governance"],
         model: "Bespoke + non-compete",
         desc: "Research and promote on Odum infrastructure. Even then, we do not trade your strategy. Bespoke commercial terms.",
@@ -303,7 +329,7 @@ export const slides = [
     achieved: [
       { text: "End Q2 2026 (2 months out)", detail: "" },
       {
-        text: "Elysium DeFi go-live (DART Signals-In)",
+        text: "Elysium DeFi go-live (DART Trading Infrastructure, client-provided signals capability)",
         detail: "$125K onboarding, $75K upsell path (MEV + Solana + recursive staking).",
       },
       {
@@ -315,8 +341,9 @@ export const slides = [
         detail: "2 IM clients at $50\u2013100K (capacity-bound).",
       },
       {
-        text: "Regulatory Umbrella: Seed + Desmond live",
-        detail: "Desmond combines Reg Umbrella with DART Signals-In (perp-funding arb).",
+        text: "Regulated Operating Models: Seed + first client live",
+        detail:
+          "Combines a regulated-operating-model engagement with DART Trading Infrastructure (client-provided signals capability) for perp-funding arb. (Legal/contract labels: Regulatory Umbrella + DART Signals-In.)",
       },
       { text: "AUM: $8\u201310M", detail: "" },
     ],
@@ -331,7 +358,7 @@ export const slides = [
         detail: "$100K onboarding + $5\u201310M IM allocation (NSE delta).",
       },
       {
-        text: "Odum Signals \u2014 2 institutional counterparties",
+        text: "DART Odum-provided signal counterparties \u2014 2 institutional",
         detail: "Sept 2026 go-live, ~$5K/mo combined via hybrid pricing.",
       },
       {
@@ -340,7 +367,8 @@ export const slides = [
       },
       {
         text: "Annual revenue ~£636K, December cash ~£408K",
-        detail: "Revenue-funded \u2014 no bridge capital needed. The £3M raised in 2021 built the stack; the next phase grows from four live revenue lines.",
+        detail:
+          "Revenue-funded \u2014 no bridge capital needed. The £3M raised in 2021 built the stack; the next phase grows from three live engagement routes.",
       },
     ],
     launchReady: [
@@ -351,12 +379,12 @@ export const slides = [
       },
       { text: "$100M target (2028)", detail: "18+ month TRs across strategy families." },
       {
-        text: "4 DART clients, 6 Regulatory Umbrella clients",
-        detail: "Odum Signals to institutional counterparties.",
+        text: "4 DART Trading Infrastructure clients, 6 Regulated Operating Models clients",
+        detail: "DART Odum-provided signals to institutional counterparties.",
       },
       {
-        text: "9 DART clients, 11 Regulatory Umbrella clients (2028)",
-        detail: "Full service portfolio scaled across all four revenue lines.",
+        text: "9 DART Trading Infrastructure clients, 11 Regulated Operating Models clients (2028)",
+        detail: "Full portfolio scaled across all three engagement routes.",
       },
     ],
     checkpoint:
@@ -369,30 +397,35 @@ export const slides = [
     type: "doctrine",
     title: "Why This Plan Is Realistic",
     subtitle:
-      "This is not a plan from zero. It is a plan from $7.5M with demonstrated performance and four live revenue lines.",
+      "This is not a plan from zero. It is a plan from $7.5M with demonstrated performance and three live engagement routes.",
     points: [
       {
         problem: "Starting from zero?",
-        solution: "No. $7.5M live, 30%+ returns with 1-year TR (mean reversion) and 5-years (BTC FoF). First DART and Regulatory Umbrella clients onboarded.",
+        solution:
+          "No. $7.5M live, 30%+ returns with 1-year TR (mean reversion) and 5-years (BTC FoF). First DART Trading Infrastructure and Regulated Operating Models clients onboarded.",
       },
       {
         problem: "Track record takes forever?",
-        solution: "Every additional month and every additional strategy makes the next raise easier. We are not starting the clock \u2014 we are compounding an existing one.",
+        solution:
+          "Every additional month and every additional strategy makes the next raise easier. We are not starting the clock \u2014 we are compounding an existing one.",
       },
       {
         problem: "Scaling costs scale linearly?",
         solution: "The same 22 microservices that run $7.5M can run $100M. Infrastructure costs scale sub-linearly.",
       },
       {
-        problem: "Dependent on IM fees alone?",
-        solution: "Four revenue lines: IM performance fees, DART platform revenue, Odum Signals licences, Regulatory Umbrella retainers. Each grows on its own driver.",
+        problem: "Dependent on Odum-Managed Strategies fees alone?",
+        solution:
+          "Three engagement routes: Odum-Managed Strategies performance fees, DART Trading Infrastructure platform revenue (including Odum-provided signal licences), Regulated Operating Models retainers. Each grows on its own driver.",
       },
       {
         problem: "Needs bridge capital to get there?",
-        solution: "No. October 2026 flip to £372K cash. December 2026 £413K. The £3M raised in 2021 funded the infrastructure build. The $7.5M → $25M transition is funded by four live revenue lines — no further external capital is being sought.",
+        solution:
+          "No. October 2026 flip to £372K cash. December 2026 £413K. The £3M raised in 2021 funded the infrastructure build. The $7.5M → $25M transition is funded by the three live engagement routes — no further external capital is being sought.",
       },
     ],
-    conclusion: "The path to $100M is: demonstrate performance, compound track record, open institutional channels. The system is built. The commercial model is proven. The scale lever is track record time.",
+    conclusion:
+      "The path to $100M is: demonstrate performance, compound track record, open institutional channels. The system is built. The commercial model is proven. The scale lever is track record time.",
   },
 
   // ── Slide 11: Explore The Public Site ─────────────────────
@@ -403,11 +436,23 @@ export const slides = [
     subtitle:
       "The trajectory narrative \u2014 in context. Forward these to advisors, LPs, and prospects who want the story before the numbers. Access code for the briefings hub is odum-briefings-2026.",
     sections: [
-      { name: "Homepage", desc: "Four commercial paths, one regulated operating system", link: "/" },
-      { name: "Our Story", desc: "Long-form founder narrative \u2014 why this exists, how we got here", link: "/our-story" },
+      { name: "Homepage", desc: "Three engagement routes, one regulated operating system", link: "/" },
+      {
+        name: "Our Story",
+        desc: "Long-form founder narrative \u2014 why this exists, how we got here",
+        link: "/our-story",
+      },
       { name: "Timeline", desc: "Dated milestones from 2011 desks to FCA to the unified stack", link: "/story" },
-      { name: "IM Briefing", desc: "How IM feeds the trajectory \u2014 strategy families, fees, portal", link: "/briefings/investment-management" },
-      { name: "DART Briefing", desc: "Platform revenue that funds the business while track records compound", link: "/briefings/platform" },
+      {
+        name: "Odum-Managed Strategies Briefing",
+        desc: "How Odum-Managed Strategies feeds the trajectory \u2014 strategy families, fees, portal",
+        link: "/briefings/investment-management",
+      },
+      {
+        name: "DART Trading Infrastructure Briefing",
+        desc: "Platform revenue that funds the business while track records compound",
+        link: "/briefings/dart-trading-infrastructure",
+      },
       { name: "FAQ", desc: "Common objections front-run", link: "/faq" },
     ],
     note: "Public-site links open in a new tab. Briefings hub is gated by the shared access code.",
@@ -418,7 +463,8 @@ export const slides = [
     id: 12,
     type: "demo",
     title: "See It Live",
-    subtitle: "Walk through any part of the system in demo mode \u2014 representative positions and P&L against a demo persona, never real client capital.",
+    subtitle:
+      "Walk through any part of the system in demo mode \u2014 representative positions and P&L against a demo persona, never real client capital.",
     sections: [
       {
         name: "Dashboard",
