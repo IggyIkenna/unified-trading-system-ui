@@ -62,10 +62,25 @@ function HomeContactButton({
   );
 }
 
+const LIFECYCLE_STEPS = ["Research", "Execution", "Monitoring", "Reporting", "Governance"] as const;
+
+const PROOF_POINTS = ["FCA-authorised", "Professional / institutional clients", "Regulated since 2023"] as const;
+
 function Hero() {
   return (
-    <section className="border-b border-border/40 bg-background">
-      <div className="container px-4 py-20 md:px-6 md:py-28">
+    <section className="relative overflow-hidden border-b border-border/40 bg-background">
+      {/* Subtle dark-gradient + grid backdrop for institutional weight without
+          stat-strip clutter. Pure CSS — no images, no animation. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-primary/[0.04] via-background to-background"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-[0.05] [background-image:linear-gradient(rgba(255,255,255,0.5)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.5)_1px,transparent_1px)] [background-size:48px_48px]"
+      />
+
+      <div className="container relative px-4 py-20 md:px-6 md:py-28">
         <div className="mx-auto max-w-3xl text-center">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
             Odum Research &middot; FCA 975797
@@ -74,13 +89,55 @@ function Hero() {
             Systematic strategies and trading infrastructure for institutional clients
           </h1>
           <p className="mt-6 text-pretty text-base leading-relaxed text-muted-foreground md:text-lg">
-            Odum runs selected systematic strategies for eligible allocators and operates the trading infrastructure
-            behind them. Where appropriate, we structure the engagement under a regulated operating model.
+            Odum manages selected systematic strategies and operates the infrastructure behind them &mdash; from
+            research and execution to monitoring, reporting, and governance.
+          </p>
+          <p className="mx-auto mt-3 max-w-2xl text-pretty text-sm leading-relaxed text-muted-foreground/85 md:text-base">
+            Clients engage through {SERVICE_LABELS.investment.marketing}, {SERVICE_LABELS.dart.marketing}, or{" "}
+            {SERVICE_LABELS.regulatory.marketing} where appropriate.
           </p>
           <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <HomeStartReviewButton source="hero" />
             <HomeContactButton source="hero" />
           </div>
+
+          {/* Lifecycle strip — restrained proof of platform breadth, no stats. */}
+          <div
+            aria-hidden
+            className="mt-12 hidden items-center justify-center gap-3 font-mono text-[11px] uppercase tracking-[0.15em] text-muted-foreground/80 md:flex"
+          >
+            {LIFECYCLE_STEPS.map((step, i) => (
+              <span key={step} className="flex items-center gap-3">
+                <span className={i === 0 ? "text-foreground/85" : ""}>{step}</span>
+                {i < LIFECYCLE_STEPS.length - 1 && <span className="text-muted-foreground/40">→</span>}
+              </span>
+            ))}
+          </div>
+          <div
+            aria-hidden
+            className="mt-6 flex flex-wrap items-center justify-center gap-2 text-[11px] uppercase tracking-[0.15em] text-muted-foreground/70 md:hidden"
+          >
+            {LIFECYCLE_STEPS.map((step) => (
+              <span key={step} className="font-mono">
+                {step}
+              </span>
+            ))}
+          </div>
+
+          {/* Proof row — institutional credibility without metrics-row clutter. */}
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-xs text-muted-foreground/85">
+            {PROOF_POINTS.map((proof, i) => (
+              <span key={proof} className="flex items-center gap-3">
+                <span>{proof}</span>
+                {i < PROOF_POINTS.length - 1 && <span className="text-muted-foreground/40">·</span>}
+              </span>
+            ))}
+          </div>
+
+          {/* Optional market context line — controlled, no five-asset-class mega-list. */}
+          <p className="mt-4 text-xs text-muted-foreground/60">
+            Digital assets &middot; Traditional markets &middot; Alternative trading contexts
+          </p>
         </div>
       </div>
     </section>
