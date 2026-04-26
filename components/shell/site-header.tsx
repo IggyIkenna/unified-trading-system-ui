@@ -381,8 +381,16 @@ export function SiteHeader() {
                   <Link href="/contact" className="hidden text-sm text-muted-foreground hover:text-foreground xl:block">
                     Book a Fit Call
                   </Link>
+                  {/* Responsive label: "Submit Evaluation" on mobile (fits at
+                      375px width); "Submit Strategy Evaluation" on sm+ where
+                      there's room. The Menu pill + Sheet drawer also carries
+                      the full CTA set on mobile, so the inline CTA is a
+                      shortcut, not the only path. */}
                   <Button size="sm" asChild>
-                    <Link href="/strategy-evaluation">Submit Strategy Evaluation</Link>
+                    <Link href="/strategy-evaluation">
+                      <span className="sm:hidden">Submit Evaluation</span>
+                      <span className="hidden sm:inline">Submit Strategy Evaluation</span>
+                    </Link>
                   </Button>
                 </>
               ) : (
