@@ -25,25 +25,39 @@
 export interface CatalogueSeed {
   readonly assetGroups: readonly string[];
   readonly instrumentTypes: readonly string[];
-  readonly marketNeutral?: boolean;
+  /** Market exposure preference — "neutral" / "directional" / "both". */
+  readonly marketNeutral?: string;
+  /** Risk appetite — "low" / "medium" / "high". */
   readonly riskProfile?: string;
+  /** Leverage tolerance — "none" / "low" / "medium" / "any". */
   readonly leveragePreference?: string;
+  /** Optional minimum Sharpe ratio for FOMO-tab ranking. */
+  readonly targetSharpeMin?: number;
+  /** Base-currency / hedging preferences. */
+  readonly shareClassPreferences?: readonly string[];
 }
 
 const STORAGE_KEY = "odum-catalogue-seed-v1";
 
 interface QuestionnaireLikeInput {
-  // Questionnaire envelope axes.
+  // Questionnaire envelope axes (snake_case).
   categories?: readonly string[];
   asset_groups?: readonly string[];
   instrument_types?: readonly string[];
-  market_neutral?: boolean;
-  risk_profile?: string;
-  leverage_preference?: string;
-  // Strategy-evaluation client-side state shape.
+  market_neutral?: string | boolean | null;
+  risk_profile?: string | null;
+  leverage_preference?: string | null;
+  target_sharpe_min?: number | null;
+  share_class_preferences?: readonly string[];
+  // Strategy-evaluation client-side state shape (camelCase / Set).
   assetGroups?: ReadonlySet<string> | readonly string[];
   instrumentTypes?: ReadonlySet<string> | readonly string[];
-  // Allocator-path fields.
+  marketNeutral?: string | null;
+  riskProfile?: string | null;
+  leveragePreference?: string | null;
+  targetSharpeMin?: number | null;
+  shareClassPreferences?: readonly string[] | ReadonlySet<string>;
+  // Allocator-path fields (informational, not yet mapped to filter axes).
   allocatorAllowedVenues?: string;
   allocatorLeverageCap?: string;
 }
@@ -71,12 +85,37 @@ export function seedFiltersFromQuestionnaire(input: QuestionnaireLikeInput): Cat
     new Set([...asArray(input.instrument_types), ...asArray(input.instrumentTypes)].filter(Boolean)),
   );
 
+  // Normalise market_neutral. UAC uses literal strings ("neutral" |
+  // "directional" | "both"); the older JSON shape used a boolean. Coerce
+  // legacy boolean to the literal token so consumers can rely on a single
+  // representation.
+  const marketNeutral =
+    typeof input.marketNeutral === "string"
+      ? input.marketNeutral
+      : typeof input.market_neutral === "string"
+        ? input.market_neutral
+        : typeof input.market_neutral === "boolean"
+          ? input.market_neutral
+            ? "neutral"
+            : "directional"
+          : undefined;
+  const riskProfile = input.riskProfile ?? input.risk_profile ?? undefined;
+  const leveragePreference = input.leveragePreference ?? input.leverage_preference ?? undefined;
+  const targetSharpeMin = input.targetSharpeMin ?? input.target_sharpe_min ?? undefined;
+  const shareClassPreferences = (() => {
+    const v = input.shareClassPreferences ?? input.share_class_preferences;
+    if (!v) return undefined;
+    return Array.from(asArray(v)).filter(Boolean);
+  })();
+
   const seed: CatalogueSeed = {
     assetGroups,
     instrumentTypes,
-    ...(typeof input.market_neutral === "boolean" ? { marketNeutral: input.market_neutral } : {}),
-    ...(input.risk_profile ? { riskProfile: input.risk_profile } : {}),
-    ...(input.leverage_preference ? { leveragePreference: input.leverage_preference } : {}),
+    ...(marketNeutral ? { marketNeutral } : {}),
+    ...(riskProfile ? { riskProfile } : {}),
+    ...(leveragePreference ? { leveragePreference } : {}),
+    ...(typeof targetSharpeMin === "number" && Number.isFinite(targetSharpeMin) ? { targetSharpeMin } : {}),
+    ...(shareClassPreferences && shareClassPreferences.length > 0 ? { shareClassPreferences } : {}),
   };
   return seed;
 }
@@ -108,9 +147,15 @@ export function readPersistedSeed(): CatalogueSeed | null {
     return {
       assetGroups: Array.isArray(parsed.assetGroups) ? parsed.assetGroups : [],
       instrumentTypes: Array.isArray(parsed.instrumentTypes) ? parsed.instrumentTypes : [],
-      ...(typeof parsed.marketNeutral === "boolean" ? { marketNeutral: parsed.marketNeutral } : {}),
+      ...(typeof parsed.marketNeutral === "string" ? { marketNeutral: parsed.marketNeutral } : {}),
       ...(typeof parsed.riskProfile === "string" ? { riskProfile: parsed.riskProfile } : {}),
       ...(typeof parsed.leveragePreference === "string" ? { leveragePreference: parsed.leveragePreference } : {}),
+      ...(typeof parsed.targetSharpeMin === "number" && Number.isFinite(parsed.targetSharpeMin)
+        ? { targetSharpeMin: parsed.targetSharpeMin }
+        : {}),
+      ...(Array.isArray(parsed.shareClassPreferences) && parsed.shareClassPreferences.length > 0
+        ? { shareClassPreferences: parsed.shareClassPreferences }
+        : {}),
     };
   } catch {
     return null;
@@ -125,8 +170,14 @@ export function seedToQueryParams(seed: CatalogueSeed): Record<string, string> {
   const params: Record<string, string> = {};
   if (seed.assetGroups.length > 0) params.asset_groups = seed.assetGroups.join(",");
   if (seed.instrumentTypes.length > 0) params.instrument_types = seed.instrumentTypes.join(",");
-  if (typeof seed.marketNeutral === "boolean") params.market_neutral = seed.marketNeutral ? "1" : "0";
+  if (seed.marketNeutral) params.market_neutral = seed.marketNeutral;
   if (seed.riskProfile) params.risk_profile = seed.riskProfile;
   if (seed.leveragePreference) params.leverage_preference = seed.leveragePreference;
+  if (typeof seed.targetSharpeMin === "number" && Number.isFinite(seed.targetSharpeMin)) {
+    params.target_sharpe_min = seed.targetSharpeMin.toString();
+  }
+  if (seed.shareClassPreferences && seed.shareClassPreferences.length > 0) {
+    params.share_class_preferences = seed.shareClassPreferences.join(",");
+  }
   return params;
 }

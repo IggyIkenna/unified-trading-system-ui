@@ -345,9 +345,15 @@ export function QuestionnaireForm({ returnPath, compact = false }: Questionnaire
       // round-trip). DO NOT redirect to /services/* — public users go to
       // /briefings.
       try {
+        const sharpeVal = parseFloat(state.target_sharpe_min_str);
         const seed = seedFiltersFromQuestionnaire({
           categories: [...state.categories],
           instrument_types: [...state.instrument_types],
+          market_neutral: state.market_neutral,
+          risk_profile: state.risk_profile,
+          leverage_preference: state.leverage_preference,
+          target_sharpe_min: Number.isFinite(sharpeVal) ? sharpeVal : null,
+          share_class_preferences: [...state.share_class_preferences],
         });
         persistSeed(seed);
       } catch (err) {

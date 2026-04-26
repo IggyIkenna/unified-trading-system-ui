@@ -16,7 +16,9 @@
  * /services/admin/strategy-lifecycle-editor — scaffolded Plan B Phase 2.
  */
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+
+import { readPersistedSeed } from "@/lib/questionnaire/seed-catalogue-filters";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
@@ -56,10 +58,7 @@ export default function StrategyCataloguePage() {
   const fromParam = searchParams?.get("from") ?? null;
   const tabParam = searchParams?.get("tab") ?? null;
 
-  const subscribedInstanceIds = useMemo(
-    () => subscribedInstanceIdsFor(user?.role),
-    [user?.role],
-  );
+  const subscribedInstanceIds = useMemo(() => subscribedInstanceIdsFor(user?.role), [user?.role]);
 
   const hasSubscriptions = subscribedInstanceIds.length > 0;
 
@@ -70,16 +69,44 @@ export default function StrategyCataloguePage() {
     return hasSubscriptions ? "reality" : "explore";
   });
 
-  // Hydrate filter from URL params when arriving from questionnaire redirect.
+  // Hydrate filter from URL params when arriving from questionnaire redirect,
+  // or from the persisted localStorage seed when the user opens the catalogue
+  // post-signup. URL params win (they let admins deep-link a fresh view); the
+  // seed fallback covers the natural case where a prospect went through the
+  // public questionnaire / strategy-evaluation, signed up, and opens the
+  // catalogue for the first time. (Funnel Coherence plan Workstream E5.)
   const [filter, setFilter] = useState<StrategyCatalogueFilter>(() => {
-    if (!searchParams) return EMPTY_CATALOGUE_FILTER;
-    const parsed = parseCatalogueFilter(new URLSearchParams(searchParams.toString()));
-    // Only use parsed filter if it has at least one axis set.
-    const hasFilter = Object.keys(parsed).some((k) => parsed[k as keyof StrategyCatalogueFilter] !== undefined);
-    return hasFilter ? parsed : EMPTY_CATALOGUE_FILTER;
+    if (searchParams) {
+      const parsed = parseCatalogueFilter(new URLSearchParams(searchParams.toString()));
+      const hasFilter = Object.keys(parsed).some((k) => parsed[k as keyof StrategyCatalogueFilter] !== undefined);
+      if (hasFilter) return parsed;
+    }
+    return EMPTY_CATALOGUE_FILTER;
   });
+  const [hydratedFromSeed, setHydratedFromSeed] = useState(false);
 
-  const fromQuestionnaire = fromParam === "questionnaire";
+  // After mount, if no URL filter was applied, try the persisted seed.
+  useEffect(() => {
+    if (filter !== EMPTY_CATALOGUE_FILTER) return;
+    const seed = readPersistedSeed();
+    if (!seed) return;
+    const seeded: StrategyCatalogueFilter = {
+      ...(seed.assetGroups.length > 0 ? { assetGroups: seed.assetGroups } : {}),
+      ...(seed.instrumentTypes.length > 0 ? { instrumentTypes: seed.instrumentTypes } : {}),
+      ...(seed.marketNeutral ? { marketNeutral: seed.marketNeutral } : {}),
+      ...(seed.riskProfile ? { riskProfile: seed.riskProfile } : {}),
+      ...(seed.leveragePreference ? { leveragePreference: seed.leveragePreference } : {}),
+    };
+    const hasAny = Object.keys(seeded).some((k) => seeded[k as keyof StrategyCatalogueFilter] !== undefined);
+    if (hasAny) {
+      setFilter(seeded);
+      setHydratedFromSeed(true);
+    }
+    // We intentionally only run this once on mount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const fromQuestionnaire = fromParam === "questionnaire" || hydratedFromSeed;
 
   const viewModeFor = (t: CatalogueTab): StrategyCatalogueViewMode =>
     t === "reality" ? "client-reality" : "client-fomo";
@@ -89,19 +116,15 @@ export default function StrategyCataloguePage() {
       <div className="platform-page-width space-y-6 p-6">
         <header className="space-y-2">
           <div className="flex items-center gap-2">
-            <h1 className="text-page-title font-semibold tracking-tight">
-              Strategy Catalogue
-            </h1>
+            <h1 className="text-page-title font-semibold tracking-tight">Strategy Catalogue</h1>
             <Badge variant="outline" className="font-mono text-xs">
               Tier 3 · client view
             </Badge>
           </div>
           <p className="text-body text-muted-foreground max-w-3xl">
-            Your active subscriptions sit in{" "}
-            <span className="font-semibold">Your Subscriptions</span>. Explore
-            shows strategies we can enable for you, rendered with the Odum
-            backtest / paper / live performance overlay so you can see alpha
-            decay and slippage realism before allocating.
+            Your active subscriptions sit in <span className="font-semibold">Your Subscriptions</span>. Explore shows
+            strategies we can enable for you, rendered with the Odum backtest / paper / live performance overlay so you
+            can see alpha decay and slippage realism before allocating.
           </p>
         </header>
 
@@ -113,17 +136,16 @@ export default function StrategyCataloguePage() {
                 View all
               </Link>
             </span>
-            <Link href="/questionnaire" className="text-xs text-emerald-700 hover:text-emerald-900 underline underline-offset-2 shrink-0">
+            <Link
+              href="/questionnaire"
+              className="text-xs text-emerald-700 hover:text-emerald-900 underline underline-offset-2 shrink-0"
+            >
               Edit preferences
             </Link>
           </div>
         )}
 
-        <Tabs
-          value={tab}
-          onValueChange={(next) => setTab(next as CatalogueTab)}
-          data-testid="strategy-catalogue-tabs"
-        >
+        <Tabs value={tab} onValueChange={(next) => setTab(next as CatalogueTab)} data-testid="strategy-catalogue-tabs">
           <TabsList>
             <TabsTrigger value="reality" data-testid="tab-reality">
               Your Subscriptions
