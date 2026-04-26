@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Globe } from "lucide-react";
 import Link from "next/link";
 
 import { ArbitrageGalaxy } from "@/components/marketing/arbitrage-galaxy";
@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { trackEvent } from "@/lib/analytics/track";
 import { SERVICE_LABELS } from "@/lib/copy/service-labels";
+
+const ASSET_CLASSES = ["TradFi", "Crypto", "DeFi", "Sports", "Prediction Markets"] as const;
 
 /**
  * Homepage React composition. See `app/(public)/page.tsx` for the metadata,
@@ -163,8 +165,31 @@ function Hero() {
 
       <div className="container relative px-4 py-20 md:px-6 md:py-28">
         <div className="mx-auto max-w-3xl text-center">
+          {/* Asset-class pill banner — globe icon + 5 markets in a rounded
+              capsule. Restored from prior hero per user. */}
+          <div
+            className="inline-flex items-center gap-3 rounded-full border px-5 py-2.5 text-sm motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700"
+            style={{
+              borderColor: "rgba(255,255,255,0.12)",
+              backgroundColor: "rgba(255,255,255,0.02)",
+              color: COLORS.textSecondary,
+              animationFillMode: "both",
+            }}
+          >
+            <Globe aria-hidden className="size-4" style={{ color: COLORS.textMuted }} />
+            {ASSET_CLASSES.map((cls, i) => (
+              <span key={cls} className="flex items-center gap-3">
+                <span style={{ color: COLORS.textPrimary }}>{cls}</span>
+                {i < ASSET_CLASSES.length - 1 && <span style={{ color: `${COLORS.textSecondary}66` }}>&middot;</span>}
+              </span>
+            ))}
+          </div>
+
           {/* Eyebrow: firm name in muted text + FCA reference in gold accent. */}
-          <p className="text-xs font-semibold uppercase tracking-[0.18em]" style={{ color: COLORS.textSecondary }}>
+          <p
+            className="mt-6 text-xs font-semibold uppercase tracking-[0.18em] motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700"
+            style={{ color: COLORS.textSecondary, animationDelay: "120ms", animationFillMode: "both" }}
+          >
             Odum Research <span style={{ color: `${COLORS.textSecondary}80` }}>&middot;</span>{" "}
             <span style={{ color: COLORS.accentGold }}>FCA 975797</span>
           </p>
@@ -252,14 +277,6 @@ function Hero() {
               </span>
             ))}
           </div>
-
-          {/* Market context line — controlled, no five-asset-class mega-list. */}
-          <p
-            className="mt-4 text-xs motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700"
-            style={{ color: COLORS.textDim, animationDelay: "1200ms", animationFillMode: "both" }}
-          >
-            Digital assets &middot; Traditional markets &middot; Alternative trading contexts
-          </p>
         </div>
       </div>
     </section>

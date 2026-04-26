@@ -88,7 +88,7 @@ export default function MarketingPlatformPage() {
   return (
     <div className="min-h-screen bg-background">
       <main className="container px-4 pb-16 pt-10 md:px-6 md:pb-20 md:pt-12">
-        <div className="mx-auto max-w-5xl">
+        <div className="mx-auto max-w-6xl">
           {/* Hero */}
           <div className="text-center">
             <Badge variant="outline" className="mb-3">
@@ -111,52 +111,53 @@ export default function MarketingPlatformPage() {
             </div>
           </div>
 
-          {/* On-page review path — replaces the disconnected global breadcrumb. */}
-          <div className="mx-auto mt-14 flex max-w-3xl flex-wrap items-center justify-center gap-x-3 gap-y-1 rounded-md border border-border/60 bg-card/40 px-4 py-3 text-[12px] text-muted-foreground">
-            <span className="font-medium text-foreground/85">Path</span>
-            <span className="text-muted-foreground/60">·</span>
+          {/* On-page review path — quieter than before so it doesn't compete
+              with the page heading. */}
+          <div className="mx-auto mt-14 flex max-w-2xl flex-wrap items-center justify-center gap-x-2.5 gap-y-1 rounded-md border border-border/40 bg-card/20 px-4 py-2.5 text-[11px] text-muted-foreground/80">
+            <span className="font-medium text-foreground/70">Path</span>
+            <span className="text-muted-foreground/40">·</span>
             <span>Start Your Review</span>
-            <span className="text-muted-foreground/60">→</span>
+            <span className="text-muted-foreground/40">→</span>
             <span>Briefings</span>
-            <span className="text-muted-foreground/60">→</span>
+            <span className="text-muted-foreground/40">→</span>
             <span>Fit call</span>
           </div>
 
           {/* DART capabilities — three-card grid */}
-          <section className="pt-28 md:pt-32">
-            <div className="mb-12 text-center">
-              <h2 className="text-2xl font-semibold tracking-tight">DART capabilities</h2>
-              <p className="mx-auto mt-3 max-w-2xl text-sm text-muted-foreground">
+          <section className="pt-28 md:pt-36">
+            <div className="mb-14 text-center">
+              <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">DART capabilities</h2>
+              <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground">
                 DART can support client-provided signals, Odum-provided signals, or hybrid workflows depending on the
                 agreed engagement scope.
               </p>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-3">
+            <div className="grid gap-6 md:grid-cols-3 md:gap-7">
               {DART_MODES.map((mode) => (
                 <Card
                   key={mode.id}
                   id={mode.anchorId}
                   className="flex h-full flex-col scroll-mt-24 border-border/60 bg-card/40"
                 >
-                  <CardHeader className="space-y-4 pb-4">
+                  <CardHeader className="space-y-4 p-7 pb-4 md:p-8 md:pb-5">
                     <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-wider">
                       <span className="font-semibold text-primary/85">{mode.modeNumber}</span>
                       <span className="rounded-sm border border-border/60 bg-background/50 px-2 py-0.5 text-foreground/75">
                         {mode.pill}
                       </span>
                     </div>
-                    <h3 className="text-lg font-semibold leading-tight">{mode.title}</h3>
-                    <p className="border-t border-border/40 pt-3 text-sm leading-relaxed text-muted-foreground">
+                    <h3 className="text-lg font-semibold leading-tight md:text-xl">{mode.title}</h3>
+                    <p className="border-t border-border/40 pt-4 text-sm leading-relaxed text-muted-foreground md:text-base">
                       {mode.oneLine}
                     </p>
                   </CardHeader>
-                  <CardContent className="mt-auto pt-0">
-                    <ul className="space-y-2 text-sm text-foreground/85">
+                  <CardContent className="mt-auto p-7 pt-0 md:p-8 md:pt-0">
+                    <ul className="space-y-2.5 text-sm text-foreground/85 md:text-[15px]">
                       {mode.bullets.map((bullet) => (
-                        <li key={bullet} className="flex items-start gap-2">
-                          <Check className="mt-0.5 size-3.5 shrink-0 text-primary/70" aria-hidden />
-                          <span className="leading-snug">{bullet}</span>
+                        <li key={bullet} className="flex items-start gap-2.5">
+                          <Check className="mt-1 size-3.5 shrink-0 text-primary/70" aria-hidden />
+                          <span className="leading-relaxed">{bullet}</span>
                         </li>
                       ))}
                     </ul>
