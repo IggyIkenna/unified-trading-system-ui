@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
+import { ArbitrageGalaxy } from "@/components/marketing/arbitrage-galaxy";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { trackEvent } from "@/lib/analytics/track";
@@ -17,6 +18,7 @@ export function HomePageClient() {
     <div className="min-h-screen bg-background">
       <main>
         <Hero />
+        <MarketsUniverse />
         <EngagementRoutes />
         <WhyOdum />
         <EngagementJourney />
@@ -88,13 +90,9 @@ function Hero() {
           <h1 className="mt-6 text-balance text-4xl font-semibold tracking-tight md:text-5xl">
             Systematic strategies and trading infrastructure for institutional clients
           </h1>
-          <p className="mt-6 text-pretty text-base leading-relaxed text-muted-foreground md:text-lg">
-            Odum manages selected systematic strategies and operates the infrastructure behind them &mdash; from
-            research and execution to monitoring, reporting, and governance.
-          </p>
-          <p className="mx-auto mt-3 max-w-2xl text-pretty text-sm leading-relaxed text-muted-foreground/85 md:text-base">
-            Clients engage through {SERVICE_LABELS.investment.marketing}, {SERVICE_LABELS.dart.marketing}, or{" "}
-            {SERVICE_LABELS.regulatory.marketing} where appropriate.
+          <p className="mx-auto mt-6 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground md:text-lg">
+            Odum manages selected systematic strategies and provides the infrastructure and regulated operating models
+            around them.
           </p>
           <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <HomeStartReviewButton source="hero" />
@@ -139,6 +137,46 @@ function Hero() {
             Digital assets &middot; Traditional markets &middot; Alternative trading contexts
           </p>
         </div>
+      </div>
+    </section>
+  );
+}
+
+/**
+ * Markets universe — visual breadth USP.
+ *
+ * Reuses the canvas-based ArbitrageGalaxy already shipped in
+ * components/marketing/arbitrage-galaxy.tsx (TradFi / CeFi / DeFi / Sports /
+ * Predictions nodes with sequential BTC / S&P / Football arbitrage packets).
+ * Captures cross-market breadth without writing five stats or a feature list.
+ *
+ * Per user feedback 2026-04-26: the prior text-only hero felt austere. This
+ * section lives directly under the hero and gives the page institutional
+ * trading-platform presence.
+ */
+function MarketsUniverse() {
+  return (
+    <section className="border-t border-border/40 bg-background">
+      <div className="container px-4 pt-16 pb-20 md:px-6 md:pt-24 md:pb-28">
+        <div className="mx-auto max-w-3xl text-center">
+          <h2 className="text-balance text-2xl font-semibold tracking-tight md:text-3xl">
+            Selected markets, one operating surface
+          </h2>
+          <p className="mx-auto mt-3 max-w-2xl text-pretty text-sm leading-relaxed text-muted-foreground md:text-base">
+            Strategies move from research and simulation to live trading on the same operating surface, with one clean
+            data feed across every source.
+          </p>
+        </div>
+
+        {/* Galaxy canvas — keeps a fixed aspect-ratio so it doesn't stretch */}
+        <div className="relative mx-auto mt-10 aspect-[16/9] w-full max-w-5xl overflow-hidden rounded-lg border border-border/40 bg-card/20">
+          <ArbitrageGalaxy />
+        </div>
+
+        <p className="mx-auto mt-6 max-w-2xl text-center text-xs text-muted-foreground/70">
+          Coverage and venues are scoped per engagement. The diagram illustrates the breadth of selected markets and
+          cross-market relationships Odum supports today; not all combinations are available to every client.
+        </p>
       </div>
     </section>
   );
