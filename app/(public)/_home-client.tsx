@@ -67,6 +67,34 @@ function HomeContactButton({
 const LIFECYCLE_STEPS = ["Research", "Execution", "Monitoring", "Reporting", "Governance"] as const;
 
 /**
+ * Odum institutional palette — used by inline style props so colours render
+ * regardless of Tailwind JIT arbitrary-value class generation. The tokens
+ * here are the brand SSOT for the hero block.
+ */
+const COLORS = {
+  bgDeep: "#07080A",
+  bgPanel: "#0B0D10",
+  textPrimary: "#F4F6F8",
+  textSecondary: "#A7AFBA",
+  textMuted: "#8B93A0",
+  textDim: "#6F7783",
+  textActive: "#D8DEE6",
+  accentCyan: "#22D3EE",
+  accentGold: "#C8A94A",
+} as const;
+
+const HERO_BG_GRADIENT = [
+  "radial-gradient(circle at 50% 15%, rgba(34,211,238,0.10), transparent 38%)",
+  "radial-gradient(circle at 82% 8%, rgba(200,169,74,0.06), transparent 30%)",
+  "linear-gradient(180deg, #0B0D10 0%, #07080A 100%)",
+].join(", ");
+
+const HERO_GRID_BG = [
+  "linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px)",
+  "linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)",
+].join(", ");
+
+/**
  * Proof row — credibility markers under the hero CTAs.
  * Items tagged "gold" use the Odum brand-gold accent (#C8A94A) to separate
  * regulatory / authorisation signals from the muted operational statements.
@@ -79,19 +107,23 @@ const PROOF_POINTS: ReadonlyArray<{ readonly text: string; readonly tone: "gold"
 
 function Hero() {
   return (
-    <section className="relative overflow-hidden border-b border-border/40 bg-[#07080A]">
+    <section className="relative overflow-hidden border-b border-border/40" style={{ backgroundColor: COLORS.bgDeep }}>
       {/* Richer institutional backdrop:
           - cyan radial top-centre (system signal)
           - gold radial top-right (regulatory accent)
           - vertical dark gradient #0B0D10 → #07080A for depth
-          All decorative, all aria-hidden. */}
+          All decorative, all aria-hidden. Inline style instead of Tailwind
+          arbitrary classes — multi-layer radial-gradient + comma-separated
+          rgba() values are unreliable through the JIT. */}
+      <div aria-hidden className="pointer-events-none absolute inset-0" style={{ background: HERO_BG_GRADIENT }} />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 [background:radial-gradient(circle_at_50%_15%,rgba(34,211,238,0.10),transparent_38%),radial-gradient(circle_at_82%_8%,rgba(200,169,74,0.06),transparent_30%),linear-gradient(180deg,#0B0D10_0%,#07080A_100%)]"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-[0.04] [background-image:linear-gradient(rgba(255,255,255,0.5)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.5)_1px,transparent_1px)] [background-size:48px_48px]"
+        className="pointer-events-none absolute inset-0"
+        style={{
+          backgroundImage: HERO_GRID_BG,
+          backgroundSize: "48px 48px",
+          opacity: 0.04,
+        }}
       />
       {/* Abstract equity-curve overlay — two soft lines crossing the hero
           area at very low opacity. Suggests data sophistication without
@@ -132,52 +164,72 @@ function Hero() {
       <div className="container relative px-4 py-20 md:px-6 md:py-28">
         <div className="mx-auto max-w-3xl text-center">
           {/* Eyebrow: firm name in muted text + FCA reference in gold accent. */}
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#A7AFBA]">
-            Odum Research <span className="text-[#A7AFBA]/50">&middot;</span>{" "}
-            <span className="text-[#C8A94A]">FCA 975797</span>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em]" style={{ color: COLORS.textSecondary }}>
+            Odum Research <span style={{ color: `${COLORS.textSecondary}80` }}>&middot;</span>{" "}
+            <span style={{ color: COLORS.accentGold }}>FCA 975797</span>
           </p>
           {/* Three-line manifesto with sequential reveal. Each line fades up
               with a 140ms stagger; respects prefers-reduced-motion. */}
-          <h1 className="mt-7 text-balance text-4xl font-semibold leading-[1.1] tracking-tight text-[#F4F6F8] md:text-6xl md:leading-[1.05]">
-            <span className="block motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-700 motion-safe:[animation-fill-mode:both]">
+          <h1
+            className="mt-7 text-balance text-4xl font-semibold leading-[1.1] tracking-tight md:text-6xl md:leading-[1.05]"
+            style={{ color: COLORS.textPrimary }}
+          >
+            <span
+              className="block motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-700"
+              style={{ animationFillMode: "both" }}
+            >
               Systematic strategies.
             </span>
-            <span className="block motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-700 motion-safe:[animation-delay:140ms] motion-safe:[animation-fill-mode:both]">
+            <span
+              className="block motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-700"
+              style={{ animationDelay: "140ms", animationFillMode: "both" }}
+            >
               Trading infrastructure.
             </span>
-            <span className="block motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-700 motion-safe:[animation-delay:280ms] motion-safe:[animation-fill-mode:both]">
+            <span
+              className="block motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-700"
+              style={{ animationDelay: "280ms", animationFillMode: "both" }}
+            >
               Institutional clients.
             </span>
           </h1>
-          <p className="mx-auto mt-7 max-w-2xl text-pretty text-base leading-relaxed text-[#A7AFBA] md:text-lg motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700 motion-safe:[animation-delay:480ms] motion-safe:[animation-fill-mode:both]">
+          <p
+            className="mx-auto mt-7 max-w-2xl text-pretty text-base leading-relaxed md:text-lg motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700"
+            style={{ color: COLORS.textSecondary, animationDelay: "480ms", animationFillMode: "both" }}
+          >
             Odum manages selected systematic strategies and provides access to the infrastructure and regulated
             operating models around them.
           </p>
-          <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700 motion-safe:[animation-delay:600ms] motion-safe:[animation-fill-mode:both]">
+          <div
+            className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700"
+            style={{ animationDelay: "600ms", animationFillMode: "both" }}
+          >
             <HomeStartReviewButton source="hero" />
             <HomeContactButton source="hero" />
           </div>
 
           {/* Lifecycle strip — pipeline reveal: each step + arrow fades in
-              left-to-right, 80ms stagger, after the headline finishes. */}
+              left-to-right, 90ms stagger, after the headline finishes. */}
           <div
             aria-hidden
-            className="mt-12 hidden items-center justify-center gap-3 font-mono text-[11px] uppercase tracking-[0.15em] text-[#8B93A0] md:flex"
+            className="mt-12 hidden items-center justify-center gap-3 font-mono text-[11px] uppercase tracking-[0.15em] md:flex"
+            style={{ color: COLORS.textMuted }}
           >
             {LIFECYCLE_STEPS.map((step, i) => (
               <span
                 key={step}
-                className="flex items-center gap-3 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-500 motion-safe:[animation-fill-mode:both]"
-                style={{ animationDelay: `${720 + i * 90}ms` }}
+                className="flex items-center gap-3 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-500"
+                style={{ animationDelay: `${720 + i * 90}ms`, animationFillMode: "both" }}
               >
-                <span className={i === 0 ? "text-[#D8DEE6]" : ""}>{step}</span>
-                {i < LIFECYCLE_STEPS.length - 1 && <span className="text-[#22D3EE]/55">→</span>}
+                <span style={i === 0 ? { color: COLORS.textActive } : undefined}>{step}</span>
+                {i < LIFECYCLE_STEPS.length - 1 && <span style={{ color: `${COLORS.accentCyan}8C` }}>→</span>}
               </span>
             ))}
           </div>
           <div
             aria-hidden
-            className="mt-6 flex flex-wrap items-center justify-center gap-2 text-[11px] uppercase tracking-[0.15em] text-[#8B93A0] md:hidden"
+            className="mt-6 flex flex-wrap items-center justify-center gap-2 text-[11px] uppercase tracking-[0.15em] md:hidden"
+            style={{ color: COLORS.textMuted }}
           >
             {LIFECYCLE_STEPS.map((step) => (
               <span key={step} className="font-mono">
@@ -187,17 +239,25 @@ function Hero() {
           </div>
 
           {/* Proof row — gold accents on regulatory items; muted on operational. */}
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-xs text-[#8B93A0] motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700 motion-safe:[animation-delay:1100ms] motion-safe:[animation-fill-mode:both]">
+          <div
+            className="mt-6 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-xs motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700"
+            style={{ color: COLORS.textMuted, animationDelay: "1100ms", animationFillMode: "both" }}
+          >
             {PROOF_POINTS.map((proof, i) => (
               <span key={proof.text} className="flex items-center gap-3">
-                <span className={proof.tone === "gold" ? "text-[#C8A94A]" : "text-[#A7AFBA]"}>{proof.text}</span>
-                {i < PROOF_POINTS.length - 1 && <span className="text-[#A7AFBA]/40">·</span>}
+                <span style={{ color: proof.tone === "gold" ? COLORS.accentGold : COLORS.textSecondary }}>
+                  {proof.text}
+                </span>
+                {i < PROOF_POINTS.length - 1 && <span style={{ color: `${COLORS.textSecondary}66` }}>·</span>}
               </span>
             ))}
           </div>
 
           {/* Market context line — controlled, no five-asset-class mega-list. */}
-          <p className="mt-4 text-xs text-[#6F7783] motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700 motion-safe:[animation-delay:1200ms] motion-safe:[animation-fill-mode:both]">
+          <p
+            className="mt-4 text-xs motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700"
+            style={{ color: COLORS.textDim, animationDelay: "1200ms", animationFillMode: "both" }}
+          >
             Digital assets &middot; Traditional markets &middot; Alternative trading contexts
           </p>
         </div>
