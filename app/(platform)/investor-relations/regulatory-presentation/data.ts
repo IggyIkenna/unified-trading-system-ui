@@ -1,21 +1,24 @@
-// Regulatory Umbrella Presentation \u2014 data for 10-slide coverage deck.
+// Regulated Operating Models Presentation \u2014 data for 10-slide coverage deck.
+// Marketing label: Regulated Operating Models. Legal/contract label: Regulatory Umbrella
+// (retained on signup, contracts, and admin surfaces for backwards compat per
+// SERVICE_LABELS SSOT in lib/copy/service-labels.ts).
 // Last restructured: April 2026 \u2014 reframed around the 4-axis flexibility model
-// (structure × scope × counterparty-facing × activity) with named AR/umbrella
-// competitors and the five engagement shapes from the public briefing.
+// (structure × scope × counterparty-facing × activity) with named competitors and
+// the engagement shapes (assessed case by case) from the public briefing.
 
 export const slides = [
   // ── Slide 1: Cover ────────────────────────────────────────
   {
     id: 1,
     type: "cover",
-    title: "Regulatory Umbrella",
+    title: "Regulated Operating Models",
     subtitle:
-      "FCA regulatory coverage for Professional and Eligible Counterparty clients. Operational in weeks, not the 12\u201324 months of direct authorisation. Five engagement shapes to match your operating model.",
-    tagline: "Regulatory Coverage Deck",
+      "FCA-authorised operating coverage for Professional and Eligible Counterparty clients, where appropriate and subject to scope review. Material onboarding-time savings versus the 12\u201324 months of direct authorisation. Engagement shapes assessed case by case to match your operating model.",
+    tagline: "Regulated Operating Models Deck",
     stats: [
       { value: "FCA 975797", label: "Authorisation" },
       { value: "Jan 2023", label: "Authorised" },
-      { value: "1 Live", label: "Umbrella Client" },
+      { value: "1 Live", label: "Operating-Model Client" },
       { value: "3", label: "In Pipeline" },
       { value: "4", label: "Engagement Axes" },
     ],
@@ -31,19 +34,23 @@ export const slides = [
     points: [
       {
         problem: "Direct FCA authorisation takes 12\u201324 months and three-figure-thousand spend.",
-        solution: "Operate under Odum's regulatory coverage \u2014 operational in weeks, scope-matched to your activity.",
+        solution:
+          "Operate under Odum's regulated coverage where appropriate, scope-matched to your activity. Onboarding timing assessed case by case after due diligence.",
       },
       {
         problem: "Building compliance infrastructure from scratch is expensive and easy to get wrong.",
-        solution: "Use the same compliance infrastructure we built for our own $7.5M AUM \u2014 best-execution monitoring, MLRO services, transaction reporting.",
+        solution:
+          "Use the same compliance infrastructure we built for our own $7.5M AUM \u2014 best-execution monitoring, MLRO services, transaction reporting.",
       },
       {
         problem: "Ongoing regulatory burden \u2014 TR, SM&CR, AML, supervision \u2014 is a permanent distraction.",
-        solution: "Odum handles reporting officer services, transaction reporting, annual reviews, and financial promotions approval.",
+        solution:
+          "Odum handles reporting officer services, transaction reporting, annual reviews, and financial promotions approval.",
       },
       {
         problem: "Getting it wrong has real consequences \u2014 fines, enforcement, reputational damage.",
-        solution: "Live FCA permission with dealing, arranging, advising, and managing scope \u2014 scope-matched to what you actually do.",
+        solution:
+          "Live FCA permission with dealing, arranging, advising, and managing scope \u2014 scope-matched to what you actually do.",
       },
     ],
     differentiators: [
@@ -64,23 +71,27 @@ export const slides = [
     points: [
       {
         problem: "Structure \u2014 how your entity relates to Odum.",
-        solution: "Options: Odum manages investments on your behalf (IM) • Odum's permissions cover your activity (umbrella proper) • you operate as an Appointed Representative under Odum • a fund vehicle we jointly administer • adjacent services where Odum's permissions are not load-bearing.",
+        solution:
+          "Options: Odum manages investments on your behalf (IM) • Odum's permissions cover your activity (umbrella proper) • you operate as an Appointed Representative under Odum • a fund vehicle we jointly administer • adjacent services where Odum's permissions are not load-bearing.",
       },
       {
         problem: "Scope \u2014 which regulated activity you actually do.",
-        solution: "Dealing in investments as agent • arranging deals in investments • advising on investments • managing investments • combinations thereof. We scope exactly what you need \u2014 no more, no less.",
+        solution:
+          "Dealing in investments as agent • arranging deals in investments • advising on investments • managing investments • combinations thereof. We scope exactly what you need \u2014 no more, no less.",
       },
       {
         problem: "Counterparty-facing \u2014 who your clients are.",
-        solution: "Odum-facing (Odum is the counterparty of record) or client-facing (your clients interact with you directly). Shapes who holds KYC, who signs the IMA, who controls the account.",
+        solution:
+          "Odum-facing (Odum is the counterparty of record) or client-facing (your clients interact with you directly). Shapes who holds KYC, who signs the IMA, who controls the account.",
       },
       {
         problem: "Activity \u2014 what's actually happening operationally.",
-        solution: "Execution on a regulated market • portfolio management of discretionary mandates • giving advice • promoting a fund • arranging introductions. Each triggers a different subset of regulatory obligations.",
+        solution:
+          "Execution on a regulated market • portfolio management of discretionary mandates • giving advice • promoting a fund • arranging introductions. Each triggers a different subset of regulatory obligations.",
       },
     ],
     differentiators: [
-      "Five concrete engagement shapes emerge from the axes (next slide)",
+      "Concrete engagement shapes emerge from the axes (next slide), assessed case by case",
       "Default is Odum-as-IM (Shapes 1\u20132) \u2014 AR route (Shape 3) adds 4\u201312 weeks FCA lead time",
       "Shapes 4\u20135 cover adjacent services where Odum's permissions are not load-bearing",
     ],
@@ -91,14 +102,15 @@ export const slides = [
   {
     id: 4,
     type: "packaging",
-    title: "The Five Engagement Shapes",
-    subtitle: "Each shape is a defined position on the four axes. Pick one, or stack across shapes as scope expands.",
+    title: "Engagement Shapes Within Regulated Operating Models",
+    subtitle:
+      "Each shape is a defined position on the four axes within this single engagement route. Pick one, or stack shapes as scope expands. All shapes are assessed case by case and available by separate agreement.",
     services: [
       {
         name: "Shape 1 \u2014 Odum as IM (SMA)",
         stages: ["Decision", "Execution", "Governance"],
         model: "From £4,000/month + setup",
-        desc: "Discretionary managed account. Odum is IM under FCA 975797. Client is the investor. Default shape \u2014 fastest path live.",
+        desc: "Discretionary managed account. Odum holds the Investment Management permission under FCA 975797 (legal/contract label). Client is the investor. Common starting shape, subject to scope review.",
       },
       {
         name: "Shape 2 \u2014 Odum as IM (Fund)",
@@ -163,7 +175,7 @@ export const slides = [
       {
         competitor: "Direct FCA authorisation",
         users: "Firms with time/capital",
-        gap: "You control the permissions. 12\u201324 month authorisation process, material spend, permanent compliance operation. Right choice for large operators \u2014 wrong choice for firms who want to trade in weeks.",
+        gap: "You control the permissions. 12\u201324 month authorisation process, material spend, permanent compliance operation. Right choice for large operators \u2014 alternative for firms whose scope can be assessed and accommodated more quickly, where appropriate.",
         color: "cyan",
       },
       {
@@ -214,7 +226,7 @@ export const slides = [
     callout: "Same reporting tools we use for our own $7.5M AUM. Not a stripped-down version.",
     metrics: [
       { value: "10", label: "Attribution Factors" },
-      { value: "Days", label: "To Go Live" },
+      { value: "Case-by-case", label: "Onboarding Timing" },
       { value: "$7.5M", label: "Our Own Capital" },
       { value: "FCA 975797", label: "Authorisation" },
     ],
@@ -229,7 +241,7 @@ export const slides = [
     questions: [
       {
         q: "How long does onboarding take?",
-        a: "Typically weeks for Shapes 1, 2, 4, 5. Shape 3 (AR) adds 4\u201312 weeks of FCA lead time because of the notification process. You apply, upload documents at your pace, and go operational once due diligence is complete.",
+        a: "Onboarding timing depends on the shape and is assessed case by case. Shapes 1, 2, 4, 5 are typically the fastest, subject to review. Shape 3 (AR) carries additional FCA lead time because of the notification process. You begin a fit review, upload documents at your pace, and proceed once due diligence is complete.",
       },
       {
         q: "Can I use my own compliance processes?",
@@ -249,7 +261,7 @@ export const slides = [
       },
       {
         q: "Can I combine umbrella with DART?",
-        a: "Yes \u2014 this is the common path. Desmond (our first umbrella client) is simultaneously DART Signals-In for perp-funding arbitrage. Umbrella handles the regulatory scope; DART handles the execution and reporting.",
+        a: "Yes \u2014 this is the common path. Our first regulated-operating-model client is simultaneously a DART Trading Infrastructure client (client-provided signals capability) for perp-funding arbitrage. The regulated-operating-model engagement handles scope and oversight; DART handles execution and reporting.",
       },
     ],
   },
@@ -259,23 +271,20 @@ export const slides = [
     id: 8,
     type: "ask",
     title: "Get Started",
-    subtitle: "Apply online, upload documents at your own pace, and go operational in weeks.",
+    subtitle:
+      "Begin a fit review online and upload documents at your own pace. Onboarding timing assessed case by case after due diligence.",
     asks: [
       {
         title: "Step 1 \u2014 Scope",
         items: [
           "Walk your activity against the four axes",
-          "Identify which of the five engagement shapes fits",
-          "Complete the regulatory questionnaire (13 axes for umbrella prospects)",
+          "Identify which engagement shape fits, assessed case by case",
+          "Complete the regulatory questionnaire (13 axes for regulated-operating-model prospects)",
         ],
       },
       {
         title: "Step 2 \u2014 Review",
-        items: [
-          "Due diligence review",
-          "Compliance sign-off",
-          "FCA notification (Shape 3 only)",
-        ],
+        items: ["Due diligence review", "Compliance sign-off", "FCA notification (Shape 3 only)"],
       },
       {
         title: "Step 3 \u2014 Operate",
@@ -297,10 +306,22 @@ export const slides = [
     subtitle:
       "Forward these to firms scoping FCA coverage. The regulatory briefing goes deep on the four-axis flexibility model. Access code for the briefings hub is odum-briefings-2026.",
     sections: [
-      { name: "Regulatory Umbrella", desc: "Public landing \u2014 what the umbrella covers and timeline", link: "/regulatory" },
-      { name: "Regulatory Briefing", desc: "Four-axis flexibility model \u2014 five engagement shapes explained", link: "/briefings/regulatory" },
+      {
+        name: "Regulated Operating Models",
+        desc: "Public landing \u2014 what regulated coverage covers and how scope is assessed",
+        link: "/regulatory",
+      },
+      {
+        name: "Regulated Operating Models Briefing",
+        desc: "Four-axis flexibility model \u2014 engagement shapes explained, available by separate agreement",
+        link: "/briefings/regulatory",
+      },
       { name: "FAQ", desc: "Common objections \u2014 sanctions, scope, AR vs IM, timing", link: "/faq" },
-      { name: "Fit Questionnaire", desc: "Thirteen axes for umbrella prospects (licence region, targets, MLRO, jurisdiction)", link: "/questionnaire" },
+      {
+        name: "Fit Questionnaire",
+        desc: "Thirteen axes for umbrella prospects (licence region, targets, MLRO, jurisdiction)",
+        link: "/questionnaire",
+      },
       { name: "Contact", desc: "Calendly for scheduling, prefilled form for typed intent", link: "/contact" },
     ],
     note: "Public-site links open in a new tab. Briefings hub is gated by the shared access code.",
