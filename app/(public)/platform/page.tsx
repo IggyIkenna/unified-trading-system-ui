@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { SERVICE_LABELS, BRIEFING_SLUGS } from "@/lib/copy/service-labels";
+import { BRIEFING_SLUGS, PUBLIC_ROUTE_PATHS, SERVICE_LABELS } from "@/lib/copy/service-labels";
 import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -48,7 +48,7 @@ export default function MarketingPlatformPage() {
                 </Link>
               </Button>
               <Button asChild variant="outline">
-                <Link href="/start-your-review">Start your review</Link>
+                <Link href={PUBLIC_ROUTE_PATHS.startYourReview}>Start Your Review</Link>
               </Button>
             </div>
             <p className="mt-3 text-xs text-muted-foreground">

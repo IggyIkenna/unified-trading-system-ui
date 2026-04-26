@@ -3,8 +3,7 @@ import { Term } from "@/components/marketing/term";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { SERVICE_LABELS } from "@/lib/copy/service-labels";
-import { CALENDLY_URL } from "@/lib/marketing/calendly";
+import { BRIEFING_SLUGS, PUBLIC_ROUTE_PATHS, SERVICE_LABELS } from "@/lib/copy/service-labels";
 import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -55,6 +54,19 @@ export default function InvestmentManagementPage() {
             </p>
             <p className="mt-3 text-sm text-muted-foreground">
               Odum operates as an FCA investment manager under FRN 975797 from <strong>January 2023</strong>.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Button asChild>
+                <Link href={`/briefings/${BRIEFING_SLUGS.investment}`}>
+                  Read the briefing <ArrowRight className="ml-2 size-4" />
+                </Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href={PUBLIC_ROUTE_PATHS.startYourReview}>Start Your Review</Link>
+              </Button>
+            </div>
+            <p className="mt-3 text-xs text-muted-foreground">
+              Briefings are gated. Start your review to receive an access code.
             </p>
           </div>
 
@@ -180,14 +192,12 @@ export default function InvestmentManagementPage() {
             </p>
             <div className="mt-4 flex flex-wrap justify-center gap-3">
               <Button asChild>
-                <Link href="/briefings/investment-management">
+                <Link href={`/briefings/${BRIEFING_SLUGS.investment}`}>
                   Open IM briefing <ArrowRight className="ml-2 size-4" />
                 </Link>
               </Button>
               <Button asChild variant="outline">
-                <a href={CALENDLY_URL} target="_blank" rel="noopener noreferrer">
-                  Book a call
-                </a>
+                <Link href={PUBLIC_ROUTE_PATHS.contact}>Contact Odum</Link>
               </Button>
             </div>
           </div>

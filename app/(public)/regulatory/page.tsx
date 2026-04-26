@@ -5,8 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { RegUmbrellaHierarchyDiagram } from "@/components/marketing/reg-umbrella-hierarchy-diagram";
-import { SERVICE_LABELS } from "@/lib/copy/service-labels";
-import { CALENDLY_URL } from "@/lib/marketing/calendly";
+import { BRIEFING_SLUGS, PUBLIC_ROUTE_PATHS, SERVICE_LABELS } from "@/lib/copy/service-labels";
 
 /**
  * Regulatory Umbrella — public marketing page.
@@ -46,6 +45,22 @@ export default function RegulatoryPage() {
               engagements around governance, supervisory reporting, FCA coverage, SMA routes, or affiliate fund
               pathways. The reporting surface is the same component tree Odum uses internally for its own investment
               management.
+            </p>
+            <p className="mt-3 text-sm text-muted-foreground">
+              Coverage and structure are reviewed case by case; engagement scope is confirmed after the fit call.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Button asChild>
+                <Link href={`/briefings/${BRIEFING_SLUGS.regulatory}`}>
+                  Read the briefing <ArrowRight className="ml-2 size-4" />
+                </Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href={PUBLIC_ROUTE_PATHS.startYourReview}>Start Your Review</Link>
+              </Button>
+            </div>
+            <p className="mt-3 text-xs text-muted-foreground">
+              Briefings are gated. Start your review to receive an access code.
             </p>
           </div>
 
@@ -158,14 +173,12 @@ export default function RegulatoryPage() {
             </p>
             <div className="mt-4 flex flex-wrap justify-center gap-3">
               <Button asChild>
-                <Link href="/briefings/regulated-operating-models">
-                  Open Regulated Operating Models briefing <ArrowRight className="ml-2 size-4" />
+                <Link href={`/briefings/${BRIEFING_SLUGS.regulatory}`}>
+                  Open {SERVICE_LABELS.regulatory.marketing} briefing <ArrowRight className="ml-2 size-4" />
                 </Link>
               </Button>
               <Button asChild variant="outline">
-                <a href={CALENDLY_URL} target="_blank" rel="noopener noreferrer">
-                  Book a call
-                </a>
+                <Link href={PUBLIC_ROUTE_PATHS.contact}>Contact Odum</Link>
               </Button>
             </div>
           </div>

@@ -49,7 +49,7 @@ export default function BriefingsHubPage() {
       <BriefingHero
         title="Briefings"
         tldr="How we invest, how we're regulated, and every path through our platform — from signals in, to Odum Signals."
-        cta={{ label: "Book 45-minute call", href: CALENDLY_URL }}
+        cta={{ label: "Book a Fit Call", href: CALENDLY_URL }}
       />
 
       <section className="space-y-4">
@@ -101,7 +101,7 @@ export default function BriefingsHubPage() {
             rel="noopener noreferrer"
             className="inline-flex w-full items-center justify-center rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 sm:w-auto sm:justify-start"
           >
-            Book a 30-minute call →
+            Book a Fit Call →
           </a>
           <Link
             href="/strategy-evaluation"
