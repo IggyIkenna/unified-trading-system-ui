@@ -82,7 +82,7 @@ const nextConfig = {
     return [
       { source: "/api/auth/provisioning/:path*", destination: `${authBase}/provisioning/:path*` },
       { source: "/api/reporting/:path*", destination: `${reportingBase}/api/reporting/:path*` },
-      { source: "/api/health", destination: `${deploymentBase}/health` },
+      { source: "/api/health", destination: `${unifiedApiBase}/health` },
       { source: "/api/services/:path*", destination: `${deploymentBase}/api/services/:path*` },
       { source: "/api/deployments/:path*", destination: `${deploymentBase}/api/deployments/:path*` },
       { source: "/api/cloud-builds/:path*", destination: `${deploymentBase}/api/cloud-builds/:path*` },
