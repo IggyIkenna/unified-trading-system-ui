@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 import { ArbitrageGalaxy } from "@/components/marketing/arbitrage-galaxy";
 import { Button } from "@/components/ui/button";
@@ -66,21 +66,32 @@ function HomeContactButton({
 
 const LIFECYCLE_STEPS = ["Research", "Execution", "Monitoring", "Reporting", "Governance"] as const;
 
-const PROOF_POINTS = ["FCA-authorised", "Professional / institutional clients", "Regulated since 2023"] as const;
+/**
+ * Proof row — credibility markers under the hero CTAs.
+ * Items tagged "gold" use the Odum brand-gold accent (#C8A94A) to separate
+ * regulatory / authorisation signals from the muted operational statements.
+ */
+const PROOF_POINTS: ReadonlyArray<{ readonly text: string; readonly tone: "gold" | "muted" }> = [
+  { text: "FCA-authorised", tone: "gold" },
+  { text: "Professional / institutional clients", tone: "muted" },
+  { text: "Regulated since 2023", tone: "gold" },
+];
 
 function Hero() {
   return (
-    <section className="relative overflow-hidden border-b border-border/40 bg-background">
-      {/* Layered backdrop: dark gradient + faint grid + abstract equity-curve
-          SVG. All decorative, all aria-hidden. Adds institutional presence
-          without metrics, photos, or fake price charts. */}
+    <section className="relative overflow-hidden border-b border-border/40 bg-[#07080A]">
+      {/* Richer institutional backdrop:
+          - cyan radial top-centre (system signal)
+          - gold radial top-right (regulatory accent)
+          - vertical dark gradient #0B0D10 → #07080A for depth
+          All decorative, all aria-hidden. */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-primary/[0.04] via-background to-background"
+        className="pointer-events-none absolute inset-0 [background:radial-gradient(circle_at_50%_15%,rgba(34,211,238,0.10),transparent_38%),radial-gradient(circle_at_82%_8%,rgba(200,169,74,0.06),transparent_30%),linear-gradient(180deg,#0B0D10_0%,#07080A_100%)]"
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-[0.05] [background-image:linear-gradient(rgba(255,255,255,0.5)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.5)_1px,transparent_1px)] [background-size:48px_48px]"
+        className="pointer-events-none absolute inset-0 opacity-[0.04] [background-image:linear-gradient(rgba(255,255,255,0.5)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.5)_1px,transparent_1px)] [background-size:48px_48px]"
       />
       {/* Abstract equity-curve overlay — two soft lines crossing the hero
           area at very low opacity. Suggests data sophistication without
@@ -120,39 +131,53 @@ function Hero() {
 
       <div className="container relative px-4 py-20 md:px-6 md:py-28">
         <div className="mx-auto max-w-3xl text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-            Odum Research &middot; FCA 975797
+          {/* Eyebrow: firm name in muted text + FCA reference in gold accent. */}
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#A7AFBA]">
+            Odum Research <span className="text-[#A7AFBA]/50">&middot;</span>{" "}
+            <span className="text-[#C8A94A]">FCA 975797</span>
           </p>
-          {/* Three-line manifesto — each line equal weight, balanced rhythm. */}
-          <h1 className="mt-7 text-balance text-4xl font-semibold leading-[1.1] tracking-tight md:text-6xl md:leading-[1.05]">
-            <span className="block">Systematic strategies.</span>
-            <span className="block">Trading infrastructure.</span>
-            <span className="block">Institutional clients.</span>
+          {/* Three-line manifesto with sequential reveal. Each line fades up
+              with a 140ms stagger; respects prefers-reduced-motion. */}
+          <h1 className="mt-7 text-balance text-4xl font-semibold leading-[1.1] tracking-tight text-[#F4F6F8] md:text-6xl md:leading-[1.05]">
+            <span className="block motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-700 motion-safe:[animation-fill-mode:both]">
+              Systematic strategies.
+            </span>
+            <span className="block motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-700 motion-safe:[animation-delay:140ms] motion-safe:[animation-fill-mode:both]">
+              Trading infrastructure.
+            </span>
+            <span className="block motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-700 motion-safe:[animation-delay:280ms] motion-safe:[animation-fill-mode:both]">
+              Institutional clients.
+            </span>
           </h1>
-          <p className="mx-auto mt-7 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground md:text-lg">
-            Odum manages selected systematic strategies and provides the infrastructure and regulated operating models
-            around them.
+          <p className="mx-auto mt-7 max-w-2xl text-pretty text-base leading-relaxed text-[#A7AFBA] md:text-lg motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700 motion-safe:[animation-delay:480ms] motion-safe:[animation-fill-mode:both]">
+            Odum manages selected systematic strategies and provides access to the infrastructure and regulated
+            operating models around them.
           </p>
-          <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700 motion-safe:[animation-delay:600ms] motion-safe:[animation-fill-mode:both]">
             <HomeStartReviewButton source="hero" />
             <HomeContactButton source="hero" />
           </div>
 
-          {/* Lifecycle strip — restrained proof of platform breadth, no stats. */}
+          {/* Lifecycle strip — pipeline reveal: each step + arrow fades in
+              left-to-right, 80ms stagger, after the headline finishes. */}
           <div
             aria-hidden
-            className="mt-12 hidden items-center justify-center gap-3 font-mono text-[11px] uppercase tracking-[0.15em] text-muted-foreground/80 md:flex"
+            className="mt-12 hidden items-center justify-center gap-3 font-mono text-[11px] uppercase tracking-[0.15em] text-[#8B93A0] md:flex"
           >
             {LIFECYCLE_STEPS.map((step, i) => (
-              <span key={step} className="flex items-center gap-3">
-                <span className={i === 0 ? "text-foreground/85" : ""}>{step}</span>
-                {i < LIFECYCLE_STEPS.length - 1 && <span className="text-muted-foreground/40">→</span>}
+              <span
+                key={step}
+                className="flex items-center gap-3 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-500 motion-safe:[animation-fill-mode:both]"
+                style={{ animationDelay: `${720 + i * 90}ms` }}
+              >
+                <span className={i === 0 ? "text-[#D8DEE6]" : ""}>{step}</span>
+                {i < LIFECYCLE_STEPS.length - 1 && <span className="text-[#22D3EE]/55">→</span>}
               </span>
             ))}
           </div>
           <div
             aria-hidden
-            className="mt-6 flex flex-wrap items-center justify-center gap-2 text-[11px] uppercase tracking-[0.15em] text-muted-foreground/70 md:hidden"
+            className="mt-6 flex flex-wrap items-center justify-center gap-2 text-[11px] uppercase tracking-[0.15em] text-[#8B93A0] md:hidden"
           >
             {LIFECYCLE_STEPS.map((step) => (
               <span key={step} className="font-mono">
@@ -161,18 +186,18 @@ function Hero() {
             ))}
           </div>
 
-          {/* Proof row — institutional credibility without metrics-row clutter. */}
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-xs text-muted-foreground/85">
+          {/* Proof row — gold accents on regulatory items; muted on operational. */}
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-xs text-[#8B93A0] motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700 motion-safe:[animation-delay:1100ms] motion-safe:[animation-fill-mode:both]">
             {PROOF_POINTS.map((proof, i) => (
-              <span key={proof} className="flex items-center gap-3">
-                <span>{proof}</span>
-                {i < PROOF_POINTS.length - 1 && <span className="text-muted-foreground/40">·</span>}
+              <span key={proof.text} className="flex items-center gap-3">
+                <span className={proof.tone === "gold" ? "text-[#C8A94A]" : "text-[#A7AFBA]"}>{proof.text}</span>
+                {i < PROOF_POINTS.length - 1 && <span className="text-[#A7AFBA]/40">·</span>}
               </span>
             ))}
           </div>
 
-          {/* Optional market context line — controlled, no five-asset-class mega-list. */}
-          <p className="mt-4 text-xs text-muted-foreground/60">
+          {/* Market context line — controlled, no five-asset-class mega-list. */}
+          <p className="mt-4 text-xs text-[#6F7783] motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700 motion-safe:[animation-delay:1200ms] motion-safe:[animation-fill-mode:both]">
             Digital assets &middot; Traditional markets &middot; Alternative trading contexts
           </p>
         </div>
