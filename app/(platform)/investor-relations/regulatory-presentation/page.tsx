@@ -6,7 +6,7 @@ import { slides } from "./data";
 
 export default function RegulatoryPresentationPage() {
   return (
-    <PageEntitlementGate entitlement="investor-regulatory" featureName="Regulatory Umbrella Presentation">
+    <PageEntitlementGate entitlement="investor-regulatory" featureName="Regulated Operating Models Presentation">
       <PresentationShell slides={slides} />
     </PageEntitlementGate>
   );

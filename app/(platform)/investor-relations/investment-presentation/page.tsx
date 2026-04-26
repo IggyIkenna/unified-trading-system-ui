@@ -6,7 +6,7 @@ import { slides } from "./data";
 
 export default function InvestmentPresentationPage() {
   return (
-    <PageEntitlementGate entitlement="investor-im" featureName="Investment Management Presentation">
+    <PageEntitlementGate entitlement="investor-im" featureName="Odum-Managed Strategies Presentation">
       <PresentationShell slides={slides} />
     </PageEntitlementGate>
   );

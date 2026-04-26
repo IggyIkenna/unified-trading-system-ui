@@ -6,7 +6,7 @@ import { slides } from "./data";
 
 export default function PlatformPresentationPage() {
   return (
-    <PageEntitlementGate entitlement="investor-platform" featureName="Trading Platform Presentation">
+    <PageEntitlementGate entitlement="investor-platform" featureName="DART Trading Infrastructure Presentation">
       <PresentationShell slides={slides} />
     </PageEntitlementGate>
   );
