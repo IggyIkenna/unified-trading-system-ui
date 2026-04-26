@@ -9,8 +9,35 @@ import { Label } from "@/components/ui/label";
 import { Term } from "@/components/marketing/term";
 import { FileUploadField } from "@/components/strategy-evaluation/file-upload-field";
 import { isUploadedFileRef, type UploadedFileRef } from "@/lib/strategy-evaluation/upload";
+import PreStepGate from "./_pre-step-gate";
+import AllocatorWizard, { type AllocatorFormState } from "./_allocator-wizard";
 
 interface FormState {
+  /**
+   * Pre-step gate (Funnel Coherence plan Workstream A).
+   * "" = unset, gate is shown. "allocator" = Path A, allocator wizard renders.
+   * "builder" = Path B, the existing 8-step builder wizard renders.
+   */
+  engagementIntent: "" | "allocator" | "builder";
+  /** Path B regulatory-wrapper sub-checkbox (replaces the old Path C primary option). */
+  regulatoryWrapperNeeded: boolean;
+  // Allocator (Path A) fields — preference-shaped intake.
+  allocatorInvestorType: string;
+  allocatorAumBand: string;
+  allocatorTargetSharpe: string;
+  allocatorMaxDrawdown: string;
+  allocatorReturnHorizon: string;
+  allocatorAllowedVenues: string;
+  allocatorLeverageCap: string;
+  allocatorSmaFeesPreference: string;
+  allocatorInstrumentRestrictions: string;
+  allocatorCapitalScalingTimeline: string;
+  allocatorDeploymentPreference: string;
+  allocatorMandateMgmtInterest: string;
+  allocatorReportingCadence: string;
+  allocatorPreferredStructure: "" | "sma" | "pooled" | "unsure";
+  allocatorRegulatedStructureInterest: "" | "unknown" | "no" | "yes";
+  // Builder (Path B) fields — existing 8-step DDQ.
   strategyName: string;
   leadResearcher: string;
   email: string;
@@ -137,6 +164,23 @@ type SerializedFormState = Omit<
 };
 
 const INITIAL_STATE: FormState = {
+  engagementIntent: "",
+  regulatoryWrapperNeeded: false,
+  allocatorInvestorType: "",
+  allocatorAumBand: "",
+  allocatorTargetSharpe: "",
+  allocatorMaxDrawdown: "",
+  allocatorReturnHorizon: "",
+  allocatorAllowedVenues: "",
+  allocatorLeverageCap: "",
+  allocatorSmaFeesPreference: "",
+  allocatorInstrumentRestrictions: "",
+  allocatorCapitalScalingTimeline: "",
+  allocatorDeploymentPreference: "",
+  allocatorMandateMgmtInterest: "",
+  allocatorReportingCadence: "",
+  allocatorPreferredStructure: "",
+  allocatorRegulatedStructureInterest: "",
   strategyName: "",
   leadResearcher: "",
   email: "",
@@ -292,15 +336,20 @@ function serializeState(state: FormState): SerializedFormState {
 }
 
 function deserializeState(raw: SerializedFormState): FormState {
+  // Merge with INITIAL_STATE so new fields default cleanly when a partial
+  // pre-seed payload arrives (e.g. URL-param-driven engagementIntent +
+  // regulatoryWrapperNeeded from page.tsx) and old cached drafts that
+  // predate field additions still hydrate without violating FormState types.
   return {
+    ...INITIAL_STATE,
     ...raw,
     // New fields default to empty so older cached drafts don't violate FormState string types
     referralSource: typeof raw.referralSource === "string" ? raw.referralSource : "",
     referralSourceNotes: typeof raw.referralSourceNotes === "string" ? raw.referralSourceNotes : "",
     holdingPeriod: typeof raw.holdingPeriod === "string" ? raw.holdingPeriod : "",
-    assetGroups: new Set(raw.assetGroups),
-    instrumentTypes: new Set(raw.instrumentTypes),
-    archetypeMarkers: new Set(raw.archetypeMarkers),
+    assetGroups: new Set(raw.assetGroups ?? []),
+    instrumentTypes: new Set(raw.instrumentTypes ?? []),
+    archetypeMarkers: new Set(raw.archetypeMarkers ?? []),
     commercialPathSecondary: new Set(raw.commercialPathSecondary ?? []),
     commercialPathTertiary: new Set(raw.commercialPathTertiary ?? []),
     fundraisingChannels: new Set(raw.fundraisingChannels ?? []),
@@ -746,6 +795,77 @@ export default function StrategyEvaluationFormClient({
             )}
           </div>
         </div>
+      </div>
+    );
+  }
+
+  // Engagement-intent gate (Funnel Coherence plan Workstream A0).
+  // Show the Path A vs Path B chooser as the very first surface a prospect
+  // sees on /strategy-evaluation. If we already have prior data (refile via
+  // ?token= or draft refile) we skip the gate — the user has already
+  // committed to one branch.
+  const hasPriorData = Boolean(
+    initialData ||
+    form.engagementIntent ||
+    // Any builder-only field already populated → it's a builder draft, skip the gate.
+    form.strategyName ||
+    form.alphaTesis,
+  );
+  if (form.engagementIntent === "" && !hasPriorData) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-12 md:px-6">
+        <PreStepGate
+          onPickAllocator={() => setForm((f) => ({ ...f, engagementIntent: "allocator" }))}
+          onPickBuilder={() => setForm((f) => ({ ...f, engagementIntent: "builder" }))}
+        />
+      </div>
+    );
+  }
+
+  // Path A — allocator wizard. Renders a separate, lighter intake (~4 steps,
+  // 15 fields) and reuses handleSubmit for persistence. The submit payload
+  // includes engagementIntent: "allocator" so the server can branch
+  // validation + email template.
+  if (form.engagementIntent === "allocator") {
+    const allocatorForm: AllocatorFormState = {
+      strategyName: form.strategyName,
+      leadResearcher: form.leadResearcher,
+      email: form.email,
+      phone: form.phone,
+      allocatorInvestorType: form.allocatorInvestorType,
+      allocatorAumBand: form.allocatorAumBand,
+      allocatorTargetSharpe: form.allocatorTargetSharpe,
+      allocatorMaxDrawdown: form.allocatorMaxDrawdown,
+      allocatorReturnHorizon: form.allocatorReturnHorizon,
+      allocatorAllowedVenues: form.allocatorAllowedVenues,
+      allocatorLeverageCap: form.allocatorLeverageCap,
+      allocatorSmaFeesPreference: form.allocatorSmaFeesPreference,
+      allocatorInstrumentRestrictions: form.allocatorInstrumentRestrictions,
+      allocatorCapitalScalingTimeline: form.allocatorCapitalScalingTimeline,
+      allocatorDeploymentPreference: form.allocatorDeploymentPreference,
+      allocatorMandateMgmtInterest: form.allocatorMandateMgmtInterest,
+      allocatorReportingCadence: form.allocatorReportingCadence,
+      allocatorPreferredStructure: form.allocatorPreferredStructure,
+      allocatorRegulatedStructureInterest: form.allocatorRegulatedStructureInterest,
+    };
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-12 md:px-6">
+        <AllocatorWizard
+          form={allocatorForm}
+          setField={(k, v) => setForm((f) => ({ ...f, [k]: v }))}
+          submitting={submitting}
+          submitted={submitted}
+          submitError={submitError}
+          onSubmit={async () => {
+            // Synthesize a form-event-like submit through the existing
+            // pipeline so we get the same persistence + email behaviour.
+            const fakeEvent = {
+              preventDefault: () => {},
+            } as unknown as React.FormEvent;
+            await handleSubmit(fakeEvent);
+          }}
+          onSwitchToBuilder={() => setForm((f) => ({ ...f, engagementIntent: "builder" }))}
+        />
       </div>
     );
   }
@@ -1437,6 +1557,28 @@ export default function StrategyEvaluationFormClient({
                   {getError("understandSignals") && <FieldError message={getError("understandSignals")!} />}
                 </div>
               </div>
+            </section>
+
+            {/* Regulatory-wrapper sub-checkbox — replaces the previous Path C
+                primary commercialPath option (Funnel Coherence plan
+                Workstream A2). When ticked, Odum's regulatory cover applies
+                on top of the primary path the prospect picked above. Path D
+                (signals-out) stays as a sub-mode of Path B / DART. */}
+            <section className="space-y-3 rounded-md border border-border/60 bg-card/30 p-4">
+              <h3 className="text-sm font-semibold">Regulatory wrapper</h3>
+              <label className="flex items-start gap-2.5">
+                <input
+                  type="checkbox"
+                  checked={form.regulatoryWrapperNeeded}
+                  onChange={(e) => setField("regulatoryWrapperNeeded", e.target.checked)}
+                  className="mt-0.5"
+                />
+                <span className="text-sm text-foreground/85">
+                  Odum&rsquo;s regulatory cover applies to this engagement &mdash; we&rsquo;d like the wrapper alongside
+                  DART. Tick if your strategy needs Odum to act as Investment Manager / Adviser / AR; we&rsquo;ll cover
+                  the specifics in the operating-model conversation.
+                </span>
+              </label>
             </section>
           </>
         )}

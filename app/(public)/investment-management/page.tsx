@@ -226,6 +226,33 @@ export default function InvestmentManagementPage() {
             </div>
           </section>
 
+          {/* Allocator intake themes — mirrors the Path A Strategy Evaluation
+              field set so allocators see the form's shape before they hit it. */}
+          <section className="pt-24 md:pt-32">
+            <div className="mb-8 max-w-2xl">
+              <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">What we&rsquo;ll ask you about</h2>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground md:text-base">
+                The Strategy Evaluation for allocators is preference-shaped, not strategy-shaped. We don&rsquo;t ask for
+                your methodology or track record &mdash; we ask what fits your mandate.
+              </p>
+            </div>
+            <ul className="grid gap-x-8 gap-y-3 text-sm leading-relaxed text-foreground/85 md:grid-cols-2 md:text-[15px]">
+              {[
+                "Investor profile and risk appetite (target Sharpe, max drawdown).",
+                "Allowed venues and geographies; instrument-type restrictions.",
+                "Leverage caps and SMA exchange-fee preferences.",
+                "Performance criteria and return horizon.",
+                "Capital scaling timeline and deployment preference.",
+                "Structure interest (SMA / pooled fund / unsure) and reporting cadence.",
+              ].map((theme) => (
+                <li key={theme} className="flex items-start gap-2.5">
+                  <Check className="mt-1 size-3.5 shrink-0 text-primary/70" aria-hidden />
+                  <span>{theme}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+
           {/* Structure + Fees — two-column row */}
           <section className="pt-24 md:pt-32">
             <div className="grid gap-6 md:grid-cols-2">

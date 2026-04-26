@@ -52,6 +52,50 @@ export default function BriefingsHubPage() {
         cta={{ label: "Book a Fit Call", href: CALENDLY_URL }}
       />
 
+      {/* By-route routing table — 2 rows that point each persona at the
+          briefing they should start with. Replaces the previous flat
+          equal-pillars treatment so a builder who walks in already knowing
+          they want DART doesn't read three briefings to find the one that
+          matters. Pillar grid stays below this table. */}
+      <section className="space-y-3 rounded-lg border border-border/80 bg-card/30 p-5 md:p-6">
+        <h2 className="text-xs font-semibold tracking-[0.12em] uppercase text-muted-foreground">By route</h2>
+        <ul className="divide-y divide-border/60">
+          <li className="grid gap-2 py-3 md:grid-cols-[200px_1fr] md:items-center md:gap-6">
+            <span className="text-sm font-medium text-foreground">Allocator (capital → Odum)</span>
+            <span className="text-sm text-muted-foreground">
+              Start at{" "}
+              <Link
+                href="/briefings/investment-management"
+                className="font-medium text-foreground underline decoration-muted-foreground/50 underline-offset-2 hover:decoration-foreground"
+              >
+                Odum-Managed Strategies
+              </Link>
+              .
+            </span>
+          </li>
+          <li className="grid gap-2 py-3 md:grid-cols-[200px_1fr] md:items-center md:gap-6">
+            <span className="text-sm font-medium text-foreground">Builder / counterparty (your strategy)</span>
+            <span className="text-sm text-muted-foreground">
+              Start at{" "}
+              <Link
+                href="/briefings/dart-trading-infrastructure"
+                className="font-medium text-foreground underline decoration-muted-foreground/50 underline-offset-2 hover:decoration-foreground"
+              >
+                DART Trading Infrastructure
+              </Link>
+              . If a regulatory wrapper applies, companion read:{" "}
+              <Link
+                href="/briefings/regulated-operating-models"
+                className="font-medium text-foreground underline decoration-muted-foreground/50 underline-offset-2 hover:decoration-foreground"
+              >
+                Regulated Operating Models
+              </Link>
+              .
+            </span>
+          </li>
+        </ul>
+      </section>
+
       {/* Skip-ahead affordance — for prospects who already know what they want
           and don't need to read three briefings before being specific. Tier
           1 → Tier 2 escape hatch placed near the hero so it's visible

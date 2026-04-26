@@ -39,7 +39,7 @@ async function loadByToken(token: string): Promise<Record<string, unknown> | nul
     if (snap.empty) return null;
     const docSnap = snap.docs[0];
     const data = docSnap.data();
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     const { magicToken: _t, submittedAt: _s, emailVerifiedAt: _v, ...rest } = data;
     return { id: docSnap.id, ...rest };
   } catch (err) {
@@ -65,16 +65,26 @@ async function loadDraftByEmail(email: string): Promise<Record<string, unknown> 
   }
 }
 
+function pickFirst(value: string | string[] | undefined): string | undefined {
+  if (Array.isArray(value)) return value[0];
+  return value;
+}
+
 export default async function Page({
   searchParams,
 }: {
-  searchParams: Promise<{ token?: string | string[]; draft?: string | string[] }>;
+  searchParams: Promise<{
+    token?: string | string[];
+    draft?: string | string[];
+    path?: string | string[];
+    regulatory?: string | string[];
+  }>;
 }) {
   const params = await searchParams;
-  const tokenRaw = params.token;
-  const token = Array.isArray(tokenRaw) ? tokenRaw[0] : tokenRaw;
-  const draftRaw = params.draft;
-  const draftEmail = Array.isArray(draftRaw) ? draftRaw[0] : draftRaw;
+  const token = pickFirst(params.token);
+  const draftEmail = pickFirst(params.draft);
+  const pathParam = pickFirst(params.path);
+  const regulatoryParam = pickFirst(params.regulatory);
 
   // Token wins over draft — a magic-link refile from a submitted entry takes
   // priority. If no token, try the draft-resume path keyed off email.
@@ -84,5 +94,17 @@ export default async function Page({
   } else if (draftEmail) {
     initialData = await loadDraftByEmail(draftEmail);
   }
+
+  // Funnel Coherence plan Workstream A4: public-page deep-links can
+  // pre-seed the engagement intent + regulatory checkbox so the prospect
+  // doesn't have to pick on the gate when they're routed in from
+  // /investment-management or /regulatory.
+  if (!initialData && (pathParam === "allocator" || pathParam === "builder")) {
+    initialData = {
+      engagementIntent: pathParam,
+      regulatoryWrapperNeeded: regulatoryParam === "true" || regulatoryParam === "1",
+    };
+  }
+
   return <StrategyEvaluationFormClient initialData={initialData} initialToken={token ?? null} />;
 }

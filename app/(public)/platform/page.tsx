@@ -211,6 +211,47 @@ export default function MarketingPlatformPage() {
             </div>
           </section>
 
+          {/* Mode 01 vs Mode 02 differentiation — "When to choose Full" callout.
+              Sharpens the why-Full-when-it-is-still-your-signals argument that
+              isn't covered by the three-card grid above. */}
+          <section className="pt-24 md:pt-32">
+            <div className="rounded-lg border border-border/80 bg-card/40 p-7 md:p-10">
+              <div className="grid gap-8 md:grid-cols-[1fr_2fr] md:gap-12">
+                <div>
+                  <h3 className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                    Mode 01 vs Mode 02
+                  </h3>
+                  <h2 className="mt-3 text-xl font-semibold tracking-tight md:text-2xl">When to choose Full</h2>
+                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground md:text-base">
+                    Signals-In handles execution, post-trade, and reporting against your strategy. Full opens the
+                    research and operational stack we run on our own capital &mdash; useful when the prospect&rsquo;s
+                    signals are still being shaped or when execution-quality alone isn&rsquo;t the answer.
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                    What Full unlocks beyond Signals-In
+                  </p>
+                  <ul className="mt-4 grid gap-x-8 gap-y-2.5 text-sm leading-relaxed text-foreground/85 md:grid-cols-2 md:text-[15px]">
+                    {[
+                      "Rich data sources (granular tick + book + on-chain + alternative).",
+                      "Research environment for backtest, paper, and promotion-ladder workflows.",
+                      "Test fee, treasury, risk, liquidation, and rebalancing assumptions on the most granular data.",
+                      "Live execution + post-trade analytics + reconciliation + treasury observability.",
+                      "Paper trading alongside live, with delivery health and ack flows.",
+                      "Live performance vs backtest tracking on a T+1 basis.",
+                    ].map((item) => (
+                      <li key={item} className="flex items-start gap-2.5">
+                        <Check className="mt-1 size-3.5 shrink-0 text-primary/70" aria-hidden />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </section>
+
           {/* Dashboard + API access — secondary information band */}
           <section className="pt-24 md:pt-32">
             <div className="grid gap-8 rounded-lg border border-border/80 bg-card/50 p-8 md:grid-cols-2 md:gap-12 md:p-10">
