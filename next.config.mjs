@@ -124,9 +124,31 @@ const nextConfig = {
         permanent: true,
       },
     ];
+
+    // Marketing-site three-route consolidation 2026-04-26.
+    // Public Odum Signals + DART Signals-In + DART Full all fold into /platform
+    // (DART Trading Infrastructure) as in-page sections. Authenticated
+    // /services/signals/* counterparty surfaces are unaffected per Completion
+    // Patch §L. Briefing pillars consolidated 6 → 3.
+    const marketingThreeRouteRedirects = [
+      { source: "/signals", destination: "/platform#signals-capability", permanent: true },
+      { source: "/platform/signals-in", destination: "/platform#signals-in-capability", permanent: true },
+      { source: "/platform/full", destination: "/platform#full-stack-capability", permanent: true },
+      { source: "/briefings/platform", destination: "/briefings/dart-trading-infrastructure", permanent: true },
+      { source: "/briefings/dart", destination: "/briefings/dart-trading-infrastructure", permanent: true },
+      { source: "/briefings/dart-full", destination: "/briefings/dart-trading-infrastructure", permanent: true },
+      {
+        source: "/briefings/dart-signals-in",
+        destination: "/briefings/dart-trading-infrastructure",
+        permanent: true,
+      },
+      { source: "/briefings/signals-out", destination: "/briefings/dart-trading-infrastructure", permanent: true },
+      { source: "/briefings/regulatory", destination: "/briefings/regulated-operating-models", permanent: true },
+    ];
     return [
       ...presentationRedirects,
       ...executionRedirects,
+      ...marketingThreeRouteRedirects,
       // Legacy flat marketing HTML → App Router (public shell + auth)
       { source: "/index.html", destination: "/", permanent: false },
       { source: "/homepage.html", destination: "/", permanent: true },

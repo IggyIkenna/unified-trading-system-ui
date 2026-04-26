@@ -88,10 +88,7 @@ export function SpacesNavSections() {
         <Link href="/investment-management">{SERVICE_LABELS.investment.marketing}</Link>
       </DropdownMenuItem>
       <DropdownMenuItem asChild>
-        <Link href="/platform">{PLATFORM_MARKETING_NAV_LABEL}</Link>
-      </DropdownMenuItem>
-      <DropdownMenuItem asChild>
-        <Link href="/signals">{SERVICE_LABELS.signals.marketing}</Link>
+        <Link href="/platform">{SERVICE_LABELS.dart.marketing}</Link>
       </DropdownMenuItem>
       <DropdownMenuItem asChild>
         <Link href="/regulatory">{SERVICE_LABELS.regulatory.marketing}</Link>
