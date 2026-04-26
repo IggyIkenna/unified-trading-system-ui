@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BRIEFING_SLUGS, PUBLIC_ROUTE_PATHS, SERVICE_LABELS } from "@/lib/copy/service-labels";
+import { PUBLIC_ROUTE_PATHS, SERVICE_LABELS } from "@/lib/copy/service-labels";
 import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -63,7 +63,7 @@ export default function InvestmentManagementPage() {
               </Button>
             </div>
             <p className="mt-3 text-xs text-muted-foreground">
-              Briefings are gated. Start your review to receive access to the relevant allocator briefing.
+              Access to the relevant allocator briefing is provided after the initial review.
             </p>
           </div>
 
@@ -132,9 +132,7 @@ export default function InvestmentManagementPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="text-sm text-muted-foreground">
-              <p>
-                The public page does not quote or imply standard terms. The specific structure is reviewed case by case.
-              </p>
+              <p>Specific terms are reviewed case by case.</p>
             </CardContent>
           </Card>
 
@@ -166,13 +164,6 @@ export default function InvestmentManagementPage() {
                   steps.
                 </li>
               </ol>
-              <div className="mt-6 flex flex-wrap gap-3">
-                <Button asChild variant="outline" size="sm">
-                  <Link href={`/briefings/${BRIEFING_SLUGS.investment}`}>
-                    Open the {SERVICE_LABELS.investment.marketing} briefing (gated)
-                  </Link>
-                </Button>
-              </div>
             </CardContent>
           </Card>
 
