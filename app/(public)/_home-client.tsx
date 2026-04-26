@@ -71,8 +71,9 @@ const PROOF_POINTS = ["FCA-authorised", "Professional / institutional clients", 
 function Hero() {
   return (
     <section className="relative overflow-hidden border-b border-border/40 bg-background">
-      {/* Subtle dark-gradient + grid backdrop for institutional weight without
-          stat-strip clutter. Pure CSS — no images, no animation. */}
+      {/* Layered backdrop: dark gradient + faint grid + abstract equity-curve
+          SVG. All decorative, all aria-hidden. Adds institutional presence
+          without metrics, photos, or fake price charts. */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 bg-gradient-to-b from-primary/[0.04] via-background to-background"
@@ -81,16 +82,54 @@ function Hero() {
         aria-hidden
         className="pointer-events-none absolute inset-0 opacity-[0.05] [background-image:linear-gradient(rgba(255,255,255,0.5)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.5)_1px,transparent_1px)] [background-size:48px_48px]"
       />
+      {/* Abstract equity-curve overlay — two soft lines crossing the hero
+          area at very low opacity. Suggests data sophistication without
+          impersonating a real chart. */}
+      <svg
+        aria-hidden
+        viewBox="0 0 1600 600"
+        preserveAspectRatio="none"
+        className="pointer-events-none absolute inset-0 h-full w-full"
+      >
+        <defs>
+          <linearGradient id="hero-curve-primary" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0" />
+            <stop offset="50%" stopColor="hsl(var(--primary))" stopOpacity="0.2" />
+            <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0" />
+          </linearGradient>
+          <linearGradient id="hero-curve-muted" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="hsl(var(--muted-foreground))" stopOpacity="0" />
+            <stop offset="50%" stopColor="hsl(var(--muted-foreground))" stopOpacity="0.12" />
+            <stop offset="100%" stopColor="hsl(var(--muted-foreground))" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        <path
+          d="M -50 460 C 250 410, 420 330, 640 360 S 1040 280, 1260 240 S 1600 180, 1700 160"
+          fill="none"
+          stroke="url(#hero-curve-primary)"
+          strokeWidth="1.25"
+        />
+        <path
+          d="M -50 520 C 280 500, 460 470, 700 470 S 1100 430, 1320 400 S 1620 360, 1700 350"
+          fill="none"
+          stroke="url(#hero-curve-muted)"
+          strokeWidth="1"
+          strokeDasharray="2 6"
+        />
+      </svg>
 
       <div className="container relative px-4 py-20 md:px-6 md:py-28">
         <div className="mx-auto max-w-3xl text-center">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
             Odum Research &middot; FCA 975797
           </p>
-          <h1 className="mt-6 text-balance text-4xl font-semibold tracking-tight md:text-5xl">
-            Systematic strategies and trading infrastructure for institutional clients
+          {/* Three-line manifesto — each line equal weight, balanced rhythm. */}
+          <h1 className="mt-7 text-balance text-4xl font-semibold leading-[1.1] tracking-tight md:text-6xl md:leading-[1.05]">
+            <span className="block">Systematic strategies.</span>
+            <span className="block">Trading infrastructure.</span>
+            <span className="block">Institutional clients.</span>
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground md:text-lg">
+          <p className="mx-auto mt-7 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground md:text-lg">
             Odum manages selected systematic strategies and provides the infrastructure and regulated operating models
             around them.
           </p>
@@ -160,7 +199,7 @@ function MarketsUniverse() {
       <div className="container px-4 pt-16 pb-20 md:px-6 md:pt-24 md:pb-28">
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="text-balance text-2xl font-semibold tracking-tight md:text-3xl">
-            Selected markets, one operating surface
+            Selected markets. One operating surface
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-pretty text-sm leading-relaxed text-muted-foreground md:text-base">
             Strategies move from research and simulation to live trading on the same operating surface, with one clean
