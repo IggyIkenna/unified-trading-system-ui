@@ -58,45 +58,46 @@ export default function InvestmentManagementPage() {
             </p>
           </div>
 
-          {/* How custody works (read-only-key mechanic) */}
+          {/* Custody — short pointer to /regulatory which carries the depth */}
           <Card className="mb-8">
             <CardHeader>
-              <CardTitle>How custody works</CardTitle>
+              <CardTitle>Custody</CardTitle>
               <CardDescription>
-                Odum does not take custody. Capital remains with the client at all times, under the client&apos;s own
-                venue relationships.
+                Odum does not take custody. Capital stays under your own venue relationships (SMA) or with a qualified
+                third-party custodian (Pooled).
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3 text-sm text-muted-foreground">
               <p>
-                Client retains venue custody. Client issues scoped read-only-plus-execute API keys to Odum. Odum never
-                custodies client capital. All trades settle in the client&apos;s venue account.
-              </p>
-              <p>
-                Keys are scoped at the venue level &mdash; trade + positions + balances where execution is required,
-                read-only where only reconciliation is needed. Withdrawal permission is never requested and never
-                accepted.
+                The custody mechanic is shared across {SERVICE_LABELS.investment.marketing} and{" "}
+                <Link href="/regulatory" className="text-primary underline-offset-4 hover:underline">
+                  {SERVICE_LABELS.regulatory.marketing}
+                </Link>{" "}
+                — scoped venue API keys with no withdrawal authority, ever. Read the full custody walk-through on the{" "}
+                {SERVICE_LABELS.regulatory.marketing} page.
               </p>
             </CardContent>
           </Card>
 
-          {/* Client-slice visibility */}
+          {/* Client confidentiality */}
           <Card className="mb-8">
             <CardHeader>
-              <CardTitle>Client-slice visibility only</CardTitle>
+              <CardTitle>Client confidentiality is enforced at the system level</CardTitle>
               <CardDescription>
-                The reporting surface partitions on the client record. There is no cross-client view at any UI layer.
+                Your slice is your slice. Other clients&apos; positions are not visible, not queryable, and not
+                inferable from any surface you can reach.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3 text-sm text-muted-foreground">
               <p>
-                Pooled fund clients see only their share-class slice. SMA clients see only their own book. No
-                cross-client visibility at any UI layer.
+                Reporting partitions on your client record at the data layer — not just at the UI layer. Pooled fund
+                allocators see only their share-class slice; SMA allocators see only their own book. Aggregation,
+                attribution, risk exposure, and NAV all run against your slice.
               </p>
               <p>
-                Aggregation, attribution, risk exposure, and NAV run against the client&apos;s slice &mdash; other
-                clients&apos; positions are not visible, not queryable, and not inferable from any surface the client
-                can reach.
+                Confidentiality is built in, not opted into: there is no cross-client view at any UI layer, and the same
+                rule binds Odum&apos;s internal staff sharing the system — operational visibility is bounded by the same
+                partitions that bound your view of others.
               </p>
             </CardContent>
           </Card>
