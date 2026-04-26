@@ -112,7 +112,7 @@ export default function MarketingPlatformPage() {
           </div>
 
           {/* On-page review path — replaces the disconnected global breadcrumb. */}
-          <div className="mx-auto mt-10 flex max-w-3xl flex-wrap items-center justify-center gap-x-3 gap-y-1 rounded-md border border-border/60 bg-card/40 px-4 py-3 text-[12px] text-muted-foreground">
+          <div className="mx-auto mt-14 flex max-w-3xl flex-wrap items-center justify-center gap-x-3 gap-y-1 rounded-md border border-border/60 bg-card/40 px-4 py-3 text-[12px] text-muted-foreground">
             <span className="font-medium text-foreground/85">Path</span>
             <span className="text-muted-foreground/60">·</span>
             <span>Start Your Review</span>
@@ -123,16 +123,16 @@ export default function MarketingPlatformPage() {
           </div>
 
           {/* DART capabilities — three-card grid */}
-          <section className="mt-16">
-            <div className="mb-8 text-center">
+          <section className="mt-24">
+            <div className="mb-10 text-center">
               <h2 className="text-2xl font-semibold tracking-tight">DART capabilities</h2>
-              <p className="mx-auto mt-2 max-w-2xl text-sm text-muted-foreground">
+              <p className="mx-auto mt-3 max-w-2xl text-sm text-muted-foreground">
                 DART can support client-provided signals, Odum-provided signals, or hybrid workflows depending on the
                 agreed engagement scope.
               </p>
             </div>
 
-            <div className="grid gap-5 md:grid-cols-3">
+            <div className="grid gap-6 md:grid-cols-3">
               {DART_MODES.map((mode) => (
                 <Card
                   key={mode.id}
@@ -167,7 +167,7 @@ export default function MarketingPlatformPage() {
           </section>
 
           {/* Dashboard + API access — compact two-column row */}
-          <section className="mt-14 grid gap-6 rounded-lg border border-border/60 bg-card/30 p-6 md:grid-cols-2 md:gap-8">
+          <section className="mt-24 grid gap-6 rounded-lg border border-border/60 bg-card/30 p-7 md:grid-cols-2 md:gap-10 md:p-8">
             <div>
               <h3 className="text-sm font-semibold tracking-wide uppercase text-foreground/85">Dashboard</h3>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
@@ -184,8 +184,8 @@ export default function MarketingPlatformPage() {
           </section>
 
           {/* Adjacent engagement routes — two compact cards */}
-          <section className="mt-14">
-            <h3 className="mb-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          <section className="mt-24">
+            <h3 className="mb-5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Adjacent engagement routes
             </h3>
             <div className="grid gap-4 md:grid-cols-2">
@@ -217,13 +217,13 @@ export default function MarketingPlatformPage() {
           </section>
 
           {/* Final CTA band */}
-          <section className="mt-16 rounded-lg border border-border/60 bg-gradient-to-b from-card/60 to-card/30 p-8 text-center md:p-10">
+          <section className="mt-24 rounded-lg border border-border/60 bg-gradient-to-b from-card/60 to-card/30 p-8 text-center md:p-12">
             <h2 className="text-xl font-semibold tracking-tight md:text-2xl">Ready to understand the right route?</h2>
             <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground md:text-base">
               Start with a short review. We&rsquo;ll route you to the relevant briefing and next step &mdash; DART, an
               Odum-managed strategy, or a regulated operating model.
             </p>
-            <div className="mt-5 flex flex-wrap justify-center gap-3">
+            <div className="mt-6 flex flex-wrap justify-center gap-3">
               <Button asChild size="lg">
                 <Link href={PUBLIC_ROUTE_PATHS.startYourReview}>Start Your Review</Link>
               </Button>
