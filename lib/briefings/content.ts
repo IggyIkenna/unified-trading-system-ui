@@ -104,49 +104,60 @@ export const BRIEFING_PILLARS: readonly BriefingPillar[] = [
   {
     slug: "regulated-operating-models",
     title: "Regulated Operating Models",
-    tldr: "Where appropriate, Odum can structure trading engagements around governance, supervisory reporting, FCA coverage, SMA routes, or affiliate fund pathways. The reporting surface is the same component tree Odum uses internally for its own investment management. Default has Odum as IM of record; AR-style arrangements available case by case.",
+    // Public lobby tone per user review 2026-04-26: lighter, less "internal
+    // memo". The detailed hierarchy lives in the diagram below the frame
+    // (RegUmbrellaHierarchyDiagram); we don't repeat it as prose. Per-block
+    // pricing, MLRO/AIFM detail, and AR registration timelines move to the
+    // second call.
+    tldr: "Some trading engagements need more than technology. Where appropriate, Odum can help structure selected engagements around governance, supervisory reporting, FCA coverage, SMA routes, affiliate fund pathways, or AR-style arrangements.",
     frame:
-      "Some trading engagements require more than technology. Where appropriate, Odum can structure selected engagements around the right governance, permissions, reporting, and affiliate pathway — Odum as IM under FCA permissions, SMA routes, affiliate fund / AIFM partnerships, or AR-style arrangements where a client wants to be customer-facing IM under their own brand. The shape is fit-driven, not product-driven. Odum Research Ltd holds live FCA authorisation (FRN 975797 — verifiable on the FCA register at register.fca.org.uk) and operates compliance, MLRO, and supervisory reporting internally. Where the planned activity sits outside UK regulatory scope, an EU-regulated affiliate with AIFM and fund-administration permissions carries the EU-side mandate. Custody is a separate concern from regulatory cover: under SMA, you hold your own venue accounts and Odum operates scoped execute-plus-read API keys with no withdrawal authority; under Pooled, fund assets sit with a qualified third-party custodian (Copper for crypto; equivalent regulated custodians for other asset classes). The regulatory-relevant test is who is IM of record — that party holds trading discretion and carries the corresponding authorisation requirement.",
+      "The right structure depends on who manages the strategy, where the capital sits, who faces the end client, what permissions are required, and whether the engagement is best handled through Odum, the client, or an approved affiliate route. Odum does not custody client capital. Where venue or brokerage access is required, permissions are scoped to the agreed mandate. Withdrawal authority is never requested.",
     sections: [
       {
-        title: "Engagement shapes — fit-driven, not product-driven",
-        body: "Where Odum is IM of record under FCA FRN 975797: fastest onboarding, no AR registration required. Where the engagement runs as an SMA: client holds venue accounts in their own entity name, Odum runs execution under scoped keys. Where a fund vehicle is needed: affiliate fund administrator + AIFM partner handles NAV, subscriptions, and redemptions; Odum is investment manager. Where the client specifically wants to be customer-facing IM under their own brand: AR-style arrangements available, but FCA AR registration adds 4–12 weeks of onboarding lead time, so speed-to-live engagements default to Odum-as-IM. New legal drafting prefers the specific structure name (Advisory / AR-style / SMA / affiliate fund) over a generic umbrella label.",
+        title: "What this route can cover",
+        // Softened from the previous "Default has Odum as IM of record;
+        // AR-style arrangements available case by case." line — reads as
+        // intelligent structuring rather than forcing one model.
+        body: "In many cases, the simplest route is Odum acting as investment manager where the mandate fits. AR-style or affiliate-supported structures can be considered where the client needs a different operating posture.",
+        bullets: [
+          "{{strong:Odum as investment manager}} — Odum acts as the investment manager of record where the engagement fits within its permissions and mandate scope.",
+          "{{strong:SMA route}} — The client keeps capital in its own venue, broker, or custodian accounts. Odum may operate scoped read-and-execute access where agreed.",
+          "{{strong:Affiliate fund or AIFM pathway}} — Where a pooled fund or EU-side structure is required, the operating model may involve an approved fund administrator, AIFM, custodian, or affiliate arrangement.",
+          "{{strong:AR-style arrangement}} — Where a client wants to be customer-facing under its own brand, an AR-style structure may be considered case by case. This usually requires more onboarding and regulatory review.",
+        ],
       },
       {
-        title: "Custody, scoped keys, no withdrawal authority — ever",
-        body: "Odum does not take custody of client or sub-entity capital. The regulated operating model is a permission and supervision construct, not a custody construct. Venue custody stays with the client (SMA) or with a qualified third-party custodian (Pooled). Odum operates scoped venue API keys held in Secret Manager — execute-plus-read where Odum is IM and runs execution, read-only-plus-read-transaction where the client is IM and executes under its own authorisation or AR status. Withdrawal permission is never requested under any configuration. Each fund or SMA under a multi-vehicle umbrella follows the same key-scoping rule per its mandate shape.",
+        title: "Custody and control",
+        body: "The regulated operating model is a governance, permission, and reporting layer. It is not a custody product. For {{term:sma}} arrangements, the client or relevant entity holds the accounts. For pooled structures, assets sit with an appropriate third-party custodian or administrator route. Odum's access, where granted, is scoped to the mandate and does not include withdrawal permissions.",
       },
       {
-        title: "Multi-vehicle setup",
-        body: "Where the engagement involves multiple sub-entities (multiple share classes, multiple SMA books, multiple fund vehicles), they are addressed independently in the reporting surface. Positions, NAV, attribution, and compliance artefacts are scoped to the sub-entity. The parent client has supervisory visibility across its own multi-vehicle umbrella only — never across other clients on the platform. The hierarchy is the same regardless of which engagement shape is chosen for any given vehicle.",
+        title: "Multi-vehicle reporting",
+        body: "Where an engagement includes multiple funds, share classes, SMA books, or sub-entities, each book is reported separately and then rolled up into a supervisory view for the relevant client umbrella. The reporting surface can show {{term:nav|NAV}}, attribution, compliance artefacts, audit trail, positions, orders, fills, and reconciliation events at the correct level of the hierarchy.",
       },
       {
-        title: "Supervisory artefacts",
-        body: "Standard supervisory artefacts: monthly NAV per fund or SMA book; quarterly performance attribution at strategy and venue granularity; compliance certifications and periodic attestations covering mandate boundaries, best execution, and conflicts; audit-trail access covering instructions, orders, fills, position movements, and reconciliation events. These are produced by the same surface Odum's own internal supervision uses — same components, same data — sliced per the client's umbrella.",
-      },
-      {
-        title: "Risk and governance",
-        body: "Risk and governance overlays scale with the engagement shape. Position-balance monitoring, risk-and-exposure checks, instrument and venue eligibility, leverage and concentration ceilings, and kill-switches all run at the same execution-service layer regardless of who is IM of record. Where Odum is IM, Odum's compliance and MLRO carry the supervisory load. Where the client is IM under an AR-style arrangement, Odum supplies the supervisory infrastructure but the client's own MLRO and compliance officer carry the regulatory load. Multi-vehicle umbrellas carry an additional supervisory overlay across the client's own sub-entities.",
+        title: "Risk and supervision",
+        body: "Risk controls operate at the execution and reporting layers, regardless of the selected structure. These may include venue eligibility, instrument restrictions, leverage limits, concentration checks, position monitoring, kill-switches, and reconciliation controls. The responsible regulatory role depends on the chosen model. Where Odum is investment manager, Odum carries the relevant supervisory responsibility. Where the client or an affiliate carries the role, the responsibilities are scoped accordingly.",
       },
       {
         title: "Distribution",
-        body: "Distribution support is available by separate agreement only. The regulated operating model itself does not include distribution. Where a client wants distribution support, the scope is agreed at the second call and contracted separately.",
+        body: "Distribution support is not included by default. Where requested, it is discussed separately and contracted separately.",
       },
       {
-        title: "Commitment floor",
-        body: "Twelve-month minimum engagement. Onboarding costs are real — legal review, compliance setup, MLRO onboarding, venue provisioning, reporting setup — and the floor recovers them. Pricing is per block: regulatory operating model layer, reporting core, execution layer, venue packs, instrument-type packs. Multi-vehicle engagements carry per-additional-vehicle scope uplifts rather than N-times-the-base. Specific numbers are walked through at the second call.",
+        title: "Commercial floor",
+        body: "Regulated operating models require real setup work: legal review, compliance scoping, onboarding, reporting configuration, venue or custodian coordination, and supervisory workflow design. For that reason, engagements are normally scoped around a minimum term and priced by blocks: regulatory model, reporting core, execution layer, venue packs, instrument packs, and additional vehicles where relevant. Specific pricing is discussed after fit is confirmed.",
       },
     ],
     keyMessages: [
-      "Engagement shape is fit-driven — Odum-as-IM, SMA, affiliate fund, or AR-style — assessed case by case.",
-      "Odum does not custody. Scoped venue keys, no withdrawal authority, ever.",
-      "Multi-vehicle umbrellas address sub-entities independently with supervisory overlay across the client's own umbrella only.",
-      "Supervisory artefacts (NAV, attribution, compliance, audit trail) are produced by the same surface Odum's own internal supervision uses.",
-      "Distribution support is by separate agreement only — not included in the regulated operating model.",
-      "Twelve-month minimum engagement; per-block pricing with per-additional-vehicle uplifts on multi-vehicle umbrellas.",
+      "Fit-driven structure: Odum-as-IM, SMA, affiliate fund, or AR-style.",
+      "No custody by Odum.",
+      "No withdrawal authority requested.",
+      "Multi-vehicle structures can roll into one supervisory view.",
+      "Reporting uses the same operating surface Odum uses internally.",
+      "Distribution is separate.",
+      "Pricing depends on structure, scope, and onboarding complexity.",
     ],
     nextCall:
-      "The 45-minute second call resolves engagement shape against your specifics — UK or EU path, Fund or SMA, single or multi-vehicle, Odum-as-IM or AR-style — walks the supervisory artefacts you need, and confirms the regulatory scope of your activity. Specific scope numbers and onboarding workstreams are codex-private and walked through during the call.",
+      "Use the second call to resolve the structure against your facts: UK or EU path, SMA or fund, single or multi-vehicle, Odum-as-IM or AR-style, custody route, reporting requirements, and regulatory scope.",
     cta: BOOK_SECOND_CALL,
   },
   // ── Legacy pillars below — slugs intercepted by next.config.mjs redirects;
@@ -156,51 +167,40 @@ export const BRIEFING_PILLARS: readonly BriefingPillar[] = [
     title: "Odum-Managed Strategies",
     tldr: "Odum allocates client capital to its own systematic strategies under Odum's {{term:fca}} permissions. {{term:allocator}} reporting runs on the same surface Odum uses to operate the book.",
     frame:
-      "Investment Management ({{term:im}}) allocates client capital to Odum-run systematic strategies under Odum's {{term:fca}} permissions. Reporting comes from the same surface Odum's own traders and risk desk use — same components, same data, entitlement-filtered for {{term:allocator}} views. Strategies are operated on Odum infrastructure, not wrapped on top of a third party. Custody model depends on structure: under {{term:sma}} you hold your own {{term:venue}} accounts in your own entity name and issue Odum scoped execute+read API keys; under {{term:pooled}} the fund's assets sit with a qualified third-party custodian (Copper for crypto; equivalent regulated custodians for other asset classes), you hold a share class in the fund, and you subscribe and redeem through the platform — automated via API and via the client dashboard. Odum Research Ltd — the investment manager — never holds principal; no custody role under either structure.",
+      "Odum allocates client capital to selected systematic strategies under Odum's {{term:fca}} permissions. Allocators access the same operating surface Odum uses internally, filtered by mandate, share class, or {{term:sma}} partition. The structure is agreed case by case: a pooled fund for share-class access, or SMA where the client keeps {{term:venue}} accounts in its own name. Odum acts as investment manager; it does not custody client assets under either structure.",
     sections: [
       {
+        title: "Structure: pooled fund or SMA",
+        body: "**Pooled fund:** clients subscribe into a share class. Fund assets sit with a qualified third-party custodian, and each allocator sees only its own share-class NAV, exposure, and P&L. Subscriptions and redemptions are handled through the platform and fund-administration process.",
+        bodyAfter:
+          "**SMA:** the client holds venue accounts in its own entity name and grants Odum scoped execute-and-read access. Capital remains in the client's accounts, and withdrawal permissions are never requested.",
+      },
+      {
         title: "The strategy surface",
-        body: "The second call opens with the catalogue screen — one row per strategy Odum offers you, with maturity (code-audited, backtested, paper, live-tiny, live-allocated) and capacity visible per slot. No research-phase placeholders, no authoring surfaces. What you see is live, allocable, and filtered to the public slice your mandate warrants plus any slots Odum has set aside for discretionary allocation on your side.",
+        body: "The strategy surface shows the strategies available for your mandate, with maturity, capacity, reporting scope, and allocation status. Allocators do not see research workspaces or authoring tools; they see the investable surface relevant to their structure and eligibility.",
       },
       {
-        title: "Structure — SMA or Pooled with share classes",
-        body: "Two structural options resolve at onboarding, with two different custody mechanics. SMA: you hold your own venue accounts in your own entity name, funded directly with the venue. Odum operates execution via scoped execute+read API keys kept in Odum Secret Manager and hot-reloaded into execution-service — no withdrawal authority, ever. Capital stays with you throughout; you can revoke a key at any time and execution on that venue closes inside the next reload cycle. Pooled: allocators subscribe to share classes in a fund vehicle whose assets sit with a qualified third-party custodian (Copper for crypto; equivalent regulated custodians for other asset classes). The custodian holds fund assets under their own regulatory permissions; Odum Research Ltd is the investment manager and does not custody. You see your share-class NAV and position attribution via the Odum portal, and you subscribe and redeem via platform request — automated via API and via the client dashboard. Pooled is operationally simpler and often better for smaller tickets or where share-class mechanics are a feature rather than a cost; SMA is the default for allocators who want full isolation, bespoke venue selection, or mandate-specific risk parameters.",
-        bodyAfter:
-          "Under the Pooled structure, visibility is strictly sliced by share-class identifier — you see only your own slice of positions, exposures, and P&L. There is no cross-client visibility within the Pooled vehicle. The choice between SMA and Pooled has real downstream consequences on onboarding, venue provisioning, reporting, and liquidity terms, walked through against your specifics at the second call.",
-      },
-      {
-        title: "Pooled custody — qualified custodian and portal subscriptions",
-        body: "This section covers Pooled only; SMA keeps you on your own venue accounts per the Structure section. Under Pooled, fund assets sit with a qualified third-party custodian regulated for the asset classes in scope — Copper for crypto, equivalent regulated custodians for {{term:tradfi}} and on-chain positions. Odum Research Ltd is the investment manager; the custodian holds fund assets under their own regulatory permissions. The fund administrator runs {{term:nav}} accounting, subscriptions, and redemptions. Odum Research Ltd never touches principal; the trading entity never holds client capital.",
-        bodyAfter:
-          "Subscriptions and redemptions are automated via the Odum platform. You log in to the client dashboard, see your share-class NAV and position attribution, and submit a subscription or redemption request; the request flows through compliance and NAV-calculation gates at the fund administrator and settles at the published NAV point. The same request surface is exposed as REST API endpoints so allocators with their own operations can script flows alongside the UI. Every state transition (subscription requested, subscribed, redemption requested, redeemed, settled) emits a lifecycle event into your audit trail.",
-      },
-      {
-        title: "Reporting surface — the operating system, filtered",
-        body: "Positions, exposures, {{term:pnl|P&L}} attribution by factor, reconciliation breaks, audit trail, compliance artefacts. The same surface Odum's own traders and risk desk use, filtered through your entitlement — share class if Pooled, SMA partition if standalone. Your allocator reporting is a partition of an operational system, not a purpose-built investor view assembled after the fact. The batch-and-live parity principle applies: the backtest view you see at onboarding uses the same components, the same risk checks, the same position tracking as live. The only thing that changes between batch and live is the execution-fill source.",
+        title: "Reporting surface",
+        body: "Positions, exposures, {{term:pnl|P&L}} attribution by factor, reconciliation breaks, and audit trail. Allocator reporting is a partition of the same operating system Odum's own traders and risk desk use — entitlement-filtered to your share class (Pooled) or SMA partition. Same components, same data, different views.",
       },
       {
         title: "Regulatory posture and commitment floor",
-        body: "Odum operates under FCA permissions. {{term:mlro}}, compliance monitoring, and supervisory reporting run internally — not outsourced. Twelve-month minimum engagement; the floor reflects real provisioning costs — legal review, venue onboarding, per-client API-key issuance, reconciliation setup, share-class or SMA mechanics.",
+        body: "Odum operates under FCA permissions. {{term:mlro}}, compliance monitoring, and supervisory reporting run internally — not outsourced. Twelve-month minimum engagement; the floor reflects real provisioning costs (legal review, venue onboarding, per-client setup, reconciliation, share-class or SMA mechanics).",
       },
       {
-        title: "Performance-fee band and platform-fee choice",
-        body: "Standard mandate posture is no management fee — IM runs on performance share only. Per codex/14-playbooks/commercial-model/im-profit-share-structures.md, the performance share sits in a 30-35% band on profits above a negotiated {{term:hwm|high-water mark}}; the lower end of the band applies to liquid, commoditised strategies (higher replaceability), the upper end applies to specialised or capacity-bound strategies (harder to source elsewhere). Specific rate per mandate is covered in the second call under codex-private pricing. At mandate signing you pick one of two platform-fee options: Option A — a small uplift on the performance share in exchange for zero fixed monthly charge, pure alignment posture. Option B — a small flat monthly platform-access fee in exchange for the lower performance share, a modest fixed floor. Either captures allocation to the same strategies; the choice is about whether you prefer full alignment or a small fixed component. Co-invest and asymmetric structures (where Odum provides skin-in-the-game alongside the client's allocation) are available on a bespoke basis for strategies where that alignment shape fits — walked through at contract drafting if relevant to your mandate.",
-      },
-      {
-        title: "Related paths",
-        body: "If you run an FCA-regulated operation and want Odum's permissions over your own activity, see the Regulatory Umbrella briefing at /briefings/regulatory — the reporting surface is shared between IM clients and Umbrella clients because the underlying stack is one. If you generate your own strategy signals and want to use Odum's execution and reporting rather than allocate capital to Odum-run strategies, see the DART Signals-In briefing at /briefings/dart-signals-in.",
+        title: "Fees",
+        body: "Fees are agreed by mandate. The standard posture is performance-linked, with the final structure depending on strategy capacity, liquidity, operational complexity, and whether the client chooses a pure performance-share model or a lower performance-share model with a modest platform-access component. Specific ranges are walked at the second call and confirmed at Commercial Tailoring.",
       },
     ],
     keyMessages: [
-      "Allocation to Odum-run strategies on Odum infrastructure under Odum's FCA permissions — not a third-party wrapper.",
-      "Two structural options with two custody mechanics. SMA: your venue accounts in your own entity name, scoped Odum execute+read keys, no withdrawal authority — capital stays with you. Pooled: share classes in a fund vehicle, fund assets with a qualified third-party custodian (Copper or equivalent), subscriptions + redemptions via Odum portal.",
-      "Custody depends on structure. SMA: your own venue accounts in your own entity name, scoped execute+read keys to Odum — no withdrawal authority, ever. Pooled: qualified third-party custodian (Copper or equivalent) holds fund assets; you subscribe and redeem via the Odum portal, automated via API and UI. Odum Research Ltd — the investment manager — never holds principal under either structure.",
-      "Reporting is the same surface Odum uses internally, filtered by entitlement — share class or SMA partition. Same data, same components, different views.",
-      "Performance share sits in a 30-35% band; no management fee. Platform-fee choice at signing: uplift on performance share (Option A) or small flat monthly access fee (Option B).",
-      "Regulatory cover, compliance, and MLRO are operated inside Odum — not outsourced, not optional. Twelve-month minimum engagement.",
+      "Odum manages selected systematic strategies under FCA permissions.",
+      "Allocators can access strategies through SMA or pooled-fund structures.",
+      "Odum does not custody client assets; custody follows the agreed structure.",
+      "Reporting uses the same operating surface Odum uses internally, filtered by entitlement.",
+      "Fees, capacity, liquidity, and onboarding are agreed mandate by mandate.",
     ],
     nextCall:
-      "The 45-minute second call walks the specific strategies your mandate shape fits, the SMA-versus-Pooled choice against your isolation preference and share-class mechanics, the read-only-key venue setup against your existing venue relationships, and the platform-fee option against your preferred alignment posture.",
+      "The 45-minute second call walks the strategies your mandate shape fits, the SMA-versus-pooled choice against your isolation preference, the venue setup against your existing relationships, and fee structure against the strategies in scope.",
     cta: BOOK_SECOND_CALL,
   },
 ] as const;

@@ -21,7 +21,7 @@ export function FundSmaHierarchyDiagram(): React.JSX.Element {
       aria-labelledby="fund-sma-diagram-title"
     >
       <figcaption id="fund-sma-diagram-title" className="mb-4 text-sm font-semibold text-foreground">
-        Fund / SMA hierarchy
+        Fund and SMA structure
       </figcaption>
 
       <WidgetScroll axes="horizontal" scrollbarSize="thin" className="w-full">
