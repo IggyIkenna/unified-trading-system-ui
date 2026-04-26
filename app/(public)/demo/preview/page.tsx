@@ -522,8 +522,8 @@ export default function DemoPreview() {
               </span>
             </div>
             <Button size="sm" variant="outline" asChild>
-              <Link href="/demo">
-                Request Demo
+              <Link href="/start-your-review">
+                Start Your Review
                 <ArrowRight className="size-4 ml-1" />
               </Link>
             </Button>
