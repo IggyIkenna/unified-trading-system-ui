@@ -262,7 +262,6 @@ function ContactPageContent() {
           <section className="mb-12">
             <div className="mb-3 flex flex-wrap items-center gap-2">
               <Badge variant="outline">Contact</Badge>
-              <Badge variant="outline">FCA 975797</Badge>
             </div>
             <h1 className="text-3xl font-bold tracking-tight md:text-4xl">Contact Odum</h1>
             <p className="mt-4 max-w-2xl text-lg text-muted-foreground">

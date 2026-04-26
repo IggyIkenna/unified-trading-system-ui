@@ -36,7 +36,6 @@ export default function RegulatoryPage() {
           <div className="mb-12">
             <div className="mb-3 flex flex-wrap items-center gap-2">
               <Badge variant="outline">Regulatory Umbrella</Badge>
-              <Badge variant="outline">FCA FRN 975797</Badge>
               <Badge variant="outline">Multi-vehicle mandate</Badge>
             </div>
             <h1 className="text-3xl font-bold">{SERVICE_LABELS.regulatory.marketing}</h1>

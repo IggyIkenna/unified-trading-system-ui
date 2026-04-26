@@ -17,9 +17,6 @@ export default function RegulatoryServicePage() {
             <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-2xl bg-slate-400/10">
               <Shield className="size-8 text-slate-400" />
             </div>
-            <Badge variant="outline" className="mb-4">
-              FCA 975797
-            </Badge>
             <h1 className="text-3xl font-bold">Regulatory Umbrella</h1>
             <p className="mt-2 text-lg text-muted-foreground">
               FCA Appointed Representative services for Professional clients. Operational in weeks, not the 12-24 months

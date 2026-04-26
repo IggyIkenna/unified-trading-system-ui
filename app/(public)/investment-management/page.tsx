@@ -40,9 +40,6 @@ export default function InvestmentManagementPage() {
                 <Term id="im">Investment Management</Term>
               </Badge>
               <Badge variant="outline">
-                <Term id="fca">FCA</Term> 975797
-              </Badge>
-              <Badge variant="outline">
                 <Term id="pooled">Pooled</Term> fund or <Term id="sma">SMA</Term>
               </Badge>
             </div>
@@ -51,9 +48,6 @@ export default function InvestmentManagementPage() {
               Allocate capital to selected systematic strategies managed by Odum across digital assets, traditional
               markets, sports, and prediction markets. The allocator-facing reporting surface is the same one Odum uses
               to run the strategies &mdash; one system, one codebase, partitioned views.
-            </p>
-            <p className="mt-3 text-sm text-muted-foreground">
-              Odum operates as an FCA investment manager under FRN 975797 from <strong>January 2023</strong>.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Button asChild>

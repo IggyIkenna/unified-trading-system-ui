@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, CheckCircle2, Shield, Clock, Video } from "lucide-react";
+import { Calendar, CheckCircle2, Clock, Video } from "lucide-react";
 
 export default function DemoPage() {
   const [submitted, setSubmitted] = React.useState(false);
@@ -91,20 +91,6 @@ export default function DemoPage() {
                     <div>
                       <div className="font-semibold">30 Minute Session</div>
                       <div className="text-sm text-muted-foreground">Efficient use of your time</div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="pt-6">
-                  <div className="flex items-center gap-4">
-                    <div className="size-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                      <Shield className="size-6 text-primary" />
-                    </div>
-                    <div>
-                      <div className="font-semibold">FCA Authorised</div>
-                      <div className="text-sm text-muted-foreground">Reference Number 975797</div>
                     </div>
                   </div>
                 </CardContent>
