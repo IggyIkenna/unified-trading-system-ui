@@ -85,9 +85,12 @@ function IssueLinkDialog({ open, onClose, onIssued }: { open: boolean; onClose: 
   const [evaluationId, setEvaluationId] = useState("");
   const [reviewId, setReviewId] = useState("");
   const [ttlDays, setTtlDays] = useState("30");
+  // Default: send email immediately. Admin can opt out to verify the link
+  // first before forwarding manually through their preferred channel.
+  const [sendEmail, setSendEmail] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [issued, setIssued] = useState<{ url: string } | null>(null);
+  const [issued, setIssued] = useState<{ url: string; emailSent: boolean; emailReason?: string } | null>(null);
 
   if (!open) return null;
 
@@ -101,6 +104,7 @@ function IssueLinkDialog({ open, onClose, onIssued }: { open: boolean; onClose: 
         prospect_email: email.trim(),
         prospect_name: prospectName.trim(),
         persona_profile: personaProfile,
+        send_email: sendEmail,
       };
       if (evaluationId.trim()) body.evaluation_id = evaluationId.trim();
       if (reviewId.trim()) body.review_id = reviewId.trim();
@@ -111,12 +115,23 @@ function IssueLinkDialog({ open, onClose, onIssued }: { open: boolean; onClose: 
         headers,
         body: JSON.stringify(body),
       });
-      const json = (await res.json()) as { ok?: boolean; link?: string; error?: string };
+      const json = (await res.json()) as {
+        ok?: boolean;
+        link?: string;
+        email_sent?: boolean;
+        email_reason?: string;
+        email_skipped?: boolean;
+        error?: string;
+      };
       if (!res.ok || !json.ok) {
         setError(json.error ?? `Request failed (${res.status})`);
         return;
       }
-      setIssued({ url: json.link ?? "" });
+      setIssued({
+        url: json.link ?? "",
+        emailSent: json.email_sent === true,
+        ...(json.email_reason ? { emailReason: json.email_reason } : {}),
+      });
       onIssued();
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
@@ -142,10 +157,23 @@ function IssueLinkDialog({ open, onClose, onIssued }: { open: boolean; onClose: 
 
         {issued ? (
           <div className="space-y-3">
-            <p className="text-sm text-muted-foreground">
-              Link issued. Copy below if you need to share it manually (no email is currently sent for demo-session
-              links — admin shares via the recipient&rsquo;s preferred contact channel).
-            </p>
+            {issued.emailSent ? (
+              <p className="text-sm text-emerald-600">
+                Link issued and email sent to the recipient. Copy below if you also need to share it manually.
+              </p>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                Link issued. Email was{" "}
+                {sendEmail ? (
+                  <span className="text-amber-600 font-medium">
+                    NOT delivered{issued.emailReason ? ` (${issued.emailReason})` : ""}
+                  </span>
+                ) : (
+                  "skipped — copy below and forward manually"
+                )}
+                .
+              </p>
+            )}
             <div className="break-all rounded-md border border-border bg-muted/40 p-3 font-mono text-xs">
               {issued.url}
             </div>
@@ -220,10 +248,25 @@ function IssueLinkDialog({ open, onClose, onIssued }: { open: boolean; onClose: 
                 onChange={(e) => setTtlDays(e.target.value)}
               />
             </div>
+            <label className="flex cursor-pointer items-start gap-2.5 rounded-md border border-border/60 bg-card/30 p-3 text-sm">
+              <input
+                id="ds-send-email"
+                type="checkbox"
+                checked={sendEmail}
+                onChange={(e) => setSendEmail(e.target.checked)}
+                className="mt-0.5"
+              />
+              <span>
+                <span className="font-medium">Email the magic link to the recipient now.</span>
+                <span className="mt-1 block text-xs text-muted-foreground">
+                  Untick to verify the link yourself first and forward manually through your preferred channel.
+                </span>
+              </span>
+            </label>
             {error !== null && <p className="text-sm text-red-600">{error}</p>}
             <div className="flex gap-2 pt-2">
               <Button type="button" onClick={submit} disabled={submitting || !email.trim()}>
-                {submitting ? "Issuing…" : "Issue link"}
+                {submitting ? "Issuing…" : sendEmail ? "Issue link + send email" : "Issue link only"}
               </Button>
               <Button type="button" variant="outline" onClick={onClose} disabled={submitting}>
                 Cancel
