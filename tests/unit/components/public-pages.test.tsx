@@ -1,7 +1,4 @@
-import { readFileSync } from "node:fs";
-import path from "node:path";
-
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import { TestWrapper } from "@/tests/helpers/test-wrapper";
@@ -16,23 +13,11 @@ vi.mock("next/link", () => ({
   default: ({ children, href }: { children: React.ReactNode; href: string }) => <a href={href}>{children}</a>,
 }));
 
-// Public-facing marketing pages were restructured 2026-04 to load static HTML
-// from `public/*.html` into a Shadow DOM via `<MarketingStaticFromFile>`. The
-// previous JSX-component tests broke because:
-//   1. Shadow DOM content is opaque to `screen.getByText` by default.
-//   2. The copy in the static HTML has been updated (e.g. "FCA 975797" now,
-//      not "FCA Authorised (975797)").
-//
-// New strategy: mount the page, assert the shadow-host + client subtree are
-// rendered, then verify the authoritative marketing content by reading the
-// static HTML file directly. That tests both the server-side loader contract
-// AND the actual marketing copy without depending on Shadow-DOM internals.
-
-const HOMEPAGE_HTML_PATH = path.join(process.cwd(), "public", "homepage.html");
-
-function loadHomepageHtml(): string {
-  return readFileSync(HOMEPAGE_HTML_PATH, "utf-8");
-}
+// Public homepage was rebuilt 2026-04-26 as a React composition (Phase 3 of
+// `marketing_site_three_route_consolidation_2026_04_26.plan.md`). It no longer
+// loads `public/homepage.html` via shadow-DOM. Tests now assert the React
+// component tree directly: hero headline, three engagement-route cards, and
+// the canonical CTA strings.
 
 describe("Public pages — homepage shell", () => {
   it("homepage exports a default function component", async () => {
@@ -40,46 +25,58 @@ describe("Public pages — homepage shell", () => {
     expect(typeof mod.default).toBe("function");
   });
 
-  it("homepage renders the marketing shadow host", async () => {
+  it("homepage renders the hero headline + primary CTA", async () => {
     const mod = await import("@/app/(public)/page");
     const Page = mod.default;
-    const { container } = render(<Page />, { wrapper: TestWrapper });
-    // MarketingStaticShadow mounts a host with data-testid="marketing-static-host".
-    // Its shadowRoot is populated by a ref callback; the host itself is always
-    // present once React commits the tree.
-    const host = container.querySelector("[data-testid='marketing-static-host']");
-    expect(host).not.toBeNull();
+    render(<Page />, { wrapper: TestWrapper });
+    expect(
+      screen.getByRole("heading", {
+        level: 1,
+        name: /Systematic strategies and trading infrastructure/i,
+      }),
+    ).toBeDefined();
+    // Two "Start Your Review" CTAs (hero + final) and two "Contact Odum" CTAs.
+    expect(screen.getAllByRole("link", { name: /Start Your Review/i }).length).toBeGreaterThanOrEqual(2);
+    expect(screen.getAllByRole("link", { name: /Contact Odum/i }).length).toBeGreaterThanOrEqual(2);
+  });
+
+  it("renders three engagement-route cards with marketing labels", async () => {
+    const mod = await import("@/app/(public)/page");
+    const Page = mod.default;
+    render(<Page />, { wrapper: TestWrapper });
+    expect(screen.getByText("Odum-Managed Strategies")).toBeDefined();
+    expect(screen.getByText("DART Trading Infrastructure")).toBeDefined();
+    expect(screen.getByText("Regulated Operating Models")).toBeDefined();
   });
 });
 
-describe("Public pages — homepage marketing content (SSOT: public/homepage.html)", () => {
-  it("contains the hero headline", () => {
-    const html = loadHomepageHtml();
-    expect(html).toContain("Odum Research");
-    expect(html.toLowerCase()).toContain("unified trading infrastructure");
+describe("Public pages — homepage CTA discipline (Completion Patch §D)", () => {
+  it("contains canonical primary CTAs", async () => {
+    const mod = await import("@/app/(public)/page");
+    const Page = mod.default;
+    const { container } = render(<Page />, { wrapper: TestWrapper });
+    const text = container.textContent ?? "";
+    expect(text).toContain("Start Your Review");
+    expect(text).toContain("Contact Odum");
   });
 
-  it("references the five asset groups section", () => {
-    const html = loadHomepageHtml();
-    expect(html).toContain("Five asset groups");
-  });
-
-  it("exposes the FCA authorisation number (975797)", () => {
-    const html = loadHomepageHtml();
-    expect(html).toMatch(/FCA[^<]{0,80}975797/);
-  });
-
-  it("lists the expected venue marquee pills", () => {
-    const html = loadHomepageHtml();
-    expect(html).toContain("Binance");
-    expect(html).toContain("OKX");
-    expect(html).toContain("Uniswap V3");
-  });
-
-  it("has Get Started and Book a Demo CTAs", () => {
-    const html = loadHomepageHtml();
-    expect(html).toContain("Get Started");
-    expect(html).toContain("Book a Demo");
+  it("does not use banned CTAs (Completion Patch §D)", async () => {
+    const mod = await import("@/app/(public)/page");
+    const Page = mod.default;
+    const { container } = render(<Page />, { wrapper: TestWrapper });
+    const text = container.textContent ?? "";
+    // "Begin Questionnaire" is allowed only on /start-your-review.
+    expect(text).not.toMatch(/\bGet Started\b/);
+    expect(text).not.toMatch(/\bApply Now\b/);
+    expect(text).not.toMatch(/\bRequest Demo\b/);
+    expect(text).not.toMatch(/\bTake Questionnaire\b/);
+    expect(text).not.toMatch(/\bSign Up\b/);
+    expect(text).not.toMatch(/\bAccess Platform\b/);
+    expect(text).not.toMatch(/\bLaunch Strategy\b/);
+    expect(text).not.toMatch(/\bBegin Questionnaire\b/);
+    // No direct "Book a call" CTA on the homepage (per Phase 3 / Decision §1).
+    expect(text).not.toMatch(/\bBook a call\b/i);
+    expect(text).not.toMatch(/\bBook a Demo\b/i);
   });
 });
 
@@ -101,6 +98,11 @@ describe("Service pages export default functions", () => {
 
   it("who-we-are page exports", async () => {
     const mod = await import("@/app/(public)/who-we-are/page");
+    expect(typeof mod.default).toBe("function");
+  });
+
+  it("start-your-review page exports", async () => {
+    const mod = await import("@/app/(public)/start-your-review/page");
     expect(typeof mod.default).toBe("function");
   });
 });

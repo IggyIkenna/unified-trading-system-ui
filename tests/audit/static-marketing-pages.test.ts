@@ -4,8 +4,10 @@ import { resolve } from "path";
 
 const PUBLIC_DIR = resolve(process.cwd(), "public");
 
+// homepage.html was removed 2026-04-26 (Phase 3 of marketing-site three-route
+// consolidation rebuilt the homepage as a React composition). Tests for the
+// React homepage live in `tests/unit/components/public-pages.test.tsx`.
 const MARKETING_PAGES = [
-  "homepage.html",
   "strategies.html",
   "platform.html",
   "regulatory.html",
@@ -52,18 +54,9 @@ describe("Marketing page content consistency", () => {
     }
   });
 
-  it("homepage contains hero title", () => {
-    expect(pages["homepage.html"]).toContain("FCA-Regulated Investment Manager");
-  });
-
-  it("homepage contains all five asset class references", () => {
-    const hp = pages["homepage.html"];
-    expect(hp).toContain("Crypto Exchanges");
-    expect(hp).toContain("DeFi Protocols");
-    expect(hp).toContain("Traditional Markets");
-    expect(hp).toContain("Sports");
-    expect(hp).toContain("Prediction Markets");
-  });
+  // Homepage hero and asset-class assertions live in
+  // `tests/unit/components/public-pages.test.tsx` now that the homepage is
+  // a React composition.
 
   it("strategies page contains strategy cards", () => {
     // Content is case-loose: the marketing copy uses "Traditional",
@@ -113,14 +106,16 @@ describe("Marketing page content consistency", () => {
     }
   });
 
-  it("total venue count >=100 on homepage and platform pages", () => {
+  it("total venue count >=100 on platform page", () => {
     // Marketing copy uses two inlinings:
-    //   homepage:  "<strong>100+</strong><span>Venues</span>"  (HTML between number and word)
     //   platform:  "across 100+ venues"                          (inline)
     // A `\d+\+` token followed within ~60 chars by the word "venue" is the
     // stable anchor — requiring the `+` avoids grabbing CSS numerics or
     // other digits near unrelated "venue" mentions.
-    for (const name of ["homepage.html", "platform.html"] as const) {
+    // (Homepage venue-count assertions removed when homepage.html became a
+    // React composition; venue scope on the homepage is now intentionally
+    // minimal per Completion Patch §F.)
+    for (const name of ["platform.html"] as const) {
       const html = pages[name];
       const totalVenueMatch = html.match(/(\d+)\+[\s\S]{0,60}?[Vv]enue/);
       expect(totalVenueMatch, `${name} missing "N+ venue" count`).toBeTruthy();

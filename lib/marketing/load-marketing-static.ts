@@ -4,7 +4,9 @@ import { cache } from "react";
 
 /** Public marketing HTML files we allow loading from disk (allowlist). */
 export const MARKETING_STATIC_FILES = [
-  "homepage.html",
+  // homepage.html removed 2026-04-26 — homepage rebuilt as React composition
+  // in `app/(public)/page.tsx` per Phase 3 of the marketing-site three-route
+  // consolidation plan. Keep this comment so future audits don't re-add it.
   "strategies.html",
   "platform.html",
   "signals.html",
@@ -81,10 +83,7 @@ function isAllowedMarketingHeadLink(href: string, rel: string): boolean {
     );
   }
   if (relLower === "stylesheet") {
-    return (
-      hrefLower === "https://fonts.googleapis.com" ||
-      hrefLower.startsWith("https://fonts.googleapis.com/")
-    );
+    return hrefLower === "https://fonts.googleapis.com" || hrefLower.startsWith("https://fonts.googleapis.com/");
   }
   return false;
 }
@@ -176,8 +175,7 @@ export function rewriteMarketingAnchors(html: string): string {
   // Static marketing used contact for "Sign In"; app shell uses /login.
   out = out.replace(
     /<a\b([^>]*)\bhref=(["'])\/contact\2([^>]*)>\s*Sign In\s*</gi,
-    (_m, before: string, q: string, after: string) =>
-      `<a${before}href=${q}/login${q}${after}>Sign In<`,
+    (_m, before: string, q: string, after: string) => `<a${before}href=${q}/login${q}${after}>Sign In<`,
   );
 
   out = out.replace(/\bsrc="(favicon-[^"]+)"/gi, 'src="/$1"');

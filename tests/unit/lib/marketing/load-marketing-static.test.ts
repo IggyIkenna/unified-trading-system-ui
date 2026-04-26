@@ -10,9 +10,17 @@ import {
 
 describe("MARKETING_STATIC_FILES allowlist", () => {
   it("has the expected marketing pages", () => {
-    expect(MARKETING_STATIC_FILES).toContain("homepage.html");
     expect(MARKETING_STATIC_FILES).toContain("strategies.html");
     expect(MARKETING_STATIC_FILES).toContain("platform.html");
+  });
+
+  it("homepage.html removed (now React) but legacy anchor rewrites stay", () => {
+    // Phase 3 of the marketing-site refactor rebuilt the homepage as a React
+    // composition; the static HTML file no longer exists or appears in the
+    // allowlist. The rewrite mapping in `rewriteMarketingAnchors` keeps the
+    // `homepage.html → /` redirect so anchors in other static pages still
+    // resolve correctly.
+    expect(MARKETING_STATIC_FILES).not.toContain("homepage.html");
   });
 });
 

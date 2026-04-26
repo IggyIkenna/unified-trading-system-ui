@@ -31,14 +31,9 @@ const PUBLIC_MARKETING_PATHS = [
 ];
 
 /** Direct `public/*.html` hits (links in static marketing still use these). */
-const PUBLIC_MARKETING_HTML = [
-  "/homepage.html",
-  "/strategies.html",
-  "/platform.html",
-  "/regulatory.html",
-  "/firm.html",
-  "/contact.html",
-];
+// homepage.html removed 2026-04-26 — the React homepage at "/" is the canonical
+// landing now. Other static HTML still ships from `public/` for legacy anchors.
+const PUBLIC_MARKETING_HTML = ["/strategies.html", "/platform.html", "/regulatory.html", "/firm.html", "/contact.html"];
 
 function isStagingPublicPath(pathname: string): boolean {
   if (PUBLIC_MARKETING_PATHS.includes(pathname)) return true;

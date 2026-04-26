@@ -40,7 +40,10 @@ export const SERVICE_LABELS: Record<ServiceKey, ServiceLabel> = {
     slug: "platform",
   },
   signals: {
-    marketing: "DART Trading Infrastructure (signals capability)",
+    // Signals is no longer a top-level public service — it surfaces inside
+    // DART Trading Infrastructure as the signals capability. Kept here for
+    // legal/admin contexts that still reference the line item directly.
+    marketing: "DART signals capability",
     legal: "Odum Signals",
     slug: "signals",
   },

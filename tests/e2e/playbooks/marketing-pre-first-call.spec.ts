@@ -20,11 +20,13 @@ test.describe("pb1 — Marketing pre-first-call", () => {
 
     await expect(page).toHaveTitle(/Odum Research/i);
 
-    const headingsText = await page.locator("h1, h2, h3").allTextContents();
-    const combined = headingsText.join(" ");
-    expect(combined).toMatch(/Invest/);
-    expect(combined).toMatch(/Build & Run|Platform|Data Analytics|DART/);
-    expect(combined).toMatch(/Regulate|Regulatory/);
+    // Phase 3 React rebuild renders the three engagement-route cards with
+    // marketing labels: Odum-Managed Strategies, DART Trading Infrastructure,
+    // Regulated Operating Models.
+    const allText = await page.locator("main").innerText();
+    expect(allText).toMatch(/Odum-Managed Strategies/);
+    expect(allText).toMatch(/DART Trading Infrastructure/);
+    expect(allText).toMatch(/Regulated Operating Models/);
   });
 
   test("top-nav service landings all resolve 200", async ({ page }) => {

@@ -1,12 +1,35 @@
 import type { Metadata } from "next";
-import { MarketingStaticFromFile } from "@/components/marketing/marketing-static-from-file";
+import { HomePageClient } from "./_home-client";
 
+/**
+ * Public homepage — React composition.
+ *
+ * Plan: `marketing_site_three_route_consolidation_2026_04_26.plan.md`,
+ * Phase 3. Replaces the prior `<MarketingStaticFromFile file="homepage.html" />`
+ * shadow-DOM render with a typed React component tree.
+ *
+ * Six sections per Phase 3 § 6:
+ *   1. Hero (single primary CTA: Start Your Review)
+ *   2. Three engagement-route cards (Odum-Managed Strategies / DART /
+ *      Regulated Operating Models)
+ *   3. Why Odum exists (~70 words + link to /our-story)
+ *   4. Six-step engagement journey
+ *   5. Governance and risk (short, serious)
+ *   6. Final CTA (mirror Hero)
+ *
+ * Word budget per Completion Patch §C: 700–1,000 words max.
+ * SEO metadata per Completion Patch §J.
+ * CTA discipline per Completion Patch §D — banned strings: "Get Started",
+ * "Apply Now", "Request Demo", "Take Questionnaire", "Sign Up",
+ * "Access Platform", "Launch Strategy". "Begin Questionnaire" is allowed
+ * only on `/start-your-review`.
+ */
 export const metadata: Metadata = {
-  title: "Odum Research — FCA-Regulated Investment Manager & Trading Platform",
+  title: "Odum Research | Systematic Strategies and Trading Infrastructure",
   description:
-    "Five commercial paths on one regulated operating system: Investment Management, DART Signals-In, DART Full, Odum Signals, and Regulatory Umbrella.",
+    "Odum operates selected systematic strategies and DART Trading Infrastructure for institutional clients, with regulated operating models where appropriate.",
 };
 
 export default function PublicHomePage() {
-  return <MarketingStaticFromFile file="homepage.html" />;
+  return <HomePageClient />;
 }
