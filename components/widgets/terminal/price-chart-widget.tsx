@@ -27,6 +27,8 @@ export function PriceChartWidget(_props: WidgetComponentProps) {
     selectedInstrument,
     isLoading,
     error,
+    loadMoreCandles,
+    isLoadingMoreHistory,
   } = useTerminalData();
 
   if (isLoading) {
@@ -114,7 +116,13 @@ export function PriceChartWidget(_props: WidgetComponentProps) {
                 }>
               }
               indicators={indicatorOverlays as unknown as IndicatorOverlay[]}
+              onLoadMoreLeft={loadMoreCandles}
             />
+            {isLoadingMoreHistory && (
+              <div className="absolute left-2 top-2 z-10 rounded bg-background/80 px-2 py-1 text-nano text-muted-foreground">
+                Loading older history…
+              </div>
+            )}
           </div>
         )}
       </CardContent>

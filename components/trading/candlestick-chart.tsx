@@ -3,7 +3,7 @@
 // CandlestickChart v5.0 - supports candle/line display switching via displayType prop
 import * as React from "react";
 import { createChart, CandlestickSeries, HistogramSeries, LineSeries, AreaSeries, ColorType } from "lightweight-charts";
-import type { IChartApi, ISeriesApi, CandlestickData, Time, LineData } from "lightweight-charts";
+import type { IChartApi, ISeriesApi, CandlestickData, Time, LineData, LogicalRange } from "lightweight-charts";
 import { cn } from "@/lib/utils";
 
 export interface IndicatorOverlay {
@@ -38,6 +38,12 @@ interface CandlestickChartProps {
    * "line" shows an area chart of close prices using the same chart instance — no remount on switch.
    */
   displayType?: "candles" | "line";
+  /**
+   * Fires when the user scrolls close to the left edge (oldest data) — caller is expected
+   * to fetch older candles and prepend them to `data`. Receives the unix-second time of the
+   * currently-oldest loaded candle so the caller can fetch strictly earlier data.
+   */
+  onLoadMoreLeft?: (oldestLoadedTime: number) => void;
 }
 
 export function CandlestickChart({
@@ -47,6 +53,7 @@ export function CandlestickChart({
   className,
   absoluteFill = false,
   displayType = "candles",
+  onLoadMoreLeft,
 }: CandlestickChartProps) {
   /** Layout box — lightweight-charts sets inline px size on the mount node, which breaks `absolute inset-0` stretch. */
   const chartOuterRef = React.useRef<HTMLDivElement>(null);
@@ -181,6 +188,7 @@ export function CandlestickChart({
     const t50 = window.setTimeout(syncSize, 50);
     const t200 = window.setTimeout(syncSize, 200);
 
+    const indicatorMap = indicatorSeriesRef.current;
     return () => {
       window.clearTimeout(t50);
       window.clearTimeout(t200);
@@ -188,12 +196,14 @@ export function CandlestickChart({
       cancelAnimationFrame(rafInner);
       ro.disconnect();
       chart.remove();
-      indicatorSeriesRef.current.clear();
+      indicatorMap.clear();
       // Reset so the next chart instance calls fitContent() on its first data load
       hasInitializedViewRef.current = false;
     };
 
-    // displayType initial value is intentionally captured at mount; subsequent changes handled below
+    // displayType initial value is intentionally captured at mount; subsequent changes
+    // are handled by the dedicated effect below.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [height]);
 
   // Toggle candle/line display without recreating the chart instance
@@ -284,6 +294,34 @@ export function CandlestickChart({
     }
     prevLastBarRef.current = { time: lastD.time, len: validData.length };
   }, [data]);
+
+  // Scroll-back pagination — fire onLoadMoreLeft when the user pans close to the
+  // left edge of loaded data. Debounced to one trigger every ~700ms.
+  const dataRef = React.useRef(data);
+  React.useEffect(() => {
+    dataRef.current = data;
+  }, [data]);
+  React.useEffect(() => {
+    const chart = chartRef.current;
+    if (!chart || !onLoadMoreLeft) return;
+    const ts = chart.timeScale();
+    let lastTrigger = 0;
+    const handler = (range: LogicalRange | null) => {
+      if (!range) return;
+      // range.from goes negative when the visible window extends past the first loaded bar
+      if (range.from > 8) return;
+      const now = Date.now();
+      if (now - lastTrigger < 700) return;
+      lastTrigger = now;
+      const d = dataRef.current;
+      if (d.length === 0) return;
+      onLoadMoreLeft(d[0].time);
+    };
+    ts.subscribeVisibleLogicalRangeChange(handler);
+    return () => {
+      ts.unsubscribeVisibleLogicalRangeChange(handler);
+    };
+  }, [onLoadMoreLeft]);
 
   // Update indicator overlays
   React.useEffect(() => {

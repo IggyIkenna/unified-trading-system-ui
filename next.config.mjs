@@ -72,6 +72,8 @@ const nextConfig = {
     const authBase = process.env.NEXT_PUBLIC_AUTH_URL || "http://localhost:8200";
     const reportingBase = process.env.NEXT_PUBLIC_REPORTING_API_URL || "http://localhost:8014";
     const deploymentBase = process.env.NEXT_PUBLIC_DEPLOYMENT_API_URL || "http://localhost:8004";
+    // unified-trading-api — consolidated gateway absorbing 9 domain APIs.
+    const unifiedApiBase = process.env.NEXT_PUBLIC_UNIFIED_API_URL || "http://localhost:8030";
     // /api/v1/* is intentionally NOT rewritten — those paths are served by
     // the portal's own Admin SDK routes under app/api/v1/*. Same for the
     // /api/auth/* portal-native routes (signup verification, password reset).
@@ -92,6 +94,27 @@ const nextConfig = {
       { source: "/api/cache/:path*", destination: `${deploymentBase}/api/cache/:path*` },
       { source: "/api/capabilities/:path*", destination: `${deploymentBase}/api/capabilities/:path*` },
       { source: "/api/config/:path*", destination: `${deploymentBase}/api/config/:path*` },
+      // unified-trading-api routes (market data, instruments, positions, etc.)
+      { source: "/api/market-data/:path*", destination: `${unifiedApiBase}/market-data/:path*` },
+      { source: "/api/instruments/:path*", destination: `${unifiedApiBase}/instruments/:path*` },
+      { source: "/api/positions/:path*", destination: `${unifiedApiBase}/positions/:path*` },
+      { source: "/api/orders/:path*", destination: `${unifiedApiBase}/orders/:path*` },
+      { source: "/api/alerts/:path*", destination: `${unifiedApiBase}/alerts/:path*` },
+      { source: "/api/risk/:path*", destination: `${unifiedApiBase}/risk/:path*` },
+      { source: "/api/analytics/:path*", destination: `${unifiedApiBase}/analytics/:path*` },
+      { source: "/api/derivatives/:path*", destination: `${unifiedApiBase}/derivatives/:path*` },
+      { source: "/api/execution/:path*", destination: `${unifiedApiBase}/execution/:path*` },
+      { source: "/api/audit/:path*", destination: `${unifiedApiBase}/audit/:path*` },
+      { source: "/api/compliance/:path*", destination: `${unifiedApiBase}/compliance/:path*` },
+      { source: "/api/calendar/:path*", destination: `${unifiedApiBase}/calendar/:path*` },
+      { source: "/api/events/:path*", destination: `${unifiedApiBase}/events/:path*` },
+      { source: "/api/ml/:path*", destination: `${unifiedApiBase}/ml/:path*` },
+      { source: "/api/users/:path*", destination: `${unifiedApiBase}/users/:path*` },
+      { source: "/api/defi/:path*", destination: `${unifiedApiBase}/defi/:path*` },
+      { source: "/api/commodity/:path*", destination: `${unifiedApiBase}/commodity/:path*` },
+      { source: "/api/documents/:path*", destination: `${unifiedApiBase}/documents/:path*` },
+      { source: "/api/chat/:path*", destination: `${unifiedApiBase}/chat/:path*` },
+      { source: "/api/sports/:path*", destination: `${unifiedApiBase}/sports/:path*` },
     ];
   },
 

@@ -38,6 +38,10 @@ export interface TerminalData {
   spread: number;
   spreadBps: number;
   candleData: Array<Record<string, unknown>>;
+  /** Trigger fetching one earlier day of candles and prepending to candleData. No-op while inflight or at history limit. */
+  loadMoreCandles: () => void;
+  /** Whether a scroll-back fetch is currently in flight. */
+  isLoadingMoreHistory: boolean;
   indicatorOverlays: Array<Record<string, unknown>>;
   recentTrades: Array<Record<string, unknown>>;
   ownTrades: Array<Record<string, unknown>>;

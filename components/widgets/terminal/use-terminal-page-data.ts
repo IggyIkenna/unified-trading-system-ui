@@ -5,9 +5,11 @@ import { useInstruments } from "@/hooks/api/use-instruments";
 import { useCandles, useOrderBook, useTickers } from "@/hooks/api/use-market-data";
 import { useBalances, usePositions } from "@/hooks/api/use-positions";
 import { useStrategyPerformance } from "@/hooks/api/use-strategies";
+import { useAuth } from "@/hooks/use-auth";
 import { useTickingNowMs } from "@/hooks/use-ticking-now";
 import { useWebSocket } from "@/hooks/use-websocket";
 import { getOrders, placeMockOrder } from "@/lib/api/mock-trade-ledger";
+import { typedFetch, type GatewayApiResponse } from "@/lib/api/typed-fetch";
 import { MOCK_TERMINAL_EVENTS } from "@/lib/config/services/terminal-events.config";
 import type { Strategy } from "@/lib/mocks/fixtures/strategy-instances";
 import { STRATEGIES } from "@/lib/mocks/fixtures/strategy-instances";
@@ -19,6 +21,22 @@ import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import { bollingerBands, ema, sma } from "@/lib/utils/indicators";
 import * as React from "react";
 import type { TerminalData, TerminalInstrument } from "./terminal-data-context";
+
+// Hard cap on scroll-back history to keep memory bounded and avoid hammering
+// GCS with consecutive empty-day fetches. 30 days back from the initial as_of.
+const MAX_HISTORY_DAYS = 30;
+
+interface RawCandle {
+  time: number;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+  isUp: boolean;
+}
+
+type CandlesApiResponse = GatewayApiResponse<"/api/market-data/candles">;
 
 const DEFAULT_INSTRUMENTS: TerminalInstrument[] = [
   {
@@ -294,6 +312,97 @@ export function useTerminalPageData(): TerminalPageResult {
     asOfParam,
   );
 
+  // Scroll-back pagination — accumulate older days as the user pans the chart left.
+  // Reset whenever the (venue, symbol, timeframe, asOf) chart context changes.
+  const { token } = useAuth();
+  const [olderCandles, setOlderCandles] = React.useState<RawCandle[]>([]);
+  const [isLoadingMoreHistory, setIsLoadingMoreHistory] = React.useState(false);
+  // ISO date (UTC) of the earliest day already fetched. Next page will request
+  // [earliestLoaded - 1 day .. earliestLoaded - 1 day]. Initialised on first useCandles success.
+  const earliestLoadedRef = React.useRef<string | null>(null);
+  const noMoreHistoryRef = React.useRef(false);
+  const inflightRef = React.useRef(false);
+  const initialAsOfRef = React.useRef<string | null>(null);
+
+  React.useEffect(() => {
+    setOlderCandles([]);
+    earliestLoadedRef.current = null;
+    initialAsOfRef.current = asOfParam ?? new Date().toISOString().slice(0, 10);
+    noMoreHistoryRef.current = false;
+    inflightRef.current = false;
+  }, [selectedInstrument?.venue, selectedInstrument?.symbol, timeframe, asOfParam]);
+
+  // Seed earliestLoadedRef from the initial useCandles response so the first
+  // scroll-back fetches the day before that.
+  React.useEffect(() => {
+    if (earliestLoadedRef.current !== null) return;
+    const apiCandles = (candlesApiData as Record<string, unknown> | undefined)?.candles as
+      | Array<{ time: number }>
+      | undefined;
+    if (apiCandles && apiCandles.length > 0) {
+      const oldest = apiCandles.reduce((min, c) => (c.time < min ? c.time : min), apiCandles[0].time);
+      earliestLoadedRef.current = new Date(oldest * 1000).toISOString().slice(0, 10);
+    }
+  }, [candlesApiData]);
+
+  const loadMoreCandles = React.useCallback(() => {
+    if (inflightRef.current || noMoreHistoryRef.current) return;
+    if (isMockDataMode()) return;
+    if (!selectedInstrument) return;
+    const earliest = earliestLoadedRef.current;
+    if (!earliest) return;
+
+    const earliestDate = new Date(`${earliest}T00:00:00Z`);
+    const targetDate = new Date(earliestDate);
+    targetDate.setUTCDate(targetDate.getUTCDate() - 1);
+    const targetStr = targetDate.toISOString().slice(0, 10);
+
+    const initialAsOf = initialAsOfRef.current ?? earliest;
+    const initialDate = new Date(`${initialAsOf}T00:00:00Z`);
+    const daysBack = Math.floor((initialDate.getTime() - targetDate.getTime()) / (1000 * 60 * 60 * 24));
+    if (daysBack > MAX_HISTORY_DAYS) {
+      noMoreHistoryRef.current = true;
+      return;
+    }
+
+    inflightRef.current = true;
+    setIsLoadingMoreHistory(true);
+    const params = new URLSearchParams({
+      venue: selectedInstrument.venue,
+      instrument: selectedInstrument.symbol,
+      timeframe,
+      count: "500",
+      mode: "batch",
+      from_date: targetStr,
+      to_date: targetStr,
+    });
+    typedFetch<CandlesApiResponse>(`/api/market-data/candles?${params.toString()}`, token)
+      .then((result) => {
+        const rows = ((result as Record<string, unknown>).candles as Array<Record<string, unknown>> | undefined) ?? [];
+        // Always advance the pointer so consecutive empty days don't stall scroll-back.
+        earliestLoadedRef.current = targetStr;
+        if (rows.length > 0) {
+          const mapped: RawCandle[] = rows.map((c) => ({
+            time: c.time as number,
+            open: c.open as number,
+            high: c.high as number,
+            low: c.low as number,
+            close: c.close as number,
+            volume: (c.volume as number) ?? 0,
+            isUp: (c.close as number) >= (c.open as number),
+          }));
+          setOlderCandles((prev) => [...mapped, ...prev]);
+        }
+      })
+      .catch(() => {
+        // Don't mark noMoreHistory on transient network errors — let the user retry.
+      })
+      .finally(() => {
+        inflightRef.current = false;
+        setIsLoadingMoreHistory(false);
+      });
+  }, [selectedInstrument, timeframe, token]);
+
   const handleWsMessage = React.useCallback(
     (msg: Record<string, unknown>) => {
       if (msg.instrument === selectedInstrument?.symbol && typeof msg.price === "number") {
@@ -527,7 +636,7 @@ export function useTerminalPageData(): TerminalPageResult {
       ? undefined
       : ((candlesApiData as Record<string, unknown>)?.candles as Array<Record<string, unknown>> | undefined);
     if (apiCandles && Array.isArray(apiCandles) && apiCandles.length > 0) {
-      const mapped = apiCandles
+      const mappedCurrent = apiCandles
         .map((c) => {
           const rawTime = c.time ?? c.timestamp;
           const time =
@@ -547,6 +656,16 @@ export function useTerminalPageData(): TerminalPageResult {
           };
         })
         .filter((c) => Number.isFinite(c.time));
+      // Merge accumulated older pages with the current useCandles result.
+      // Dedupe by time + sort ascending so LWC's setData() gets a clean monotonic series.
+      const seen = new Set<number>();
+      const mapped: RawCandle[] = [];
+      for (const c of [...olderCandles, ...mappedCurrent]) {
+        if (seen.has(c.time)) continue;
+        seen.add(c.time);
+        mapped.push(c);
+      }
+      mapped.sort((a, b) => a.time - b.time);
       if (mapped.length === 0) {
         // intentional fall-through
       } else {
@@ -608,7 +727,16 @@ export function useTerminalPageData(): TerminalPageResult {
       }
     }
     return data;
-  }, [candlesApiData, selectedInstrument.midPrice, timeframe, livePrice, isClient, isMockMode, liveCandle]);
+  }, [
+    candlesApiData,
+    olderCandles,
+    selectedInstrument.midPrice,
+    timeframe,
+    livePrice,
+    isClient,
+    isMockMode,
+    liveCandle,
+  ]);
 
   const indicatorOverlays = React.useMemo(() => {
     if (!candleData || candleData.length === 0) return [];
@@ -798,7 +926,9 @@ export function useTerminalPageData(): TerminalPageResult {
       asks,
       spread,
       spreadBps,
-      candleData: candleData as Array<Record<string, unknown>>,
+      candleData: candleData as unknown as Array<Record<string, unknown>>,
+      loadMoreCandles,
+      isLoadingMoreHistory,
       indicatorOverlays,
       recentTrades: recentTrades as Array<Record<string, unknown>>,
       ownTrades: ownTrades as Array<Record<string, unknown>>,
@@ -847,6 +977,8 @@ export function useTerminalPageData(): TerminalPageResult {
       spread,
       spreadBps,
       candleData,
+      loadMoreCandles,
+      isLoadingMoreHistory,
       indicatorOverlays,
       recentTrades,
       ownTrades,

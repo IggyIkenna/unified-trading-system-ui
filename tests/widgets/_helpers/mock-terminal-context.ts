@@ -93,6 +93,8 @@ export function buildMockTerminalData(overrides: MockTerminalDataOverrides = {})
     spread: overrides.spread ?? 20,
     spreadBps: overrides.spreadBps ?? 3.1,
     candleData: [],
+    loadMoreCandles: vi.fn(),
+    isLoadingMoreHistory: false,
     indicatorOverlays: [],
     recentTrades: overrides.recentTrades ?? defaultTrades,
     ownTrades: overrides.ownTrades ?? [],
