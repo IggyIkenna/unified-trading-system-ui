@@ -314,11 +314,26 @@ export function SiteHeader() {
                   >
                     Sign In
                   </Link>
-                  <Button asChild className="w-full">
-                    <Link href="/start-your-review" onClick={() => setMobileOpen(false)}>
-                      Start Your Review
-                    </Link>
-                  </Button>
+                  {briefingSessionActive ? (
+                    <>
+                      <Button asChild className="w-full">
+                        <Link href="/strategy-evaluation" onClick={() => setMobileOpen(false)}>
+                          Submit Strategy Evaluation
+                        </Link>
+                      </Button>
+                      <Button asChild variant="outline" className="w-full">
+                        <Link href="/contact" onClick={() => setMobileOpen(false)}>
+                          Book a Fit Call
+                        </Link>
+                      </Button>
+                    </>
+                  ) : (
+                    <Button asChild className="w-full">
+                      <Link href="/start-your-review" onClick={() => setMobileOpen(false)}>
+                        Start Your Review
+                      </Link>
+                    </Button>
+                  )}
                 </div>
               )}
             </div>
@@ -352,9 +367,29 @@ export function SiteHeader() {
               <Link href="/login" className="hidden text-sm text-muted-foreground hover:text-foreground xl:block">
                 Sign In
               </Link>
-              <Button size="sm" asChild>
-                <Link href="/start-your-review">Start Your Review</Link>
-              </Button>
+              {/*
+                When the visitor is already past the briefings gate (i.e. they
+                completed the questionnaire and are reading deep dives), the
+                primary header CTA shouldn't keep saying "Start Your Review" —
+                they've already started. Swap to "Submit Strategy Evaluation"
+                with "Book a Fit Call" as a secondary, matching the Next-steps
+                block at the bottom of the briefings hub. Pre-gate the CTA
+                stays "Start Your Review".
+              */}
+              {briefingSessionActive ? (
+                <>
+                  <Link href="/contact" className="hidden text-sm text-muted-foreground hover:text-foreground xl:block">
+                    Book a Fit Call
+                  </Link>
+                  <Button size="sm" asChild>
+                    <Link href="/strategy-evaluation">Submit Strategy Evaluation</Link>
+                  </Button>
+                </>
+              ) : (
+                <Button size="sm" asChild>
+                  <Link href="/start-your-review">Start Your Review</Link>
+                </Button>
+              )}
             </>
           )}
         </div>
