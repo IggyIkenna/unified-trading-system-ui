@@ -315,8 +315,8 @@ export function SiteHeader() {
                     Sign In
                   </Link>
                   <Button asChild className="w-full">
-                    <Link href="/contact" onClick={() => setMobileOpen(false)}>
-                      Book a call
+                    <Link href="/start-your-review" onClick={() => setMobileOpen(false)}>
+                      Start Your Review
                     </Link>
                   </Button>
                 </div>
@@ -353,7 +353,7 @@ export function SiteHeader() {
                 Sign In
               </Link>
               <Button size="sm" asChild>
-                <Link href="/contact">Book a call</Link>
+                <Link href="/start-your-review">Start Your Review</Link>
               </Button>
             </>
           )}
