@@ -535,6 +535,7 @@ export default function StrategyEvaluationFormClient({
     } catch {
       // ignore corrupt storage
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- mount-only
   }, []);
 
   React.useEffect(() => {

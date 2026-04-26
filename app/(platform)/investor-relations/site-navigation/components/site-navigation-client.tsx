@@ -11,6 +11,7 @@ export function SiteNavigationClient() {
       <header className="border-b border-border bg-card/50 px-6 py-4">
         <div className="mx-auto max-w-4xl flex items-center gap-4">
           <Link href="/investor-relations" className="flex items-center gap-2">
+            {/* eslint-disable-next-line @next/next/no-img-element -- 28x28 logo; next/image overhead not justified */}
             <img src="/images/odum-logo.png" alt="Odum Research" className="size-7" />
             <span className="font-bold text-lg tracking-tight">
               ODUM<span className="text-primary">.</span>

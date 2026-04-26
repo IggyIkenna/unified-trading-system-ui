@@ -3,13 +3,7 @@
 import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useIrArchiveMetadata } from "@/hooks/api/use-ir-archive-metadata";
 import { useAuth } from "@/hooks/use-auth";
@@ -40,27 +34,27 @@ const PILLARS: Array<{
   title: string;
   summary: string;
 }> = [
-    {
-      id: 1,
-      title: "How we got here",
-      summary: "History, opportunity, and why Odum now.",
-    },
-    {
-      id: 2,
-      title: "Where we are going",
-      summary: "Roadmap, readiness, and capital trajectory.",
-    },
-    {
-      id: 3,
-      title: "Portal & website concept",
-      summary: "Five paths, auth, and how to navigate the live site.",
-    },
-    {
-      id: 4,
-      title: "DR, security, and stack depth",
-      summary: "Resilience narrative with deep DR deck linked for detail.",
-    },
-  ];
+  {
+    id: 1,
+    title: "How we got here",
+    summary: "History, opportunity, and why Odum now.",
+  },
+  {
+    id: 2,
+    title: "Where we are going",
+    summary: "Roadmap, readiness, and capital trajectory.",
+  },
+  {
+    id: 3,
+    title: "Portal & website concept",
+    summary: "Five paths, auth, and how to navigate the live site.",
+  },
+  {
+    id: 4,
+    title: "DR, security, and stack depth",
+    summary: "Resilience narrative with deep DR deck linked for detail.",
+  },
+];
 
 const PRESENTATIONS: readonly IrDeckPresentation[] = [
   {
@@ -193,8 +187,7 @@ const PRESENTATIONS: readonly IrDeckPresentation[] = [
     id: "archive-readiness-snapshot",
     title: "Archived readiness snapshot",
     subtitle: "Earlier plan narrative",
-    description:
-      "Historical snapshot preserved for archive; substantive updates live in Plan & Longevity.",
+    description: "Historical snapshot preserved for archive; substantive updates live in Plan & Longevity.",
     href: "/investor-relations/plan-presentation",
     icon: CalendarClock,
     color: "from-zinc-500/15 to-zinc-600/5",
@@ -215,10 +208,7 @@ export default function InvestorRelationsPage() {
   const [year, setYear] = React.useState<string>("all");
   const [audience, setAudience] = React.useState<string>("all");
 
-  const mergedPresentations = React.useMemo(
-    () => mergeIrDeckMetadata(PRESENTATIONS, irMeta),
-    [irMeta],
-  );
+  const mergedPresentations = React.useMemo(() => mergeIrDeckMetadata(PRESENTATIONS, irMeta), [irMeta]);
 
   const canAccess = React.useCallback(
     (entitlement: Entitlement) => isAdmin() || isInternal() || hasEntitlement(entitlement),
@@ -258,14 +248,14 @@ export default function InvestorRelationsPage() {
     [audience, year],
   );
 
-  const pillarDecks = (pid: PillarId) =>
-    visiblePresentations.filter((p) => p.pillar === pid && filterDeck(p));
+  const pillarDecks = (pid: PillarId) => visiblePresentations.filter((p) => p.pillar === pid && filterDeck(p));
 
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card/50 px-6 py-4">
         <div className="mx-auto max-w-6xl flex items-center gap-4">
           <Link href="/" className="flex items-center gap-2">
+            {/* eslint-disable-next-line @next/next/no-img-element -- 28x28 logo; next/image overhead not justified */}
             <img src="/images/odum-logo.png" alt="Odum Research" className="size-7" />
             <span className="font-bold text-lg tracking-tight">
               ODUM<span className="text-primary">.</span>
@@ -285,9 +275,8 @@ export default function InvestorRelationsPage() {
           description={
             <p className="text-lg">
               Presentations grouped by narrative pillars, with current versus archive views. Archive requires the{" "}
-              <code className="text-xs">investor-archive</code> entitlement (enabled on the investor demo persona).
-              Live builds merge optional deck metadata from{" "}
-              <code className="text-xs">client-reporting-api</code> (
+              <code className="text-xs">investor-archive</code> entitlement (enabled on the investor demo persona). Live
+              builds merge optional deck metadata from <code className="text-xs">client-reporting-api</code> (
               <code className="text-xs">/api/reporting/investor-relations/archive-metadata</code>
               ).
             </p>
