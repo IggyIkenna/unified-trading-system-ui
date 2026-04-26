@@ -3,6 +3,7 @@
 import { RequireAuth } from "@/components/shell/require-auth";
 import { UnifiedShell } from "@/components/shell/unified-shell";
 import { PersonaGate } from "@/components/platform/persona-gate";
+import { DemoBanner } from "@/components/platform/DemoBanner";
 import { RuntimeModeBadge } from "@/components/runtime-mode-badge";
 import { useAuth } from "@/hooks/use-auth";
 import { useRiskAlertNotifications } from "@/hooks/api/use-risk-alert-notifications";
@@ -19,6 +20,7 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
         <PlatformShellInner>{children}</PlatformShellInner>
       </RequireAuth>
       <RuntimeModeBadge />
+      <DemoBanner />
     </>
   );
 }

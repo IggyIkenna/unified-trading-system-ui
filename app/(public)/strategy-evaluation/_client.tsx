@@ -11,6 +11,7 @@ import { FileUploadField } from "@/components/strategy-evaluation/file-upload-fi
 import { isUploadedFileRef, type UploadedFileRef } from "@/lib/strategy-evaluation/upload";
 import PreStepGate from "./_pre-step-gate";
 import AllocatorWizard, { type AllocatorFormState } from "./_allocator-wizard";
+import { persistSeed, seedFiltersFromQuestionnaire } from "@/lib/questionnaire/seed-catalogue-filters";
 
 interface FormState {
   /**
@@ -757,6 +758,22 @@ export default function StrategyEvaluationFormClient({
       }
       localStorage.removeItem(STORAGE_KEY);
       pendingFilesRef.current.clear();
+      // Funnel Coherence plan Workstream E5 — persist a catalogue seed
+      // computed from the evaluation answers. The signed-in catalogue
+      // and the demo/UAT walkthrough Reality view both hydrate from this
+      // seed. Public flow does NOT redirect into /services/* — the
+      // success state below stays on /strategy-evaluation.
+      try {
+        const seed = seedFiltersFromQuestionnaire({
+          assetGroups: finalForm.assetGroups,
+          instrumentTypes: finalForm.instrumentTypes,
+          allocatorAllowedVenues: finalForm.allocatorAllowedVenues,
+          allocatorLeverageCap: finalForm.allocatorLeverageCap,
+        });
+        persistSeed(seed);
+      } catch (err) {
+        console.error("[strategy-evaluation] persistSeed failed", err);
+      }
       setSubmittedSubmissionId(responseBody.submissionId);
       setSubmitted(true);
     } catch (err: unknown) {

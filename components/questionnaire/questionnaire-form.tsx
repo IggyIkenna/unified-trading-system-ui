@@ -26,6 +26,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { setBriefingSessionActive } from "@/lib/briefings/session";
+import { persistSeed, seedFiltersFromQuestionnaire } from "@/lib/questionnaire/seed-catalogue-filters";
 import type {
   QuestionnaireCategory,
   QuestionnaireEnvelope,
@@ -337,6 +338,21 @@ export function QuestionnaireForm({ returnPath, compact = false }: Questionnaire
     setSubmitting(false);
     if (outcome.success) {
       setBriefingSessionActive();
+      // Funnel Coherence plan Workstream E5 — compute the catalogue seed
+      // from the prospect's answers and persist it (Firestore envelope is
+      // already written by the API; the localStorage seed lets the demo/UAT
+      // walkthrough and the post-signup catalogue hydrate without a fresh
+      // round-trip). DO NOT redirect to /services/* — public users go to
+      // /briefings.
+      try {
+        const seed = seedFiltersFromQuestionnaire({
+          categories: [...state.categories],
+          instrument_types: [...state.instrument_types],
+        });
+        persistSeed(seed);
+      } catch (err) {
+        console.error("[questionnaire] persistSeed failed", err);
+      }
       const paramReturn = searchParams?.get("return");
       const safeParam =
         paramReturn && paramReturn.startsWith("/") && !paramReturn.startsWith("//") ? paramReturn : null;
