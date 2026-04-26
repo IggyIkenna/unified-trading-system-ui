@@ -44,6 +44,8 @@ export interface StrategyReviewDoc {
   readonly email: string;
   readonly prospect_name: string;
   readonly evaluation_id?: string;
+  /** Per-route scaffolding flag — Path A leads with structure; Path B with DART config. */
+  readonly engagementIntent?: "allocator" | "builder";
   readonly createdAt?: string;
   readonly expiresAt?: string;
   readonly revokedAt?: string;
@@ -199,94 +201,194 @@ export default function StrategyReviewClient({ review }: { review: StrategyRevie
         </Card>
       ) : null}
 
-      <section className="space-y-5">
-        <SectionScaffold
-          title="Proposed route hypothesis"
-          description="Which of the three Odum routes we think fits — and why."
-          bullets={[
-            `${SERVICE_LABELS.investment.marketing}, ${SERVICE_LABELS.dart.marketing}, or ${SERVICE_LABELS.regulatory.marketing} — and which fits best`,
-            "Why this hypothesis, given your evaluation answers",
-            "Adjacent routes worth considering or ruling out",
-          ]}
-          {...((review.proposedRouteHypothesis ?? review.proposedOperatingModel)
-            ? { notes: review.proposedRouteHypothesis ?? review.proposedOperatingModel }
-            : {})}
-        />
-
-        <SectionScaffold
-          title="Relevant briefing excerpts"
-          description="Curated paragraphs from the matching pillar briefing — read these before the demo."
-          bullets={[
-            "The pillar briefing most relevant to your route",
-            "Key passages and decisions worth reviewing first",
-            "Supporting links you can revisit during your review window",
-          ]}
-          {...(review.briefingExcerpts ? { notes: review.briefingExcerpts } : {})}
-        />
-
-        <SectionScaffold
-          title="Demo agenda"
-          description="What we'll walk through in the platform walkthrough."
-          bullets={[
-            "The flow we'll follow during the operator-led portion",
-            "What we'll hand over to you for the self-guided review",
-            "Decision points we want your reaction to",
-          ]}
-          {...((review.demoAgenda ?? review.demoPreparation)
-            ? { notes: review.demoAgenda ?? review.demoPreparation }
-            : {})}
-        />
-
-        <SectionScaffold
-          title="Workflows / modules likely to be shown"
-          description="The specific platform surfaces relevant to your evaluation answers."
-          bullets={[
-            "Modules in scope (research, trading, execution, reporting — as relevant)",
-            "Asset groups and instrument types we'll demonstrate against",
-            "Surfaces we'll skip because they aren't relevant to your route",
-          ]}
-          {...((review.workflowsShown ?? review.dartConfiguration)
-            ? { notes: review.workflowsShown ?? review.dartConfiguration }
-            : {})}
-        />
-
-        <SectionScaffold
-          title="Curated examples"
-          description="A small handful of strategies or configurations relevant to your interest. The full catalogue opens later, in Commercial Tailoring."
-          bullets={[
-            "Two or three illustrative strategies aligned to your asset-group and instrument-type preferences",
-            "Maturity stage (paper / live-tiny / live) for each example",
-            "Indicative performance ranges — directional, not final",
-          ]}
-          {...(review.curatedExamples ? { notes: review.curatedExamples } : {})}
-        />
-
-        <SectionScaffold
-          title="Missing-information checklist"
-          description="What we still need from you to make the demo land."
-          bullets={[
-            "Specifics we couldn't fully scope from your evaluation",
-            "Documents, data, or access we'll need before the walkthrough",
-            "Any decisions you should be ready to make on the call",
-          ]}
-          {...((review.missingInformation ?? review.nextSteps)
-            ? { notes: review.missingInformation ?? review.nextSteps }
-            : {})}
-        />
-
-        <SectionScaffold
-          title="Route-specific risks and constraints"
-          description="What you should be ready to discuss — both operational and regulatory."
-          bullets={[
-            "Operational constraints we've identified (capacity, latency, venue, treasury)",
-            "Regulatory wrapper applicability — when relevant to your route",
-            "Pre-conditions we'd want to confirm before live capital",
-          ]}
-          {...((review.routeRisks ?? review.riskReview ?? review.regulatoryPathway)
-            ? { notes: review.routeRisks ?? review.riskReview ?? review.regulatoryPathway }
-            : {})}
-        />
-      </section>
+      {(() => {
+        // Per-route scaffolding (Funnel Coherence plan Workstream C3 + C4):
+        // Path A (allocator) leads with structure-relevant emphasis;
+        // Path B (builder) leads with DART-config-relevant emphasis. Same
+        // 7 sections in both; only ordering + bullet emphasis shifts.
+        const sections: Record<string, React.ReactNode> = {
+          "proposed-route": (
+            <SectionScaffold
+              key="proposed-route"
+              title="Proposed route hypothesis"
+              description={
+                review.engagementIntent === "allocator"
+                  ? "Which structure and route fits your mandate — and why."
+                  : "Which of the three Odum routes we think fits — and why."
+              }
+              bullets={
+                review.engagementIntent === "allocator"
+                  ? [
+                      `${SERVICE_LABELS.investment.marketing} — SMA, pooled fund, or other structure`,
+                      "Why this fits the appetite, constraints, and capital scale you described",
+                      "Adjacent or alternative structures worth considering",
+                    ]
+                  : [
+                      `${SERVICE_LABELS.investment.marketing}, ${SERVICE_LABELS.dart.marketing}, or ${SERVICE_LABELS.regulatory.marketing} — and which fits best`,
+                      "Why this hypothesis, given your evaluation answers",
+                      "Adjacent routes worth considering or ruling out",
+                    ]
+              }
+              {...((review.proposedRouteHypothesis ?? review.proposedOperatingModel)
+                ? { notes: review.proposedRouteHypothesis ?? review.proposedOperatingModel }
+                : {})}
+            />
+          ),
+          "briefing-excerpts": (
+            <SectionScaffold
+              key="briefing-excerpts"
+              title="Relevant briefing excerpts"
+              description="Curated paragraphs from the matching pillar briefing — read these before the demo."
+              bullets={
+                review.engagementIntent === "allocator"
+                  ? [
+                      "Odum-Managed Strategies briefing — the allocator-relevant sections",
+                      "Mandate, structure, and reporting passages worth reviewing",
+                      "Supporting links you can revisit during your review window",
+                    ]
+                  : [
+                      "DART Trading Infrastructure briefing — Signals-In vs Full vs Signals-Out as relevant",
+                      "Key passages and decisions worth reviewing first",
+                      "Supporting links you can revisit during your review window",
+                    ]
+              }
+              {...(review.briefingExcerpts ? { notes: review.briefingExcerpts } : {})}
+            />
+          ),
+          "demo-agenda": (
+            <SectionScaffold
+              key="demo-agenda"
+              title="Demo agenda"
+              description={
+                review.engagementIntent === "allocator"
+                  ? "Reporting and structure surfaces we'll walk through."
+                  : "The DART research / execution / reporting flow we'll walk through."
+              }
+              bullets={
+                review.engagementIntent === "allocator"
+                  ? [
+                      "Reporting surfaces (catalogue, mandate-level perf, illustrative invoices)",
+                      "Structure walkthrough — SMA vs pooled fund operating shape",
+                      "Decision points we want your reaction to (mandate terms, reporting cadence)",
+                    ]
+                  : [
+                      "The flow we'll follow during the operator-led portion",
+                      "What we'll hand over to you for the self-guided review",
+                      "Decision points we want your reaction to",
+                    ]
+              }
+              {...((review.demoAgenda ?? review.demoPreparation)
+                ? { notes: review.demoAgenda ?? review.demoPreparation }
+                : {})}
+            />
+          ),
+          workflows: (
+            <SectionScaffold
+              key="workflows"
+              title="Workflows / modules likely to be shown"
+              description="The specific platform surfaces relevant to your evaluation answers."
+              bullets={
+                review.engagementIntent === "allocator"
+                  ? [
+                      "Strategy catalogue scoped to your asset-group + instrument-type preferences",
+                      "Mandate / fund-level reports and performance views",
+                      "Surfaces we'll skip because they aren't relevant to allocator mandates",
+                    ]
+                  : [
+                      "Modules in scope (research, trading, execution, reporting — as relevant)",
+                      "Asset groups and instrument types we'll demonstrate against",
+                      "Surfaces we'll skip because they aren't relevant to your route",
+                    ]
+              }
+              {...((review.workflowsShown ?? review.dartConfiguration)
+                ? { notes: review.workflowsShown ?? review.dartConfiguration }
+                : {})}
+            />
+          ),
+          "curated-examples": (
+            <SectionScaffold
+              key="curated-examples"
+              title="Curated examples"
+              description="A small handful of strategies or configurations relevant to your interest. The full catalogue opens later, in Commercial Tailoring."
+              bullets={[
+                "Two or three illustrative strategies aligned to your preferences",
+                "Maturity stage (paper / live-tiny / live) for each example",
+                "Indicative performance ranges — directional, not final",
+              ]}
+              {...(review.curatedExamples ? { notes: review.curatedExamples } : {})}
+            />
+          ),
+          "missing-info": (
+            <SectionScaffold
+              key="missing-info"
+              title="Missing-information checklist"
+              description="What we still need from you to make the demo land."
+              bullets={
+                review.engagementIntent === "allocator"
+                  ? [
+                      "Capital timing + scaling specifics we couldn't fully scope",
+                      "Mandate / IPS documents we'd want sight of before the walkthrough",
+                      "Any decisions you should be ready to make on the call",
+                    ]
+                  : [
+                      "Specifics we couldn't fully scope from your evaluation",
+                      "Documents, data, or access we'll need before the walkthrough",
+                      "Any decisions you should be ready to make on the call",
+                    ]
+              }
+              {...((review.missingInformation ?? review.nextSteps)
+                ? { notes: review.missingInformation ?? review.nextSteps }
+                : {})}
+            />
+          ),
+          risks: (
+            <SectionScaffold
+              key="risks"
+              title="Route-specific risks and constraints"
+              description="What you should be ready to discuss — both operational and regulatory."
+              bullets={
+                review.engagementIntent === "allocator"
+                  ? [
+                      "Concentration / drawdown sensitivity given your appetite",
+                      "Mandate constraints (venues, leverage, instrument types)",
+                      "Pre-conditions we'd want to confirm before initial allocation",
+                    ]
+                  : [
+                      "Operational constraints we've identified (capacity, latency, venue, treasury)",
+                      "Regulatory wrapper applicability — when relevant to your route",
+                      "Pre-conditions we'd want to confirm before live capital",
+                    ]
+              }
+              {...((review.routeRisks ?? review.riskReview ?? review.regulatoryPathway)
+                ? { notes: review.routeRisks ?? review.riskReview ?? review.regulatoryPathway }
+                : {})}
+            />
+          ),
+        };
+        // Allocator: structure first, demo agenda focused on reporting,
+        // missing-info before risks. Builder: DART config first, broader
+        // workflows, risks before missing-info.
+        const ALLOCATOR_ORDER = [
+          "proposed-route",
+          "briefing-excerpts",
+          "demo-agenda",
+          "workflows",
+          "curated-examples",
+          "missing-info",
+          "risks",
+        ] as const;
+        const BUILDER_ORDER = [
+          "proposed-route",
+          "briefing-excerpts",
+          "workflows",
+          "demo-agenda",
+          "curated-examples",
+          "risks",
+          "missing-info",
+        ] as const;
+        const order = review.engagementIntent === "allocator" ? ALLOCATOR_ORDER : BUILDER_ORDER;
+        return <section className="space-y-5">{order.map((key) => sections[key])}</section>;
+      })()}
 
       <Card className="border-border/80">
         <CardContent className="flex flex-wrap items-center justify-between gap-4 py-6">

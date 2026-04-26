@@ -86,9 +86,41 @@ async function loadByToken(token: string): Promise<LoadResult> {
     const expiresAt = isoFromTimestamp(data["expiresAt"]);
     const revokedAt = isoFromTimestamp(data["revokedAt"]);
 
-    // Optional v2 content blocks. v1 ships without authored content; the
-    // client renders sectioned scaffolding + admin-supplied notes when present.
+    // Per-route scaffolding (Funnel Coherence plan Workstream C). The
+    // engagementIntent is the load-bearing flag — when present on the
+    // review doc it overrides; when absent we look it up from the linked
+    // strategy_evaluations doc. Path A (allocator) leads with structure;
+    // Path B (builder) leads with DART config.
+    let engagementIntent: "allocator" | "builder" | undefined;
+    const reviewIntent = pickString(data, "engagementIntent");
+    if (reviewIntent === "allocator" || reviewIntent === "builder") {
+      engagementIntent = reviewIntent;
+    } else if (evaluation_id) {
+      try {
+        const evalDoc = await db.collection("strategy_evaluations").doc(evaluation_id).get();
+        if (evalDoc.exists) {
+          const evalIntent = pickString(evalDoc.data() ?? {}, "engagementIntent");
+          if (evalIntent === "allocator" || evalIntent === "builder") {
+            engagementIntent = evalIntent;
+          }
+        }
+      } catch (err) {
+        console.error("[strategy-review/page] failed to load linked evaluation for engagementIntent", err);
+      }
+    }
+
+    // Pre-demo prep fields (Workstream C2 schema). Optional content blocks;
+    // the client renders scaffolded sections when admin prose is absent.
     const notes = pickString(data, "notes");
+    // New section schema (preferred names).
+    const proposedRouteHypothesis = pickString(data, "proposedRouteHypothesis");
+    const briefingExcerpts = pickString(data, "briefingExcerpts");
+    const demoAgenda = pickString(data, "demoAgenda");
+    const workflowsShown = pickString(data, "workflowsShown");
+    const curatedExamples = pickString(data, "curatedExamples");
+    const missingInformation = pickString(data, "missingInformation");
+    const routeRisks = pickString(data, "routeRisks");
+    // Legacy fields preserved as fallbacks for backwards compat.
     const proposedOperatingModel = pickString(data, "proposedOperatingModel");
     const dartConfiguration = pickString(data, "dartConfiguration");
     const regulatoryPathway = pickString(data, "regulatoryPathway");
@@ -101,10 +133,18 @@ async function loadByToken(token: string): Promise<LoadResult> {
       email,
       prospect_name,
       ...(evaluation_id ? { evaluation_id } : {}),
+      ...(engagementIntent ? { engagementIntent } : {}),
       ...(createdAt ? { createdAt } : {}),
       ...(expiresAt ? { expiresAt } : {}),
       ...(revokedAt ? { revokedAt } : {}),
       ...(notes ? { notes } : {}),
+      ...(proposedRouteHypothesis ? { proposedRouteHypothesis } : {}),
+      ...(briefingExcerpts ? { briefingExcerpts } : {}),
+      ...(demoAgenda ? { demoAgenda } : {}),
+      ...(workflowsShown ? { workflowsShown } : {}),
+      ...(curatedExamples ? { curatedExamples } : {}),
+      ...(missingInformation ? { missingInformation } : {}),
+      ...(routeRisks ? { routeRisks } : {}),
       ...(proposedOperatingModel ? { proposedOperatingModel } : {}),
       ...(dartConfiguration ? { dartConfiguration } : {}),
       ...(regulatoryPathway ? { regulatoryPathway } : {}),
