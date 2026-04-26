@@ -284,6 +284,26 @@ const STAGING_USERS = [
       entitlements: ["reporting", "investor-regulatory", "data-pro", "execution-full"],
     },
   },
+  // ── Funnel Coherence walkthrough personas (Phase 5 / Workstream F) ─────
+  // Mirror lib/auth/personas.ts demo-allocator + demo-investor-lp.
+  {
+    email: "demo-allocator@odum-research.co.uk",
+    displayName: "Demo Allocator",
+    password: "OdumIR2026!",
+    claims: {
+      role: "client",
+      entitlements: ["reporting"],
+    },
+  },
+  {
+    email: "demo-investor-lp@odum-research.co.uk",
+    displayName: "Demo Investor / LP",
+    password: "OdumIR2026!",
+    claims: {
+      role: "client",
+      entitlements: ["investor-relations", "reporting"],
+    },
+  },
 ];
 
 async function upsertUser(auth, user) {

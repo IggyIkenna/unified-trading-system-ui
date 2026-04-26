@@ -597,11 +597,81 @@ export const REGISTERED_TILE_SHAPE_IDS: ReadonlySet<string> = new Set(Object.key
 export const REGISTERED_SUBROUTE_SHAPE_IDS: ReadonlySet<string> = new Set(Object.keys(PERSONA_SUBROUTE_SHAPES));
 
 /**
+ * Derive a tile-shape from a user's entitlements when no PERSONA_TILE_SHAPES
+ * entry exists for them.
+ *
+ * Funnel Coherence plan Workstream D1. The strict per-persona separation:
+ *   - Admin / wildcard entitlements → all tiles visible
+ *   - DART entitlements (`data-pro`, `execution-full`, `ml-full`,
+ *     `strategy-full`) → DART tile + Reports tile
+ *   - `investor-relations` (LP) → Investor Relations tile + Reports tile
+ *   - `signals-broadcast` (counterparty) → Odum Signals tile + Reports tile
+ *   - `reporting` only (IM allocator) → Reports tile ONLY
+ *   - Otherwise → conservative default (Reports visible, DART locked)
+ *
+ * The entitlement-derived shape applies ONLY when the persona id is unknown
+ * to PERSONA_TILE_SHAPES. Registered personas keep their explicit shape so
+ * UAT demo bundles can override with intent.
+ */
+function entitlementDerivedShape(entitlements: ReadonlyArray<unknown>): DashboardTileVisibility | null {
+  const flat = new Set<string>();
+  for (const e of entitlements) {
+    if (typeof e === "string") flat.add(e);
+    else if (e && typeof e === "object" && "domain" in e && typeof (e as { domain: unknown }).domain === "string") {
+      flat.add(`${(e as { domain: string }).domain}`);
+    }
+  }
+  // Admin wildcard.
+  if (flat.has("*")) return ALL_VISIBLE_TILE;
+
+  const hasDart =
+    flat.has("data-pro") ||
+    flat.has("execution-full") ||
+    flat.has("ml-full") ||
+    flat.has("strategy-full") ||
+    flat.has("trading-common") ||
+    flat.has("trading-defi");
+  const hasInvestorRelations =
+    flat.has("investor-relations") || flat.has("investor-im") || flat.has("investor-platform");
+  const hasSignalsBroadcast = flat.has("signals-broadcast") || flat.has("signals-counterparty");
+  const hasReporting = flat.has("reporting");
+
+  // IM allocator: reporting only — strict per-persona separation per
+  // Decision 4. NOT DART, NOT Investor Relations, NOT Odum Signals.
+  if (hasReporting && !hasDart && !hasInvestorRelations && !hasSignalsBroadcast) {
+    return tileOverride({ reports: "visible" });
+  }
+
+  // Odum Signals counterparty — Odum Signals tile + Reports.
+  if (hasSignalsBroadcast && !hasDart) {
+    return tileOverride({ "odum-signals": "visible", reports: "visible" });
+  }
+
+  // Investor / LP — Investor Relations tile + Reports.
+  if (hasInvestorRelations && !hasDart && !hasSignalsBroadcast) {
+    return tileOverride({ "investor-relations": "visible", reports: "visible" });
+  }
+
+  // DART user — DART tile + Reports tile.
+  if (hasDart) {
+    return tileOverride({ dart: "visible", reports: "visible" });
+  }
+
+  return null;
+}
+
+/**
  * Resolve the per-persona 5-tile visibility. Falls back to a conservative
  * DART-locked / Reports-visible shape for unknown personas.
+ *
+ * Resolution order:
+ *   1. Registered PERSONA_TILE_SHAPES (UAT/demo bundles override anything).
+ *   2. role === admin/internal → admin shape (all visible).
+ *   3. Entitlement-derived shape (Workstream D1).
+ *   4. Conservative DEFAULT_TILE_SHAPE.
  */
 export function personaDashboardShape(
-  persona: { id?: string; role?: string } | null | undefined,
+  persona: { id?: string; role?: string; entitlements?: ReadonlyArray<unknown> } | null | undefined,
 ): DashboardTileVisibility {
   if (!persona) return DEFAULT_TILE_SHAPE;
   if (persona.id && PERSONA_TILE_SHAPES[persona.id]) {
@@ -609,6 +679,10 @@ export function personaDashboardShape(
   }
   if (persona.role === "admin" || persona.role === "internal") {
     return PERSONA_TILE_SHAPES.admin;
+  }
+  if (persona.entitlements) {
+    const derived = entitlementDerivedShape(persona.entitlements);
+    if (derived) return derived;
   }
   return DEFAULT_TILE_SHAPE;
 }

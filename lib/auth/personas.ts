@@ -189,6 +189,28 @@ export const PERSONAS: readonly AuthPersona[] = [
     description:
       "Reports-only IM client. No DART tile, no investor-relations — just the Reports surface. Use this when demoing the IM allocator's view: monthly P&L, attribution, settlement reconciliation. Distinct from client-im-pooled / client-im-sma which also have investor-relations.",
   },
+  {
+    id: "demo-allocator",
+    email: "demo-allocator@odum-research.co.uk",
+    password: "OdumIR2026!",
+    displayName: "Demo Allocator",
+    role: "client",
+    org: { id: "odum-demo-allocator", name: "Demo Allocator Family Office" },
+    entitlements: ["reporting"],
+    description:
+      "Path A allocator demo persona for the Funnel Coherence walkthrough — investor evaluating Odum-managed strategies (NOT a builder). Entitlements: reporting only. Sees the Reports tile (catalogue + own-account); no DART, no Odum Signals, no Investor Relations. Pair with seeded /strategy-evaluation?path=allocator catalogue_seed for the demo/UAT walkthrough.",
+  },
+  {
+    id: "demo-investor-lp",
+    email: "demo-investor-lp@odum-research.co.uk",
+    password: "OdumIR2026!",
+    displayName: "Demo Investor / LP",
+    role: "client",
+    org: { id: "odum-demo-investor-lp", name: "Demo LP Capital" },
+    entitlements: ["investor-relations", "reporting"],
+    description:
+      "LP / fund-investor demo persona. Sees Investor Relations + Reports tiles only. No DART, no Odum Signals, no admin. Use when demoing the LP-side surfaces (board pack mirror, fund DR, IR briefings) alongside the catalogue / own-account reports.",
+  },
 
   // ── External client demos ─────────────────────────────────────────────
   {
