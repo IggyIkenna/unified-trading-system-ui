@@ -3,27 +3,31 @@
 /**
  * Strategy Review — read-only prospect-specific display.
  *
- * Sections (per plan Phase 5): proposed operating model · DART configuration
- * options · regulatory pathway · risk review · walkthrough follow-up ·
- * next steps.
+ * **Pre-demo prep pack** (NOT a final commercial proposal). The funnel order
+ * is: Eval → Strategy Review → Platform walkthrough → Commercial Tailoring.
+ * This surface lives BEFORE the walkthrough and is meant to set the prospect
+ * up for a relevant demo, not synthesise after one.
  *
- * Note (2026-04-26): journey reorder placed the Platform walkthrough BEFORE
- * Strategy Review (was: Eval → Review → Demo; now: Eval → Walkthrough →
- * Review). The previous "demo preparation" section is now the
- * "walkthrough follow-up" — it captures what we observed during the
- * walkthrough that informs the proposed model.
+ * Sections (per Funnel Coherence plan Workstream C2 / G3):
+ *  1. Proposed route hypothesis
+ *  2. Relevant briefing excerpts
+ *  3. Demo agenda
+ *  4. Workflows / modules likely to be shown
+ *  5. Curated examples (a small handful — NOT the full catalogue)
+ *  6. Missing-information checklist
+ *  7. Route-specific risks and constraints
  *
- * Sectioned heavily — no hard word cap. Each section either renders the
- * admin-supplied notes (when present in the Firestore doc) or a sectioned
- * scaffolding placeholder so the surface always feels structured and
- * institutional.
+ * Each section renders admin-supplied prose when present in the Firestore doc,
+ * or a sectioned "We'll cover" scaffolding when absent — the surface always
+ * feels structured and institutional even before admin authoring.
+ *
+ * Strategy Review MUST NOT show: full strategy catalogue, final pricing, final
+ * contract structure, full signed-in platform, all bespoke combinations. Those
+ * open in Commercial Tailoring (post-walkthrough, operator-led).
  *
  * One-token-two-doors: on mount, calls `setBriefingSessionActive()` so this
  * browser can navigate `/briefings/*` without an additional access-code
  * prompt. The token is the only key required.
- *
- * Catalogue subset display + curated strategy listing are deferred to Strategy
- * Review v2 per plan Decisions §4.
  */
 
 import * as React from "react";
@@ -44,6 +48,15 @@ export interface StrategyReviewDoc {
   readonly expiresAt?: string;
   readonly revokedAt?: string;
   readonly notes?: string;
+  /** Pre-demo prep pack fields (Workstream C2 schema). */
+  readonly proposedRouteHypothesis?: string;
+  readonly briefingExcerpts?: string;
+  readonly demoAgenda?: string;
+  readonly workflowsShown?: string;
+  readonly curatedExamples?: string;
+  readonly missingInformation?: string;
+  readonly routeRisks?: string;
+  /** Legacy fields from Phase 5 schema — render as fallback if new fields absent. */
   readonly proposedOperatingModel?: string;
   readonly dartConfiguration?: string;
   readonly regulatoryPathway?: string;
@@ -145,10 +158,15 @@ export default function StrategyReviewClient({ review }: { review: StrategyRevie
           <Badge variant="secondary">Private to {greetingName}</Badge>
         </div>
         <h1 className="text-3xl font-bold tracking-tight">Your tailored Strategy Review</h1>
+        <p className="text-sm font-medium text-foreground/80">Your tailored pre-demo review.</p>
         <p className="text-sm text-muted-foreground max-w-2xl">
-          Prepared by Odum Research after your strategy evaluation and platform walkthrough. This surface walks through
-          the operating model we&rsquo;d propose, DART configuration choices, regulatory pathway, risk review,
-          walkthrough follow-up, and next steps.
+          Prepared by Odum Research after your Strategy Evaluation. This page sets you up for a relevant platform
+          walkthrough — proposed route, briefing excerpts to read first, demo agenda, workflows we expect to show,
+          curated examples, missing information we still need, and route-specific risks to discuss.
+        </p>
+        <p className="text-xs text-muted-foreground max-w-2xl">
+          This is a pre-demo preparation pack, not a final proposal. Catalogue depth, pricing, and contract shape open
+          in Commercial Tailoring after the walkthrough.
         </p>
         <dl className="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-x-6 gap-y-2 text-xs text-muted-foreground">
           <div>
@@ -183,89 +201,104 @@ export default function StrategyReviewClient({ review }: { review: StrategyRevie
 
       <section className="space-y-5">
         <SectionScaffold
-          title="Proposed operating model"
-          description="The structural shape we recommend for your strategy."
+          title="Proposed route hypothesis"
+          description="Which of the three Odum routes we think fits — and why."
           bullets={[
             `${SERVICE_LABELS.investment.marketing}, ${SERVICE_LABELS.dart.marketing}, or ${SERVICE_LABELS.regulatory.marketing} — and which fits best`,
-            "Capital structure considerations (proprietary, SMA, pooled fund, or open / TBD)",
-            "Counterparty / fund-administration / custody alignment",
-            "Estimated time-to-live with our incubation rebuild",
+            "Why this hypothesis, given your evaluation answers",
+            "Adjacent routes worth considering or ruling out",
           ]}
-          {...(review.proposedOperatingModel ? { notes: review.proposedOperatingModel } : {})}
+          {...((review.proposedRouteHypothesis ?? review.proposedOperatingModel)
+            ? { notes: review.proposedRouteHypothesis ?? review.proposedOperatingModel }
+            : {})}
         />
 
         <SectionScaffold
-          title="DART configuration options"
-          description="Capability bundles, signal capture, execution path, and reporting."
+          title="Relevant briefing excerpts"
+          description="Curated paragraphs from the matching pillar briefing — read these before the demo."
           bullets={[
-            "Signals-In / Full / Counterparty signals — which configuration matches your team",
-            "Asset groups and instrument types in scope",
-            "Execution path — Odum execution, client execution, or hybrid",
-            "Reporting and analytics readiness — what we set up day-one",
+            "The pillar briefing most relevant to your route",
+            "Key passages and decisions worth reviewing first",
+            "Supporting links you can revisit during your review window",
           ]}
-          {...(review.dartConfiguration ? { notes: review.dartConfiguration } : {})}
+          {...(review.briefingExcerpts ? { notes: review.briefingExcerpts } : {})}
         />
 
         <SectionScaffold
-          title="Regulatory pathway"
-          description="How your strategy reaches regulated capital — fund route, advisory, or appointed representative."
+          title="Demo agenda"
+          description="What we'll walk through in the platform walkthrough."
           bullets={[
-            "Whether to ride under our FCA permissions or run as an introducer",
-            "Eligible investor classification and minimum subscription thinking",
-            "Jurisdictional notes for the fund, SMA, or proprietary account",
-            "Compliance review timeline and what we need from you",
+            "The flow we'll follow during the operator-led portion",
+            "What we'll hand over to you for the self-guided review",
+            "Decision points we want your reaction to",
           ]}
-          {...(review.regulatoryPathway ? { notes: review.regulatoryPathway } : {})}
+          {...((review.demoAgenda ?? review.demoPreparation)
+            ? { notes: review.demoAgenda ?? review.demoPreparation }
+            : {})}
         />
 
         <SectionScaffold
-          title="Risk review"
-          description="Strategy-level and execution-level risk controls we&rsquo;d apply."
+          title="Workflows / modules likely to be shown"
+          description="The specific platform surfaces relevant to your evaluation answers."
           bullets={[
-            "Position-sizing, leverage, and drawdown bands",
-            "Execution-risk controls — venue, slippage, fill-quality, counterparty",
-            "Treasury and operational continuity expectations",
-            "Stress scenarios we&rsquo;d test before live capital",
+            "Modules in scope (research, trading, execution, reporting — as relevant)",
+            "Asset groups and instrument types we'll demonstrate against",
+            "Surfaces we'll skip because they aren't relevant to your route",
           ]}
-          {...(review.riskReview ? { notes: review.riskReview } : {})}
+          {...((review.workflowsShown ?? review.dartConfiguration)
+            ? { notes: review.workflowsShown ?? review.dartConfiguration }
+            : {})}
         />
 
         <SectionScaffold
-          title="Walkthrough follow-up"
-          description="What we observed during the platform walkthrough that informs the proposed model."
+          title="Curated examples"
+          description="A small handful of strategies or configurations relevant to your interest. The full catalogue opens later, in Commercial Tailoring."
           bullets={[
-            "Workflows and components that fit your operating reality",
-            "Workflows you flagged as out of scope or low-priority",
-            "Gaps surfaced during the self-guided review",
-            "Open items from the walkthrough we still need to resolve",
+            "Two or three illustrative strategies aligned to your asset-group and instrument-type preferences",
+            "Maturity stage (paper / live-tiny / live) for each example",
+            "Indicative performance ranges — directional, not final",
           ]}
-          {...(review.demoPreparation ? { notes: review.demoPreparation } : {})}
+          {...(review.curatedExamples ? { notes: review.curatedExamples } : {})}
         />
 
         <SectionScaffold
-          title="Next steps"
-          description="What happens after you&rsquo;ve read this, and how to push back."
+          title="Missing-information checklist"
+          description="What we still need from you to make the demo land."
           bullets={[
-            "Schedule a call to walk through the proposed operating model",
-            "Push back on any of the above — we treat this as a working draft",
-            "Sign off on the operating model and we move into the tailored demo",
-            "Or pause and revisit — the link stays valid until it expires",
+            "Specifics we couldn't fully scope from your evaluation",
+            "Documents, data, or access we'll need before the walkthrough",
+            "Any decisions you should be ready to make on the call",
           ]}
-          {...(review.nextSteps ? { notes: review.nextSteps } : {})}
+          {...((review.missingInformation ?? review.nextSteps)
+            ? { notes: review.missingInformation ?? review.nextSteps }
+            : {})}
+        />
+
+        <SectionScaffold
+          title="Route-specific risks and constraints"
+          description="What you should be ready to discuss — both operational and regulatory."
+          bullets={[
+            "Operational constraints we've identified (capacity, latency, venue, treasury)",
+            "Regulatory wrapper applicability — when relevant to your route",
+            "Pre-conditions we'd want to confirm before live capital",
+          ]}
+          {...((review.routeRisks ?? review.riskReview ?? review.regulatoryPathway)
+            ? { notes: review.routeRisks ?? review.riskReview ?? review.regulatoryPathway }
+            : {})}
         />
       </section>
 
       <Card className="border-border/80">
         <CardContent className="flex flex-wrap items-center justify-between gap-4 py-6">
           <div>
-            <h2 className="text-base font-semibold">Ready for the tailored demo?</h2>
+            <h2 className="text-base font-semibold">Ready to book the walkthrough?</h2>
             <p className="text-sm text-muted-foreground">
-              Push back, fill in anything we&rsquo;re missing, or move into the demo.
+              Push back on anything above, fill in what we&rsquo;re missing, or schedule the platform walkthrough.
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
             <Button asChild>
-              <Link href="/contact">Book Tailored Demo</Link>
+              <Link href="/contact">Book Platform Walkthrough</Link>
             </Button>
             <Button variant="outline" asChild>
               <Link href="/strategy-evaluation">Submit Missing Details</Link>

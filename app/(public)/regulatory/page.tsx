@@ -64,13 +64,18 @@ const PROCESS_STEPS: readonly ProcessStep[] = [
   },
   {
     number: "05",
+    title: "Strategy Review",
+    body: "A tailored pre-demo review of your route, requirements, and demo focus.",
+  },
+  {
+    number: "06",
     title: "Platform walkthrough",
     body: "A tailored walkthrough of the relevant workflows and a self-guided fit check.",
   },
   {
-    number: "06",
-    title: "Strategy Review",
-    body: "We present the proposed operating model and next steps.",
+    number: "07",
+    title: "Commercial Tailoring",
+    body: "Deeper catalogue, structure, and contract shape against your specifics.",
   },
 ];
 
@@ -266,7 +271,7 @@ export default function RegulatoryPage() {
             <h3 className="mb-7 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
               How the process works
             </h3>
-            <div className="grid gap-3 md:grid-cols-3 lg:grid-cols-6">
+            <div className="grid gap-3 md:grid-cols-3 lg:grid-cols-7">
               {PROCESS_STEPS.map((step) => (
                 <div
                   key={step.number}

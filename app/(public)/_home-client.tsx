@@ -534,19 +534,19 @@ const ENGAGEMENT_JOURNEY: readonly {
   },
   {
     step: "05",
+    title: "Strategy Review",
+    description: "A tailored pre-demo review of your route, requirements, and demo focus.",
+  },
+  {
+    step: "06",
     title: "Platform walkthrough",
     description:
       "A tailored walkthrough of the relevant workflows, followed by a self-guided review and feedback on fit.",
   },
   {
-    step: "06",
-    title: "Strategy Review",
-    description: "Per-prospect tailored layer: proposed operating model, DART config, and regulatory pathway.",
-  },
-  {
     step: "07",
-    title: "Onboarding",
-    description: "Documentation, custody arrangements, and platform access where applicable.",
+    title: "Commercial Tailoring",
+    description: "Once the demo confirms fit, we open the deeper catalogue, pricing, and contract shape.",
   },
 ] as const;
 

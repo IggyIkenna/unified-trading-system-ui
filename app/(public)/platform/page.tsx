@@ -29,6 +29,50 @@ export const metadata: Metadata = {
     "DART is the infrastructure layer behind Odum's systematic trading activity, available to selected clients who need a controlled path from research to execution, monitoring, and reporting.",
 };
 
+interface ProcessStep {
+  number: string;
+  title: string;
+  body: string;
+}
+
+const PROCESS_STEPS: readonly ProcessStep[] = [
+  {
+    number: "01",
+    title: "Questionnaire",
+    body: "A few minutes. Routes you to the relevant briefing pillar.",
+  },
+  {
+    number: "02",
+    title: "Briefings",
+    body: "Gated material covering DART's structure, mechanics, and scope.",
+  },
+  {
+    number: "03",
+    title: "Initial call",
+    body: "If the briefing lines up, a focused call rather than a generic intro.",
+  },
+  {
+    number: "04",
+    title: "Strategy Evaluation",
+    body: "Structured DDQ covering your strategy, venues, risk, and infrastructure needs.",
+  },
+  {
+    number: "05",
+    title: "Strategy Review",
+    body: "A tailored pre-demo review of your route, requirements, and demo focus.",
+  },
+  {
+    number: "06",
+    title: "Platform walkthrough",
+    body: "A tailored walkthrough of the relevant workflows and a self-guided fit check.",
+  },
+  {
+    number: "07",
+    title: "Commercial Tailoring",
+    body: "Deeper catalogue, pricing, and contract shape against your specifics.",
+  },
+];
+
 interface DartMode {
   id: string;
   modeNumber: string;
@@ -184,6 +228,27 @@ export default function MarketingPlatformPage() {
                   provided inside the appropriate gated or signed-in area.
                 </p>
               </div>
+            </div>
+          </section>
+
+          {/* Process strip — numbered 7-step funnel (parity with /investment-management + /regulatory) */}
+          <section className="pt-24 md:pt-32">
+            <h3 className="mb-7 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+              How the process works
+            </h3>
+            <div className="grid gap-3 md:grid-cols-3 lg:grid-cols-7">
+              {PROCESS_STEPS.map((step) => (
+                <div
+                  key={step.number}
+                  className="flex h-full flex-col rounded-md border border-border/80 bg-card/30 p-5"
+                >
+                  <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-primary/85">
+                    {step.number}
+                  </span>
+                  <span className="mt-2 text-sm font-semibold leading-tight text-foreground">{step.title}</span>
+                  <span className="mt-2 text-xs leading-relaxed text-muted-foreground">{step.body}</span>
+                </div>
+              ))}
             </div>
           </section>
 
