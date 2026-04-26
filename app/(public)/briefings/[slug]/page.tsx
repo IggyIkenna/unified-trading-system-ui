@@ -388,6 +388,27 @@ export default async function BriefingPillarPage({ params }: PageProps) {
             <BriefingNextSteps slug={pillar.slug} />
           </div>
 
+          {/* Developer Documentation — DART-only escape hatch.
+              Investment-management allocators don't typically need backend
+              docs; the link sits here on the DART pillar for builders /
+              trading teams who want to scan the API + integration
+              reference. If an allocator ever requests it we can grant
+              access on a tailored basis. */}
+          {pillar.slug === "dart-trading-infrastructure" && (
+            <section className="scroll-mt-24 space-y-2 border-t border-border/40 pt-8">
+              <h2 className="text-sm font-semibold tracking-wide uppercase text-muted-foreground">
+                Developer documentation
+              </h2>
+              <p className="text-sm text-foreground/85 leading-relaxed max-w-2xl">
+                <Link href="/docs" className="font-medium text-primary hover:underline">
+                  /docs
+                </Link>{" "}
+                &mdash; API and integration reference for teams who want to scan the schema before the fit call. Only
+                relevant if you&rsquo;re going to integrate against DART; allocators can skip.
+              </p>
+            </section>
+          )}
+
           <section id="other-briefings" className="scroll-mt-24 space-y-3 border-t border-border/40 pt-8">
             <h2 className="text-sm font-semibold tracking-wide uppercase text-muted-foreground">Other briefings</h2>
             <ul className="space-y-3 max-w-2xl">
