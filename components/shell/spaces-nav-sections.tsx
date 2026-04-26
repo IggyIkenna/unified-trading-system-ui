@@ -2,11 +2,8 @@
 
 import { LockedItemDialog, type LockedAccessType } from "@/components/shell/locked-item-dialog";
 import { PLATFORM_MARKETING_NAV_LABEL } from "@/components/shell/nav-copy";
-import {
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
+import { SERVICE_LABELS } from "@/lib/copy/service-labels";
+import { DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/use-auth";
 import { useBriefingSession } from "@/lib/briefings/session";
 import { Lock } from "lucide-react";
@@ -16,15 +13,7 @@ import type { ReactNode } from "react";
 const RESEARCH_DOCS_SECTION = "Research & Documentation";
 const CLIENT_ACCESS_SECTION = "Client access";
 
-function GatedSectionLabel({
-  title,
-  hint,
-  locked,
-}: {
-  title: string;
-  hint: string;
-  locked: boolean;
-}) {
+function GatedSectionLabel({ title, hint, locked }: { title: string; hint: string; locked: boolean }) {
   if (!locked) {
     return <DropdownMenuLabel className="text-xs text-muted-foreground">{title}</DropdownMenuLabel>;
   }
@@ -35,10 +24,7 @@ function GatedSectionLabel({
       className="flex cursor-default flex-col gap-1 px-2 py-2 font-normal"
     >
       <span className="flex items-start gap-1.5 text-xs font-medium leading-snug text-muted-foreground">
-        <Lock
-          className="mt-0.5 size-3.5 shrink-0 text-amber-600 dark:text-amber-500"
-          aria-hidden
-        />
+        <Lock className="mt-0.5 size-3.5 shrink-0 text-amber-600 dark:text-amber-500" aria-hidden />
         <span className="min-w-0 text-foreground/85">{title}</span>
       </span>
       <span className="pl-[calc(0.5rem+0.875rem)] text-[10px] font-medium uppercase tracking-wide text-amber-700 dark:text-amber-400">
@@ -70,12 +56,7 @@ function GatedMenuItem({
 
   if (locked) {
     return (
-      <LockedItemDialog
-        href={href}
-        label={label}
-        sectionTitle={sectionTitle}
-        accessType={accessType}
-      >
+      <LockedItemDialog href={href} label={label} sectionTitle={sectionTitle} accessType={accessType}>
         {children}
       </LockedItemDialog>
     );
@@ -83,10 +64,7 @@ function GatedMenuItem({
 
   return (
     <DropdownMenuItem asChild>
-      <Link
-        href={href}
-        className="relative flex w-full cursor-default items-center gap-2"
-      >
+      <Link href={href} className="relative flex w-full cursor-default items-center gap-2">
         <span className="min-w-0 flex-1">{children}</span>
       </Link>
     </DropdownMenuItem>
@@ -107,29 +85,20 @@ export function SpacesNavSections() {
         <Link href="/">Home</Link>
       </DropdownMenuItem>
       <DropdownMenuItem asChild>
-        <Link href="/investment-management">Investment Management</Link>
+        <Link href="/investment-management">{SERVICE_LABELS.investment.marketing}</Link>
       </DropdownMenuItem>
       <DropdownMenuItem asChild>
         <Link href="/platform">{PLATFORM_MARKETING_NAV_LABEL}</Link>
       </DropdownMenuItem>
       <DropdownMenuItem asChild>
-        <Link href="/signals">Odum Signals</Link>
+        <Link href="/signals">{SERVICE_LABELS.signals.marketing}</Link>
       </DropdownMenuItem>
       <DropdownMenuItem asChild>
-        <Link href="/regulatory">Regulatory</Link>
+        <Link href="/regulatory">{SERVICE_LABELS.regulatory.marketing}</Link>
       </DropdownMenuItem>
       <DropdownMenuSeparator />
-      <GatedSectionLabel
-        title={RESEARCH_DOCS_SECTION}
-        hint="Access code required"
-        locked={researchDocsLocked}
-      />
-      <GatedMenuItem
-        href="/briefings"
-        label="Briefings Hub"
-        sectionTitle={RESEARCH_DOCS_SECTION}
-        accessType="code"
-      >
+      <GatedSectionLabel title={RESEARCH_DOCS_SECTION} hint="Access code required" locked={researchDocsLocked} />
+      <GatedMenuItem href="/briefings" label="Briefings Hub" sectionTitle={RESEARCH_DOCS_SECTION} accessType="code">
         Briefings Hub
       </GatedMenuItem>
       <GatedMenuItem
@@ -156,11 +125,7 @@ export function SpacesNavSections() {
        * same code, same screens, narrative-framing differs — see
        * `codex/14-playbooks/cross-cutting/client-reporting.md`.
        */}
-      <GatedSectionLabel
-        title={CLIENT_ACCESS_SECTION}
-        hint="Sign-in required"
-        locked={clientAccessLocked}
-      />
+      <GatedSectionLabel title={CLIENT_ACCESS_SECTION} hint="Sign-in required" locked={clientAccessLocked} />
       <GatedMenuItem
         href="/services/reports/overview"
         label="Client Reporting"

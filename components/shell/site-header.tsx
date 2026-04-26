@@ -2,6 +2,7 @@
 
 import { BriefingSignOutLink } from "@/components/briefings/briefing-signout-link";
 import { PLATFORM_MARKETING_NAV_LABEL } from "@/components/shell/nav-copy";
+import { SERVICE_LABELS, BRIEFING_SLUGS } from "@/lib/copy/service-labels";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -15,13 +16,18 @@ import * as React from "react";
 
 const NAV_HOME = { href: "/", label: "Home" } as const;
 
-// 5-path nav per marketing_site_restructure_2026_04_20 plan M1:
-// Investment Management / DART / Signals / Regulatory / Firm + Contact secondary.
+// Public marketing nav per marketing_site_three_route_consolidation_2026_04_26 plan.
+// Three engagement routes (Odum-Managed Strategies / DART Trading Infrastructure /
+// Regulated Operating Models) + Who We Are + Contact. Display labels via SERVICE_LABELS
+// SSOT (lib/copy/service-labels.ts); URL slugs unchanged.
+//
+// Phase 1 retains five entries with renamed labels; Phase 2 collapses to three by
+// dropping the standalone Odum Signals path (it folds into DART as a capability).
 const NAV_FIVE_PATHS = [
-  { href: "/investment-management", label: "Investment Management" },
+  { href: "/investment-management", label: SERVICE_LABELS.investment.marketing },
   { href: "/platform", label: PLATFORM_MARKETING_NAV_LABEL },
-  { href: "/signals", label: "Odum Signals" },
-  { href: "/regulatory", label: "Regulatory" },
+  { href: "/signals", label: SERVICE_LABELS.signals.marketing },
+  { href: "/regulatory", label: SERVICE_LABELS.regulatory.marketing },
   { href: "/who-we-are", label: "Who We Are" },
 ] as const;
 
@@ -42,13 +48,22 @@ const DEEP_DIVE_HEADLINE = [
   { href: "/faq", label: "FAQ" },
 ] as const;
 
+// Briefing pillars consolidated 6 → 3 per marketing_site_three_route_consolidation
+// 2026-04-26 plan Phase 4. Old slugs (`platform`, `dart-full`, `dart-signals-in`,
+// `signals-out`) redirect to `dart-trading-infrastructure`; old `regulatory` redirects
+// to `regulated-operating-models` (next.config.mjs).
+//
+// Phase 1 retains the six legacy entries with renamed labels for consistency with the
+// homepage / engagement-route pages; Phase 4 drops the five DART/regulatory legacy
+// entries once the canonical `dart-trading-infrastructure` + `regulated-operating-models`
+// briefing YAMLs land.
 const DEEP_DIVE_BRIEFINGS = [
-  { href: "/briefings/investment-management", label: "Investment Management" },
-  { href: "/briefings/platform", label: "DART — Start here" },
-  { href: "/briefings/dart-signals-in", label: "DART — Signals In" },
-  { href: "/briefings/dart-full", label: "DART — Full Pipeline" },
-  { href: "/briefings/signals-out", label: "Odum Signals" },
-  { href: "/briefings/regulatory", label: "Regulatory Umbrella" },
+  { href: `/briefings/${BRIEFING_SLUGS.investment}`, label: SERVICE_LABELS.investment.marketing },
+  { href: "/briefings/platform", label: `${SERVICE_LABELS.dart.marketing} — Start here` },
+  { href: "/briefings/dart-signals-in", label: `${SERVICE_LABELS.dart.marketing} — Signals In` },
+  { href: "/briefings/dart-full", label: `${SERVICE_LABELS.dart.marketing} — Full Pipeline` },
+  { href: "/briefings/signals-out", label: SERVICE_LABELS.signals.marketing },
+  { href: "/briefings/regulatory", label: SERVICE_LABELS.regulatory.marketing },
 ] as const;
 
 function isNavItemActive(pathname: string, hash: string, itemHref: string): boolean {
