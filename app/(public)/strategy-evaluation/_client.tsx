@@ -800,24 +800,55 @@ export default function StrategyEvaluationFormClient({
   }
 
   if (submitted) {
+    // First-time submit: the email needs verification + the magic link from
+    // the confirmation email is what unlocks the status page later.
+    // Refile (editingFromToken or previousSubmissionId set): the email was
+    // already verified on the original submission, so the second-time copy
+    // skips the "confirm email" framing and just acknowledges the edit.
+    const isRefile = Boolean(editingFromToken || previousSubmissionId);
     return (
       <div className="max-w-3xl mx-auto px-4 py-12 md:px-6">
         <div className="rounded-xl border border-border bg-card p-8 space-y-4">
           <div className="text-center space-y-2">
-            <Badge variant="outline">Received</Badge>
-            <h1 className="text-2xl font-bold">Thank you — your evaluation has been received.</h1>
+            <Badge variant="outline">{isRefile ? "Updated" : "Received"}</Badge>
+            <h1 className="text-2xl font-bold">
+              {isRefile ? "Your evaluation has been updated." : "Thank you — your evaluation has been received."}
+            </h1>
             <p className="text-muted-foreground">
-              Your evaluation of <span className="font-medium text-foreground">&lsquo;{form.strategyName}&rsquo;</span>{" "}
-              has been received. We&apos;ll review it and be in touch within 3 business days.
+              {isRefile ? (
+                <>
+                  Your edits to <span className="font-medium text-foreground">&lsquo;{form.strategyName}&rsquo;</span>{" "}
+                  are filed alongside the original submission. We&rsquo;ll pick up the latest version on review.
+                </>
+              ) : (
+                <>
+                  Your evaluation of{" "}
+                  <span className="font-medium text-foreground">&lsquo;{form.strategyName}&rsquo;</span> has been
+                  received. We&apos;ll review it and be in touch within 3 business days.
+                </>
+              )}
             </p>
           </div>
           <div className="rounded-md border border-border/60 bg-card/40 px-4 py-3 text-sm space-y-1">
-            <p className="font-medium">Check your inbox.</p>
-            <p className="text-muted-foreground">
-              We&rsquo;ve sent a confirmation email to <span className="font-medium text-foreground">{form.email}</span>
-              . Click the link inside to confirm your email and view a private status page where you can download your
-              uploaded documents and refile if anything needs to change.
-            </p>
+            {isRefile ? (
+              <>
+                <p className="font-medium">Your status page</p>
+                <p className="text-muted-foreground">
+                  Use the magic link in your original confirmation email to view or edit the submission again. It
+                  remains valid &mdash; we don&rsquo;t re-send a new link on every edit.
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="font-medium">Check your inbox.</p>
+                <p className="text-muted-foreground">
+                  We&rsquo;ve sent a confirmation email to{" "}
+                  <span className="font-medium text-foreground">{form.email}</span>. Click the link inside to confirm
+                  your email and view a private status page where you can download your uploaded documents and refile if
+                  anything needs to change.
+                </p>
+              </>
+            )}
             {submittedSubmissionId && (
               <p className="text-xs text-muted-foreground pt-1">
                 Submission ID: <code className="font-mono text-foreground/80">{submittedSubmissionId}</code>
