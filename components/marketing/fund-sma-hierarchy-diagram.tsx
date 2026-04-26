@@ -21,7 +21,7 @@ export function FundSmaHierarchyDiagram(): React.JSX.Element {
       aria-labelledby="fund-sma-diagram-title"
     >
       <figcaption id="fund-sma-diagram-title" className="mb-4 text-sm font-semibold text-foreground">
-        Fund and SMA structure
+        Direct Odum-managed fund / SMA structure
       </figcaption>
 
       <WidgetScroll axes="horizontal" scrollbarSize="thin" className="w-full">
@@ -40,12 +40,15 @@ export function FundSmaHierarchyDiagram(): React.JSX.Element {
             read-only-plus-execute across CeFi venues, TradFi venues, and on-chain wallets.
           </desc>
 
-          {/* ===== Row 1: Odum (Investment Manager) ===== */}
+          {/* ===== Row 1: Odum — Manager of the Strategy ===== */}
+          {/* Wider rect (320 vs 200) to fit the longer label without overflow.
+              Centered on x=480 so the bottom-center connector point (480, 72)
+              still aligns with the existing path 'M 480 72 L 480 100 L ...'. */}
           <g>
             <rect
-              x="380"
+              x="320"
               y="20"
-              width="200"
+              width="320"
               height="52"
               rx="8"
               className="fill-zinc-100 stroke-zinc-400 dark:fill-zinc-800 dark:stroke-zinc-500"
@@ -53,14 +56,14 @@ export function FundSmaHierarchyDiagram(): React.JSX.Element {
             />
             <text
               x="480"
-              y="44"
+              y="42"
               textAnchor="middle"
               className="fill-zinc-900 text-[14px] font-semibold dark:fill-zinc-100"
             >
-              Odum
+              Odum — Manager of the Strategy
             </text>
-            <text x="480" y="62" textAnchor="middle" className="fill-zinc-600 text-[11px] dark:fill-zinc-400">
-              Investment Manager
+            <text x="480" y="60" textAnchor="middle" className="fill-zinc-600 text-[11px] dark:fill-zinc-400">
+              IM where appointed · no custody role
             </text>
           </g>
 
@@ -499,13 +502,11 @@ export function FundSmaHierarchyDiagram(): React.JSX.Element {
       </WidgetScroll>
 
       <p className="mt-4 text-xs text-muted-foreground">
-        Pooled fund and SMA are the two structural options with different custody mechanics. Pooled: fund assets sit
-        with a qualified third-party custodian (Copper or equivalent) under the custodian&apos;s own regulatory
-        permissions; clients hold share classes in the fund, see balances and P&amp;L via the Odum portal, and submit
-        subscriptions and redemptions through the portal API or UI. SMA: client holds their own venue accounts in their
-        own entity name, funds them directly with the venue, and issues Odum scoped execute+read API keys &mdash; no
-        withdrawal authority, ever. Both paths use the same reporting surface; Odum Research Ltd &mdash; the investment
-        manager &mdash; never holds principal.
+        Pooled fund and SMA are the two core access structures, with different custody mechanics. In a pooled structure,
+        investors hold share-class exposure and fund assets sit with a qualified third-party custodian or approved fund
+        route. In an SMA, the client holds venue, broker, or custodian accounts in its own entity name and grants scoped
+        execute-and-read access where agreed. Withdrawal authority is never requested. Both paths use the same reporting
+        surface; Odum manages the strategy layer and does not hold client assets as principal.
       </p>
     </figure>
   );

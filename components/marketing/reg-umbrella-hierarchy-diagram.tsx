@@ -28,7 +28,7 @@ export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
       aria-labelledby="reg-umbrella-diagram-title"
     >
       <figcaption id="reg-umbrella-diagram-title" className="mb-4 text-sm font-semibold text-foreground">
-        Regulatory umbrella hierarchy
+        Example multi-vehicle operating model
       </figcaption>
 
       <WidgetScroll axes="horizontal" scrollbarSize="thin" className="w-full">
@@ -39,7 +39,7 @@ export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
           aria-labelledby="reg-umbrella-svg-title reg-umbrella-svg-desc"
           className="mx-auto block h-auto w-full min-w-[560px] max-w-[960px]"
         >
-          <title id="reg-umbrella-svg-title">Regulatory umbrella hierarchy</title>
+          <title id="reg-umbrella-svg-title">Example multi-vehicle operating model</title>
           <desc id="reg-umbrella-svg-desc">
             A regulatory umbrella client operates a multi-vehicle mandate, orchestrating two sub-funds and one SMA
             underneath. Sub-Fund 1 is pooled with N share classes for N end-investors, Sub-Fund 2 is pooled with M share
@@ -71,7 +71,7 @@ export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
               Multi-vehicle mandate &mdash; N sub-funds + N SMAs
             </text>
             <text x="480" y="76" textAnchor="middle" className="fill-emerald-700 text-[10px] dark:fill-emerald-400">
-              Regulatory posture per mandate shape (Odum-as-IM default; AR optional)
+              Regulatory posture set by mandate shape
             </text>
           </g>
 
@@ -417,10 +417,10 @@ export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
               textAnchor="middle"
               className="fill-amber-900 text-[13px] font-semibold dark:fill-amber-200"
             >
-              Venue API keys &mdash; read-only-plus-execute
+              Venue API keys &mdash; read + execute only
             </text>
             <text x="480" y="422" textAnchor="middle" className="fill-amber-800 text-[11px] dark:fill-amber-300">
-              Same custody model across all sub-entities. Withdrawal permission never requested.
+              No withdrawal permission requested.
             </text>
           </g>
 
@@ -570,12 +570,14 @@ export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
       </WidgetScroll>
 
       <p className="mt-4 text-xs text-muted-foreground">
-        The umbrella client operates a multi-vehicle mandate spanning N sub-funds and N SMAs. Each sub-entity has its
-        own share-class or SMA book and uses the same scoped-venue-key model. Supervisory artefacts &mdash; NAV,
-        attribution, compliance, audit trail &mdash; roll up N-to-one into the umbrella client&apos;s reporting surface
-        (one consolidated pane for MLRO sign-off and regulator response). The hierarchy is identical across the three
-        umbrella mandate shapes (Shape 1, 2, or 3); only the regulatory posture between the umbrella client and Odum
-        differs.
+        A regulated engagement can include multiple sub-funds, share classes, or SMA books. Each book remains separately
+        reported, while NAV, attribution, compliance artefacts, and audit trail roll up into one supervisory view for
+        the client umbrella. Venue access remains scoped by mandate, and withdrawal permission is never requested.
+      </p>
+      <p className="mt-2 text-xs text-muted-foreground">
+        In this model, the reporting hierarchy is separate from the legal appointment chain. Depending on the mandate,
+        Odum may be the appointed investment manager, a delegated trading manager, a sub-adviser, or the infrastructure
+        and reporting provider behind the regulated manager.
       </p>
     </figure>
   );

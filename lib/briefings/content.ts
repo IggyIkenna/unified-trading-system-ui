@@ -61,44 +61,53 @@ export const BRIEFING_PILLARS: readonly BriefingPillar[] = [
   {
     slug: "dart-trading-infrastructure",
     title: "DART Trading Infrastructure",
-    tldr: "DART is the trading infrastructure Odum uses to build, research, execute, and monitor its own systematic strategies. Available to clients across three workflows: client-provided signals (Signals-In), the full research-to-execution pipeline, and Odum-provided signals leased to counterparties.",
+    // Public lobby tone per user review 2026-04-26: let the diagram (where
+    // you sit / where Odum sits / where we meet) carry the boundary, keep
+    // prose short and selective. Eight-field schema detail, exclusivity
+    // legal framing, dashboard taxonomy, and HMAC/credential mechanics
+    // move to the second call.
+    tldr: "{{term:dart|DART}} is the trading stack Odum uses to research, test, execute, monitor, and report systematic strategies.",
     frame:
-      "DART (Data Analytics, Research & Trading) is one operating stack with three engagement shapes. Clients with their own strategy generators send structured instructions in via the eight-field signal schema and Odum runs execution, reconciliation, position tracking, and reporting. Clients building strategies use the full research surface — enriched data, backtest, paper, live-tiny promotion ladder — on the same components Odum's own traders use. Counterparties licensing Odum's strategies receive signals out and execute on their own infrastructure, with delivery health and acknowledgement reporting included. The same component tree powers all three; what differs is the seam between client and Odum.",
+      "Clients can use it in two main ways: send their own signals into Odum's execution and reporting layer, or build and run strategies through the full research-to-execution pipeline. In selected cases, Odum can also deliver its own signals to approved counterparties.",
     sections: [
       {
         title: "Signals-In — your strategy, our execution",
-        body: "Your strategy runs on your infrastructure; structured instructions flow into Odum's execution, reconciliation, and reporting stack. Your code never crosses the wire. Instructions land against the eight-field signal schema (instrument and venue context, side, size, price terms, lifecycle, attribution, identifier, timestamps). Odum runs venue routing, execution, reconciliation, position tracking, and reporting on the receipts. The research and backtest layers stay with your team — DART Signals-In is the execution-and-reporting half only. The 45-minute fit-call walks the schema field-by-field against your upstream and confirms venue / instrument-type compatibility before anything goes live.",
+        body: "Your models and signal generation stay on your side. Odum receives structured instructions, then handles execution, reconciliation, position tracking, and reporting. This route fits teams that already have alpha or decision logic, but want a controlled execution and post-trade layer rather than rebuilding the whole operating stack.",
+        bodyAfter:
+          "The fit call confirms schema compatibility, venues, instruments, and the level of execution control required.",
       },
       {
-        title: "Full pipeline — research-to-execution on the same stack",
-        body: "Research, promote through paper, and run live on the same components Odum uses for its own capital. Enriched data services, backtesting, the strategy catalogue, the maturity ladder (code-audited → backtested → paper → live-tiny → live-allocated), and the promotion ledger are visible end-to-end. Your IP stays yours: the engagement runs under client-exclusivity where appropriate — Odum does not run your strategy on its own book, and other clients do not run it either. Twelve-month minimum engagement; venue / chain / instrument-type packs scope per client.",
+        title: "Full pipeline — research to execution on one stack",
+        body: "Build, test, promote, and run strategies on the same components Odum uses internally. This route fits teams that want access to the full DART environment: data, research, backtesting, paper trading, live promotion, execution, monitoring, and reporting.",
+        bodyAfter:
+          "Where appropriate, client strategy IP is scoped under the agreed commercial relationship and not shared across other client engagements.",
       },
       {
-        title: "Odum-provided signals — counterparty leasing",
-        body: "Where appropriate, DART can supply Odum-generated signals to counterparties who execute on their own infrastructure. The counterparty receives signals; execution stays with the counterparty. Delivery health (HMAC-signed webhooks, retry, observability), acknowledgement reporting, and delivery-vs-intent reconciliation are included. Engagement scope, counterparty fit, and exclusivity / non-exclusivity terms are assessed case by case. Available by separate agreement.",
+        title: "Odum-provided signals — selected counterparty arrangements",
+        // Held back deliberately — Signals-Out is not the central DART
+        // commercial path, so this section is short, lower-weight, and
+        // placed last among the three shapes.
+        body: "In selected cases, Odum may provide signals to counterparties who execute on their own infrastructure. These engagements are assessed case by case and include delivery health, acknowledgement reporting, and reconciliation where applicable.",
       },
       {
-        title: "Risk and governance",
-        body: "DART carries risk and governance overlays appropriate to the engagement: position-balance monitoring, risk-and-exposure checks, instrument and venue eligibility, leverage and concentration ceilings, kill-switches at the execution-service layer. For Signals-In, governance is shape-aware — your strategy controls intent, Odum controls fills. For Full pipeline engagements, the maturity ladder enforces evidence-led promotion (no live capital allocated to a strategy that has not passed paper). For Odum-provided signals, counterparty credentials are managed via API-key reloaders with HMAC signing and shard-level failure isolation. Detailed risk posture and the supervisory artefacts available per engagement are walked at the second call.",
-      },
-      {
-        title: "Dashboard, API, and reporting",
-        body: "Day-to-day work runs in the authenticated platform: the post-login services portal (dashboard, data, research, trading, observe, reports — sliced to your entitlements). The same operations are available programmatically where we ship endpoints: the Unified Trading API and service REST APIs documented at /docs. Reporting carries the same shape across all three workflows: positions, P&L attribution by factor, reconciliation, delivery health (for Signals workflows), audit trail, compliance artefacts.",
+        title: "Risk, governance, and reporting",
+        body: "Risk controls operate at the execution layer across the three shapes: position monitoring, instrument and venue eligibility, leverage and concentration limits, and kill-switches. Day-to-day work runs in the authenticated platform; equivalent operations are exposed programmatically via the Unified Trading API and service REST endpoints. Reporting carries the same shape across the three workflows — positions, P&L attribution, reconciliation, delivery health, audit trail, and compliance artefacts.",
       },
       {
         title: "Commitment floor",
-        body: "Twelve-month minimum engagement across all three DART shapes. The floor reflects real provisioning costs — legal review, venue onboarding, per-client API-key issuance, reconciliation setup, schema fit-check (Signals-In), promotion-ladder onboarding (Full), counterparty credential setup (Signals-Out). Pricing is per block — venue packs, chain packs, instrument-type packs — mixable across the three shapes. Specific numbers walked at the second call.",
+        body: "Twelve-month minimum engagement across the three DART shapes — onboarding, venue provisioning, and per-client setup are real costs the floor recovers. Pricing is per block (venue packs, chain packs, instrument-type packs), mixable across shapes; specific numbers are walked through at the second call.",
       },
     ],
     keyMessages: [
-      "DART is one operating stack with three engagement shapes — your signals, our pipeline, or our signals.",
-      "Signals-In: your strategy, Odum's execution and reporting via the eight-field schema.",
-      "Full pipeline: research-to-execution on the components Odum uses for its own capital, with client exclusivity where appropriate.",
-      "Odum-provided signals: leased to counterparties under separate agreement, with delivery health and acknowledgement reporting.",
-      "Twelve-month minimum engagement; venue / chain / instrument-type packs scope per client.",
+      "DART is one operating stack with three engagement shapes.",
+      "Signals-In: your models, Odum's execution, reconciliation, and reporting.",
+      "Full pipeline: research-to-execution on the components Odum uses internally; client strategy IP scoped to the engagement where appropriate.",
+      "Odum-provided signals: selected counterparty arrangements, assessed case by case.",
+      "Risk, governance, and reporting are applied consistently across the three shapes.",
+      "Twelve-month minimum engagement; per-block pricing — specifics at the second call.",
     ],
     nextCall:
-      "The 45-minute second call confirms which DART shape fits, walks venue / instrument-type compatibility, scopes the packs your engagement requires, and locks the commitment floor. Specific numbers and operational details are codex-private — not in the briefing — and are walked through at the second call.",
+      "The 45-minute second call confirms which DART shape fits, walks venue and instrument-type compatibility, and scopes the packs your engagement requires. Specific pricing and operational detail are walked through during the call.",
     cta: BOOK_SECOND_CALL,
   },
   {
@@ -111,24 +120,23 @@ export const BRIEFING_PILLARS: readonly BriefingPillar[] = [
     // second call.
     tldr: "Some trading engagements need more than technology. Where appropriate, Odum can help structure selected engagements around governance, supervisory reporting, FCA coverage, SMA routes, affiliate fund pathways, or AR-style arrangements.",
     frame:
-      "The right structure depends on who manages the strategy, where the capital sits, who faces the end client, what permissions are required, and whether the engagement is best handled through Odum, the client, or an approved affiliate route. Odum does not custody client capital. Where venue or brokerage access is required, permissions are scoped to the agreed mandate. Withdrawal authority is never requested.",
+      "The right structure depends on who is appointed to manage the mandate, where the capital sits, who faces the end client, what permissions are required, and whether the engagement is best handled directly by Odum, by the client, or through an approved affiliate route. Odum can act as investment manager where appointed, or as delegated trading manager / sub-adviser where another regulated manager or affiliate carries the formal fund role. Odum does not custody client capital. Venue, broker, or wallet permissions are scoped to the mandate, and withdrawal authority is never requested.",
     sections: [
       {
         title: "What this route can cover",
-        // Softened from the previous "Default has Odum as IM of record;
-        // AR-style arrangements available case by case." line — reads as
-        // intelligent structuring rather than forcing one model.
-        body: "In many cases, the simplest route is Odum acting as investment manager where the mandate fits. AR-style or affiliate-supported structures can be considered where the client needs a different operating posture.",
+        body: "In many cases, the simplest route is Odum acting directly as investment manager where the mandate fits. Where a pooled fund, EU-side fund route, client-branded model, or third-party manager is required, Odum can operate as delegated trading manager, sub-adviser, or infrastructure provider while the appointed manager, AIFM, administrator, or client entity carries the relevant formal role.",
         bullets: [
-          "{{strong:Odum as investment manager}} — Odum acts as the investment manager of record where the engagement fits within its permissions and mandate scope.",
-          "{{strong:SMA route}} — The client keeps capital in its own venue, broker, or custodian accounts. Odum may operate scoped read-and-execute access where agreed.",
-          "{{strong:Affiliate fund or AIFM pathway}} — Where a pooled fund or EU-side structure is required, the operating model may involve an approved fund administrator, AIFM, custodian, or affiliate arrangement.",
-          "{{strong:AR-style arrangement}} — Where a client wants to be customer-facing under its own brand, an AR-style structure may be considered case by case. This usually requires more onboarding and regulatory review.",
+          "{{strong:Odum as investment manager}} — Odum acts as investment manager of record where the engagement fits its permissions and mandate scope.",
+          "{{strong:SMA route}} — The client keeps capital in its own venue, broker, or custodian accounts. Odum may operate scoped read-and-execute access where appointed or delegated to trade.",
+          "{{strong:Affiliate fund or AIFM pathway}} — Investors subscribe into a fund, pod, or share-class structure operated by an approved affiliate manager, AIFM, administrator, or fund platform. That manager may appoint or delegate Odum as trading manager, sub-adviser, or strategy operator. The affiliate route handles fund setup, KYC, administration, NAV, custody coordination, and compliance scope; Odum keeps the strategy, trading, reporting, and platform layer where agreed.",
+          "{{strong:AR-style arrangement}} — Where a client wants to be customer-facing under its own brand, an AR-style structure may be considered case by case. This normally requires additional onboarding, compliance review, and role clarity.",
         ],
+        bodyAfter:
+          "In any of these models, the reporting hierarchy is separate from the legal appointment chain. Depending on the mandate, Odum may be the appointed investment manager, a delegated trading manager, a sub-adviser, or the infrastructure / reporting provider behind the regulated manager.",
       },
       {
         title: "Custody and control",
-        body: "The regulated operating model is a governance, permission, and reporting layer. It is not a custody product. For {{term:sma}} arrangements, the client or relevant entity holds the accounts. For pooled structures, assets sit with an appropriate third-party custodian or administrator route. Odum's access, where granted, is scoped to the mandate and does not include withdrawal permissions.",
+        body: "The regulated operating model is a governance, permission, and reporting layer. It is not a custody product. For {{term:sma}} arrangements, the client or relevant entity holds the accounts. For pooled or affiliate fund structures, assets sit with the relevant fund, custodian, administrator, or affiliate platform route. Odum may operate the strategy or trading layer, but custody and fund administration sit with the appointed fund-side parties. Odum's access, where granted, is scoped to the mandate and does not include withdrawal permissions.",
       },
       {
         title: "Multi-vehicle reporting",
@@ -136,7 +144,7 @@ export const BRIEFING_PILLARS: readonly BriefingPillar[] = [
       },
       {
         title: "Risk and supervision",
-        body: "Risk controls operate at the execution and reporting layers, regardless of the selected structure. These may include venue eligibility, instrument restrictions, leverage limits, concentration checks, position monitoring, kill-switches, and reconciliation controls. The responsible regulatory role depends on the chosen model. Where Odum is investment manager, Odum carries the relevant supervisory responsibility. Where the client or an affiliate carries the role, the responsibilities are scoped accordingly.",
+        body: "Risk controls operate at the execution and reporting layers, regardless of the selected structure. These may include venue eligibility, instrument restrictions, leverage limits, concentration checks, position monitoring, kill-switches, and reconciliation controls. Where Odum is appointed investment manager, Odum carries the relevant supervisory responsibility for that mandate. Where a client, affiliate manager, AIFM, or fund platform carries the formal role, Odum's responsibility is scoped to the delegated trading, advisory, reporting, or infrastructure function agreed in the documents.",
       },
       {
         title: "Distribution",
@@ -148,7 +156,8 @@ export const BRIEFING_PILLARS: readonly BriefingPillar[] = [
       },
     ],
     keyMessages: [
-      "Fit-driven structure: Odum-as-IM, SMA, affiliate fund, or AR-style.",
+      "Fit-driven structure: Odum-as-IM, SMA, affiliate fund / AIFM pathway, sub-adviser, or AR-style.",
+      "Odum manages the strategy and operating layer; the legal appointment, custody route, and regulatory role depend on the agreed structure.",
       "No custody by Odum.",
       "No withdrawal authority requested.",
       "Multi-vehicle structures can roll into one supervisory view.",
@@ -157,7 +166,7 @@ export const BRIEFING_PILLARS: readonly BriefingPillar[] = [
       "Pricing depends on structure, scope, and onboarding complexity.",
     ],
     nextCall:
-      "Use the second call to resolve the structure against your facts: UK or EU path, SMA or fund, single or multi-vehicle, Odum-as-IM or AR-style, custody route, reporting requirements, and regulatory scope.",
+      "Use the second call to resolve the structure against your facts: UK or EU path, SMA or fund, single or multi-vehicle, Odum-as-IM or affiliate-led with Odum as delegated trading manager / sub-adviser, custody route, reporting requirements, and regulatory scope.",
     cta: BOOK_SECOND_CALL,
   },
   // ── Legacy pillars below — slugs intercepted by next.config.mjs redirects;
@@ -165,15 +174,15 @@ export const BRIEFING_PILLARS: readonly BriefingPillar[] = [
   {
     slug: "investment-management",
     title: "Odum-Managed Strategies",
-    tldr: "Odum allocates client capital to its own systematic strategies under Odum's {{term:fca}} permissions. {{term:allocator}} reporting runs on the same surface Odum uses to operate the book.",
+    tldr: "Odum manages selected systematic strategies for allocators through agreed fund or {{term:sma}} structures. Reporting runs on the same operating surface Odum uses internally, filtered by entitlement.",
     frame:
-      "Odum allocates client capital to selected systematic strategies under Odum's {{term:fca}} permissions. Allocators access the same operating surface Odum uses internally, filtered by mandate, share class, or {{term:sma}} partition. The structure is agreed case by case: a pooled fund for share-class access, or SMA where the client keeps {{term:venue}} accounts in its own name. Odum acts as investment manager; it does not custody client assets under either structure.",
+      "Odum manages selected systematic strategies for allocators through agreed fund or {{term:sma}} structures. Allocators access the same operating surface Odum uses internally, filtered by mandate, share class, or SMA partition. In a direct Odum mandate, Odum acts as investment manager and operates the strategy; custody remains with the agreed {{term:venue}}, broker, custodian, or client-controlled account structure. Odum does not request withdrawal authority and does not hold client assets as principal.",
     sections: [
       {
         title: "Structure: pooled fund or SMA",
-        body: "**Pooled fund:** clients subscribe into a share class. Fund assets sit with a qualified third-party custodian, and each allocator sees only its own share-class NAV, exposure, and P&L. Subscriptions and redemptions are handled through the platform and fund-administration process.",
+        body: "**Pooled fund:** investors hold share-class exposure and fund assets sit with a qualified third-party custodian or approved fund route. Each allocator sees only its own share-class NAV, exposure, and P&L. Subscriptions and redemptions are handled through the platform and fund-administration process.",
         bodyAfter:
-          "**SMA:** the client holds venue accounts in its own entity name and grants Odum scoped execute-and-read access. Capital remains in the client's accounts, and withdrawal permissions are never requested.",
+          "**SMA:** the client holds venue, broker, or custodian accounts in its own entity name and grants Odum scoped execute-and-read access where agreed. Capital remains with the client, and withdrawal authority is never requested. Both paths use the same reporting surface; Odum manages the strategy layer and does not hold client assets as principal.",
       },
       {
         title: "The strategy surface",
@@ -193,9 +202,10 @@ export const BRIEFING_PILLARS: readonly BriefingPillar[] = [
       },
     ],
     keyMessages: [
-      "Odum manages selected systematic strategies under FCA permissions.",
-      "Allocators can access strategies through SMA or pooled-fund structures.",
+      "Odum manages selected systematic strategies for allocator mandates.",
+      "Allocators can access strategies through direct SMA, pooled-fund, or approved affiliate structures where applicable.",
       "Odum does not custody client assets; custody follows the agreed structure.",
+      "Odum manages the strategy and operating layer; the legal appointment, custody route, and regulatory role depend on the agreed structure.",
       "Reporting uses the same operating surface Odum uses internally, filtered by entitlement.",
       "Fees, capacity, liquidity, and onboarding are agreed mandate by mandate.",
     ],
