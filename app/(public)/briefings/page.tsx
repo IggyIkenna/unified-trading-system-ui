@@ -52,6 +52,20 @@ export default function BriefingsHubPage() {
         cta={{ label: "Book a Fit Call", href: CALENDLY_URL }}
       />
 
+      {/* Skip-ahead affordance — for prospects who already know what they want
+          and don't need to read three briefings before being specific. Tier
+          1 → Tier 2 escape hatch placed near the hero so it's visible
+          without scrolling past the pillar grid. */}
+      <p className="text-xs text-muted-foreground">
+        Already know what fits?{" "}
+        <Link
+          href="/strategy-evaluation"
+          className="font-medium text-foreground underline decoration-muted-foreground/50 underline-offset-2 hover:decoration-foreground"
+        >
+          Skip ahead to Strategy Evaluation &rarr;
+        </Link>
+      </p>
+
       <section className="space-y-4">
         <h2 className="text-sm font-semibold tracking-wide uppercase text-muted-foreground">The commercial paths</h2>
         <div className="grid gap-6 md:grid-cols-2">

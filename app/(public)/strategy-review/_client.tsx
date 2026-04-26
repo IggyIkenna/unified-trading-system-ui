@@ -251,15 +251,17 @@ export default function StrategyReviewClient({ review }: { review: StrategyRevie
       <Card className="border-border/80">
         <CardContent className="flex flex-wrap items-center justify-between gap-4 py-6">
           <div>
-            <h2 className="text-base font-semibold">Ready to talk this through?</h2>
-            <p className="text-sm text-muted-foreground">Reply to your email thread, or jump straight to a call.</p>
+            <h2 className="text-base font-semibold">Ready for the tailored demo?</h2>
+            <p className="text-sm text-muted-foreground">
+              Push back, fill in anything we&rsquo;re missing, or move into the demo.
+            </p>
           </div>
           <div className="flex flex-wrap gap-3">
             <Button asChild>
-              <Link href="/contact">Book a call</Link>
+              <Link href="/contact">Book Tailored Demo</Link>
             </Button>
             <Button variant="outline" asChild>
-              <a href="mailto:info@odum-research.com">Email us</a>
+              <Link href="/strategy-evaluation">Submit Missing Details</Link>
             </Button>
           </div>
         </CardContent>
