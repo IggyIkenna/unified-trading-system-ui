@@ -123,8 +123,8 @@ export default function MarketingPlatformPage() {
           </div>
 
           {/* DART capabilities — three-card grid */}
-          <section className="mt-24">
-            <div className="mb-10 text-center">
+          <section className="pt-28 md:pt-32">
+            <div className="mb-12 text-center">
               <h2 className="text-2xl font-semibold tracking-tight">DART capabilities</h2>
               <p className="mx-auto mt-3 max-w-2xl text-sm text-muted-foreground">
                 DART can support client-provided signals, Odum-provided signals, or hybrid workflows depending on the
@@ -167,25 +167,28 @@ export default function MarketingPlatformPage() {
           </section>
 
           {/* Dashboard + API access — compact two-column row */}
-          <section className="mt-24 grid gap-6 rounded-lg border border-border/60 bg-card/30 p-7 md:grid-cols-2 md:gap-10 md:p-8">
-            <div>
-              <h3 className="text-sm font-semibold tracking-wide uppercase text-foreground/85">Dashboard</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                Day-to-day work happens inside the authenticated platform, with access scoped to the agreed engagement.
-              </p>
-            </div>
-            <div>
-              <h3 className="text-sm font-semibold tracking-wide uppercase text-foreground/85">API access</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                Where available, selected workflows can be accessed programmatically. Detailed documentation is provided
-                inside the appropriate gated or signed-in area.
-              </p>
+          <section className="pt-24 md:pt-32">
+            <div className="grid gap-6 rounded-lg border border-border/60 bg-card/30 p-7 md:grid-cols-2 md:gap-10 md:p-8">
+              <div>
+                <h3 className="text-sm font-semibold tracking-wide uppercase text-foreground/85">Dashboard</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  Day-to-day work happens inside the authenticated platform, with access scoped to the agreed
+                  engagement.
+                </p>
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold tracking-wide uppercase text-foreground/85">API access</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  Where available, selected workflows can be accessed programmatically. Detailed documentation is
+                  provided inside the appropriate gated or signed-in area.
+                </p>
+              </div>
             </div>
           </section>
 
           {/* Adjacent engagement routes — two compact cards */}
-          <section className="mt-24">
-            <h3 className="mb-5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          <section className="pt-24 md:pt-32">
+            <h3 className="mb-6 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Adjacent engagement routes
             </h3>
             <div className="grid gap-4 md:grid-cols-2">
@@ -217,7 +220,7 @@ export default function MarketingPlatformPage() {
           </section>
 
           {/* Final CTA band */}
-          <section className="mt-24 rounded-lg border border-border/60 bg-gradient-to-b from-card/60 to-card/30 p-8 text-center md:p-12">
+          <section className="mt-28 rounded-lg border border-border/60 bg-gradient-to-b from-card/60 to-card/30 p-8 text-center md:mt-32 md:p-12">
             <h2 className="text-xl font-semibold tracking-tight md:text-2xl">Ready to understand the right route?</h2>
             <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground md:text-base">
               Start with a short review. We&rsquo;ll route you to the relevant briefing and next step &mdash; DART, an
