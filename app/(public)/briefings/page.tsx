@@ -12,21 +12,19 @@ export const metadata = {
 };
 
 /**
- * Index ordering reflects likely prospect flow:
- *  1. DART Start Here — top-left orientation entry
- *  2. Investment Management — top-right, highest-value commercial path
- *  3. DART Full Pipeline — deepest DART path
- *  4. DART Signals-In — lighter DART path
- *  5. Odum Signals — inverse direction
- *  6. Regulatory Umbrella — narrowest audience
+ * Index ordering — three canonical pillars per
+ * marketing_site_three_route_consolidation_2026_04_26 plan Phase 4.
+ *
+ * Legacy slugs (`platform`, `dart-full`, `dart-signals-in`, `signals-out`,
+ * `regulatory`) are intercepted by 301 redirects in next.config.mjs and never
+ * reach this list. Risk-and-Governance and Working-with-Odum are NOT exposed
+ * as pillars; their content folds into the existing pillars + the
+ * "Working with Odum" inline section below per Decision 6 of the plan.
  */
 const DISPLAY_ORDER: readonly BriefingPillar["slug"][] = [
-  "platform",
   "investment-management",
-  "dart-full",
-  "dart-signals-in",
-  "signals-out",
-  "regulatory",
+  "dart-trading-infrastructure",
+  "regulated-operating-models",
 ];
 
 const ORDERED_PILLARS: readonly BriefingPillar[] = DISPLAY_ORDER.flatMap((slug) => {
@@ -85,35 +83,32 @@ export default function BriefingsHubPage() {
         </p>
       </section>
 
-      {/* Forward CTA — next step after reading the briefings hub. */}
+      {/* Forward CTA — next step after reading the briefings hub. By the time
+          a reader is here they've already submitted the questionnaire (it's
+          the gate that unlocked /briefings/*), so the next steps are the
+          initial call and, optionally, the deeper Strategy Evaluation. */}
       <section className="rounded-lg border border-border bg-card/30 p-6">
         <h2 className="text-sm font-semibold text-foreground">Next steps</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          Ready to onboard? Tell us about your firm in a short invite-only questionnaire so we can pre-configure your
-          path. If you have a strategy to evaluate for incubation or signal integration, submit our strategy evaluation
-          form. Or book a 45-minute call to walk any path against your specifics.
+          You&apos;ve read the deep dives. The natural next step is a 30-minute initial call &mdash; targeted now that
+          you have the context, focused on which products actually fit. If you&rsquo;re ready to be specific on the
+          record, you can also submit our deeper Strategy Evaluation.
         </p>
         <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-          <Link
-            href="/strategy-evaluation"
-            className="inline-flex w-full items-center justify-center rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 sm:w-auto sm:justify-start"
-          >
-            Submit a strategy evaluation →
-          </Link>
-          <Link
-            href="/questionnaire"
-            className="inline-flex w-full items-center justify-center rounded-md border border-border bg-background px-4 py-2.5 text-sm font-medium text-foreground hover:bg-accent sm:w-auto sm:justify-start"
-          >
-            Onboarding questionnaire →
-          </Link>
           <a
             href={CALENDLY_URL}
             target="_blank"
             rel="noopener noreferrer"
+            className="inline-flex w-full items-center justify-center rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 sm:w-auto sm:justify-start"
+          >
+            Book a 30-minute call →
+          </a>
+          <Link
+            href="/strategy-evaluation"
             className="inline-flex w-full items-center justify-center rounded-md border border-border bg-background px-4 py-2.5 text-sm font-medium text-foreground hover:bg-accent sm:w-auto sm:justify-start"
           >
-            Book a call
-          </a>
+            Submit a Strategy Evaluation →
+          </Link>
           <Link
             href="/"
             className="inline-flex w-full items-center justify-center rounded-md border border-border bg-background px-4 py-2.5 text-sm font-medium text-foreground hover:bg-accent sm:w-auto sm:justify-start"
