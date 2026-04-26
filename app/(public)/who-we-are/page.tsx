@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { MarketingStaticFromFile } from "@/components/marketing/marketing-static-from-file";
+import { SERVICE_LABELS } from "@/lib/copy/service-labels";
 
 export const metadata: Metadata = {
-  title: "Who We Are — Odum Research",
+  title: "Who We Are | Odum Research",
   description: "Odum Research: team, mission, and how we work with clients and allocators.",
 };
 
@@ -18,15 +19,16 @@ export default function MarketingWhoWeArePage() {
             <h2 className="text-sm font-semibold text-foreground">Related</h2>
             <ul className="mt-3 space-y-2 text-sm">
               <li>
-                <a
-                  href="https://calendly.com/odum-ikenna"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Link
+                  href="/start-your-review"
                   className="font-medium text-foreground underline-offset-4 hover:underline"
                 >
-                  Book a call
-                </a>
-                <span className="text-muted-foreground"> &mdash; schedule a first call on Calendly.</span>
+                  Start your review
+                </Link>
+                <span className="text-muted-foreground">
+                  {" "}
+                  &mdash; short fit-review questionnaire, then routed to the relevant briefing.
+                </span>
               </li>
               <li>
                 <Link href="/briefings" className="font-medium text-foreground underline-offset-4 hover:underline">
@@ -34,7 +36,7 @@ export default function MarketingWhoWeArePage() {
                 </Link>
                 <span className="text-muted-foreground">
                   {" "}
-                  &mdash; per-path deep-dive briefings behind the light-auth gate.
+                  &mdash; per-route deep-dive briefings behind the light-auth gate.
                 </span>
               </li>
               <li>
@@ -42,29 +44,38 @@ export default function MarketingWhoWeArePage() {
                   href="/investment-management"
                   className="font-medium text-foreground underline-offset-4 hover:underline"
                 >
-                  Investment Management
+                  {SERVICE_LABELS.investment.marketing}
                 </Link>
                 <span className="text-muted-foreground">
                   {" "}
-                  &mdash; allocate capital to Odum-run systematic strategies.
-                </span>
-              </li>
-              <li>
-                <Link href="/regulatory" className="font-medium text-foreground underline-offset-4 hover:underline">
-                  Regulatory Umbrella
-                </Link>
-                <span className="text-muted-foreground">
-                  {" "}
-                  &mdash; operate regulated activity under Odum&apos;s FCA permissions.
+                  &mdash; allocate capital to selected systematic strategies managed by Odum.
                 </span>
               </li>
               <li>
                 <Link href="/platform" className="font-medium text-foreground underline-offset-4 hover:underline">
-                  DART
+                  {SERVICE_LABELS.dart.marketing}
                 </Link>
                 <span className="text-muted-foreground">
                   {" "}
-                  &mdash; Data Analytics, Research &amp; Trading: our operating system, available to clients.
+                  &mdash; the research-to-execution stack we use ourselves, available to clients.
+                </span>
+              </li>
+              <li>
+                <Link href="/regulatory" className="font-medium text-foreground underline-offset-4 hover:underline">
+                  {SERVICE_LABELS.regulatory.marketing}
+                </Link>
+                <span className="text-muted-foreground">
+                  {" "}
+                  &mdash; structure regulated engagements where appropriate; FCA-regulated.
+                </span>
+              </li>
+              <li>
+                <Link href="/contact" className="font-medium text-foreground underline-offset-4 hover:underline">
+                  Contact Odum
+                </Link>
+                <span className="text-muted-foreground">
+                  {" "}
+                  &mdash; general enquiries, press / partnerships, advisor / referral.
                 </span>
               </li>
             </ul>

@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { RegUmbrellaHierarchyDiagram } from "@/components/marketing/reg-umbrella-hierarchy-diagram";
+import { SERVICE_LABELS } from "@/lib/copy/service-labels";
 import { CALENDLY_URL } from "@/lib/marketing/calendly";
 
 /**
@@ -22,9 +23,9 @@ import { CALENDLY_URL } from "@/lib/marketing/calendly";
  *   codex/14-playbooks/playbooks/03-regulatory-umbrella.md
  */
 export const metadata: Metadata = {
-  title: "Regulatory Umbrella — Odum Research",
+  title: `${SERVICE_LABELS.regulatory.marketing} | Odum Research`,
   description:
-    "Operate regulated activity under Odum's FCA permissions (FRN 975797). Multi-fund / SMA umbrella mandate, same custody + reporting model as Investment Management, supervisory artifacts included. Default mandate has Odum as IM of record; appointed-representative route available where you want to be customer-facing IM under your own brand.",
+    "Structure the engagement around the right governance, permissions, reporting, and affiliate pathway where required. FCA-regulated (FRN 975797). Multi-fund / SMA umbrella mandate, same custody and reporting model as Odum-Managed Strategies, supervisory artifacts included. Default has Odum as IM of record; AR-style arrangements available case by case.",
 };
 
 export default function RegulatoryPage() {
@@ -39,11 +40,12 @@ export default function RegulatoryPage() {
               <Badge variant="outline">FCA FRN 975797</Badge>
               <Badge variant="outline">Multi-vehicle mandate</Badge>
             </div>
-            <h1 className="text-3xl font-bold">Regulatory Umbrella</h1>
+            <h1 className="text-3xl font-bold">{SERVICE_LABELS.regulatory.marketing}</h1>
             <p className="mt-4 text-lg text-muted-foreground">
-              Operate regulated activity under Odum&apos;s FCA permissions. Onboarding covers regulatory scope,
-              compliance artefacts, MLRO coverage, and supervisory reporting. The reporting surface is the same
-              component tree Odum uses internally for its own investment management.
+              Some trading engagements require more than technology. Where appropriate, Odum can structure selected
+              engagements around governance, supervisory reporting, FCA coverage, SMA routes, or affiliate fund
+              pathways. The reporting surface is the same component tree Odum uses internally for its own investment
+              management.
             </p>
           </div>
 
@@ -133,9 +135,10 @@ export default function RegulatoryPage() {
           <div className="mb-8 rounded-lg border border-border bg-card/50 p-6">
             <h2 className="text-lg font-semibold">One system, partitioned views</h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              The same dashboards, risk controls, and audit trails serve IM clients that serve the Regulatory Umbrella
-              &mdash; one system, slice-scoped per audience. Regulatory-client views carry an additional supervisory
-              overlay across their own sub-entities, built on the same component tree.
+              The same dashboards, risk controls, and audit trails serve allocators on{" "}
+              {SERVICE_LABELS.investment.marketing} as serve umbrella clients here &mdash; one system, slice-scoped per
+              audience. Umbrella-client views carry an additional supervisory overlay across their own sub-entities,
+              built on the same component tree.
             </p>
           </div>
 
@@ -155,8 +158,8 @@ export default function RegulatoryPage() {
             </p>
             <div className="mt-4 flex flex-wrap justify-center gap-3">
               <Button asChild>
-                <Link href="/briefings/regulatory">
-                  Open Regulatory briefing <ArrowRight className="ml-2 size-4" />
+                <Link href="/briefings/regulated-operating-models">
+                  Open Regulated Operating Models briefing <ArrowRight className="ml-2 size-4" />
                 </Link>
               </Button>
               <Button asChild variant="outline">
@@ -176,23 +179,34 @@ export default function RegulatoryPage() {
                   href="/investment-management"
                   className="font-medium text-foreground underline-offset-4 hover:underline"
                 >
-                  Investment Management
+                  {SERVICE_LABELS.investment.marketing}
                 </Link>
                 <span className="text-muted-foreground">
                   {" "}
-                  &mdash; same custody and reporting model; capital allocated to Odum-run systematic strategies.
+                  &mdash; same custody and reporting model; allocate capital to selected systematic strategies managed
+                  by Odum.
+                </span>
+              </li>
+              <li>
+                <Link href="/platform" className="font-medium text-foreground underline-offset-4 hover:underline">
+                  {SERVICE_LABELS.dart.marketing}
+                </Link>
+                <span className="text-muted-foreground">
+                  {" "}
+                  &mdash; the underlying research-to-execution stack; available on its own without the regulatory
+                  overlay.
                 </span>
               </li>
               <li>
                 <Link
-                  href="/briefings/regulatory"
+                  href="/briefings/regulated-operating-models"
                   className="font-medium text-foreground underline-offset-4 hover:underline"
                 >
-                  Regulatory briefing
+                  Regulated Operating Models briefing
                 </Link>
                 <span className="text-muted-foreground">
                   {" "}
-                  &mdash; regulatory scope, onboarding workstreams, supervisory artefacts in depth.
+                  &mdash; regulatory scope, onboarding workstreams, supervisory artefacts in depth (gated).
                 </span>
               </li>
               <li>
@@ -200,17 +214,6 @@ export default function RegulatoryPage() {
                   Who We Are
                 </Link>
                 <span className="text-muted-foreground"> &mdash; team, operating history, FCA credentials.</span>
-              </li>
-              <li>
-                <a
-                  href="https://calendly.com/odum-ikenna"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-medium text-foreground underline-offset-4 hover:underline"
-                >
-                  Book a call
-                </a>
-                <span className="text-muted-foreground"> &mdash; schedule a regulatory-fit call on Calendly.</span>
               </li>
             </ul>
           </div>

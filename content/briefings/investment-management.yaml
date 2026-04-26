@@ -1,6 +1,6 @@
 slug: investment-management
-title: Investment Management
-tldr: Odum allocates client capital to its own systematic strategies under Odum's {{term:fca}} permissions. {{term:allocator}} reporting runs on the same surface Odum uses to operate the book.
+title: Odum-Managed Strategies
+tldr: Odum allocates client capital to selected systematic strategies it manages, under Odum's {{term:fca}} permissions. {{term:allocator}} reporting runs on the same surface Odum uses to operate the book.
 frame: "Investment Management ({{term:im}}) allocates client capital to Odum-run systematic strategies under Odum's {{term:fca}} permissions. Reporting comes from the same surface Odum's own traders and risk desk use — same components, same data, entitlement-filtered for {{term:allocator}} views. Strategies are operated on Odum infrastructure, not wrapped on top of a third party. Custody model depends on structure: under {{term:sma}} you hold your own {{term:venue}} accounts in your own entity name and issue Odum scoped execute+read API keys; under {{term:pooled}} the fund's assets sit with a qualified third-party custodian (Copper for crypto; equivalent regulated custodians for other asset classes), you hold a share class in the fund, and you subscribe and redeem through the platform — automated via API and via the client dashboard. Odum Research Ltd — the investment manager — never holds principal; no custody role under either structure."
 sections:
   - title: The strategy surface
