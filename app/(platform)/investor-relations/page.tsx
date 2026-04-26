@@ -26,6 +26,7 @@ import {
   ShieldAlert,
   TrendingUp,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import * as React from "react";
 
@@ -47,7 +48,7 @@ const PILLARS: Array<{
   {
     id: 3,
     title: "Portal & website concept",
-    summary: "Five paths, auth, and how to navigate the live site.",
+    summary: "Three engagement routes, auth, and how to navigate the live site.",
   },
   {
     id: 4,
@@ -96,9 +97,9 @@ const PRESENTATIONS: readonly IrDeckPresentation[] = [
   {
     id: "site-navigation",
     title: "Portal & website navigation",
-    subtitle: "Five engagement paths",
+    subtitle: "Three engagement routes",
     description:
-      "Walks the board through public, lighter gate, IR, investment management, and platform surfaces — auth levels and where live vs fixture data matters.",
+      "Walks the board through public, lighter gate, IR, and signed-in platform surfaces — three engagement routes (Odum-Managed Strategies, DART Trading Infrastructure, Regulated Operating Models) plus auth levels and where live vs fixture data matters.",
     href: "/investor-relations/site-navigation",
     icon: MapIcon,
     color: "from-sky-500/20 to-sky-600/5",
@@ -113,10 +114,10 @@ const PRESENTATIONS: readonly IrDeckPresentation[] = [
   },
   {
     id: "platform-presentation",
-    title: "Trading Platform as a Service",
+    title: "DART Trading Infrastructure",
     subtitle: "Trading Infrastructure Without the Build",
     description:
-      "14-slide DART product deck: named-competitor landscape (Bloomberg, QuantConnect, Hummingbot, FlexTrade, IBKR, FalconX, Citadel-internal), Signals-In vs Full mode split, alpha-protection boundary by layer, and how to start.",
+      "DART product deck: named-competitor landscape (Bloomberg, QuantConnect, Hummingbot, FlexTrade, IBKR, FalconX, Citadel-internal), single engagement route with client-provided / Odum-provided / hybrid signal capability, alpha-protection boundary by layer, and how to start.",
     href: "/investor-relations/platform-presentation",
     icon: LayoutGrid,
     color: "from-emerald-500/20 to-emerald-600/5",
@@ -131,16 +132,16 @@ const PRESENTATIONS: readonly IrDeckPresentation[] = [
   },
   {
     id: "investment-presentation",
-    title: "Investment Management",
+    title: "Odum-Managed Strategies",
     subtitle: "FCA-Authorised Discretionary Management",
     description:
-      "10-slide allocator deck: the allocator landscape (BlackRock Alt, Galaxy, Pantera, Millennium LPs), live performance ($7.5M / 30%+ annualised), strategy families, investor portal, co-invest terms, and FAQ.",
+      "Allocator deck: the allocator landscape (BlackRock Alt, Galaxy, Pantera, Millennium LPs), live performance ($7.5M / 30%+ annualised), strategy families, investor portal, co-invest terms, and FAQ. Investment Management is the legal/contract label retained on signup, contracts, and admin surfaces.",
     href: "/investor-relations/investment-presentation",
     icon: TrendingUp,
     color: "from-cyan-500/20 to-cyan-600/5",
     border: "border-cyan-500/30 hover:border-cyan-500/60",
     iconColor: "text-cyan-500",
-    tags: ["Investment Management", "Performance", "Investor Portal"],
+    tags: ["Odum-Managed Strategies", "Performance", "Investor Portal"],
     entitlement: "investor-im",
     pillar: "standalone",
     status: "current",
@@ -149,16 +150,16 @@ const PRESENTATIONS: readonly IrDeckPresentation[] = [
   },
   {
     id: "regulatory-presentation",
-    title: "Regulatory Umbrella",
-    subtitle: "FCA Regulatory Coverage",
+    title: "Regulated Operating Models",
+    subtitle: "FCA-Authorised Operating Coverage",
     description:
-      "10-slide coverage deck built on the four-axis flexibility model (structure × scope × counterparty-facing × activity). Five concrete engagement shapes, named umbrella competitors (G10, Sapia, Thornbridge, Duff & Phelps), and the client portal.",
+      "Coverage deck built on the four-axis flexibility model (structure × scope × counterparty-facing × activity). Concrete engagement shapes assessed case by case, named competitors (G10, Sapia, Thornbridge, Duff & Phelps), and the client portal. Regulatory Umbrella is the legal/contract label retained on signup, contracts, and admin surfaces.",
     href: "/investor-relations/regulatory-presentation",
     icon: Landmark,
     color: "from-rose-500/20 to-rose-600/5",
     border: "border-rose-500/30 hover:border-rose-500/60",
     iconColor: "text-rose-500",
-    tags: ["Regulatory", "Regulatory Coverage", "Fund Structures"],
+    tags: ["Regulated Operating Models", "Regulatory Coverage", "Fund Structures"],
     entitlement: "investor-regulatory",
     pillar: "standalone",
     status: "current",
@@ -255,8 +256,7 @@ export default function InvestorRelationsPage() {
       <header className="border-b border-border bg-card/50 px-6 py-4">
         <div className="mx-auto max-w-6xl flex items-center gap-4">
           <Link href="/" className="flex items-center gap-2">
-            {/* eslint-disable-next-line @next/next/no-img-element -- 28x28 logo; next/image overhead not justified */}
-            <img src="/images/odum-logo.png" alt="Odum Research" className="size-7" />
+            <Image src="/images/odum-logo.png" alt="Odum Research" width={28} height={28} className="size-7" />
             <span className="font-bold text-lg tracking-tight">
               ODUM<span className="text-primary">.</span>
             </span>
