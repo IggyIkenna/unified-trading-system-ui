@@ -47,14 +47,25 @@ interface CatalogueResponse {
   total: number;
 }
 
-export function useInstruments() {
+export function useInstruments(opts?: { venue?: string; assetGroup?: string; asOf?: string }) {
   const { user, token } = useAuth();
+  const venue = opts?.venue;
+  const assetGroup = opts?.assetGroup;
+  const asOf = opts?.asOf;
+
+  const params = new URLSearchParams();
+  if (venue) params.set("venue", venue);
+  if (assetGroup) params.set("asset_group", assetGroup);
+  if (asOf) params.set("as_of", asOf);
+  params.set("page_size", "200");
+  const url = `/api/instruments/list${params.toString() ? `?${params.toString()}` : ""}`;
 
   return useQuery<InstrumentsResponse>({
-    queryKey: ["instruments", user?.id],
-    queryFn: () =>
-      apiFetch("/api/instruments/list", token) as Promise<InstrumentsResponse>,
+    queryKey: ["instruments", venue, assetGroup, asOf, user?.id],
+    queryFn: () => apiFetch(url, token) as Promise<InstrumentsResponse>,
     enabled: !!user,
+    staleTime: 30 * 60 * 1000,
+    gcTime: 60 * 60 * 1000,
   });
 }
 
@@ -63,11 +74,7 @@ export function useCatalogue() {
 
   return useQuery<CatalogueResponse>({
     queryKey: ["catalogue", user?.id],
-    queryFn: () =>
-      apiFetch(
-        "/api/instruments/catalogue",
-        token,
-      ) as Promise<CatalogueResponse>,
+    queryFn: () => apiFetch("/api/instruments/catalogue", token) as Promise<CatalogueResponse>,
     enabled: !!user,
   });
 }

@@ -101,7 +101,7 @@ export function PriceChartWidget(_props: WidgetComponentProps) {
           /* Candles and Line share one persistent LWC chart instance — no remount on switch */
           <div className="flex-1 min-h-0 relative">
             <CandlestickChart
-              key={`${selectedInstrument.symbol}-${timeframe}`}
+              key={`${selectedInstrument.venue}:${selectedInstrument.symbol}`}
               absoluteFill
               className="absolute inset-0"
               displayType={chartType === "line" ? "line" : "candles"}
