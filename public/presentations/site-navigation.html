@@ -1,168 +1,174 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Odum Research — Portal &amp; website navigation</title>
+    <link rel="stylesheet" href="ir-deck.css" />
+    <style>
+      .sn-page {
+        max-width: 56rem;
+        margin: 0 auto;
+        padding: 28px 22px 48px;
+      }
 
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Odum Research — Portal &amp; website navigation</title>
-  <link rel="stylesheet" href="ir-deck.css" />
-  <style>
-    .sn-page {
-      max-width: 56rem;
-      margin: 0 auto;
-      padding: 28px 22px 48px;
-    }
+      .sn-h1 {
+        font-size: 1.65rem;
+        font-weight: 650;
+        letter-spacing: -0.02em;
+        margin: 0 0 8px;
+      }
 
-    .sn-h1 {
-      font-size: 1.65rem;
-      font-weight: 650;
-      letter-spacing: -0.02em;
-      margin: 0 0 8px;
-    }
+      .sn-lead {
+        color: var(--ir-muted);
+        max-width: 42rem;
+        margin: 0 0 28px;
+        line-height: 1.55;
+      }
 
-    .sn-lead {
-      color: var(--ir-muted);
-      max-width: 42rem;
-      margin: 0 0 28px;
-      line-height: 1.55;
-    }
+      details.sn {
+        border: 1px solid var(--ir-border);
+        border-radius: var(--ir-radius);
+        padding: 12px 16px;
+        margin-bottom: 10px;
+        background: rgba(24, 24, 27, 0.45);
+      }
 
-    details.sn {
-      border: 1px solid var(--ir-border);
-      border-radius: var(--ir-radius);
-      padding: 12px 16px;
-      margin-bottom: 10px;
-      background: rgba(24, 24, 27, 0.45);
-    }
+      details.sn summary {
+        cursor: pointer;
+        font-weight: 650;
+        list-style: none;
+      }
 
-    details.sn summary {
-      cursor: pointer;
-      font-weight: 650;
-      list-style: none;
-    }
+      details.sn summary::-webkit-details-marker {
+        display: none;
+      }
 
-    details.sn summary::-webkit-details-marker {
-      display: none;
-    }
+      details.sn[open] summary {
+        margin-bottom: 12px;
+      }
 
-    details.sn[open] summary {
-      margin-bottom: 12px;
-    }
+      .sn-body {
+        font-size: 14px;
+        color: var(--ir-muted);
+        line-height: 1.55;
+      }
 
-    .sn-body {
-      font-size: 14px;
-      color: var(--ir-muted);
-      line-height: 1.55;
-    }
+      .sn-body ul {
+        margin: 8px 0 0;
+        padding-left: 1.25rem;
+      }
 
-    .sn-body ul {
-      margin: 8px 0 0;
-      padding-left: 1.25rem;
-    }
+      .sn-body li {
+        margin-bottom: 8px;
+      }
 
-    .sn-body li {
-      margin-bottom: 8px;
-    }
+      .sn-k {
+        color: var(--ir-fg);
+        font-weight: 600;
+      }
 
-    .sn-k {
-      color: var(--ir-fg);
-      font-weight: 600;
-    }
+      .sn-foot {
+        margin-top: 22px;
+        font-size: 11px;
+        color: var(--ir-muted);
+      }
+    </style>
+  </head>
 
-    .sn-foot {
-      margin-top: 22px;
-      font-size: 11px;
-      color: var(--ir-muted);
-    }
-  </style>
-</head>
-
-<body>
-  <div class="ir-shell">
-    <header class="ir-header">
-      <div class="ir-brand">
-        <img src="../images/odum-logo.png" alt="Odum Research" width="28" height="28" />
-        <div>
-          <div class="ir-brand-title">ODUM<span class="dot">.</span></div>
-          <div class="ir-badge" style="margin-top: 6px">FCA 975797</div>
+  <body>
+    <div class="ir-shell">
+      <header class="ir-header">
+        <div class="ir-brand">
+          <img src="../images/odum-logo.png" alt="Odum Research" width="28" height="28" />
+          <div>
+            <div class="ir-brand-title">ODUM<span class="dot">.</span></div>
+            <div class="ir-badge" style="margin-top: 6px">FCA 975797</div>
+          </div>
         </div>
-      </div>
-    </header>
-    <main class="ir-main" style="display: block">
-      <div class="sn-page">
-        <h1 class="sn-h1">Portal &amp; website navigation</h1>
-        <p class="sn-lead">
-          Board-facing walkthrough of the five engagement paths, where authentication applies, and where live versus
-          fixture data matters. Keep this deck aligned with the IA child plan in the PM repo.
-        </p>
+      </header>
+      <main class="ir-main" style="display: block">
+        <div class="sn-page">
+          <h1 class="sn-h1">Portal &amp; website navigation</h1>
+          <p class="sn-lead">
+            Board-facing walkthrough of the three public engagement routes, where authentication applies, and where live
+            versus fixture data matters. Keep this deck aligned with the IA child plan in the PM repo.
+          </p>
 
-        <details class="sn" open>
-          <summary>Five engagement spaces</summary>
-          <div class="sn-body">
-            <ul>
-              <li>
-                <span class="sn-k">Public</span> — zero-auth marketing (<code>/</code>,
-                <code>/investment-management</code>, <code>/platform</code>, <code>/regulatory</code>,
-                <code>/firm</code>,
-                <code>/contact</code>).
-              </li>
-              <li>
-                <span class="sn-k">Lighter gate</span> — <code>/briefings</code> pre-commitment narrative; optional
-                invite code via <code>NEXT_PUBLIC_BRIEFING_ACCESS_CODE</code>; separate session key from staging gate
-                and Firebase.
-              </li>
-              <li>
-                <span class="sn-k">Investor relations</span> — entitled decks under <code>/investor-relations/*</code>
-                with granular keys plus optional <code>investor-archive</code>.
-              </li>
-              <li>
-                <span class="sn-k">Investment management</span> — signed-in strategy catalogue and performance surfaces
-                (<code>/services/research/strategy/catalog</code>).
-              </li>
-              <li>
-                <span class="sn-k">Platform</span> — operational stack (data, research, build, trading, reporting,
-                observation) starting at <code>/dashboard</code>.
-              </li>
-            </ul>
-          </div>
-        </details>
+          <details class="sn" open>
+            <summary>Three engagement routes &amp; site spaces</summary>
+            <div class="sn-body">
+              <p>
+                The public site offers three engagement routes:
+                <span class="sn-k">Odum-Managed Strategies</span> (Investment Management under FCA-regulated wrapper),
+                <span class="sn-k">DART Trading Infrastructure</span>
+                (one platform with client-provided / Odum-provided / hybrid signal capability), and
+                <span class="sn-k">Regulated Operating Models</span> (FCA-authorised operating coverage assessed case by
+                case).
+              </p>
+              <ul>
+                <li>
+                  <span class="sn-k">Public</span> — zero-auth marketing (<code>/</code>,
+                  <code>/investment-management</code>, <code>/platform</code>, <code>/regulatory</code>,
+                  <code>/who-we-are</code>, <code>/contact</code>, <code>/start-your-review</code>).
+                </li>
+                <li>
+                  <span class="sn-k">Lighter gate</span> — <code>/briefings</code> pre-commitment narrative; optional
+                  invite code via <code>NEXT_PUBLIC_BRIEFING_ACCESS_CODE</code>; separate session key from staging gate
+                  and Firebase.
+                </li>
+                <li>
+                  <span class="sn-k">Investor relations</span> — entitled decks under
+                  <code>/investor-relations/*</code> with granular keys plus optional <code>investor-archive</code>.
+                </li>
+                <li>
+                  <span class="sn-k">Signed-in platform (Odum-Managed Strategies)</span> — strategy catalogue and
+                  performance surfaces (<code>/services/research/strategy/catalog</code>,
+                  <code>/services/im/funds</code>).
+                </li>
+                <li>
+                  <span class="sn-k">Signed-in platform (DART)</span> — operational stack (data, research, build,
+                  trading, reporting, observation, signals) starting at <code>/dashboard</code>.
+                </li>
+              </ul>
+            </div>
+          </details>
 
-        <details class="sn" open>
-          <summary>Authentication model</summary>
-          <div class="sn-body">
-            <p>
-              Public and lighter gate do not require Firebase. Platform and Investment management share the same
-              signed-in session. Staging may use <code>NEXT_PUBLIC_STAGING_AUTH</code> and demo personas — see the UI
-              repo <code>docs/DEPLOYMENT.md</code> for build-time flags.
-            </p>
-          </div>
-        </details>
+          <details class="sn" open>
+            <summary>Authentication model</summary>
+            <div class="sn-body">
+              <p>
+                Public and lighter gate do not require Firebase. Platform and Investment management share the same
+                signed-in session. Staging may use <code>NEXT_PUBLIC_STAGING_AUTH</code> and demo personas — see the UI
+                repo <code>docs/DEPLOYMENT.md</code> for build-time flags.
+              </p>
+            </div>
+          </details>
 
-        <details class="sn" open>
-          <summary>Demo vs live data</summary>
-          <div class="sn-body">
-            <p>
-              <code>NEXT_PUBLIC_MOCK_API</code> and <code>NEXT_PUBLIC_STRATEGY_CATALOG_SOURCE</code> control catalogue
-              sourcing. Runtime honesty uses <code>RuntimeModeBadge</code> — there is no global “preview site” banner.
-            </p>
-            <p>
-              Reporting and terminal widgets may still branch on fixtures; the mock delta pass is tracked in
-              <code>docs/DEPLOYMENT.md</code>.
-            </p>
-          </div>
-        </details>
+          <details class="sn" open>
+            <summary>Demo vs live data</summary>
+            <div class="sn-body">
+              <p>
+                <code>NEXT_PUBLIC_MOCK_API</code> and <code>NEXT_PUBLIC_STRATEGY_CATALOG_SOURCE</code> control catalogue
+                sourcing. Runtime honesty uses <code>RuntimeModeBadge</code> — there is no global “preview site” banner.
+              </p>
+              <p>
+                Reporting and terminal widgets may still branch on fixtures; the mock delta pass is tracked in
+                <code>docs/DEPLOYMENT.md</code>.
+              </p>
+            </div>
+          </details>
 
-        <p class="sn-foot">
-          Internal cross-check: <code>unified-trading-pm/plans/active/five_space_ia_audit_matrix_2026_04_17.md</code>
-          and child execution plan.
-        </p>
-      </div>
-    </main>
-    <footer class="ir-footer">
-      <span style="font-size: 12px; color: var(--ir-muted)">Static export — use arrow keys in slide decks only.</span>
-      <a class="ir-btn" href="ir-deck-index.html" style="border-color: transparent; text-decoration: none">Index</a>
-    </footer>
-  </div>
-</body>
-
+          <p class="sn-foot">
+            Internal cross-check: <code>unified-trading-pm/plans/active/five_space_ia_audit_matrix_2026_04_17.md</code>
+            and child execution plan.
+          </p>
+        </div>
+      </main>
+      <footer class="ir-footer">
+        <span style="font-size: 12px; color: var(--ir-muted)">Static export — use arrow keys in slide decks only.</span>
+        <a class="ir-btn" href="ir-deck-index.html" style="border-color: transparent; text-decoration: none">Index</a>
+      </footer>
+    </div>
+  </body>
 </html>

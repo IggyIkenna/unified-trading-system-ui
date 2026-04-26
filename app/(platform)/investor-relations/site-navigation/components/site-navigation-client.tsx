@@ -3,6 +3,7 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Shield } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 export function SiteNavigationClient() {
@@ -11,8 +12,7 @@ export function SiteNavigationClient() {
       <header className="border-b border-border bg-card/50 px-6 py-4">
         <div className="mx-auto max-w-4xl flex items-center gap-4">
           <Link href="/investor-relations" className="flex items-center gap-2">
-            {/* eslint-disable-next-line @next/next/no-img-element -- 28x28 logo; next/image overhead not justified */}
-            <img src="/images/odum-logo.png" alt="Odum Research" className="size-7" />
+            <Image src="/images/odum-logo.png" alt="Odum Research" width={28} height={28} className="size-7" />
             <span className="font-bold text-lg tracking-tight">
               ODUM<span className="text-primary">.</span>
             </span>
@@ -28,19 +28,31 @@ export function SiteNavigationClient() {
         <div className="space-y-2">
           <h1 className="text-3xl font-semibold tracking-tight">Portal & website navigation</h1>
           <p className="text-muted-foreground max-w-2xl">
-            Board-facing walkthrough of the five engagement paths, where authentication applies, and where live versus
-            fixture data matters. Keep this deck aligned with the IA child plan in the PM repo.
+            Board-facing walkthrough of the three public engagement routes, where authentication applies, and where live
+            versus fixture data matters. Keep this deck aligned with the IA child plan in the PM repo.
           </p>
         </div>
 
-        <Accordion type="multiple" defaultValue={["five", "auth", "data"]} className="w-full space-y-2">
-          <AccordionItem value="five" className="border border-border/60 rounded-lg px-4">
-            <AccordionTrigger className="text-left font-semibold">Five engagement spaces</AccordionTrigger>
+        <Accordion type="multiple" defaultValue={["routes", "auth", "data"]} className="w-full space-y-2">
+          <AccordionItem value="routes" className="border border-border/60 rounded-lg px-4">
+            <AccordionTrigger className="text-left font-semibold">
+              Three engagement routes & site spaces
+            </AccordionTrigger>
             <AccordionContent className="text-sm text-muted-foreground space-y-3 pb-4">
+              <p>
+                The public site offers three engagement routes:{" "}
+                <span className="text-foreground font-medium">Odum-Managed Strategies</span> (Investment Management
+                under FCA-regulated wrapper),{" "}
+                <span className="text-foreground font-medium">DART Trading Infrastructure</span> (one platform with
+                client-provided / Odum-provided / hybrid signal capability), and{" "}
+                <span className="text-foreground font-medium">Regulated Operating Models</span> (FCA-authorised
+                operating coverage assessed case by case).
+              </p>
               <ul className="list-disc pl-5 space-y-2">
                 <li>
                   <span className="text-foreground font-medium">Public</span> — zero-auth marketing (`/`,
-                  `/investment-management`, `/platform`, `/regulatory`, `/firm`, `/contact`).
+                  `/investment-management`, `/platform`, `/regulatory`, `/who-we-are`, `/contact`,
+                  `/start-your-review`).
                 </li>
                 <li>
                   <span className="text-foreground font-medium">Lighter gate</span> — `/briefings` pre-commitment
@@ -52,12 +64,13 @@ export function SiteNavigationClient() {
                   `/investor-relations/*` with granular keys plus optional `investor-archive`.
                 </li>
                 <li>
-                  <span className="text-foreground font-medium">Investment management</span> — signed-in strategy
-                  catalogue and performance surfaces (`/services/research/strategy/catalog`).
+                  <span className="text-foreground font-medium">Signed-in platform (Odum-Managed Strategies)</span> —
+                  strategy catalogue and performance surfaces (`/services/research/strategy/catalog`,
+                  `/services/im/funds`).
                 </li>
                 <li>
-                  <span className="text-foreground font-medium">Platform</span> — operational stack (data, research,
-                  build, trading, reporting, observation) starting at `/dashboard`.
+                  <span className="text-foreground font-medium">Signed-in platform (DART)</span> — operational stack
+                  (data, research, build, trading, reporting, observation, signals) starting at `/dashboard`.
                 </li>
               </ul>
             </AccordionContent>
