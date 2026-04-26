@@ -62,20 +62,21 @@ export default function RegulatoryPage() {
             </div>
           </div>
 
-          {/* What this page is for */}
+          {/* What this route covers */}
           <Card className="mb-8">
             <CardHeader>
-              <CardTitle>What this page is for</CardTitle>
+              <CardTitle>What this route covers</CardTitle>
               <CardDescription>
-                Regulated Operating Models are not a standalone &ldquo;umbrella product.&rdquo; They are the governance
-                and structuring layer that may sit around an Odum-managed strategy or a DART Trading Infrastructure
-                engagement.
+                Regulated Operating Models are how Odum structures the governance, reporting, permissions, and
+                counterparty arrangements that sit around a trading engagement.
               </CardDescription>
             </CardHeader>
             <CardContent className="text-sm text-muted-foreground">
               <p>
                 The shape can include SMA arrangements, Odum-managed mandates, affiliate fund pathways, supervisory
-                reporting, or other approved structures depending on the engagement.
+                reporting, or other approved structures, scoped to the engagement. The route can stand on its own where
+                a client needs the structuring layer alone, or sit alongside an Odum-managed strategy or a DART Trading
+                Infrastructure engagement where the technology and the governance are part of the same mandate.
               </p>
             </CardContent>
           </Card>
