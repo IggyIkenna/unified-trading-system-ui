@@ -9,7 +9,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { trackEvent } from "@/lib/analytics/track";
 import { SERVICE_LABELS } from "@/lib/copy/service-labels";
 
-const ASSET_CLASSES = ["TradFi", "Crypto", "DeFi", "Sports", "Prediction Markets"] as const;
+// Three buckets, ordered by familiarity for an institutional reader.
+// Digital assets folds Crypto + DeFi; sports & prediction markets read
+// as one alternative-data bucket. Keeps the pill compact on mobile.
+const ASSET_CLASSES = ["Digital assets", "Traditional markets", "Sports & prediction markets"] as const;
 
 /**
  * Homepage React composition. See `app/(public)/page.tsx` for the metadata,
@@ -304,8 +307,8 @@ function MarketsUniverse() {
             Selected markets. One operating surface
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-pretty text-sm leading-relaxed text-muted-foreground md:text-base">
-            Strategies move from research and simulation to live trading on the same operating surface, with one clean
-            data feed across every source.
+            Strategies move from research and simulation to live trading on the same operating surface,
+            with market data normalised across selected sources.
           </p>
         </div>
 
