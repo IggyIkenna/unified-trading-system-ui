@@ -4,7 +4,14 @@
  * Strategy Review — read-only prospect-specific display.
  *
  * Sections (per plan Phase 5): proposed operating model · DART configuration
- * options · regulatory pathway · risk review · demo preparation · next steps.
+ * options · regulatory pathway · risk review · walkthrough follow-up ·
+ * next steps.
+ *
+ * Note (2026-04-26): journey reorder placed the Platform walkthrough BEFORE
+ * Strategy Review (was: Eval → Review → Demo; now: Eval → Walkthrough →
+ * Review). The previous "demo preparation" section is now the
+ * "walkthrough follow-up" — it captures what we observed during the
+ * walkthrough that informs the proposed model.
  *
  * Sectioned heavily — no hard word cap. Each section either renders the
  * admin-supplied notes (when present in the Firestore doc) or a sectioned
@@ -139,9 +146,9 @@ export default function StrategyReviewClient({ review }: { review: StrategyRevie
         </div>
         <h1 className="text-3xl font-bold tracking-tight">Your tailored Strategy Review</h1>
         <p className="text-sm text-muted-foreground max-w-2xl">
-          Prepared by Odum Research following review of your strategy evaluation submission. This surface walks through
-          the operating model we&rsquo;d propose, DART configuration choices, regulatory pathway, risk review, demo
-          preparation, and next steps.
+          Prepared by Odum Research after your strategy evaluation and platform walkthrough. This surface walks through
+          the operating model we&rsquo;d propose, DART configuration choices, regulatory pathway, risk review,
+          walkthrough follow-up, and next steps.
         </p>
         <dl className="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-x-6 gap-y-2 text-xs text-muted-foreground">
           <div>
@@ -224,13 +231,13 @@ export default function StrategyReviewClient({ review }: { review: StrategyRevie
         />
 
         <SectionScaffold
-          title="Demo preparation"
-          description="What we&rsquo;ll set up in the sandbox so you can see the platform before any commitment."
+          title="Walkthrough follow-up"
+          description="What we observed during the platform walkthrough that informs the proposed model."
           bullets={[
-            "A curated UAT environment configured to your asset class and strategy",
-            "Reference datasets and a representative backtest you can re-run",
-            "Account walkthrough — research, trading, execution, reports",
-            "What we&rsquo;ll need from you to make the demo land",
+            "Workflows and components that fit your operating reality",
+            "Workflows you flagged as out of scope or low-priority",
+            "Gaps surfaced during the self-guided review",
+            "Open items from the walkthrough we still need to resolve",
           ]}
           {...(review.demoPreparation ? { notes: review.demoPreparation } : {})}
         />

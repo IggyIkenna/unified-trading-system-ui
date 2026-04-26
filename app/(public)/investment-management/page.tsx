@@ -16,8 +16,8 @@ import Link from "next/link";
  *   - Selection progression strip (Research → Testing → Live readiness →
  *     Mandate review).
  *   - Two-column lower row (Structure and reporting + Fees and mandate terms).
- *   - 5-step process strip (Start Review → Briefing → Fit call →
- *     Strategy Evaluation → Strategy Review).
+ *   - 6-step process strip (Start Review → Briefing → Fit call →
+ *     Strategy Evaluation → Platform walkthrough → Strategy Review).
  *   - Adjacent engagement routes as two compact link-cards.
  *   - Final CTA band.
  *
@@ -65,6 +65,11 @@ const PROCESS_STEPS: readonly ProcessStep[] = [
   },
   {
     number: "05",
+    title: "Platform walkthrough",
+    body: "A tailored walkthrough of the relevant workflows, followed by a self-guided review.",
+  },
+  {
+    number: "06",
     title: "Strategy Review",
     body: "We present the proposed route and next steps.",
   },
@@ -250,12 +255,12 @@ export default function InvestmentManagementPage() {
             </div>
           </section>
 
-          {/* Process strip — numbered 5-step */}
+          {/* Process strip — numbered 6-step */}
           <section className="pt-24 md:pt-32">
             <h3 className="mb-7 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
               How the process works
             </h3>
-            <div className="grid gap-3 md:grid-cols-5">
+            <div className="grid gap-3 md:grid-cols-3 lg:grid-cols-6">
               {PROCESS_STEPS.map((step) => (
                 <div
                   key={step.number}
