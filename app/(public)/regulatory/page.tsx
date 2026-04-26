@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BRIEFING_SLUGS, PUBLIC_ROUTE_PATHS, SERVICE_LABELS } from "@/lib/copy/service-labels";
+import { PUBLIC_ROUTE_PATHS, SERVICE_LABELS } from "@/lib/copy/service-labels";
 
 /**
  * Public Regulated Operating Models page — controlled institutional overview.
@@ -43,7 +43,7 @@ export default function RegulatoryPage() {
             <h1 className="text-3xl font-bold">{SERVICE_LABELS.regulatory.marketing}</h1>
             <p className="mt-4 text-lg text-muted-foreground">
               Some trading engagements need more than technology. Odum can help selected clients structure an
-              appropriate operating model around governance, reporting, permissions, counterparties, and regulatory
+              appropriate operating model around governance, reporting, counterparties, permissions, and regulatory
               responsibilities.
             </p>
             <p className="mt-3 text-sm text-muted-foreground">
@@ -67,16 +67,17 @@ export default function RegulatoryPage() {
             <CardHeader>
               <CardTitle>What this route covers</CardTitle>
               <CardDescription>
-                Regulated Operating Models are how Odum structures the governance, reporting, permissions, and
-                counterparty arrangements that sit around a trading engagement.
+                Regulated Operating Models are the governance and structuring layer around selected trading engagements.
               </CardDescription>
             </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
+            <CardContent className="space-y-3 text-sm text-muted-foreground">
               <p>
-                The shape can include SMA arrangements, Odum-managed mandates, affiliate fund pathways, supervisory
-                reporting, or other approved structures, scoped to the engagement. The route can stand on its own where
-                a client needs the structuring layer alone, or sit alongside an Odum-managed strategy or a DART Trading
-                Infrastructure engagement where the technology and the governance are part of the same mandate.
+                The structure may include SMA arrangements, Odum-managed mandates, affiliate fund pathways, supervisory
+                reporting, or other approved arrangements depending on the engagement.
+              </p>
+              <p>
+                In some cases, the structuring layer may be the main engagement. In others, it sits alongside an
+                Odum-managed strategy or DART Trading Infrastructure mandate.
               </p>
             </CardContent>
           </Card>
@@ -167,13 +168,6 @@ export default function RegulatoryPage() {
                   and next steps.
                 </li>
               </ol>
-              <div className="mt-6 flex flex-wrap gap-3">
-                <Button asChild variant="outline" size="sm">
-                  <Link href={`/briefings/${BRIEFING_SLUGS.regulatory}`}>
-                    Open the Regulated Operating Models briefing (gated)
-                  </Link>
-                </Button>
-              </div>
             </CardContent>
           </Card>
 

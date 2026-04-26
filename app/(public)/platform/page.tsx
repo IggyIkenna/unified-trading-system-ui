@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BRIEFING_SLUGS, PUBLIC_ROUTE_PATHS, SERVICE_LABELS } from "@/lib/copy/service-labels";
+import { PUBLIC_ROUTE_PATHS, SERVICE_LABELS } from "@/lib/copy/service-labels";
 import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -45,7 +45,7 @@ export default function MarketingPlatformPage() {
             </Badge>
             <h1 className="text-3xl font-bold">{SERVICE_LABELS.dart.marketing}</h1>
             <p className="mt-4 text-lg text-muted-foreground">
-              DART is the infrastructure layer behind {SERVICE_LABELS.investment.marketing}, available to selected
+              DART is the infrastructure layer behind Odum&rsquo;s systematic trading activity, available to selected
               clients who need a controlled path from research to execution, monitoring, and reporting.
             </p>
             <div className="mt-6 flex flex-wrap justify-center gap-3">
@@ -59,7 +59,7 @@ export default function MarketingPlatformPage() {
               </Button>
             </div>
             <p className="mt-3 text-xs text-muted-foreground">
-              Briefings are gated. Start your review to receive access to the relevant DART briefing.
+              Access to the DART briefing is provided after the initial review.
             </p>
           </div>
 
@@ -190,15 +190,15 @@ export default function MarketingPlatformPage() {
           <div className="mt-10 rounded-lg border border-border bg-card/50 p-6 text-center">
             <h2 className="text-lg font-semibold">Start with a review</h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              Start with a review so we can understand whether DART, {SERVICE_LABELS.investment.marketing}, or a{" "}
-              {SERVICE_LABELS.regulatory.marketing.toLowerCase()} is the right route.
+              Start with a review so we can understand whether DART, an Odum-managed strategy, or a regulated operating
+              model is the right route.
             </p>
             <div className="mt-4 flex flex-wrap justify-center gap-3">
               <Button asChild>
                 <Link href={PUBLIC_ROUTE_PATHS.startYourReview}>Start Your Review</Link>
               </Button>
               <Button asChild variant="outline">
-                <Link href={`/briefings/${BRIEFING_SLUGS.dart}`}>Open the DART briefing (gated)</Link>
+                <Link href={PUBLIC_ROUTE_PATHS.contact}>Contact Odum</Link>
               </Button>
             </div>
           </div>
