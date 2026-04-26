@@ -151,38 +151,38 @@ export default function InvestmentManagementPage() {
 
           {/* Eligibility panel — two-column for / not-for */}
           <div className="grid gap-6 md:grid-cols-2">
-            <Card className="border-border/60 bg-card/40">
-              <CardHeader>
-                <CardTitle>For clients who want</CardTitle>
-                <CardDescription>
+            <Card className="border-border/80 bg-card/40">
+              <CardHeader className="p-7 md:p-8">
+                <CardTitle className="md:text-xl">For clients who want</CardTitle>
+                <CardDescription className="md:text-base">
                   This route is built around eligible allocators looking for managed exposure to systematic strategies.
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <ul className="space-y-2 text-sm text-foreground/85">
+              <CardContent className="p-7 pt-0 md:p-8 md:pt-0">
+                <ul className="space-y-2.5 text-sm text-foreground/85 md:text-[15px]">
                   {ELIGIBLE_FOR.map((item) => (
-                    <li key={item} className="flex items-start gap-2">
-                      <Check className="mt-0.5 size-3.5 shrink-0 text-primary/70" aria-hidden />
-                      <span className="leading-snug">{item}</span>
+                    <li key={item} className="flex items-start gap-2.5">
+                      <Check className="mt-1 size-3.5 shrink-0 text-primary/70" aria-hidden />
+                      <span className="leading-relaxed">{item}</span>
                     </li>
                   ))}
                 </ul>
               </CardContent>
             </Card>
-            <Card className="border-border/60 bg-card/40">
-              <CardHeader>
-                <CardTitle>Not primarily for</CardTitle>
-                <CardDescription>
+            <Card className="border-border/80 bg-card/40">
+              <CardHeader className="p-7 md:p-8">
+                <CardTitle className="md:text-xl">Not primarily for</CardTitle>
+                <CardDescription className="md:text-base">
                   Other Odum routes (DART, Regulated Operating Models) or third-party providers may be a better fit for
                   these needs.
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <ul className="space-y-2 text-sm text-foreground/85">
+              <CardContent className="p-7 pt-0 md:p-8 md:pt-0">
+                <ul className="space-y-2.5 text-sm text-foreground/85 md:text-[15px]">
                   {NOT_PRIMARILY_FOR.map((item) => (
-                    <li key={item} className="flex items-start gap-2">
-                      <X className="mt-0.5 size-3.5 shrink-0 text-muted-foreground/60" aria-hidden />
-                      <span className="leading-snug">{item}</span>
+                    <li key={item} className="flex items-start gap-2.5">
+                      <X className="mt-1 size-3.5 shrink-0 text-muted-foreground/60" aria-hidden />
+                      <span className="leading-relaxed">{item}</span>
                     </li>
                   ))}
                 </ul>
@@ -193,8 +193,8 @@ export default function InvestmentManagementPage() {
           {/* Selection progression — compact 4-stage strip */}
           <section className="pt-24 md:pt-32">
             <div className="mb-8">
-              <h2 className="text-xl font-semibold tracking-tight md:text-2xl">How strategies are selected</h2>
-              <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+              <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">How strategies are selected</h2>
+              <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground md:text-base">
                 Strategies progress through a structured research, testing, and live-readiness process before external
                 capital is allocated. Detailed materials are provided during the gated briefing and Strategy Review.
               </p>
@@ -203,7 +203,7 @@ export default function InvestmentManagementPage() {
               {SELECTION_STAGES.map((stage) => (
                 <div
                   key={stage.number}
-                  className="flex h-full flex-col rounded-md border border-border/60 bg-card/30 p-4"
+                  className="flex h-full flex-col rounded-md border border-border/80 bg-card/30 p-5"
                 >
                   <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-primary/85">
                     {stage.number}
@@ -216,45 +216,50 @@ export default function InvestmentManagementPage() {
           </section>
 
           {/* Structure + Fees — two-column row */}
-          <div className="pt-24 grid gap-6 md:grid-cols-2 md:pt-32">
-            <Card className="border-border/60 bg-card/40">
-              <CardHeader>
-                <CardTitle>Structure and reporting</CardTitle>
-                <CardDescription>
-                  Delivered through an SMA, fund route, or other approved structure depending on the client and mandate.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="text-sm text-muted-foreground">
-                <p>
-                  Reporting is scoped to the client, mandate, fund interest, or account. Custody, share-class mechanics,
-                  permissions, and operational controls are reviewed during onboarding where relevant.
-                </p>
-              </CardContent>
-            </Card>
-            <Card className="border-border/60 bg-card/40">
-              <CardHeader>
-                <CardTitle>Fees and mandate terms</CardTitle>
-                <CardDescription>Agreed in the relevant mandate pack, reviewed case by case.</CardDescription>
-              </CardHeader>
-              <CardContent className="text-sm text-muted-foreground">
-                <p>
-                  Fees, hurdles, crystallisation timing, reporting frequency, and mandate terms are agreed at signing.
-                  The public page does not quote standard terms.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
+          <section className="pt-24 md:pt-32">
+            <div className="grid gap-6 md:grid-cols-2">
+              <Card className="border-border/80 bg-card/40">
+                <CardHeader className="p-7 md:p-8">
+                  <CardTitle className="md:text-xl">Structure and reporting</CardTitle>
+                  <CardDescription className="md:text-base">
+                    Delivered through an SMA, fund route, or other approved structure depending on the client and
+                    mandate.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="p-7 pt-0 text-sm leading-relaxed text-muted-foreground md:p-8 md:pt-0 md:text-base">
+                  <p>
+                    Reporting is scoped to the client, mandate, fund interest, or account. Custody, share-class
+                    mechanics, permissions, and operational controls are reviewed during onboarding where relevant.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="border-border/80 bg-card/40">
+                <CardHeader className="p-7 md:p-8">
+                  <CardTitle className="md:text-xl">Fees and mandate terms</CardTitle>
+                  <CardDescription className="md:text-base">
+                    Agreed in the relevant mandate pack, reviewed case by case.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="p-7 pt-0 text-sm leading-relaxed text-muted-foreground md:p-8 md:pt-0 md:text-base">
+                  <p>
+                    Fees, hurdles, crystallisation timing, reporting frequency, and mandate terms are agreed at signing.
+                    The public page does not quote standard terms.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+          </section>
 
           {/* Process strip — numbered 5-step */}
           <section className="pt-24 md:pt-32">
-            <h3 className="mb-6 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <h3 className="mb-7 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
               How the process works
             </h3>
             <div className="grid gap-3 md:grid-cols-5">
               {PROCESS_STEPS.map((step) => (
                 <div
                   key={step.number}
-                  className="flex h-full flex-col rounded-md border border-border/60 bg-card/30 p-4"
+                  className="flex h-full flex-col rounded-md border border-border/80 bg-card/30 p-5"
                 >
                   <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-primary/85">
                     {step.number}
@@ -268,31 +273,35 @@ export default function InvestmentManagementPage() {
 
           {/* Adjacent engagement routes — two compact link cards */}
           <section className="pt-24 md:pt-32">
-            <h3 className="mb-6 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <h3 className="mb-7 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
               Adjacent engagement routes
             </h3>
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-6 md:grid-cols-2">
               <Link
                 href={PUBLIC_ROUTE_PATHS.dart}
-                className="group rounded-lg border border-border/60 bg-card/30 p-5 transition-colors hover:border-border hover:bg-card/60"
+                className="group rounded-lg border border-border/80 bg-card/40 p-7 transition-colors hover:border-border hover:bg-card/70 md:p-8"
               >
                 <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-semibold text-foreground">{SERVICE_LABELS.dart.marketing}</h4>
+                  <h4 className="text-base font-semibold text-foreground md:text-lg">
+                    {SERVICE_LABELS.dart.marketing}
+                  </h4>
                   <ArrowRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
                 </div>
-                <p className="mt-2 text-sm leading-snug text-muted-foreground">
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                   Build, run, monitor, or scale strategies through Odum&rsquo;s infrastructure.
                 </p>
               </Link>
               <Link
                 href={PUBLIC_ROUTE_PATHS.regulatory}
-                className="group rounded-lg border border-border/60 bg-card/30 p-5 transition-colors hover:border-border hover:bg-card/60"
+                className="group rounded-lg border border-border/80 bg-card/40 p-7 transition-colors hover:border-border hover:bg-card/70 md:p-8"
               >
                 <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-semibold text-foreground">{SERVICE_LABELS.regulatory.marketing}</h4>
+                  <h4 className="text-base font-semibold text-foreground md:text-lg">
+                    {SERVICE_LABELS.regulatory.marketing}
+                  </h4>
                   <ArrowRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
                 </div>
-                <p className="mt-2 text-sm leading-snug text-muted-foreground">
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                   Governance, reporting, permissions, and structuring around a trading engagement.
                 </p>
               </Link>
@@ -300,13 +309,13 @@ export default function InvestmentManagementPage() {
           </section>
 
           {/* Final CTA band */}
-          <section className="mt-28 rounded-lg border border-border/60 bg-gradient-to-b from-card/60 to-card/30 p-8 text-center md:mt-32 md:p-12">
-            <h2 className="text-xl font-semibold tracking-tight md:text-2xl">Ready to understand the right route?</h2>
-            <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground md:text-base">
+          <section className="mt-32 rounded-lg border border-border/80 bg-gradient-to-b from-card/60 to-card/30 p-10 text-center md:mt-36 md:p-14">
+            <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">Ready to understand the right route?</h2>
+            <p className="mx-auto mt-4 max-w-xl text-sm text-muted-foreground md:text-base">
               Tell us what you are looking to allocate to or evaluate. We will route you to the relevant briefing and
               next step.
             </p>
-            <div className="mt-6 flex flex-wrap justify-center gap-3">
+            <div className="mt-7 flex flex-wrap justify-center gap-3">
               <Button asChild size="lg">
                 <Link href={PUBLIC_ROUTE_PATHS.startYourReview}>Start Your Review</Link>
               </Button>

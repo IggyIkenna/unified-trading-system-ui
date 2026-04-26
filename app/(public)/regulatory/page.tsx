@@ -113,15 +113,15 @@ export default function RegulatoryPage() {
 
           {/* Two-column overview: covers + matters */}
           <div className="grid gap-6 md:grid-cols-2">
-            <Card className="border-border/60 bg-card/40">
-              <CardHeader>
-                <CardTitle>What this route covers</CardTitle>
-                <CardDescription>
+            <Card className="border-border/80 bg-card/40">
+              <CardHeader className="p-7 md:p-8">
+                <CardTitle className="md:text-xl">What this route covers</CardTitle>
+                <CardDescription className="md:text-base">
                   Regulated Operating Models are the governance and structuring layer around selected trading
                   engagements.
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-3 text-sm text-muted-foreground">
+              <CardContent className="space-y-3 p-7 pt-0 text-sm leading-relaxed text-muted-foreground md:p-8 md:pt-0 md:text-base">
                 <p>
                   The structure may include SMA arrangements, Odum-managed mandates, affiliate fund pathways,
                   supervisory reporting, or other approved arrangements depending on the engagement.
@@ -132,34 +132,38 @@ export default function RegulatoryPage() {
                 </p>
               </CardContent>
             </Card>
-            <Card className="border-border/60 bg-card/40">
-              <CardHeader>
-                <CardTitle>When it matters</CardTitle>
-                <CardDescription>This route may be relevant when a client needs to:</CardDescription>
+            <Card className="border-border/80 bg-card/40">
+              <CardHeader className="p-7 md:p-8">
+                <CardTitle className="md:text-xl">When it matters</CardTitle>
+                <CardDescription className="md:text-base">
+                  This route may be relevant when a client needs to:
+                </CardDescription>
               </CardHeader>
-              <CardContent>
-                <ul className="space-y-2 text-sm text-foreground/85">
-                  <li className="flex items-start gap-2">
-                    <Check className="mt-0.5 size-3.5 shrink-0 text-primary/70" aria-hidden />
-                    <span className="leading-snug">Operate a strategy under a clearer governance framework.</span>
+              <CardContent className="p-7 pt-0 md:p-8 md:pt-0">
+                <ul className="space-y-2.5 text-sm text-foreground/85 md:text-[15px]">
+                  <li className="flex items-start gap-2.5">
+                    <Check className="mt-1 size-3.5 shrink-0 text-primary/70" aria-hidden />
+                    <span className="leading-relaxed">Operate a strategy under a clearer governance framework.</span>
                   </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="mt-0.5 size-3.5 shrink-0 text-primary/70" aria-hidden />
-                    <span className="leading-snug">Separate trading activity across mandates, funds, or accounts.</span>
+                  <li className="flex items-start gap-2.5">
+                    <Check className="mt-1 size-3.5 shrink-0 text-primary/70" aria-hidden />
+                    <span className="leading-relaxed">
+                      Separate trading activity across mandates, funds, or accounts.
+                    </span>
                   </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="mt-0.5 size-3.5 shrink-0 text-primary/70" aria-hidden />
-                    <span className="leading-snug">Evidence reporting, oversight, and audit trails.</span>
+                  <li className="flex items-start gap-2.5">
+                    <Check className="mt-1 size-3.5 shrink-0 text-primary/70" aria-hidden />
+                    <span className="leading-relaxed">Evidence reporting, oversight, and audit trails.</span>
                   </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="mt-0.5 size-3.5 shrink-0 text-primary/70" aria-hidden />
-                    <span className="leading-snug">
+                  <li className="flex items-start gap-2.5">
+                    <Check className="mt-1 size-3.5 shrink-0 text-primary/70" aria-hidden />
+                    <span className="leading-relaxed">
                       Use Odum&rsquo;s infrastructure while maintaining appropriate controls.
                     </span>
                   </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="mt-0.5 size-3.5 shrink-0 text-primary/70" aria-hidden />
-                    <span className="leading-snug">
+                  <li className="flex items-start gap-2.5">
+                    <Check className="mt-1 size-3.5 shrink-0 text-primary/70" aria-hidden />
+                    <span className="leading-relaxed">
                       Assess whether an SMA, fund route, affiliate pathway, or regulated arrangement is suitable.
                     </span>
                   </li>
@@ -169,93 +173,99 @@ export default function RegulatoryPage() {
           </div>
 
           {/* How Odum approaches structure — 2-col checklist grid */}
-          <Card className="mt-16 border-border/60 bg-card/40">
-            <CardHeader>
-              <CardTitle>How Odum approaches structure</CardTitle>
-              <CardDescription>
-                We start with the commercial and operational facts of the engagement. The outcome is not assumed in
-                advance.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ul className="grid gap-x-8 gap-y-3 text-sm text-foreground/85 md:grid-cols-2">
-                {STRUCTURE_AXES.map((axis) => (
-                  <li key={axis} className="flex items-start gap-2">
-                    <Check className="mt-0.5 size-3.5 shrink-0 text-primary/70" aria-hidden />
-                    <span className="leading-snug">{axis}</span>
-                  </li>
-                ))}
-              </ul>
-              <p className="mt-5 text-sm leading-relaxed text-muted-foreground">
-                Some engagements may need only DART infrastructure. Others may require a more formal regulated or
-                affiliate-supported model.
-              </p>
-            </CardContent>
-          </Card>
-
-          {/* Two-column lower row: custody + related routes */}
-          <div className="mt-16 grid gap-6 md:grid-cols-2">
-            <Card className="border-border/60 bg-card/40">
-              <CardHeader>
-                <CardTitle>Custody and control</CardTitle>
-                <CardDescription>
-                  Odum does not present regulated operating models as a custody service.
+          <section className="pt-24 md:pt-32">
+            <Card className="border-border/80 bg-card/40">
+              <CardHeader className="p-7 md:p-8">
+                <CardTitle className="md:text-xl">How Odum approaches structure</CardTitle>
+                <CardDescription className="md:text-base">
+                  We start with the commercial and operational facts of the engagement. The outcome is not assumed in
+                  advance.
                 </CardDescription>
               </CardHeader>
-              <CardContent className="text-sm text-muted-foreground">
-                <p>
-                  Where custody, brokerage, exchange, or fund-administration arrangements are required, they are
-                  structured through the appropriate account, custodian, venue, broker, administrator, or affiliate
-                  route. Permissions and controls are scoped to the agreed mandate and documented in the relevant
-                  operating model.
+              <CardContent className="p-7 pt-0 md:p-8 md:pt-0">
+                <ul className="grid gap-x-8 gap-y-2.5 text-sm text-foreground/85 md:grid-cols-2 md:text-[15px]">
+                  {STRUCTURE_AXES.map((axis) => (
+                    <li key={axis} className="flex items-start gap-2.5">
+                      <Check className="mt-1 size-3.5 shrink-0 text-primary/70" aria-hidden />
+                      <span className="leading-relaxed">{axis}</span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-6 text-sm leading-relaxed text-muted-foreground md:text-base">
+                  Some engagements may need only DART infrastructure. Others may require a more formal regulated or
+                  affiliate-supported model.
                 </p>
               </CardContent>
             </Card>
-            <div className="rounded-lg border border-border/60 bg-card/30 p-6">
-              <h3 className="text-sm font-semibold tracking-wide uppercase text-muted-foreground">Related routes</h3>
-              <ul className="mt-4 space-y-3 text-sm">
-                <li>
-                  <Link
-                    href={PUBLIC_ROUTE_PATHS.investment}
-                    className="group flex items-center justify-between rounded-md border border-border/40 bg-card/30 p-3 transition-colors hover:border-border hover:bg-card/60"
-                  >
-                    <span>
-                      <span className="block font-medium text-foreground">{SERVICE_LABELS.investment.marketing}</span>
-                      <span className="mt-0.5 block text-xs text-muted-foreground">
-                        Allocate to selected systematic strategies managed by Odum.
+          </section>
+
+          {/* Two-column lower row: custody + related routes */}
+          <section className="pt-24 md:pt-32">
+            <div className="grid gap-6 md:grid-cols-2">
+              <Card className="border-border/80 bg-card/40">
+                <CardHeader className="p-7 md:p-8">
+                  <CardTitle className="md:text-xl">Custody and control</CardTitle>
+                  <CardDescription className="md:text-base">
+                    Odum does not present regulated operating models as a custody service.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="p-7 pt-0 text-sm leading-relaxed text-muted-foreground md:p-8 md:pt-0 md:text-base">
+                  <p>
+                    Where custody, brokerage, exchange, or fund-administration arrangements are required, they are
+                    structured through the appropriate account, custodian, venue, broker, administrator, or affiliate
+                    route. Permissions and controls are scoped to the agreed mandate and documented in the relevant
+                    operating model.
+                  </p>
+                </CardContent>
+              </Card>
+              <div className="rounded-lg border border-border/80 bg-card/40 p-7 md:p-8">
+                <h3 className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                  Related routes
+                </h3>
+                <ul className="mt-5 space-y-3 text-sm">
+                  <li>
+                    <Link
+                      href={PUBLIC_ROUTE_PATHS.investment}
+                      className="group flex items-center justify-between rounded-md border border-border/60 bg-card/30 p-4 transition-colors hover:border-border hover:bg-card/70"
+                    >
+                      <span>
+                        <span className="block font-medium text-foreground">{SERVICE_LABELS.investment.marketing}</span>
+                        <span className="mt-1 block text-xs leading-relaxed text-muted-foreground">
+                          Allocate to selected systematic strategies managed by Odum.
+                        </span>
                       </span>
-                    </span>
-                    <ArrowRight className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href={PUBLIC_ROUTE_PATHS.dart}
-                    className="group flex items-center justify-between rounded-md border border-border/40 bg-card/30 p-3 transition-colors hover:border-border hover:bg-card/60"
-                  >
-                    <span>
-                      <span className="block font-medium text-foreground">{SERVICE_LABELS.dart.marketing}</span>
-                      <span className="mt-0.5 block text-xs text-muted-foreground">
-                        Build, run, monitor, or scale strategies through Odum&rsquo;s infrastructure.
+                      <ArrowRight className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href={PUBLIC_ROUTE_PATHS.dart}
+                      className="group flex items-center justify-between rounded-md border border-border/60 bg-card/30 p-4 transition-colors hover:border-border hover:bg-card/70"
+                    >
+                      <span>
+                        <span className="block font-medium text-foreground">{SERVICE_LABELS.dart.marketing}</span>
+                        <span className="mt-1 block text-xs leading-relaxed text-muted-foreground">
+                          Build, run, monitor, or scale strategies through Odum&rsquo;s infrastructure.
+                        </span>
                       </span>
-                    </span>
-                    <ArrowRight className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
-                  </Link>
-                </li>
-              </ul>
+                      <ArrowRight className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+                    </Link>
+                  </li>
+                </ul>
+              </div>
             </div>
-          </div>
+          </section>
 
           {/* Process strip — numbered horizontal cards */}
-          <section className="mt-20">
-            <h3 className="mb-5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          <section className="pt-24 md:pt-32">
+            <h3 className="mb-7 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
               How the process works
             </h3>
             <div className="grid gap-3 md:grid-cols-5">
               {PROCESS_STEPS.map((step) => (
                 <div
                   key={step.number}
-                  className="flex h-full flex-col rounded-md border border-border/60 bg-card/30 p-4"
+                  className="flex h-full flex-col rounded-md border border-border/80 bg-card/30 p-5"
                 >
                   <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-primary/85">
                     {step.number}
@@ -268,12 +278,12 @@ export default function RegulatoryPage() {
           </section>
 
           {/* Final CTA band */}
-          <section className="mt-24 rounded-lg border border-border/60 bg-gradient-to-b from-card/60 to-card/30 p-8 text-center md:p-12">
-            <h2 className="text-xl font-semibold tracking-tight md:text-2xl">Ready to understand the right route?</h2>
-            <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground md:text-base">
+          <section className="mt-32 rounded-lg border border-border/80 bg-gradient-to-b from-card/60 to-card/30 p-10 text-center md:mt-36 md:p-14">
+            <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">Ready to understand the right route?</h2>
+            <p className="mx-auto mt-4 max-w-xl text-sm text-muted-foreground md:text-base">
               Start with a short review. We&rsquo;ll route you to the relevant briefing and next step.
             </p>
-            <div className="mt-6 flex flex-wrap justify-center gap-3">
+            <div className="mt-7 flex flex-wrap justify-center gap-3">
               <Button asChild size="lg">
                 <Link href={PUBLIC_ROUTE_PATHS.startYourReview}>Start Your Review</Link>
               </Button>
