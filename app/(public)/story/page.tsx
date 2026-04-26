@@ -1,9 +1,9 @@
-import type { Metadata } from "next";
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { PUBLIC_ROUTE_PATHS, SERVICE_LABELS } from "@/lib/copy/service-labels";
+import { ArrowRight } from "lucide-react";
+import type { Metadata } from "next";
+import Link from "next/link";
 
 /**
  * Public Story page — editorial two-column layout.
@@ -121,7 +121,7 @@ export default function MarketingStoryPage() {
                 when the operating model is unified, controlled, and properly governed.
               </p>
               <p className="border-l-2 border-primary/40 pl-4 text-sm italic text-muted-foreground">
-                Odum is still a focused firm. The ambition is not to be everything to everyone. It is to work with
+                Odum remains a focused firm. The ambition is not to be everything to everyone. It is to work with
                 selected clients and affiliate service providers where the strategy, infrastructure, and structure fit.
               </p>
             </article>
@@ -131,12 +131,17 @@ export default function MarketingStoryPage() {
               {/* Timeline */}
               <div>
                 <h2 className="mb-5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Timeline</h2>
-                <ol className="relative space-y-6 border-l border-border/60 pl-5">
+                <ol className="relative space-y-6 border-l border-border/60 pl-12">
                   {TIMELINE.map((entry) => (
                     <li key={entry.year} className="relative">
+                      {/* Circle bullet centred on the rail with generous
+                          clearance from the year text. pl-12 (48px) +
+                          left:-52px puts the 8px circle squarely on the
+                          border line at x≈-1 to +7, leaving ~40px of
+                          empty space before the "2011" caption starts. */}
                       <span
                         aria-hidden
-                        className="absolute -left-[26px] top-1.5 size-2.5 rounded-full border border-primary/60 bg-background"
+                        className="absolute -left-[52px] top-2 size-2 rounded-full border border-primary/60 bg-background"
                       />
                       <div className="font-mono text-[11px] uppercase tracking-wide text-primary/85">{entry.year}</div>
                       <div className="mt-1 text-sm font-semibold leading-tight text-foreground">{entry.title}</div>

@@ -166,19 +166,23 @@ export default function MarketingPlatformPage() {
             </div>
           </section>
 
-          {/* Dashboard + API access — compact two-column row */}
-          <section className="pt-24 md:pt-32">
-            <div className="grid gap-6 rounded-lg border border-border/60 bg-card/30 p-7 md:grid-cols-2 md:gap-10 md:p-8">
+          {/* Dashboard + API access — compact two-column row.
+              Stronger border + slightly heavier bg so the box reads as a
+              distinct group against the dark page; the previous border-/60
+              + bg-/30 was so faint the headings looked stranded between the
+              capability cards above and the adjacent-routes section below. */}
+          <section className="pt-20 md:pt-24">
+            <div className="grid gap-8 rounded-lg border border-border bg-card/50 p-8 md:grid-cols-2 md:gap-12 md:p-10">
               <div>
                 <h3 className="text-sm font-semibold tracking-wide uppercase text-foreground/85">Dashboard</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                   Day-to-day work happens inside the authenticated platform, with access scoped to the agreed
                   engagement.
                 </p>
               </div>
               <div>
                 <h3 className="text-sm font-semibold tracking-wide uppercase text-foreground/85">API access</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                   Where available, selected workflows can be accessed programmatically. Detailed documentation is
                   provided inside the appropriate gated or signed-in area.
                 </p>
@@ -187,32 +191,32 @@ export default function MarketingPlatformPage() {
           </section>
 
           {/* Adjacent engagement routes — two compact cards */}
-          <section className="pt-24 md:pt-32">
+          <section className="pt-20 md:pt-24">
             <h3 className="mb-6 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Adjacent engagement routes
             </h3>
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-6 md:grid-cols-2">
               <Link
                 href={PUBLIC_ROUTE_PATHS.investment}
-                className="group rounded-lg border border-border/60 bg-card/30 p-5 transition-colors hover:border-border hover:bg-card/60"
+                className="group rounded-lg border border-border bg-card/50 p-6 transition-colors hover:border-border hover:bg-card/70"
               >
                 <div className="flex items-center justify-between">
                   <h4 className="text-sm font-semibold text-foreground">{SERVICE_LABELS.investment.marketing}</h4>
                   <ArrowRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
                 </div>
-                <p className="mt-2 text-sm leading-snug text-muted-foreground">
+                <p className="mt-3 text-sm leading-snug text-muted-foreground">
                   Allocate to selected systematic strategies managed by Odum.
                 </p>
               </Link>
               <Link
                 href={PUBLIC_ROUTE_PATHS.regulatory}
-                className="group rounded-lg border border-border/60 bg-card/30 p-5 transition-colors hover:border-border hover:bg-card/60"
+                className="group rounded-lg border border-border bg-card/50 p-6 transition-colors hover:border-border hover:bg-card/70"
               >
                 <div className="flex items-center justify-between">
                   <h4 className="text-sm font-semibold text-foreground">{SERVICE_LABELS.regulatory.marketing}</h4>
                   <ArrowRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
                 </div>
-                <p className="mt-2 text-sm leading-snug text-muted-foreground">
+                <p className="mt-3 text-sm leading-snug text-muted-foreground">
                   Governance, reporting, permissions, and structuring around a trading engagement.
                 </p>
               </Link>
@@ -220,7 +224,7 @@ export default function MarketingPlatformPage() {
           </section>
 
           {/* Final CTA band */}
-          <section className="mt-28 rounded-lg border border-border/60 bg-gradient-to-b from-card/60 to-card/30 p-8 text-center md:mt-32 md:p-12">
+          <section className="mt-20 rounded-lg border border-border bg-gradient-to-b from-card/60 to-card/30 p-8 text-center md:mt-24 md:p-12">
             <h2 className="text-xl font-semibold tracking-tight md:text-2xl">Ready to understand the right route?</h2>
             <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground md:text-base">
               Start with a short review. We&rsquo;ll route you to the relevant briefing and next step &mdash; DART, an
