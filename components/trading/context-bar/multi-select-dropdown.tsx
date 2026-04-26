@@ -166,7 +166,7 @@ export function MultiSelectDropdown<T extends { id: string }>({
                             e.stopPropagation();
                             setCollapsedGroups((c) => ({
                               ...c,
-                              [group]: !c[group],
+                              [group]: !isCollapsed,
                             }));
                           }}
                         >
