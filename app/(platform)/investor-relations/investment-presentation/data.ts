@@ -1,4 +1,6 @@
-// Investment Management Presentation \u2014 data for 10-slide allocator deck.
+// Odum-Managed Strategies Presentation \u2014 data for 10-slide allocator deck.
+// Marketing label: Odum-Managed Strategies. Legal/contract label: Investment Management
+// (retained where the legal-context badge is appropriate, e.g. signup wizard, contracts).
 // Last restructured: April 2026 \u2014 reframed for allocators / family offices,
 // with named-competitor landscape and proof-of-same-infrastructure.
 
@@ -7,9 +9,9 @@ export const slides = [
   {
     id: 1,
     type: "cover",
-    title: "Investment Management",
+    title: "Odum-Managed Strategies",
     subtitle:
-      "FCA-authorised discretionary management. The same infrastructure that runs $7.5M of our own capital, available to you. Co-invest at identical terms as the firm principals.",
+      "FCA-authorised discretionary management (Investment Management permission, FCA 975797). The same infrastructure that runs $7.5M of our own capital, available to you. Co-invest at identical terms as the firm principals.",
     tagline: "Allocator Deck",
     stats: [
       { value: "$7.5M", label: "Under Management" },
@@ -30,24 +32,28 @@ export const slides = [
     points: [
       {
         problem: "How do I know the strategies work?",
-        solution: "We run $7.5M of our own capital through them. 30%+ annualised on crypto mean reversion, 1-year track record, $3.3M at high watermark. 5-year track record on Bitcoin fund of funds.",
+        solution:
+          "We run $7.5M of our own capital through them. 30%+ annualised on crypto mean reversion, 1-year track record, $3.3M at high watermark. 5-year track record on Bitcoin fund of funds.",
       },
       {
         problem: "How do I get transparency?",
-        solution: "Full investor portal \u2014 10-factor returns waterfall, trade history, compliance reports, settlement tracking. Same tools we use internally.",
+        solution:
+          "Full investor portal \u2014 10-factor returns waterfall, trade history, compliance reports, settlement tracking. Same tools we use internally.",
       },
       {
         problem: "How are fees aligned?",
-        solution: "0% management fee. 20\u201340% performance fee above high watermark, strategy-dependent. Lower-yielding strategies carry lower fees. We earn when you earn.",
+        solution:
+          "0% management fee. 20\u201340% performance fee above high watermark, strategy-dependent. Lower-yielding strategies carry lower fees. We earn when you earn.",
       },
       {
         problem: "Can I bring my own thesis?",
-        solution: "Yes. Backtest, build, and deploy to your specification with managed execution, custom risk parameters, and allocation constraints. Your thesis, our engineering and compliance.",
+        solution:
+          "Yes. Backtest, build, and deploy to your specification with managed execution, custom risk parameters, and allocation constraints. Your thesis, our engineering and compliance.",
       },
     ],
     differentiators: [
       "Same infrastructure runs our own capital",
-      "Live clients across every service line \u2014 IM, DART, Regulatory Umbrella",
+      "Live clients across every engagement route \u2014 Odum-Managed Strategies, DART Trading Infrastructure, Regulated Operating Models",
       "Nothing ships that we would not trust with our own money",
     ],
     conclusion: "Co-invest at identical terms as the firm principals.",
@@ -98,7 +104,8 @@ export const slides = [
         color: "rose",
       },
     ],
-    callout: "Odum is the first mandate you have seen that unifies crypto, TradFi quant, DeFi yield, sports ML, and prediction arbitrage inside one FCA-authorised wrapper \u2014 with the firm co-investing alongside on identical terms.",
+    callout:
+      "Odum is the first mandate you have seen that unifies crypto, TradFi quant, DeFi yield, sports ML, and prediction arbitrage inside one FCA-authorised wrapper \u2014 with the firm co-investing alongside on identical terms.",
   },
 
   // ── Slide 4: Live Performance ─────────────────────────────
@@ -123,7 +130,8 @@ export const slides = [
     inProgress: [
       {
         text: "DeFi yield strategies",
-        detail: "Three strategies at 5\u201320% yield \u2014 live for first DART client, opening to IM clients June 2026.",
+        detail:
+          "Three strategies at 5\u201320% yield \u2014 live for first DART client, opening to IM clients June 2026.",
       },
       {
         text: "Machine learning directional",
@@ -138,7 +146,8 @@ export const slides = [
         detail: "Oct 2026 launch. $100K onboarding + $5\u201310M IM allocation (NSE delta).",
       },
     ],
-    checkpoint: "Every new strategy tested on our own capital first. Nothing reaches a client that we have not validated with our own money.",
+    checkpoint:
+      "Every new strategy tested on our own capital first. Nothing reaches a client that we have not validated with our own money.",
   },
 
   // ── Slide 5: Strategy Families ────────────────────────────
@@ -146,7 +155,8 @@ export const slides = [
     id: 5,
     type: "strategies",
     title: "Strategy Families \u2014 Risk, Return, Capacity",
-    subtitle: "Same infrastructure, configurable risk appetite. Lower-yielding strategies carry lower performance fees.",
+    subtitle:
+      "Same infrastructure, configurable risk appetite. Lower-yielding strategies carry lower performance fees.",
     families: [
       {
         name: "DeFi \u2014 Stable Yield",
@@ -197,7 +207,8 @@ export const slides = [
         risk: "high",
       },
     ],
-    callout: "Bespoke mandates combine any of these. Allocation terms \u2014 single-strategy SMA, pooled multi-strategy, or custom bring-your-own-thesis \u2014 are scoped per client.",
+    callout:
+      "Bespoke mandates combine any of these. Allocation terms \u2014 single-strategy SMA, pooled multi-strategy, or custom bring-your-own-thesis \u2014 are scoped per client.",
   },
 
   // ── Slide 6: Your Investor Portal ─────────────────────────
@@ -289,19 +300,11 @@ export const slides = [
       },
       {
         title: "Step 2 \u2014 Suitability",
-        items: [
-          "Professional client / ECP assessment",
-          "Documentation and subscription agreement",
-          "KYC / AML",
-        ],
+        items: ["Professional client / ECP assessment", "Documentation and subscription agreement", "KYC / AML"],
       },
       {
         title: "Step 3 \u2014 Invest",
-        items: [
-          "Capital deployed",
-          "Portal access live",
-          "Monthly reporting begins",
-        ],
+        items: ["Capital deployed", "Portal access live", "Monthly reporting begins"],
       },
     ],
     contact: "ikenna@odum-research.com",
@@ -315,8 +318,16 @@ export const slides = [
     subtitle:
       "Forward these to allocators and family offices before a first call. Access code for the briefings hub is odum-briefings-2026.",
     sections: [
-      { name: "Investment Management", desc: "Public landing \u2014 proposition, strategies, fees", link: "/investment-management" },
-      { name: "IM Briefing", desc: "In-depth \u2014 mandate shapes, suitability, onboarding", link: "/briefings/investment-management" },
+      {
+        name: "Odum-Managed Strategies",
+        desc: "Public landing \u2014 proposition, strategies, fees",
+        link: "/investment-management",
+      },
+      {
+        name: "IM Briefing",
+        desc: "In-depth \u2014 mandate shapes, suitability, onboarding",
+        link: "/briefings/investment-management",
+      },
       { name: "Who We Are", desc: "Firm identity, scope, and who we serve", link: "/who-we-are" },
       { name: "Our Story", desc: "Long-form founder narrative", link: "/our-story" },
       { name: "FAQ", desc: "Common objections \u2014 IP, track record, fees, redemptions", link: "/faq" },
