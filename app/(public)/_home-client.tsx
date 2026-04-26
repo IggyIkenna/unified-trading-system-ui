@@ -307,8 +307,8 @@ function MarketsUniverse() {
             Selected markets. One operating surface
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-pretty text-sm leading-relaxed text-muted-foreground md:text-base">
-            Strategies move from research and simulation to live trading on the same operating surface,
-            with market data normalised across selected sources.
+            Strategies move from research and simulation to live trading on the same operating surface, with market data
+            normalised across selected sources.
           </p>
         </div>
 
@@ -318,8 +318,8 @@ function MarketsUniverse() {
         </div>
 
         <p className="mx-auto mt-6 max-w-2xl text-center text-xs text-muted-foreground/70">
-          Coverage and venues are scoped per engagement. The diagram illustrates the breadth of selected markets and
-          cross-market relationships Odum supports today; not all combinations are available to every client.
+          Coverage and venues are scoped per engagement. The diagram illustrates selected market relationships Odum
+          supports today; not every route or combination is available to every client.
         </p>
       </div>
     </section>
@@ -333,45 +333,55 @@ type EngagementRoute = {
   readonly bullets: readonly string[];
   readonly href: string;
   readonly cta: string;
+  /** Hex colour for the per-card top accent strip + bullet markers. */
+  readonly accent: string;
 };
 
 const ENGAGEMENT_ROUTES: readonly EngagementRoute[] = [
   {
     key: "investment",
     title: SERVICE_LABELS.investment.marketing,
-    summary: "Allocate capital to systematic strategies that Odum runs, with reporting Odum uses internally.",
+    // Each card answers three things in parallel: WHAT it is, structural
+    // mechanism, and one qualifier. ~3 short bullets max — anything longer
+    // belongs on the route's own page.
+    summary: "Allocate capital to selected systematic strategies managed by Odum.",
     bullets: [
-      "SMA or fund-route structures, available by separate agreement.",
-      "Odum acts as investment manager; clients keep custody on the SMA route.",
-      "Same reporting surface used to operate the strategies — partitioned views.",
+      "Available through SMA or fund-route structures where appropriate.",
+      "Odum acts as investment manager.",
+      "Reporting is delivered through the same operating surface used to run the mandate.",
     ],
     href: "/investment-management",
     cta: "Explore Odum-Managed Strategies",
+    // Subtle per-card accent strip across the top — gold for the
+    // capital/performance route. Restrained tones; signal not decoration.
+    accent: "#C8A94A",
   },
   {
     key: "dart",
     title: SERVICE_LABELS.dart.marketing,
-    summary:
-      "License the research-to-execution stack and run your own strategies on it, with the signal-flow you need.",
+    summary: "Use Odum's research-to-execution infrastructure to run strategies under the agreed engagement model.",
     bullets: [
-      "Client-provided, Odum-provided, or hybrid signals — same code path.",
-      "Research, ML, simulation, execution, and reporting in one operating model.",
-      "Fits trading teams that want infrastructure without allocating capital to Odum.",
+      "Client-provided, Odum-provided, or hybrid signal workflows.",
+      "Research, testing, execution, monitoring, and reporting in one system.",
+      "Suitable for teams that want infrastructure without allocating capital to Odum-managed strategies.",
     ],
     href: "/platform",
     cta: "Explore DART Trading Infrastructure",
+    accent: "#22D3EE",
   },
   {
     key: "regulatory",
     title: SERVICE_LABELS.regulatory.marketing,
-    summary: "Where the engagement requires it, Odum can structure the operating model under FCA cover.",
+    summary:
+      "Where the engagement requires it, Odum can help structure the operating model around governance, reporting, and permissions.",
     bullets: [
-      "Reviewed case by case; not a generic regulatory umbrella offer.",
-      "Specific structures considered: advisory, AR-style arrangement, affiliate fund route.",
-      "Governance, reporting, and oversight align with the engagement.",
+      "Reviewed case by case; not a generic umbrella service.",
+      "May include SMA pathways, affiliate-supported structures, or other approved arrangements.",
+      "Governance, reporting, and oversight are aligned to the engagement.",
     ],
     href: "/regulatory",
     cta: "Explore Regulated Operating Models",
+    accent: "#34D399",
   },
 ] as const;
 
@@ -384,28 +394,59 @@ function EngagementRoutes() {
             <h2 id="engagement-routes-heading" className="text-3xl font-semibold tracking-tight md:text-4xl">
               Three engagement routes
             </h2>
-            <p className="mt-4 text-base leading-relaxed text-muted-foreground">
-              Most prospects fit one of three. The questionnaire helps us confirm which one applies before either side
-              spends time on a call.
+            <p className="mt-4 text-base leading-[1.7] text-muted-foreground">
+              Most clients fit one of three routes. The questionnaire helps confirm the right one before either side
+              commits time to a call.
             </p>
           </div>
           <div className="mt-12 grid gap-6 md:grid-cols-3">
             {ENGAGEMENT_ROUTES.map((route) => (
-              <Card key={route.key} className="flex h-full flex-col border-border/80 bg-card/60">
-                <CardHeader>
+              <Card
+                key={route.key}
+                className="relative flex h-full flex-col overflow-hidden border-border/80 bg-card/60"
+              >
+                {/* 2px accent strip across the top — gold / cyan / green —
+                    restrained scan-aid so the three routes are visually
+                    distinct without the cards looking decorative. Inline
+                    style so the colour ships regardless of Tailwind JIT. */}
+                <span
+                  aria-hidden
+                  className="absolute inset-x-0 top-0 h-[2px]"
+                  style={{ backgroundColor: route.accent, opacity: 0.85 }}
+                />
+                <CardHeader className="pt-6">
                   <CardTitle className="text-lg">{route.title}</CardTitle>
-                  <CardDescription className="text-sm leading-relaxed">{route.summary}</CardDescription>
+                  {/* Summary does the heavy lift — first thing a skimmer
+                      reads. Keep at sm but bump line-height for readability. */}
+                  <CardDescription className="text-sm leading-[1.65] text-muted-foreground">
+                    {route.summary}
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-1 flex-col">
-                  <ul className="space-y-2 text-sm text-muted-foreground">
+                  <ul className="space-y-3 text-[13px] text-muted-foreground" style={{ lineHeight: 1.6 }}>
                     {route.bullets.map((bullet) => (
-                      <li key={bullet} className="flex gap-2">
-                        <span aria-hidden className="mt-2 size-1.5 shrink-0 rounded-full bg-primary/70" />
-                        <span className="leading-relaxed">{bullet}</span>
+                      <li key={bullet} className="flex gap-2.5">
+                        {/* Bullet dot vertically centred on the first line of
+                            text. text-[13px] × leading 1.6 = 20.8px line, so
+                            (20.8 − 6) / 2 ≈ 7.4px top offset for a 6px dot.
+                            Inline style — Tailwind arbitrary-value mt-[Npx]
+                            is unreliable through the JIT in this codebase. */}
+                        <span
+                          aria-hidden
+                          className="shrink-0 rounded-full"
+                          style={{
+                            width: 6,
+                            height: 6,
+                            marginTop: 7,
+                            backgroundColor: route.accent,
+                            opacity: 0.85,
+                          }}
+                        />
+                        <span>{bullet}</span>
                       </li>
                     ))}
                   </ul>
-                  <div className="mt-6 pt-2">
+                  <div className="mt-auto pt-6">
                     <Button asChild variant="outline" size="sm">
                       <Link
                         href={route.href}
@@ -433,17 +474,28 @@ function EngagementRoutes() {
 function WhyOdum() {
   return (
     <section aria-labelledby="why-odum-heading" className="border-b border-border/40 bg-card/20">
-      <div className="container px-4 py-16 md:px-6 md:py-20">
+      <div className="container px-4 py-20 md:px-6 md:py-28">
         <div className="mx-auto max-w-3xl">
-          <h2 id="why-odum-heading" className="text-2xl font-semibold tracking-tight md:text-3xl">
+          {/* Bumped to text-3xl/4xl + leading-tight so this section reads as
+              a positioning statement rather than a paragraph note. */}
+          <h2
+            id="why-odum-heading"
+            className="text-3xl font-semibold tracking-tight md:text-4xl"
+            style={{ lineHeight: 1.15 }}
+          >
             Why Odum exists
           </h2>
-          <p className="mt-5 text-base leading-relaxed text-muted-foreground md:text-lg">
-            Odum was built because the systems institutional traders run on internally rarely match the systems
-            available to the clients funding them. We operate one codebase across research, execution, reporting, and
-            compliance, and offer narrow access to it under structures that hold up to allocator and regulator scrutiny.
+          {/* Lead paragraph carries the framing — bigger size + brighter
+              text colour so it stands apart from the supporting paragraph. */}
+          <p className="mt-6 text-lg text-foreground/85 md:text-xl" style={{ lineHeight: 1.55 }}>
+            Institutional trading teams often stitch together research, execution, reporting, compliance, and
+            governance. Odum was built to reduce that fragmentation.
           </p>
-          <p className="mt-6 text-sm">
+          <p className="mt-5 text-base text-muted-foreground" style={{ lineHeight: 1.7 }}>
+            We operate one codebase across research, execution, reporting, and compliance, then offer narrow access to
+            that system through structures that can stand up to allocator and regulator scrutiny.
+          </p>
+          <p className="mt-7 text-sm">
             <Link href="/our-story" className="font-medium text-foreground underline-offset-4 hover:underline">
               Read the short story
               <ArrowRight className="ml-1 inline size-3.5 align-[-2px]" />
@@ -482,11 +534,17 @@ const ENGAGEMENT_JOURNEY: readonly {
   },
   {
     step: "05",
-    title: "Strategy Review",
-    description: "Per-prospect tailored layer: proposed operating model, DART config, regulatory pathway, demo prep.",
+    title: "Platform walkthrough",
+    description:
+      "A tailored walkthrough of the relevant workflows, followed by a self-guided review and feedback on fit.",
   },
   {
     step: "06",
+    title: "Strategy Review",
+    description: "Per-prospect tailored layer: proposed operating model, DART config, and regulatory pathway.",
+  },
+  {
+    step: "07",
     title: "Onboarding",
     description: "Documentation, custody arrangements, and platform access where applicable.",
   },
@@ -495,24 +553,71 @@ const ENGAGEMENT_JOURNEY: readonly {
 function EngagementJourney() {
   return (
     <section aria-labelledby="engagement-journey-heading" className="border-b border-border/40 bg-background">
-      <div className="container px-4 py-16 md:px-6 md:py-20">
-        <div className="mx-auto max-w-5xl">
+      <div className="container px-4 py-20 md:px-6 md:py-24">
+        <div className="mx-auto max-w-6xl">
           <div className="mx-auto max-w-2xl text-center">
             <h2 id="engagement-journey-heading" className="text-3xl font-semibold tracking-tight md:text-4xl">
               How an engagement progresses
             </h2>
-            <p className="mt-4 text-base leading-relaxed text-muted-foreground">
+            <p className="mt-4 text-base text-muted-foreground" style={{ lineHeight: 1.7 }}>
               The funnel is intentional. Each stage filters fit on both sides and earns the next.
             </p>
           </div>
-          <ol className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+
+          {/* Process rail — desktop is seven in a single row connected by a
+              hairline; mobile collapses to a vertical stack with the rail
+              running down the left. Reads as a deliberate sequence rather
+              than a generic 2x3 card grid. */}
+          <ol className="relative mt-14 hidden lg:block">
+            {/* Hairline connector across the row (desktop only) */}
+            <span
+              aria-hidden
+              className="absolute left-0 right-0 top-[15px] h-px"
+              style={{ backgroundColor: "rgba(255,255,255,0.08)" }}
+            />
+            <div className="grid grid-cols-7 gap-3">
+              {ENGAGEMENT_JOURNEY.map((stage) => (
+                <li key={stage.step} className="relative">
+                  {/* Numbered node sitting on the rail */}
+                  <span
+                    aria-hidden
+                    className="relative z-10 flex size-[30px] items-center justify-center rounded-full border bg-background font-mono text-[11px] font-semibold"
+                    style={{
+                      borderColor: "rgba(34,211,238,0.45)",
+                      color: "#22D3EE",
+                    }}
+                  >
+                    {stage.step}
+                  </span>
+                  <p className="mt-4 text-sm font-semibold text-foreground">{stage.title}</p>
+                  <p className="mt-1.5 text-[12.5px] text-muted-foreground" style={{ lineHeight: 1.55 }}>
+                    {stage.description}
+                  </p>
+                </li>
+              ))}
+            </div>
+          </ol>
+
+          {/* Mobile / tablet: vertical rail with steps stacked. */}
+          <ol className="relative mt-14 space-y-7 border-l lg:hidden" style={{ borderColor: "rgba(255,255,255,0.08)" }}>
             {ENGAGEMENT_JOURNEY.map((stage) => (
-              <li key={stage.step} className="rounded-lg border border-border/60 bg-card/40 p-5">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                  Step {stage.step}
+              <li key={stage.step} className="relative pl-7">
+                <span
+                  aria-hidden
+                  className="absolute flex size-[28px] items-center justify-center rounded-full border bg-background font-mono text-[11px] font-semibold"
+                  style={{
+                    left: -14,
+                    top: 0,
+                    borderColor: "rgba(34,211,238,0.45)",
+                    color: "#22D3EE",
+                  }}
+                >
+                  {stage.step}
+                </span>
+                <p className="text-sm font-semibold text-foreground">{stage.title}</p>
+                <p className="mt-1.5 text-[13px] text-muted-foreground" style={{ lineHeight: 1.55 }}>
+                  {stage.description}
                 </p>
-                <p className="mt-3 text-base font-medium text-foreground">{stage.title}</p>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{stage.description}</p>
               </li>
             ))}
           </ol>
@@ -522,22 +627,60 @@ function EngagementJourney() {
   );
 }
 
+/**
+ * Governance / risk pillars — three-card scan rather than a wall of
+ * paragraph text. Each card is the credibility marker an allocator or
+ * compliance reviewer is checking for.
+ */
+const GOVERNANCE_PILLARS: ReadonlyArray<{
+  readonly key: string;
+  readonly title: string;
+  readonly body: string;
+}> = [
+  {
+    key: "regulated-scope",
+    title: "Regulated scope",
+    body: "FCA-authorised (firm reference 975797). Engagement scope reviewed case by case.",
+  },
+  {
+    key: "risk-discipline",
+    title: "Risk discipline",
+    body: "Capacity limits, drawdown discipline, and risk-and-exposure controls are part of the operating model.",
+  },
+  {
+    key: "dependency-clarity",
+    title: "Dependency clarity",
+    body: "Custody, fund administration, and counterparty onboarding timelines depend on third parties — we do not guarantee coverage we do not control.",
+  },
+];
+
 function GovernanceAndRisk() {
   return (
     <section aria-labelledby="governance-heading" className="border-b border-border/40 bg-card/20">
-      <div className="container px-4 py-16 md:px-6 md:py-20">
-        <div className="mx-auto max-w-3xl">
-          <h2 id="governance-heading" className="text-2xl font-semibold tracking-tight md:text-3xl">
-            Governance and risk
-          </h2>
-          <p className="mt-5 text-base leading-relaxed text-muted-foreground">
-            Odum Research Limited is authorised and regulated by the FCA (firm reference 975797). Investment management
-            activity sits inside that perimeter; trading-infrastructure engagements and regulated operating models are
-            reviewed case by case. Strategies carry capacity limits, drawdown discipline, and the same risk-and-exposure
-            controls in research and live operation. Where a structure depends on third-party custody, fund
-            administration, or counterparty onboarding, timelines depend on those parties &mdash; we do not guarantee
-            coverage we do not control.
-          </p>
+      <div className="container px-4 py-20 md:px-6 md:py-24">
+        <div className="mx-auto max-w-5xl">
+          <div className="mx-auto max-w-2xl text-center">
+            <h2 id="governance-heading" className="text-3xl font-semibold tracking-tight md:text-4xl">
+              Governance and risk
+            </h2>
+            <p className="mt-4 text-base text-muted-foreground" style={{ lineHeight: 1.7 }}>
+              The governance and risk markers, set out plainly.
+            </p>
+          </div>
+          <div className="mt-12 grid gap-5 md:grid-cols-3">
+            {GOVERNANCE_PILLARS.map((pillar) => (
+              <div
+                key={pillar.key}
+                className="rounded-lg border bg-card/50 p-6"
+                style={{ borderColor: "rgba(255,255,255,0.08)" }}
+              >
+                <h3 className="text-base font-semibold text-foreground">{pillar.title}</h3>
+                <p className="mt-3 text-[13.5px] text-muted-foreground" style={{ lineHeight: 1.65 }}>
+                  {pillar.body}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
@@ -547,13 +690,13 @@ function GovernanceAndRisk() {
 function FinalCTA() {
   return (
     <section aria-labelledby="final-cta-heading" className="bg-background">
-      <div className="container px-4 py-16 md:px-6 md:py-20">
+      <div className="container px-4 py-20 md:px-6 md:py-24">
         <div className="mx-auto max-w-2xl text-center">
           <h2 id="final-cta-heading" className="text-3xl font-semibold tracking-tight md:text-4xl">
-            Ready to start?
+            Start with a review
           </h2>
-          <p className="mt-4 text-base leading-relaxed text-muted-foreground">
-            A short questionnaire is the most efficient way for both sides to check fit. If your situation is already
+          <p className="mt-4 text-base text-muted-foreground" style={{ lineHeight: 1.7 }}>
+            A short questionnaire helps us understand the route, briefing, and next step. If your situation is already
             specific, contact us directly.
           </p>
           <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
