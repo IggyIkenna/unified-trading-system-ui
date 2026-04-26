@@ -53,7 +53,8 @@ const DEFAULT_SUBROUTE_SHAPE: DashboardSubRouteVisibility = {
     settlement: "visible",
     reconciliation: "visible",
     regulatory: "hidden",
-    catalogue: "hidden",
+    "own-account": "visible",
+    catalogue: "visible",
   },
   "investor-relations": {
     board: "hidden",
