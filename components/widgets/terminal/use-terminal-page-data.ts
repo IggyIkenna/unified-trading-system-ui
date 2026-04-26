@@ -22,57 +22,57 @@ import type { TerminalData, TerminalInstrument } from "./terminal-data-context";
 
 const DEFAULT_INSTRUMENTS: TerminalInstrument[] = [
   {
-    symbol: "BTC/USDT",
-    name: "Bitcoin",
-    venue: "Binance",
+    symbol: "BTCUSDT",
+    name: "BTC/USDT Perp",
+    venue: "BINANCE-FUTURES",
     category: "CeFi",
-    instrumentKey: "BTC-USDT-SPOT@BINANCE",
+    instrumentKey: "BINANCE-FUTURES:BTCUSDT",
     midPrice: 87234.56,
     change: 1.23,
   },
   {
-    symbol: "ETH/USDT",
-    name: "Ethereum",
-    venue: "Binance",
+    symbol: "ETHUSDT",
+    name: "ETH/USDT Perp",
+    venue: "BINANCE-FUTURES",
     category: "CeFi",
-    instrumentKey: "ETH-USDT-SPOT@BINANCE",
+    instrumentKey: "BINANCE-FUTURES:ETHUSDT",
     midPrice: 2045.78,
     change: -0.45,
   },
   {
-    symbol: "ETH-PERP",
-    name: "ETH Perpetual",
-    venue: "Hyperliquid",
+    symbol: "ETH",
+    name: "ETH-PERP",
+    venue: "HYPERLIQUID",
     category: "CeFi",
-    instrumentKey: "ETH-PERP@HYPERLIQUID",
+    instrumentKey: "HYPERLIQUID:ETH",
     midPrice: 2043.5,
     change: -0.52,
   },
   {
-    symbol: "SOL/USDT",
-    name: "Solana",
-    venue: "Binance",
-    category: "CeFi",
-    instrumentKey: "SOL-USDT-SPOT@BINANCE",
-    midPrice: 134.21,
-    change: 2.15,
+    symbol: "ES",
+    name: "S&P 500 Futures",
+    venue: "CME",
+    category: "TradFi",
+    instrumentKey: "CME:ES",
+    midPrice: 5180.0,
+    change: 0.42,
   },
   {
-    symbol: "BTC-PERP",
-    name: "BTC Perpetual",
-    venue: "Binance",
-    category: "CeFi",
-    instrumentKey: "BTC-PERP@BINANCE",
-    midPrice: 87200.0,
-    change: 1.18,
+    symbol: "WETH-USDC-500",
+    name: "WETH/USDC (0.05%)",
+    venue: "UNISWAPV3-ETHEREUM",
+    category: "DeFi",
+    instrumentKey: "UNISWAPV3-ETHEREUM:WETH-USDC-500",
+    midPrice: 2043.5,
+    change: -0.48,
   },
 ];
 
 const strategyInstruments: Record<string, string> = {
-  "btc-basis-v3": "BTC/USDT",
-  "eth-vol-arb": "ETH/USDT",
-  "defi-yield-aave": "ETH/USDT",
-  "sol-momentum": "SOL/USDT",
+  "btc-basis-v3": "BTCUSDT",
+  "eth-vol-arb": "ETHUSDT",
+  "defi-yield-aave": "ETH",
+  "sol-momentum": "BTCUSDT",
 };
 
 const generateCandleData = (basePrice: number, tf: string, points = 200) => {
@@ -208,22 +208,15 @@ export function useTerminalPageData(): TerminalPageResult {
     (inst) => inst.instrumentKey,
   );
 
-  const watchlistInstruments = React.useMemo(() => {
-    if (!linkedStrategyId) {
-      return scopedInstruments.filter((i) => i.category === "CeFi");
-    }
-    return scopedInstruments;
-  }, [linkedStrategyId, scopedInstruments]);
-
   const instrumentsByCategory = React.useMemo(() => {
     const groups: Record<string, TerminalInstrument[]> = {};
-    for (const inst of watchlistInstruments) {
+    for (const inst of scopedInstruments) {
       const cat = inst.category ?? "Other";
       if (!groups[cat]) groups[cat] = [];
       groups[cat].push(inst);
     }
     return groups;
-  }, [watchlistInstruments]);
+  }, [scopedInstruments]);
 
   const linkedStrategy: Strategy | null = React.useMemo(() => {
     if (!linkedStrategyId) return null;
@@ -287,9 +280,9 @@ export function useTerminalPageData(): TerminalPageResult {
   }, [linkedStrategy, orderSize, selectedInstrument, orderType]);
 
   const { data: candlesApiData } = useCandles(
-    selectedInstrument?.venue ?? "Binance",
-    selectedInstrument?.symbol ?? "BTC/USDT",
-    timeframe === "1m" ? "1M" : timeframe === "5m" ? "5M" : timeframe === "15m" ? "15M" : "1H",
+    selectedInstrument?.venue ?? "BINANCE-FUTURES",
+    selectedInstrument?.symbol ?? "BTCUSDT",
+    timeframe,
     200,
     modeParam,
     asOfParam,
@@ -793,7 +786,7 @@ export function useTerminalPageData(): TerminalPageResult {
 
   const terminalData: TerminalData = React.useMemo(
     () => ({
-      instruments: [...watchlistInstruments],
+      instruments: [...scopedInstruments],
       instrumentsByCategory,
       selectedInstrument,
       setSelectedInstrument,
@@ -842,7 +835,7 @@ export function useTerminalPageData(): TerminalPageResult {
       errorEvents: null,
     }),
     [
-      watchlistInstruments,
+      scopedInstruments,
       instrumentsByCategory,
       selectedInstrument,
       livePrice,

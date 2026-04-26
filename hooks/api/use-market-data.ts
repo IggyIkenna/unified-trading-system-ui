@@ -17,6 +17,8 @@ export function useCandles(
   count = 100,
   mode?: string,
   asOf?: string,
+  fromDate?: string,
+  toDate?: string,
 ) {
   const { user, token } = useAuth();
   const params = new URLSearchParams({
@@ -27,33 +29,20 @@ export function useCandles(
   });
   if (mode) params.set("mode", mode);
   if (asOf) params.set("as_of", asOf);
+  if (fromDate) params.set("from_date", fromDate);
+  if (toDate) params.set("to_date", toDate);
 
   return useQuery<CandlesResponse>({
-    queryKey: [
-      "candles",
-      venue,
-      instrument,
-      timeframe,
-      count,
-      mode,
-      asOf,
-      user?.id,
-    ],
-    queryFn: () =>
-      typedFetch<CandlesResponse>(
-        `/api/market-data/candles?${params.toString()}`,
-        token,
-      ),
+    queryKey: ["candles", venue, instrument, timeframe, count, mode, asOf, fromDate, toDate, user?.id],
+    queryFn: () => typedFetch<CandlesResponse>(`/api/market-data/candles?${params.toString()}`, token),
     enabled: !!user && !!venue && !!instrument,
+    staleTime: mode === "batch" || mockDataMode ? 5 * 60 * 1000 : 0,
+    gcTime: mode === "batch" || mockDataMode ? 30 * 60 * 1000 : 5 * 60 * 1000,
+    refetchInterval: mode === "batch" || mockDataMode ? (false as const) : 10_000,
   });
 }
 
-export function useOrderBook(
-  venue: string,
-  instrument: string,
-  mode?: string,
-  asOf?: string,
-) {
+export function useOrderBook(venue: string, instrument: string, mode?: string, asOf?: string) {
   const { user, token } = useAuth();
   const params = new URLSearchParams({ venue, instrument });
   if (mode) params.set("mode", mode);
@@ -61,16 +50,9 @@ export function useOrderBook(
 
   return useQuery<OrderBookResponse>({
     queryKey: ["orderbook", venue, instrument, mode, asOf, user?.id],
-    queryFn: () =>
-      typedFetch<OrderBookResponse>(
-        `/api/market-data/orderbook?${params.toString()}`,
-        token,
-      ),
+    queryFn: () => typedFetch<OrderBookResponse>(`/api/market-data/orderbook?${params.toString()}`, token),
     enabled: !!user && !!venue && !!instrument,
-    refetchInterval:
-      mode === "batch" || mockDataMode
-        ? false
-        : 5000,
+    refetchInterval: mode === "batch" || mockDataMode ? false : 5000,
   });
 }
 
@@ -94,11 +76,9 @@ export function useTickers() {
 
   return useQuery<TickersResponse>({
     queryKey: ["tickers", user?.id],
-    queryFn: () =>
-      typedFetch<TickersResponse>("/api/market-data/tickers", token),
+    queryFn: () => typedFetch<TickersResponse>("/api/market-data/tickers", token),
     enabled: !!user,
-    refetchInterval:
-      mockDataMode ? false : 10000,
+    refetchInterval: mockDataMode ? false : 10000,
   });
 }
 
@@ -119,11 +99,7 @@ export function useVolSurface(underlying: string) {
   const { user, token } = useAuth();
   return useQuery({
     queryKey: ["vol-surface", underlying, user?.id],
-    queryFn: () =>
-      apiFetch(
-        `/api/derivatives/vol-surface?underlying=${encodeURIComponent(underlying)}`,
-        token,
-      ),
+    queryFn: () => apiFetch(`/api/derivatives/vol-surface?underlying=${encodeURIComponent(underlying)}`, token),
     enabled: !!user && !!underlying,
   });
 }
