@@ -41,13 +41,7 @@ export interface BriefingSection {
  * these values. `_hub.yaml` is a separate file describing the hub index
  * and does NOT use `BriefingPillarSlug`.
  */
-export type BriefingPillarSlug =
-  | "investment-management"
-  | "regulatory"
-  | "platform"
-  | "dart-signals-in"
-  | "dart-full"
-  | "signals-out";
+export type BriefingPillarSlug = "investment-management" | "dart-trading-infrastructure" | "regulated-operating-models";
 
 export interface BriefingPillar {
   slug: BriefingPillarSlug;

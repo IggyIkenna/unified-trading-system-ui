@@ -27,11 +27,8 @@ import type { BriefingHub, BriefingPillar, BriefingPillarSlug, BriefingSection }
  */
 const VALID_PILLAR_SLUGS: readonly BriefingPillarSlug[] = [
   "investment-management",
-  "regulatory",
-  "platform",
-  "dart-signals-in",
-  "dart-full",
-  "signals-out",
+  "dart-trading-infrastructure",
+  "regulated-operating-models",
 ];
 
 const VALID_APPLIES_TO = new Set(["signals-in", "full-pipeline", "both"]);

@@ -1,11 +1,9 @@
 import { BriefingHero } from "@/components/briefings/briefing-hero";
 import { StrategyCoverageMatrix } from "@/components/briefings/strategy-coverage-matrix";
 import { DocsNav, type DocsNavSection } from "@/components/docs/docs-nav";
-import { DartMaturityLadderDiagram } from "@/components/marketing/dart-maturity-ladder-diagram";
 import { DartPathsOverviewDiagram } from "@/components/marketing/dart-paths-overview-diagram";
 import { FundSmaHierarchyDiagram } from "@/components/marketing/fund-sma-hierarchy-diagram";
 import { RegUmbrellaHierarchyDiagram } from "@/components/marketing/reg-umbrella-hierarchy-diagram";
-import { SignalFlowDiagram } from "@/components/marketing/signal-flow-diagram";
 import { StrategyFamilyCatalogue } from "@/components/marketing/strategy-family-catalogue";
 import { composeRenderers, renderWithTerms } from "@/components/marketing/render-with-terms";
 import {
@@ -21,7 +19,10 @@ import * as React from "react";
 
 /** URL-safe id from a human heading. */
 function slugifyId(s: string): string {
-  return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  return s
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 }
 
 /**
@@ -99,22 +100,22 @@ function AppliesToBadge({ value }: { value: BriefingAppliesTo }) {
 
 /**
  * Slugs that render the full strategy-family × category coverage matrix
- * after the final content section. IM allocators and DART builders need
- * the breadth map; narrower paths (dart-signals-in, signals-out, regulatory)
- * render a pointer instead of the full matrix.
+ * after the final content section. Allocators and DART builders need the
+ * breadth map; the regulated-operating-models pillar renders a pointer
+ * instead of the full matrix.
  */
-const MATRIX_SLUGS = new Set<string>(["investment-management", "platform", "dart-full"]);
+const MATRIX_SLUGS = new Set<string>(["investment-management", "dart-trading-infrastructure"]);
 
 function DartTierComparisonTable() {
   const rows: { feature: string; signalsIn: boolean; full: boolean }[] = [
-    { feature: "P&L dashboard & reporting",   signalsIn: true,  full: true  },
-    { feature: "Positions & terminal",         signalsIn: true,  full: true  },
-    { feature: "Strategy observe / alerts",    signalsIn: true,  full: true  },
-    { feature: "Signal intake webhook",        signalsIn: true,  full: false },
-    { feature: "ML backtesting",               signalsIn: false, full: true  },
-    { feature: "Strategy customisation",       signalsIn: false, full: true  },
-    { feature: "Promote to live workflow",     signalsIn: false, full: true  },
-    { feature: "Feature engineering pipeline", signalsIn: false, full: true  },
+    { feature: "P&L dashboard & reporting", signalsIn: true, full: true },
+    { feature: "Positions & terminal", signalsIn: true, full: true },
+    { feature: "Strategy observe / alerts", signalsIn: true, full: true },
+    { feature: "Signal intake webhook", signalsIn: true, full: false },
+    { feature: "ML backtesting", signalsIn: false, full: true },
+    { feature: "Strategy customisation", signalsIn: false, full: true },
+    { feature: "Promote to live workflow", signalsIn: false, full: true },
+    { feature: "Feature engineering pipeline", signalsIn: false, full: true },
   ];
   return (
     <div className="overflow-x-auto rounded-lg border border-border/60">
@@ -131,14 +132,18 @@ function DartTierComparisonTable() {
             <tr key={row.feature} className={i % 2 === 1 ? "bg-muted/20" : ""}>
               <td className="px-4 py-2.5 text-foreground/85">{row.feature}</td>
               <td className="px-4 py-2.5 text-center">
-                {row.signalsIn
-                  ? <span className="font-semibold text-emerald-600">✓</span>
-                  : <span className="text-muted-foreground/40">—</span>}
+                {row.signalsIn ? (
+                  <span className="font-semibold text-emerald-600">✓</span>
+                ) : (
+                  <span className="text-muted-foreground/40">—</span>
+                )}
               </td>
               <td className="px-4 py-2.5 text-center">
-                {row.full
-                  ? <span className="font-semibold text-emerald-600">✓</span>
-                  : <span className="text-muted-foreground/40">—</span>}
+                {row.full ? (
+                  <span className="font-semibold text-emerald-600">✓</span>
+                ) : (
+                  <span className="text-muted-foreground/40">—</span>
+                )}
               </td>
             </tr>
           ))}
@@ -167,16 +172,10 @@ function DiagramForSlug({ slug }: { slug: BriefingPillar["slug"] }) {
   switch (slug) {
     case "investment-management":
       return <FundSmaHierarchyDiagram />;
-    case "regulatory":
+    case "regulated-operating-models":
       return <RegUmbrellaHierarchyDiagram />;
-    case "dart-signals-in":
-      return <SignalFlowDiagram direction="in" />;
-    case "signals-out":
-      return <SignalFlowDiagram direction="out" />;
-    case "platform":
+    case "dart-trading-infrastructure":
       return <DartPathsOverviewDiagram />;
-    case "dart-full":
-      return <DartMaturityLadderDiagram />;
   }
 }
 
@@ -184,14 +183,10 @@ function Section({ section, id }: { section: BriefingSection; id?: string }) {
   return (
     <section id={id} className="scroll-mt-24 space-y-3">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-        <h2 className="text-lg font-semibold tracking-tight text-foreground">
-          {section.title}
-        </h2>
+        <h2 className="text-lg font-semibold tracking-tight text-foreground">{section.title}</h2>
         {section.appliesTo && <AppliesToBadge value={section.appliesTo} />}
       </div>
-      <p className="text-body text-foreground/85 max-w-2xl leading-relaxed">
-        {renderBody(section.body)}
-      </p>
+      <p className="text-body text-foreground/85 max-w-2xl leading-relaxed">{renderBody(section.body)}</p>
       {section.bullets && (
         <ul className="list-disc pl-5 text-sm text-foreground/80 space-y-1.5 max-w-2xl leading-relaxed">
           {section.bullets.map((b) => (
@@ -200,79 +195,56 @@ function Section({ section, id }: { section: BriefingSection; id?: string }) {
         </ul>
       )}
       {section.bodyAfter && (
-        <p className="text-body text-foreground/85 max-w-2xl leading-relaxed">
-          {renderBody(section.bodyAfter)}
-        </p>
+        <p className="text-body text-foreground/85 max-w-2xl leading-relaxed">{renderBody(section.bodyAfter)}</p>
       )}
     </section>
   );
 }
 
-/** Per-slug "Next: fill the questionnaire" block.
- *  Same target form across briefings; entry copy + service pre-select varies. */
-const NEXT_STEPS_COPY: Record<
-  string,
-  { heading: string; service: "IM" | "DART" | "RegUmbrella" | null }
-> = {
+/** Per-slug "Next: book your initial call" block.
+ *  By the time a reader is on a /briefings/* page they've already submitted
+ *  the access-code questionnaire, so the next step is the 30-minute call
+ *  (stage 4 of the prospect funnel) — heading copy varies per pillar. */
+const NEXT_STEPS_COPY: Record<string, { heading: string }> = {
   "investment-management": {
-    heading: "Next: tell us about your investment preferences",
-    service: "IM",
+    heading: "Next: 30 minutes on your investment preferences",
   },
-  platform: {
-    heading: "Next: tell us about the strategies you want to run",
-    service: "DART",
+  "dart-trading-infrastructure": {
+    heading: "Next: 30 minutes on your DART shape, signals, and execution",
   },
-  "dart-signals-in": {
-    heading: "Next: tell us about your signals and execution needs",
-    service: "DART",
-  },
-  "dart-full": {
-    heading: "Next: tell us about your research and execution setup",
-    service: "DART",
-  },
-  "signals-out": {
-    heading: "Next: tell us about the signals you want to licence",
-    service: "DART",
-  },
-  regulatory: {
-    heading: "Next: tell us about your firm's regulatory goals",
-    service: "RegUmbrella",
+  "regulated-operating-models": {
+    heading: "Next: 30 minutes on your firm's regulatory goals",
   },
 };
 
 function BriefingNextSteps({ slug }: { slug: string }) {
   const copy = NEXT_STEPS_COPY[slug] ?? {
-    heading: "Next: tell us about your strategy",
-    service: null,
+    heading: "Next: 30 minutes on your specifics",
   };
-  const href = copy.service !== null ? `/questionnaire?service=${copy.service}` : "/questionnaire";
   return (
-    <section
-      data-testid="briefing-next-steps"
-      className="space-y-4 rounded-lg border border-border/60 bg-card/40 p-6"
-    >
+    <section data-testid="briefing-next-steps" className="space-y-4 rounded-lg border border-border/60 bg-card/40 p-6">
       <h2 className="text-base font-semibold tracking-tight text-foreground">{copy.heading}</h2>
       <p className="text-sm text-foreground/85 leading-relaxed max-w-2xl">
-        It&apos;s the same catch-all questionnaire everyone fills &mdash; six quick questions about
-        which asset classes, venues, and strategy styles fit you, plus an optional Regulatory
-        Umbrella branch if you need FCA cover. Takes ~2 minutes and lets us pre-configure the
-        right path before the first call.
+        You&apos;ve already shared the basics in the questionnaire (that&rsquo;s how you got here). The natural next
+        step is a 30-minute initial call &mdash; targeted now that you have the deep-dive context, focused on which
+        products actually fit rather than what Odum does. If you&rsquo;re ready to be specific on the record, you can
+        skip ahead to the deeper Strategy Evaluation.
       </p>
       <div className="flex flex-wrap gap-3 pt-1">
-        <Link
-          href={href}
-          className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
-        >
-          Start the questionnaire &rarr;
-        </Link>
         <a
           href={CALENDLY_URL}
           target="_blank"
           rel="noopener noreferrer"
+          className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+        >
+          Book a 30-minute call &rarr;
+        </a>
+        <Link
+          href="/strategy-evaluation"
           className="inline-flex items-center rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
         >
-          Book a 45-minute call
-        </a>
+          Submit a Strategy Evaluation
+        </Link>
       </div>
     </section>
   );
@@ -284,8 +256,8 @@ export default async function BriefingPillarPage({ params }: PageProps) {
   if (!pillar) notFound();
 
   const showCoverageMatrix = MATRIX_SLUGS.has(pillar.slug);
-  const showFamilyCatalogue = pillar.slug === "dart-full";
-  const showTierComparison = pillar.slug === "dart-signals-in";
+  const showFamilyCatalogue = pillar.slug === "dart-trading-infrastructure";
+  const showTierComparison = pillar.slug === "dart-trading-infrastructure";
 
   // Build the TOC dynamically so it reflects what this pillar actually renders.
   const tocSections: DocsNavSection[] = [
@@ -302,25 +274,17 @@ export default async function BriefingPillarPage({ params }: PageProps) {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 md:px-6">
-      <Link
-        href="/briefings"
-        className="mb-6 inline-block text-xs text-muted-foreground hover:text-foreground"
-      >
+      <Link href="/briefings" className="mb-6 inline-block text-xs text-muted-foreground hover:text-foreground">
         ← All briefings
       </Link>
 
       {/* Mobile / tablet TOC — collapsible, hidden on md+ where the sidebar takes over */}
       <details className="mb-8 rounded-lg border border-border bg-card/40 md:hidden">
-        <summary className="cursor-pointer select-none px-4 py-3 text-sm font-medium">
-          On this page
-        </summary>
+        <summary className="cursor-pointer select-none px-4 py-3 text-sm font-medium">On this page</summary>
         <ul className="space-y-1 px-4 pb-3 pt-1">
           {tocSections.map((s) => (
             <li key={s.id}>
-              <a
-                href={`#${s.id}`}
-                className="block rounded py-1.5 text-sm text-muted-foreground hover:text-foreground"
-              >
+              <a href={`#${s.id}`} className="block rounded py-1.5 text-sm text-muted-foreground hover:text-foreground">
                 {s.label}
               </a>
             </li>
@@ -347,9 +311,7 @@ export default async function BriefingPillarPage({ params }: PageProps) {
           <section id="overview" className="scroll-mt-24 space-y-6">
             <BriefingHero title={pillar.title} tldr={pillar.tldr} cta={pillar.cta} />
 
-            <p className="text-body text-foreground/90 max-w-2xl leading-relaxed">
-              {renderBody(pillar.frame)}
-            </p>
+            <p className="text-body text-foreground/90 max-w-2xl leading-relaxed">{renderBody(pillar.frame)}</p>
 
             <DiagramForSlug slug={pillar.slug} />
           </section>
@@ -380,11 +342,10 @@ export default async function BriefingPillarPage({ params }: PageProps) {
                   Strategy families × categories — what Odum runs
                 </h2>
                 <p className="text-sm text-foreground/80 leading-relaxed">
-                  The matrix below is the operational coverage map — strategy families down the side,
-                  asset-class categories across the top. A filled dot means Odum operates live strategies
-                  in that cell; a half-filled dot means adapter or configuration work is in progress for
-                  some instruments in the cell. Venue detail, specific slot configurations, and maturity
-                  tags are covered at the second call.
+                  The matrix below is the operational coverage map — strategy families down the side, asset-class
+                  categories across the top. A filled dot means Odum operates live strategies in that cell; a
+                  half-filled dot means adapter or configuration work is in progress for some instruments in the cell.
+                  Venue detail, specific slot configurations, and maturity tags are covered at the second call.
                 </p>
               </div>
               <StrategyCoverageMatrix />
@@ -398,12 +359,11 @@ export default async function BriefingPillarPage({ params }: PageProps) {
                   Full archetype × category × instrument-type catalogue
                 </h2>
                 <p className="text-sm text-foreground/80 leading-relaxed">
-                  The full combinatoric universe Odum operates on. Eighteen archetypes grouped into
-                  three family bands (directional, relative-value, event-driven) mapped across five
-                  categories and eight instrument-type cells. Lock-state posture is shown per cell —
-                  public slots are a narrow default, the rest of the supported surface is reserved for
-                  Odum&apos;s investment-management book unless a client-exclusive carve-out is
-                  negotiated.
+                  The full combinatoric universe Odum operates on. Eighteen archetypes grouped into three family bands
+                  (directional, relative-value, event-driven) mapped across five categories and eight instrument-type
+                  cells. Lock-state posture is shown per cell — public slots are a narrow default, the rest of the
+                  supported surface is reserved for Odum&apos;s investment-management book unless a client-exclusive
+                  carve-out is negotiated.
                 </p>
               </div>
               <StrategyFamilyCatalogue />
@@ -411,9 +371,7 @@ export default async function BriefingPillarPage({ params }: PageProps) {
           )}
 
           <section id="key-messages" className="scroll-mt-24 space-y-3 border-t border-border/40 pt-8">
-            <h2 className="text-sm font-semibold tracking-wide uppercase text-muted-foreground">
-              Key messages
-            </h2>
+            <h2 className="text-sm font-semibold tracking-wide uppercase text-muted-foreground">Key messages</h2>
             <ol className="list-decimal pl-5 text-sm text-foreground/85 space-y-2 max-w-2xl leading-relaxed">
               {pillar.keyMessages.map((m) => (
                 <li key={m}>{renderBody(m)}</li>
@@ -422,12 +380,8 @@ export default async function BriefingPillarPage({ params }: PageProps) {
           </section>
 
           <section id="second-call" className="scroll-mt-24 space-y-3">
-            <h2 className="text-sm font-semibold tracking-wide uppercase text-muted-foreground">
-              The second call
-            </h2>
-            <p className="text-body text-foreground/85 max-w-2xl leading-relaxed">
-              {renderBody(pillar.nextCall)}
-            </p>
+            <h2 className="text-sm font-semibold tracking-wide uppercase text-muted-foreground">The second call</h2>
+            <p className="text-body text-foreground/85 max-w-2xl leading-relaxed">{renderBody(pillar.nextCall)}</p>
           </section>
 
           <div id="next-steps" className="scroll-mt-24">
@@ -435,16 +389,11 @@ export default async function BriefingPillarPage({ params }: PageProps) {
           </div>
 
           <section id="other-briefings" className="scroll-mt-24 space-y-3 border-t border-border/40 pt-8">
-            <h2 className="text-sm font-semibold tracking-wide uppercase text-muted-foreground">
-              Other briefings
-            </h2>
+            <h2 className="text-sm font-semibold tracking-wide uppercase text-muted-foreground">Other briefings</h2>
             <ul className="space-y-3 max-w-2xl">
               {BRIEFING_PILLARS.filter((p) => p.slug !== pillar.slug).map((p) => (
                 <li key={p.slug} className="text-sm">
-                  <Link
-                    href={`/briefings/${p.slug}`}
-                    className="font-medium text-primary hover:underline"
-                  >
+                  <Link href={`/briefings/${p.slug}`} className="font-medium text-primary hover:underline">
                     {p.title}
                   </Link>
                   <p className="text-foreground/75 leading-relaxed">{renderWithTerms(p.tldr)}</p>
