@@ -18,15 +18,31 @@
 
 import { useAuth } from "@/hooks/use-auth";
 import { hasAnyEntitlement } from "./entitlement-gate";
-import type { Entitlement, TradingEntitlement } from "@/lib/config/auth";
+import {
+  isStrategyFamilyEntitlement,
+  type Entitlement,
+  type StrategyFamilyEntitlement,
+  type StrategyFamilyKey,
+  type TradingEntitlement,
+} from "@/lib/config/auth";
 import { Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+type GateEntitlement = Entitlement | TradingEntitlement | StrategyFamilyEntitlement;
+
 interface PageEntitlementGateProps {
   /** Single entitlement required */
-  entitlement?: Entitlement | TradingEntitlement;
+  entitlement?: GateEntitlement;
   /** OR: any of these entitlements grants access */
-  entitlements?: (string | TradingEntitlement)[];
+  entitlements?: GateEntitlement[];
+  /**
+   * If set, holding a strategy-family entitlement for any family in this list
+   * also grants access to the page. Inner widgets gate themselves more
+   * narrowly. Use on pages that surface a small set of family-specific widgets
+   * within an otherwise asset-group-gated route (e.g. DeFi page accepting
+   * CARRY_AND_YIELD because it carries Carry & Yield-tagged widgets).
+   */
+  acceptFamilies?: StrategyFamilyKey[];
   /** Human-readable feature name for the lock message */
   featureName: string;
   /** Optional description below the lock title */
@@ -37,6 +53,7 @@ interface PageEntitlementGateProps {
 export function PageEntitlementGate({
   entitlement,
   entitlements,
+  acceptFamilies,
   featureName,
   description,
   children,
@@ -49,7 +66,17 @@ export function PageEntitlementGate({
   const requiredList = entitlements ?? (entitlement ? [entitlement] : []);
   if (requiredList.length === 0) return <>{children}</>;
 
-  if (hasAnyEntitlement(requiredList, hasEntitlement, user?.entitlements ?? [])) return <>{children}</>;
+  const userEnts = user?.entitlements ?? [];
+  if (hasAnyEntitlement(requiredList, hasEntitlement, userEnts)) return <>{children}</>;
+
+  // Family-axis fallback: if the page declares family fallbacks and the user
+  // holds an entitlement for any of them, let the page render. Inner widget
+  // gates narrow it to which widgets actually unlock.
+  if (acceptFamilies && acceptFamilies.length > 0) {
+    const allowed = new Set<StrategyFamilyKey>(acceptFamilies);
+    const hasAcceptableFamily = userEnts.some((e) => isStrategyFamilyEntitlement(e) && allowed.has(e.family));
+    if (hasAcceptableFamily) return <>{children}</>;
+  }
 
   // Locked — render content blurred with overlay
   return (

@@ -304,6 +304,31 @@ const STAGING_USERS = [
       entitlements: ["investor-relations", "reporting"],
     },
   },
+  // ── Strategy-family entitlement personas (mirrors lib/auth/personas.ts) ─
+  {
+    email: "carry-basic@odum-research.co.uk",
+    displayName: "Carry & Yield (Basic)",
+    password: "demo123",
+    claims: {
+      role: "client",
+      entitlements: ["data-pro", "execution-basic", "reporting", { family: "CARRY_AND_YIELD", tier: "basic" }],
+    },
+  },
+  {
+    email: "carry-premium@odum-research.co.uk",
+    displayName: "Carry & Yield (Premium)",
+    password: "demo123",
+    claims: {
+      role: "client",
+      entitlements: [
+        "data-pro",
+        "execution-full",
+        "ml-full",
+        "reporting",
+        { family: "CARRY_AND_YIELD", tier: "premium" },
+      ],
+    },
+  },
 ];
 
 async function upsertUser(auth, user) {

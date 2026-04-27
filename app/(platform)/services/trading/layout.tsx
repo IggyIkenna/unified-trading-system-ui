@@ -289,7 +289,11 @@ export default function TradingServiceLayout({ children }: { children: React.Rea
     <div id="widget-fullscreen-boundary" className="h-full flex flex-col overflow-hidden relative">
       {widgetTab && <WorkspaceToolbar tab={widgetTab} />}
       <WidgetScroll className="flex-1 min-h-0">
-        <EntitlementGate entitlement={{ domain: "trading-common", tier: "basic" }} serviceName="Trading">
+        <EntitlementGate
+          entitlement={{ domain: "trading-common", tier: "basic" }}
+          acceptAnyFamilyEntitlement
+          serviceName="Trading"
+        >
           <AllWidgetProviders>
             <ErrorBoundary>{children}</ErrorBoundary>
           </AllWidgetProviders>
