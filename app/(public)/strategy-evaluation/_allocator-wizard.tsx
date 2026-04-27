@@ -25,6 +25,8 @@
 
 import * as React from "react";
 
+import { STRUCTURE_OPTIONS as ROUTE_OPTIONS } from "@/lib/marketing/structure-options";
+
 export interface AllocatorFormState {
   strategyName: string;
   leadResearcher: string;
@@ -184,10 +186,24 @@ const RETURN_HORIZONS = [
   { value: "gt-5y", label: "5+ years" },
 ] as const;
 
+// Allocator-form-state mapping: legacy `sma` / `pooled` / `unsure` form
+// values map to the SSOT route ids `sma-direct` / `pooled-fund-affiliate`
+// / `unsure`. We keep the form-state values stable so existing Firestore
+// payloads and email templates continue to work; only the displayed
+// labels change.
 const STRUCTURE_OPTIONS = [
-  { value: "sma", label: "Separately Managed Account (SMA)" },
-  { value: "pooled", label: "Pooled fund" },
-  { value: "unsure", label: "Unsure / open" },
+  {
+    value: "sma",
+    label: `${ROUTE_OPTIONS["sma-direct"].label} (${ROUTE_OPTIONS["sma-direct"].tag})`,
+  },
+  {
+    value: "pooled",
+    label: `${ROUTE_OPTIONS["pooled-fund-affiliate"].label} (${ROUTE_OPTIONS["pooled-fund-affiliate"].tag})`,
+  },
+  {
+    value: "unsure",
+    label: ROUTE_OPTIONS.unsure.label,
+  },
 ] as const;
 
 const REGULATED_OPTIONS = [
@@ -438,29 +454,35 @@ export default function AllocatorWizard({
                 />
               </div>
             </div>
-            <div className="grid gap-5 md:grid-cols-2">
-              <div>
-                <FieldLabel>Preferred structure</FieldLabel>
-                <Select
-                  value={form.allocatorPreferredStructure}
-                  onChange={(v) =>
-                    setField("allocatorPreferredStructure", v as AllocatorFormState["allocatorPreferredStructure"])
-                  }
-                  options={STRUCTURE_OPTIONS}
-                />
-              </div>
-              <div>
-                <FieldLabel>Regulated / affiliate structure interest</FieldLabel>
-                <Select
-                  value={form.allocatorRegulatedStructureInterest}
-                  onChange={(v) =>
-                    setField(
-                      "allocatorRegulatedStructureInterest",
-                      v as AllocatorFormState["allocatorRegulatedStructureInterest"],
-                    )
-                  }
-                  options={REGULATED_OPTIONS}
-                />
+            <div className="space-y-3">
+              <p className="text-xs text-muted-foreground">
+                Two main client-facing operating routes are available; engagements can also combine both. The fit call
+                walks the choice against your jurisdiction, distribution posture, and permissions.
+              </p>
+              <div className="grid gap-5 md:grid-cols-2">
+                <div>
+                  <FieldLabel>Preferred client-facing route</FieldLabel>
+                  <Select
+                    value={form.allocatorPreferredStructure}
+                    onChange={(v) =>
+                      setField("allocatorPreferredStructure", v as AllocatorFormState["allocatorPreferredStructure"])
+                    }
+                    options={STRUCTURE_OPTIONS}
+                  />
+                </div>
+                <div>
+                  <FieldLabel>Regulated / affiliate structure interest</FieldLabel>
+                  <Select
+                    value={form.allocatorRegulatedStructureInterest}
+                    onChange={(v) =>
+                      setField(
+                        "allocatorRegulatedStructureInterest",
+                        v as AllocatorFormState["allocatorRegulatedStructureInterest"],
+                      )
+                    }
+                    options={REGULATED_OPTIONS}
+                  />
+                </div>
               </div>
             </div>
           </section>

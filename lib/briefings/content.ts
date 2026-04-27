@@ -2,6 +2,14 @@
 // `{{term:<id>|<label>}}` markers. They are substituted at render time by
 // `components/marketing/render-with-terms.tsx` so we can wrap acronyms in
 // <Term> tooltips without widening BriefingSection/BriefingPillar to ReactNode.
+//
+// Structure-options vocabulary: the IM and Regulatory pillars below source
+// their structure descriptions from `lib/marketing/structure-options.ts`
+// so the same labels and descriptions appear on the briefings, in the
+// questionnaire, in /strategy-evaluation, and in the diagram on the
+// regulatory page. Edit the SSOT, not the briefing copy.
+import { STRUCTURE_OPTIONS, STRUCTURE_ROLE_CLARITY } from "@/lib/marketing/structure-options";
+
 /**
  * Post-first-call briefing content — six commercial paths.
  *
@@ -123,16 +131,15 @@ export const BRIEFING_PILLARS: readonly BriefingPillar[] = [
       "The right structure depends on who is appointed to manage the mandate, where the capital sits, who faces the end client, what permissions are required, and whether the engagement is best handled directly by Odum, by the client, or through an approved affiliate route. Odum can act as investment manager where appointed, or as delegated trading manager / sub-adviser where another regulated manager or affiliate carries the formal fund role. Odum does not custody client capital. Venue, broker, or wallet permissions are scoped to the mandate, and withdrawal authority is never requested.",
     sections: [
       {
-        title: "What this route can cover",
-        body: "In many cases, the simplest route is Odum acting directly as investment manager where the mandate fits. Where a pooled fund, EU-side fund route, client-branded model, or third-party manager is required, Odum can operate as delegated trading manager, sub-adviser, or infrastructure provider while the appointed manager, AIFM, administrator, or client entity carries the relevant formal role.",
+        title: "Two main client-facing operating routes",
+        body: "Most engagements run through one of two routes — the Pooled Fund route on the EU / affiliate-supported side, or the SMA route on the UK / direct side. A single engagement can also combine both where the mandate spans UK and EU coverage.",
         bullets: [
-          "{{strong:Odum as investment manager}} — Odum acts as investment manager of record where the engagement fits its permissions and mandate scope.",
-          "{{strong:SMA route}} — The client keeps capital in its own venue, broker, or custodian accounts. Odum may operate scoped read-and-execute access where appointed or delegated to trade.",
-          "{{strong:Affiliate fund or AIFM pathway}} — Investors subscribe into a fund, pod, or share-class structure operated by an approved affiliate manager, AIFM, administrator, or fund platform. That manager may appoint or delegate Odum as trading manager, sub-adviser, or strategy operator. The affiliate route handles fund setup, KYC, administration, NAV, custody coordination, and compliance scope; Odum keeps the strategy, trading, reporting, and platform layer where agreed.",
+          `{{strong:${STRUCTURE_OPTIONS["pooled-fund-affiliate"].label} (${STRUCTURE_OPTIONS["pooled-fund-affiliate"].tag})}} — ${STRUCTURE_OPTIONS["pooled-fund-affiliate"].description}`,
+          `{{strong:${STRUCTURE_OPTIONS["sma-direct"].label} (${STRUCTURE_OPTIONS["sma-direct"].tag})}} — ${STRUCTURE_OPTIONS["sma-direct"].description}`,
+          `{{strong:${STRUCTURE_OPTIONS.combined.label}}} — ${STRUCTURE_OPTIONS.combined.description}`,
           "{{strong:AR-style arrangement}} — Where a client wants to be customer-facing under its own brand, an AR-style structure may be considered case by case. This normally requires additional onboarding, compliance review, and role clarity.",
         ],
-        bodyAfter:
-          "In any of these models, the reporting hierarchy is separate from the legal appointment chain. Depending on the mandate, Odum may be the appointed investment manager, a delegated trading manager, a sub-adviser, or the infrastructure / reporting provider behind the regulated manager.",
+        bodyAfter: STRUCTURE_ROLE_CLARITY,
       },
       {
         title: "Custody and control",
@@ -179,10 +186,10 @@ export const BRIEFING_PILLARS: readonly BriefingPillar[] = [
       "Odum manages selected systematic strategies for allocators through agreed fund or {{term:sma}} structures. Allocators access the same operating surface Odum uses internally, filtered by mandate, share class, or SMA partition. In a direct Odum mandate, Odum acts as investment manager and operates the strategy; custody remains with the agreed {{term:venue}}, broker, custodian, or client-controlled account structure. Odum does not request withdrawal authority and does not hold client assets as principal.",
     sections: [
       {
-        title: "Structure: pooled fund or SMA",
-        body: "**Pooled fund:** investors hold share-class exposure and fund assets sit with a qualified third-party custodian or approved fund route. Each allocator sees only its own share-class NAV, exposure, and P&L. Subscriptions and redemptions are handled through the platform and fund-administration process.",
+        title: "Structure: direct Odum-managed mandates",
+        body: `**${STRUCTURE_OPTIONS["sma-direct"].label} (${STRUCTURE_OPTIONS["sma-direct"].tag}):** ${STRUCTURE_OPTIONS["sma-direct"].description}`,
         bodyAfter:
-          "**SMA:** the client holds venue, broker, or custodian accounts in its own entity name and grants Odum scoped execute-and-read access where agreed. Capital remains with the client, and withdrawal authority is never requested. Both paths use the same reporting surface; Odum manages the strategy layer and does not hold client assets as principal.",
+          "**Direct pooled fund:** investors hold share-class exposure in an Odum-managed fund where Odum is appointed investment manager. Fund assets sit with a qualified third-party custodian; each allocator sees only its own share-class NAV, exposure, and P&L. Both paths use the same operating and reporting surface, and Odum manages the strategy layer without holding client assets as principal. Where an engagement instead needs an affiliate-led pooled fund, AIFM pathway, or combined UK + EU coverage, see /briefings/regulated-operating-models for the full structural picture.",
       },
       {
         title: "The strategy surface",

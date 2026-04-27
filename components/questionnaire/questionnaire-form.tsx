@@ -51,6 +51,7 @@ import {
 import { fingerprintAccessCode, submitQuestionnaire, type SubmitResult } from "@/lib/questionnaire/submit";
 import { persistResolvedPersona, resolvePersonaFromQuestionnaire } from "@/lib/questionnaire/resolve-persona";
 import { Term } from "@/components/marketing/term";
+import { STRUCTURE_OPTIONS, STRUCTURE_PROMPT } from "@/lib/marketing/structure-options";
 
 const STRATEGY_STYLE_GLOSSARY: Record<string, string> = {
   ml_directional: "ml-directional",
@@ -519,18 +520,34 @@ export function QuestionnaireForm({ returnPath, compact = false }: Questionnaire
         </fieldset>
 
         <fieldset data-testid="axis-fund-structure">
-          <legend className="font-medium">6. Fund structure</legend>
-          <p className="mt-1 text-xs text-muted-foreground">Select all that apply.</p>
-          <div className="mt-2 flex flex-wrap gap-2">
+          <legend className="font-medium">6. Client-facing operating route</legend>
+          <p className="mt-1 text-xs text-muted-foreground">{STRUCTURE_PROMPT} Select all that apply.</p>
+          <div className="mt-2 flex flex-col gap-2">
             {(
               [
-                { value: "SMA" as const, label: "SMA — Separately Managed Account" },
-                { value: "Pooled" as const, label: "Pooled fund" },
-                { value: "prop" as const, label: "Prop — trading own capital" },
-                { value: "NA" as const, label: "Not yet decided / Other" },
+                {
+                  value: "SMA" as const,
+                  label: `${STRUCTURE_OPTIONS["sma-direct"].label} (${STRUCTURE_OPTIONS["sma-direct"].tag})`,
+                  blurb: STRUCTURE_OPTIONS["sma-direct"].blurb,
+                },
+                {
+                  value: "Pooled" as const,
+                  label: `${STRUCTURE_OPTIONS["pooled-fund-affiliate"].label} (${STRUCTURE_OPTIONS["pooled-fund-affiliate"].tag})`,
+                  blurb: STRUCTURE_OPTIONS["pooled-fund-affiliate"].blurb,
+                },
+                {
+                  value: "prop" as const,
+                  label: "Prop — trading own capital",
+                  blurb: "No external investors; the engagement runs against the firm's own capital only.",
+                },
+                {
+                  value: "NA" as const,
+                  label: "Not sure yet / Other",
+                  blurb: STRUCTURE_OPTIONS.unsure.blurb,
+                },
               ] as const
-            ).map(({ value, label }) => (
-              <label key={value} className="inline-flex items-center gap-2 rounded border px-3 py-1">
+            ).map(({ value, label, blurb }) => (
+              <label key={value} className="flex items-start gap-2 rounded border border-border/60 px-3 py-2">
                 <input
                   type="checkbox"
                   name="fund_structure"
@@ -538,17 +555,25 @@ export function QuestionnaireForm({ returnPath, compact = false }: Questionnaire
                   data-testid={`fund-structure-${value}`}
                   checked={state.fund_structure.has(value)}
                   onChange={() => setState((s) => ({ ...s, fund_structure: toggleInSet(s.fund_structure, value) }))}
+                  className="mt-1"
                 />
-                {FUND_STRUCTURE_GLOSSARY[value] ? (
-                  <Term id={FUND_STRUCTURE_GLOSSARY[value]}>
-                    <span>{label}</span>
-                  </Term>
-                ) : (
-                  <span>{label}</span>
-                )}
+                <span className="flex flex-col gap-0.5">
+                  {FUND_STRUCTURE_GLOSSARY[value] ? (
+                    <Term id={FUND_STRUCTURE_GLOSSARY[value]}>
+                      <span className="text-sm font-medium">{label}</span>
+                    </Term>
+                  ) : (
+                    <span className="text-sm font-medium">{label}</span>
+                  )}
+                  <span className="text-xs text-muted-foreground">{blurb}</span>
+                </span>
               </label>
             ))}
           </div>
+          <p className="mt-2 text-xs text-muted-foreground">
+            Selecting both <em>SMA</em> and <em>Pooled Fund</em> indicates a combined UK + EU coverage shape — common
+            where the mandate spans both jurisdictions. The final operating model is agreed at the fit call.
+          </p>
         </fieldset>
 
         <section

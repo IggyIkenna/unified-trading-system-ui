@@ -1167,26 +1167,54 @@ export default function StrategyEvaluationFormClient({
               </div>
 
               <div className="space-y-1">
-                <Label className="text-sm font-medium">Current or intended operating structure</Label>
-                <p className="text-xs text-muted-foreground">Select the closest match. You can refine this later.</p>
-                <div className="flex flex-wrap gap-x-6 gap-y-3 mt-2">
+                <Label className="text-sm font-medium">Current or intended client-facing route</Label>
+                <p className="text-xs text-muted-foreground">
+                  Two main client-facing operating routes are available; engagements can also combine both. Pick the
+                  closest match — the final operating model is agreed at the fit call.
+                </p>
+                <div className="flex flex-col gap-2 mt-2">
                   {(
                     [
-                      { value: "prop", label: "Own capital" },
-                      { value: "sma", label: "Client capital / SMA" },
-                      { value: "fund", label: "Fund or pooled vehicle" },
-                      { value: "other", label: "Not sure yet" },
-                    ] as { value: string; label: string }[]
-                  ).map(({ value, label }) => (
-                    <label key={value} className="flex items-center gap-2 text-sm cursor-pointer">
+                      {
+                        value: "prop",
+                        label: "Own capital",
+                        blurb: "Trading the firm's own capital; no external investors.",
+                      },
+                      {
+                        value: "sma",
+                        label: "SMA route (UK / direct)",
+                        blurb:
+                          "Client-owned venue / broker / custodian accounts; Odum acts as investment manager where appointed under a direct mandate.",
+                      },
+                      {
+                        value: "fund",
+                        label: "Pooled Fund route (EU / affiliate-supported)",
+                        blurb:
+                          "Pooled fund or share-class structure operated by an approved affiliate; Odum acts as delegated trading manager or sub-adviser.",
+                      },
+                      {
+                        value: "other",
+                        label: "Not sure yet",
+                        blurb: "Decide at the fit call once scope, jurisdiction, and permissions are clear.",
+                      },
+                    ] as { value: string; label: string; blurb: string }[]
+                  ).map(({ value, label, blurb }) => (
+                    <label
+                      key={value}
+                      className="flex items-start gap-2 text-sm cursor-pointer rounded border border-border/60 px-3 py-2"
+                    >
                       <input
                         type="radio"
                         name="entityStructure"
                         value={value}
+                        className="mt-1"
                         checked={form.entityStructure === value}
                         onChange={() => setField("entityStructure", value)}
                       />
-                      {label}
+                      <span className="flex flex-col gap-0.5">
+                        <span className="font-medium">{label}</span>
+                        <span className="text-xs text-muted-foreground">{blurb}</span>
+                      </span>
                     </label>
                   ))}
                 </div>
@@ -1196,8 +1224,8 @@ export default function StrategyEvaluationFormClient({
                 <div className="space-y-2 rounded-md border border-border/60 bg-card/30 p-4">
                   <Label className="text-sm font-medium">Fund jurisdiction preference</Label>
                   <p className="text-xs text-muted-foreground">
-                    For pooled funds, Odum&rsquo;s most cost-effective setup runs through our affiliate in an offshore
-                    jurisdiction. If you have a preference or constraint, indicate it here.
+                    The Pooled Fund route runs through an approved affiliate manager / AIFM / fund administrator
+                    (typically EU / offshore). If you have a jurisdiction preference or constraint, indicate it here.
                   </p>
                   <div className="flex flex-col gap-2">
                     {(
