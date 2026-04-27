@@ -336,9 +336,11 @@ export function useTerminalPageData(): TerminalPageResult {
   // scroll-back fetches the day before that.
   React.useEffect(() => {
     if (earliestLoadedRef.current !== null) return;
-    const apiCandles = (candlesApiData as Record<string, unknown> | undefined)?.candles as
-      | Array<{ time: number }>
-      | undefined;
+    // Backend wraps the candle list in `data` (single_response). Older mock paths
+    // used `candles` — accept either so the hook keeps working through schema drift.
+    const raw = candlesApiData as Record<string, unknown> | undefined;
+    const apiCandles = ((raw?.data as Array<{ time: number }> | undefined) ??
+      (raw?.candles as Array<{ time: number }> | undefined)) as Array<{ time: number }> | undefined;
     if (apiCandles && apiCandles.length > 0) {
       const oldest = apiCandles.reduce((min, c) => (c.time < min ? c.time : min), apiCandles[0].time);
       earliestLoadedRef.current = new Date(oldest * 1000).toISOString().slice(0, 10);
@@ -632,9 +634,13 @@ export function useTerminalPageData(): TerminalPageResult {
   }, [orderbookApiData, selectedInstrument.symbol, livePrice, tickCount, wsBid, wsAsk, isMockMode]);
 
   const candleData = React.useMemo(() => {
+    // Backend's single_response() returns the list under `data`. Fallback to
+    // `candles` for the mock-mode service which uses the older field name.
+    const raw = candlesApiData as Record<string, unknown> | undefined;
     const apiCandles = isMockMode
       ? undefined
-      : ((candlesApiData as Record<string, unknown>)?.candles as Array<Record<string, unknown>> | undefined);
+      : ((raw?.data as Array<Record<string, unknown>> | undefined) ??
+        (raw?.candles as Array<Record<string, unknown>> | undefined));
     if (apiCandles && Array.isArray(apiCandles) && apiCandles.length > 0) {
       const mappedCurrent = apiCandles
         .map((c) => {
