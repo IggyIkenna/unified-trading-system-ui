@@ -16,7 +16,7 @@
     "dev": "next dev --webpack",
     "dev:turbo": "next dev --turbo",
     "dev:mock": "NEXT_PUBLIC_MOCK_API=true NEXT_PUBLIC_AUTH_PROVIDER=demo next dev --webpack",
-    "dev:firebase-local": "npx --yes concurrently -k -n emu,next -c green,cyan \"firebase emulators:start --only auth,firestore,storage --project=odum-local-dev --import=.local-dev-cache/emulator-state --export-on-exit=.local-dev-cache/emulator-state\" \"NEXT_PUBLIC_USE_FIREBASE_EMULATOR=true NEXT_PUBLIC_AUTH_PROVIDER=firebase NEXT_PUBLIC_FIREBASE_PROJECT_ID=odum-local-dev FIRESTORE_EMULATOR_HOST=localhost:8080 FIREBASE_AUTH_EMULATOR_HOST=localhost:9099 FIREBASE_STORAGE_EMULATOR_HOST=localhost:9199 next dev --webpack\"",
+    "dev:firebase-local": "bash scripts/dev-tiers.sh --tier 0",
     "emulators:start": "firebase emulators:start --only auth,firestore,storage --project=odum-local-dev --import=.local-dev-cache/emulator-state --export-on-exit=.local-dev-cache/emulator-state",
     "emulators:seed": "FIRESTORE_EMULATOR_HOST=localhost:8080 FIREBASE_AUTH_EMULATOR_HOST=localhost:9099 FIREBASE_STORAGE_EMULATOR_HOST=localhost:9199 FIREBASE_STAGING_PROJECT=odum-local-dev node scripts/admin/seed-firebase-users.mjs --env=staging",
     "emulators:seed:dev": "FIRESTORE_EMULATOR_HOST=localhost:8080 FIREBASE_AUTH_EMULATOR_HOST=localhost:9099 FIREBASE_STORAGE_EMULATOR_HOST=localhost:9199 NEXT_PUBLIC_FIREBASE_PROJECT_ID=odum-local-dev node scripts/admin/seed-firebase-users.dev.mjs",

@@ -98,10 +98,21 @@ done
 # shellcheck source=load-dev-secrets.sh
 source "$SCRIPT_DIR/load-dev-secrets.sh" || true
 
-# When --firebase-local is set, hand off to the npm script that boots the
-# Firebase Emulator Suite (Auth + Firestore + Storage) concurrently with
-# the Next.js dev server. Bypasses the rest of dev-tiers.sh — emulator
-# mode is mutually exclusive with the API/services fleet for now.
+# When --firebase-local is set, boot the Firebase Emulator Suite (Auth +
+# Firestore + Storage) alongside the Next.js dev server, plus a one-shot
+# seeder that waits for the auth emulator and idempotently upserts the
+# demo personas. Bypasses the rest of dev-tiers.sh — emulator mode is
+# mutually exclusive with the API/services fleet for now.
+#
+# Three concurrent tasks (--kill-others-on-fail so the seeder exiting
+# cleanly doesn't tear the group down):
+#   emu  — firebase emulators:start (--export-on-exit best-effort; the
+#          seeder makes us independent of whether export succeeded)
+#   seed — wait-and-seed-emulator.mjs: poll auth emu, run staging seed
+#          if pool is empty, otherwise no-op
+#   next — next dev with NEXT_PUBLIC_MOCK_API=true so client-side fetches
+#          go through lib/api/mock-handler.ts instead of trying to proxy
+#          to localhost:8030 (which doesn't exist in T0)
 if $FIREBASE_LOCAL; then
   cd "$UI_ROOT"
   echo "Starting Firebase Emulator Suite + Next.js dev server (T0 + emulators)…"
@@ -111,8 +122,29 @@ if $FIREBASE_LOCAL; then
   echo "  Emu UI    → http://localhost:4000"
   echo "  Next.js   → http://localhost:3000"
   echo
-  echo "Seed 23 demo personas in another shell: npm run emulators:seed"
-  exec npm run dev:firebase-local
+  echo "Demo personas auto-seed on startup (idempotent). Login with admin@odum.internal / demo123."
+  echo
+
+  EMU_CMD="firebase emulators:start --only auth,firestore,storage --project=odum-local-dev --import=.local-dev-cache/emulator-state --export-on-exit=.local-dev-cache/emulator-state"
+
+  SEED_CMD="FIRESTORE_EMULATOR_HOST=localhost:8080 \
+FIREBASE_AUTH_EMULATOR_HOST=localhost:9099 \
+FIREBASE_STORAGE_EMULATOR_HOST=localhost:9199 \
+FIREBASE_STAGING_PROJECT=odum-local-dev \
+node scripts/admin/wait-and-seed-emulator.mjs"
+
+  NEXT_CMD="NEXT_PUBLIC_MOCK_API=true \
+NEXT_PUBLIC_USE_FIREBASE_EMULATOR=true \
+NEXT_PUBLIC_AUTH_PROVIDER=firebase \
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=odum-local-dev \
+FIRESTORE_EMULATOR_HOST=localhost:8080 \
+FIREBASE_AUTH_EMULATOR_HOST=localhost:9099 \
+FIREBASE_STORAGE_EMULATOR_HOST=localhost:9199 \
+next dev --webpack"
+
+  exec npx --yes concurrently --kill-others-on-fail \
+    -n emu,seed,next -c green,yellow,cyan \
+    "$EMU_CMD" "$SEED_CMD" "$NEXT_CMD"
 fi
 
 MOCK_MODE="true"
