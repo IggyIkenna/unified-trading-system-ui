@@ -5,6 +5,7 @@ import { onAuthStateChanged as firebaseOnAuthStateChanged, signInWithEmailAndPas
 import { doc, getDoc } from "firebase/firestore";
 import { fetchAuthorization, type AuthorizeResult } from "./authorize-client";
 import { getFirebaseAuth, getFirebaseDb } from "./firebase-config";
+import { getPersonaByEmail } from "./personas";
 import type { AuthProvider, AuthUser, UserStatus } from "./types";
 
 function mapBackendRole(role: AuthorizeResult["role"]): UserRole {
@@ -91,12 +92,24 @@ async function fetchGrantedEntitlements(
 }
 
 async function enrichUserFromBackend(fbUser: FirebaseUser): Promise<AuthUser> {
+  // Demo / staging emails are pre-registered in `lib/auth/personas.ts` with a
+  // stable persona id (e.g. "admin", "investor", "prospect-dart-full"). Map
+  // the Firebase email back to that id so visibility hooks like
+  // `useTileLockState(user.id)` and the restriction-profile engine pick up the
+  // correct profile from `lib/architecture-v2/restriction-profiles.ts`.
+  // Without this mapping `user.id` is the random Firebase UID, which is not a
+  // key in `RESTRICTION_PROFILES` → every tile resolves to `"hidden"` and the
+  // dashboard renders zero service tiles even for admins.
+  // For real (non-demo) users the email won't match — fall back to fbUser.uid;
+  // those users get the conservative anon profile until they're added to the
+  // persona registry or the restriction-profile YAML.
+  const persona = getPersonaByEmail(fbUser.email ?? "");
   const base: AuthUser = {
-    id: fbUser.uid,
+    id: persona?.id ?? fbUser.uid,
     email: fbUser.email ?? "",
-    displayName: fbUser.displayName ?? fbUser.email ?? "User",
-    role: "client",
-    org: { id: "default", name: "Default" },
+    displayName: persona?.displayName ?? fbUser.displayName ?? fbUser.email ?? "User",
+    role: persona?.role ?? "client",
+    org: persona?.org ?? { id: "default", name: "Default" },
     entitlements: [],
   };
 
