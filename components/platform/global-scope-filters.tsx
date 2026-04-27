@@ -153,7 +153,7 @@ function CompactMultiSelect<T extends { id: string }>({
         </Button>
       </PopoverTrigger>
       <PopoverContent align="start" className={cn(dropdownWidthClass, "p-0 max-h-[35vh] overflow-hidden")}>
-        <div className="max-h-[35vh] overflow-y-auto overscroll-contain">
+        <div className="max-h-[35vh] overflow-x-hidden overflow-y-auto overscroll-contain">
           <div className="p-1">
             <div
               role="button"
@@ -255,7 +255,7 @@ function CompactMultiSelect<T extends { id: string }>({
                                 onClick={() => toggleItem(item.id)}
                                 onKeyDown={(e) => e.key === "Enter" && toggleItem(item.id)}
                                 className={cn(
-                                  "w-full flex items-center gap-2 pl-7 pr-2 py-1.5 rounded text-sm hover:bg-secondary cursor-pointer",
+                                  "w-full min-w-0 flex items-center gap-2 pl-7 pr-2 py-1.5 rounded text-sm hover:bg-secondary cursor-pointer",
                                   isSelected && "bg-secondary",
                                 )}
                               >
@@ -284,7 +284,7 @@ function CompactMultiSelect<T extends { id: string }>({
                       onClick={() => toggleItem(item.id)}
                       onKeyDown={(e) => e.key === "Enter" && toggleItem(item.id)}
                       className={cn(
-                        "w-full flex items-center gap-2 px-2 py-1.5 rounded text-sm hover:bg-secondary cursor-pointer",
+                        "w-full min-w-0 flex items-center gap-2 px-2 py-1.5 rounded text-sm hover:bg-secondary cursor-pointer",
                         isSelected && "bg-secondary",
                       )}
                     >
@@ -316,29 +316,39 @@ function CompactMultiSelect<T extends { id: string }>({
 // ─────────────────────────────────────────────────────────────────────────────
 
 function FamilyArchetypeMultiSelect({
-  familyIds,
   archetypeIds,
   onChange,
 }: {
-  familyIds: string[];
   archetypeIds: string[];
-  onChange: (next: { familyIds: string[]; archetypeIds: string[] }) => void;
+  onChange: (nextArchetypeIds: string[]) => void;
 }) {
   const [open, setOpen] = React.useState(false);
   const [collapsed, setCollapsed] = React.useState<Record<string, boolean>>({});
 
-  const isAll = familyIds.length === 0 && archetypeIds.length === 0;
-  const totalSelected = familyIds.length + archetypeIds.length;
+  const isAll = archetypeIds.length === 0;
+  const archetypeSet = React.useMemo(() => new Set(archetypeIds), [archetypeIds]);
+
+  // Derive "fully-selected families" — every archetype of the family is in the
+  // selection. Counts/labels lean on this so we don't need a parallel familyIds
+  // array (which is what caused the off-by-one count bug).
+  const fullySelectedFamilies = React.useMemo(() => {
+    return STRATEGY_FAMILIES_V2.filter((f) => {
+      const archs = FAMILY_METADATA[f].archetypes;
+      return archs.length > 0 && archs.every((a) => archetypeSet.has(a));
+    });
+  }, [archetypeSet]);
 
   const display = (() => {
     if (isAll) return "All families";
-    if (familyIds.length === 1 && archetypeIds.length === 0) {
-      return formatFamily(familyIds[0]);
+    // If the user picked exactly one full family (and nothing else outside it), show its name.
+    if (fullySelectedFamilies.length === 1) {
+      const family = fullySelectedFamilies[0];
+      const familyArchs = FAMILY_METADATA[family].archetypes;
+      if (archetypeIds.length === familyArchs.length) return formatFamily(family);
     }
-    if (familyIds.length === 0 && archetypeIds.length === 1) {
-      return formatArchetype(archetypeIds[0]);
-    }
-    return `${totalSelected} selected`;
+    // Single archetype pick — show its name.
+    if (archetypeIds.length === 1) return formatArchetype(archetypeIds[0]);
+    return `${archetypeIds.length} selected`;
   })();
 
   return (
@@ -351,9 +361,9 @@ function FamilyArchetypeMultiSelect({
         >
           <ListTree className="size-3 text-violet-400" />
           <span className="hidden sm:inline max-w-32 truncate">{display}</span>
-          {totalSelected > 1 && (
+          {archetypeIds.length > 1 && (
             <Badge variant="secondary" className="h-4 px-1 text-[10px] ml-0.5">
-              {totalSelected}
+              {archetypeIds.length}
             </Badge>
           )}
           <ChevronDown className="size-3 opacity-50" />
@@ -364,8 +374,8 @@ function FamilyArchetypeMultiSelect({
           <div
             role="button"
             tabIndex={0}
-            onClick={() => onChange({ familyIds: [], archetypeIds: [] })}
-            onKeyDown={(e) => e.key === "Enter" && onChange({ familyIds: [], archetypeIds: [] })}
+            onClick={() => onChange([])}
+            onKeyDown={(e) => e.key === "Enter" && onChange([])}
             className={cn(
               "w-full flex items-center gap-2 px-2 py-1.5 rounded text-sm hover:bg-secondary cursor-pointer",
               isAll && "bg-secondary",
@@ -385,41 +395,26 @@ function FamilyArchetypeMultiSelect({
           {STRATEGY_FAMILIES_V2.map((family) => {
             const meta = FAMILY_METADATA[family];
             const archetypes = meta.archetypes;
-            const selectedArchInFamily = archetypes.filter((a) => archetypeIds.includes(a));
-            const familyToggleSelected = familyIds.includes(family);
-            const allArchSelected = archetypes.length > 0 && selectedArchInFamily.length === archetypes.length;
-            const someSelected = familyToggleSelected || selectedArchInFamily.length > 0;
-            const allSelected = familyToggleSelected && allArchSelected;
+            const selectedCount = archetypes.filter((a) => archetypeSet.has(a)).length;
+            const allSelected = archetypes.length > 0 && selectedCount === archetypes.length;
+            const someSelected = selectedCount > 0 && !allSelected;
             const isCollapsed = collapsed[family] === true;
 
             const toggleFamily = () => {
               if (allSelected) {
-                // fully selected → clear both family flag and any archetypes
-                onChange({
-                  familyIds: familyIds.filter((f) => f !== family),
-                  archetypeIds: archetypeIds.filter((a) => !(archetypes as readonly string[]).includes(a)),
-                });
+                onChange(archetypeIds.filter((a) => !(archetypes as readonly string[]).includes(a)));
               } else {
-                // not fully selected → select all (set family flag + all archetypes)
-                const otherArchs = archetypeIds.filter((a) => !(archetypes as readonly string[]).includes(a));
-                onChange({
-                  familyIds: [...new Set([...familyIds, family])],
-                  archetypeIds: [...otherArchs, ...archetypes],
-                });
+                const others = archetypeIds.filter((a) => !(archetypes as readonly string[]).includes(a));
+                onChange([...others, ...archetypes]);
               }
             };
 
             const toggleArchetype = (archetype: StrategyArchetype) => {
-              const isSelected = archetypeIds.includes(archetype);
-              const nextArchetypes = isSelected
-                ? archetypeIds.filter((a) => a !== archetype)
-                : [...archetypeIds, archetype];
-              // Family flag follows archetype state: family is "selected" iff every archetype is selected.
-              const allNowSelected = archetypes.every((a) => nextArchetypes.includes(a));
-              const nextFamilyIds = allNowSelected
-                ? [...new Set([...familyIds, family])]
-                : familyIds.filter((f) => f !== family);
-              onChange({ familyIds: nextFamilyIds, archetypeIds: nextArchetypes });
+              if (archetypeSet.has(archetype)) {
+                onChange(archetypeIds.filter((a) => a !== archetype));
+              } else {
+                onChange([...archetypeIds, archetype]);
+              }
             };
 
             return (
@@ -519,32 +514,15 @@ function entitlementAssetClasses(userEnts: readonly (string | { domain: string; 
   return allowed;
 }
 
-/** Return strategies that match the v2 family / archetype selection. */
-function filterByFamilyArchetype(
-  list: Strategy[],
-  familyIds: readonly string[],
-  archetypeIds: readonly string[],
-): Strategy[] {
-  if (familyIds.length === 0 && archetypeIds.length === 0) return list;
-  const familySet = new Set(familyIds);
+/** Return strategies that match the v2 archetype selection. */
+function filterByArchetype(list: Strategy[], archetypeIds: readonly string[]): Strategy[] {
+  if (archetypeIds.length === 0) return list;
   const archetypeSet = new Set(archetypeIds);
   return list.filter((s) => {
-    if (archetypeSet.size > 0) {
-      // Mock data uses kebab-case archetype labels; match by token prefix.
-      const token = s.archetype.split("-")[0];
-      for (const a of archetypeSet) {
-        if ((a as StrategyArchetype).toLowerCase().startsWith(token.toLowerCase())) return true;
-      }
-    }
-    if (familySet.size > 0) {
-      // Match against the row's asset class as a tolerance for mock data
-      // (mock STRATEGIES carry kebab archetype labels, not v2 archetype IDs).
-      // Real data will set strategy_family directly and we'll switch over.
-      for (const archetype of Object.keys(ARCHETYPE_TO_FAMILY) as StrategyArchetype[]) {
-        if (!familySet.has(ARCHETYPE_TO_FAMILY[archetype])) continue;
-        const token = archetype.split("_")[0].toLowerCase();
-        if (s.archetype.toLowerCase().includes(token)) return true;
-      }
+    // Mock data uses kebab-case archetype labels; match by token prefix.
+    const token = s.archetype.split("-")[0];
+    for (const a of archetypeSet) {
+      if ((a as StrategyArchetype).toLowerCase().startsWith(token.toLowerCase())) return true;
     }
     return false;
   });
@@ -556,15 +534,8 @@ function filterByFamilyArchetype(
 
 export function GlobalScopeFilters({ className }: { className?: string }) {
   const { isInternal, user } = useAuth();
-  const {
-    scope,
-    setOrganizationIds,
-    setClientIds,
-    setStrategyIds,
-    setStrategyFamilyIdsV2,
-    setStrategyArchetypeIds,
-    clearAll,
-  } = useGlobalScope();
+  const { scope, setOrganizationIds, setClientIds, setStrategyIds, setStrategyArchetypeIds, clearAll } =
+    useGlobalScope();
 
   const internalUser = isInternal();
   const isClientScoped = !internalUser && !!user?.org;
@@ -622,27 +593,20 @@ export function GlobalScopeFilters({ className }: { className?: string }) {
     if (scope.assetGroupIds.length > 0) {
       result = result.filter((s) => scope.assetGroupIds.includes(s.assetClass));
     }
-    result = filterByFamilyArchetype(result, scope.strategyFamilyIdsV2, scope.strategyArchetypeIds);
+    result = filterByArchetype(result, scope.strategyArchetypeIds);
     return result;
-  }, [
-    scope.organizationIds,
-    scope.clientIds,
-    scope.assetGroupIds,
-    scope.strategyFamilyIdsV2,
-    scope.strategyArchetypeIds,
-  ]);
+  }, [scope.organizationIds, scope.clientIds, scope.assetGroupIds, scope.strategyArchetypeIds]);
 
   const activeFilters = [
     scope.organizationIds.length > 0,
     scope.clientIds.length > 0,
     scope.strategyIds.length > 0,
-    scope.strategyFamilyIdsV2.length > 0 || scope.strategyArchetypeIds.length > 0,
+    scope.strategyArchetypeIds.length > 0,
   ].filter(Boolean).length;
 
   if (isClientScoped && user?.org) {
     const clientScopeActiveFilters =
-      (scope.strategyIds.length > 0 ? 1 : 0) +
-      (scope.strategyFamilyIdsV2.length > 0 || scope.strategyArchetypeIds.length > 0 ? 1 : 0);
+      (scope.strategyIds.length > 0 ? 1 : 0) + (scope.strategyArchetypeIds.length > 0 ? 1 : 0);
     return (
       <div className={cn("flex items-center gap-0.5", className)}>
         <div className="flex items-center gap-1 px-2 py-1 rounded-md bg-secondary/50 text-xs text-muted-foreground">
@@ -651,35 +615,35 @@ export function GlobalScopeFilters({ className }: { className?: string }) {
         </div>
         <span className="text-muted-foreground/30 text-xs hidden sm:inline">/</span>
         <FamilyArchetypeMultiSelect
-          familyIds={scope.strategyFamilyIdsV2}
           archetypeIds={scope.strategyArchetypeIds}
           onChange={(next) => {
-            setStrategyFamilyIdsV2(next.familyIds);
-            setStrategyArchetypeIds(next.archetypeIds);
+            setStrategyArchetypeIds(next);
             setStrategyIds([]);
           }}
         />
         <span className="text-muted-foreground/30 text-xs hidden sm:inline">/</span>
         <CompactMultiSelect
           icon={<BarChart3 className="size-3" />}
-          items={filterByFamilyArchetype(clientOrgStrategies, scope.strategyFamilyIdsV2, scope.strategyArchetypeIds)}
+          items={filterByArchetype(clientOrgStrategies, scope.strategyArchetypeIds)}
           selectedIds={scope.strategyIds}
           onSelectionChange={setStrategyIds}
           allLabel="All Strategies"
           groupBy={(s) => s.assetClass}
           getGroupLabel={(g) => g}
           renderItem={(strategy) => (
-            <span className="flex items-center gap-2 flex-1">
+            <span className="flex min-w-0 items-center gap-2 flex-1">
               <span
                 className={cn(
-                  "size-2 rounded-full",
+                  "size-2 rounded-full shrink-0",
                   strategy.status === "live" && "bg-emerald-500",
                   strategy.status === "paused" && "bg-zinc-500",
                   strategy.status === "warning" && "bg-amber-500",
                 )}
               />
-              <span className="flex-1 truncate">{strategy.name}</span>
-              <span className="text-[10px] text-muted-foreground">{strategy.archetype}</span>
+              <span className="flex-1 min-w-0 truncate">{strategy.name}</span>
+              <span className="text-[10px] text-muted-foreground shrink-0 max-w-[10rem] truncate">
+                {strategy.archetype}
+              </span>
             </span>
           )}
           dropdownWidthClass="w-[32rem]"
@@ -693,7 +657,6 @@ export function GlobalScopeFilters({ className }: { className?: string }) {
               className="h-6 px-1.5 text-[10px] text-muted-foreground hover:text-foreground"
               onClick={() => {
                 setStrategyIds([]);
-                setStrategyFamilyIdsV2([]);
                 setStrategyArchetypeIds([]);
               }}
             >
@@ -753,11 +716,9 @@ export function GlobalScopeFilters({ className }: { className?: string }) {
       />
       <span className="text-muted-foreground/30 text-xs hidden md:inline">/</span>
       <FamilyArchetypeMultiSelect
-        familyIds={scope.strategyFamilyIdsV2}
         archetypeIds={scope.strategyArchetypeIds}
         onChange={(next) => {
-          setStrategyFamilyIdsV2(next.familyIds);
-          setStrategyArchetypeIds(next.archetypeIds);
+          setStrategyArchetypeIds(next);
           setStrategyIds([]);
         }}
       />
