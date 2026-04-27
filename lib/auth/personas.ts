@@ -477,6 +477,43 @@ export const PERSONAS: readonly AuthPersona[] = [
       "ML_DIRECTIONAL_CONTINUOUS@cefi-perp-bybit",
     ],
   },
+
+  // ── Strategy-family entitlement personas ─────────────────────────────
+  // Test fixtures for the v2 family-axis entitlement model. Each one holds
+  // a single `StrategyFamilyEntitlement` so flipping into the persona shows
+  // exactly which widgets unlock under the new gate. Family widgets carry
+  // both a domain-axis (e.g. trading-defi) AND a family-axis entry in their
+  // `requiredEntitlements`, so a Carry & Yield client unlocks them via the
+  // family axis even without `trading-defi`. See widget defs in
+  // components/widgets/defi/register.ts.
+  {
+    id: "carry-yield-basic-client",
+    email: "carry-basic@odum-research.co.uk",
+    password: "demo123",
+    displayName: "Carry & Yield (Basic)",
+    role: "client",
+    org: { id: "elysium", name: "Elysium Capital" },
+    entitlements: ["data-pro", "execution-basic", "reporting", { family: "CARRY_AND_YIELD", tier: "basic" }],
+    description:
+      "Client with basic Carry & Yield family entitlement only. Should unlock the 5 Carry & Yield widgets (defi-lending, defi-staking, defi-rates-overview, defi-staking-rewards, defi-funding-matrix) and lock everything else asset-group-gated (e.g. defi-swap, defi-liquidity).",
+  },
+  {
+    id: "carry-yield-premium-client",
+    email: "carry-premium@odum-research.co.uk",
+    password: "demo123",
+    displayName: "Carry & Yield (Premium)",
+    role: "client",
+    org: { id: "elysium", name: "Elysium Capital" },
+    entitlements: [
+      "data-pro",
+      "execution-full",
+      "ml-full",
+      "reporting",
+      { family: "CARRY_AND_YIELD", tier: "premium" },
+    ],
+    description:
+      "Premium Carry & Yield family entitlement. Premium tier covers basic, so unlocks the same 5 Carry & Yield widgets. Verifies tier ordering: premium ≥ basic.",
+  },
 ] as const;
 
 export function getPersonaById(id: string): AuthPersona | undefined {

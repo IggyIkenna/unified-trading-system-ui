@@ -6,8 +6,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { WidgetScroll } from "@/components/shared/widget-scroll";
-import { isTradingEntitlement, checkTradingEntitlement, type TradingEntitlement } from "@/lib/config/auth";
+import { isStrategyFamilyEntitlement, isTradingEntitlement } from "@/lib/config/auth";
 import { useAuth } from "@/hooks/use-auth";
+import { checkWidgetAccess } from "@/lib/widgets/access";
 import { useActiveLayouts, useWorkspaceStore } from "@/lib/stores/workspace-store";
 import { cn } from "@/lib/utils";
 import { Check, LayoutGrid, Lock, Plus, X } from "lucide-react";
@@ -39,20 +40,11 @@ interface WidgetCatalogDrawerProps {
   onOpenChange: (open: boolean) => void;
 }
 
-function useCanAccessWidget(): (required: (string | TradingEntitlement)[]) => boolean {
-  const { hasEntitlement, isAdmin, isInternal, user } = useAuth();
-  return React.useCallback(
-    (required: (string | TradingEntitlement)[]) => {
-      if (isAdmin() || isInternal()) return true;
-      if (required.length === 0) return true;
-      const userEnts = user?.entitlements ?? [];
-      return required.some((e) => {
-        if (isTradingEntitlement(e)) return checkTradingEntitlement(userEnts, e);
-        return hasEntitlement(e as never);
-      });
-    },
-    [hasEntitlement, isAdmin, isInternal, user],
-  );
+type CheckAccessFn = (def: Pick<WidgetDefinition, "requiredEntitlements" | "requiredEntitlementsAll">) => boolean;
+
+function useCanAccessWidget(): CheckAccessFn {
+  const { user } = useAuth();
+  return React.useCallback((def) => checkWidgetAccess(user, def), [user]);
 }
 
 function WidgetDetailPanel({
@@ -69,7 +61,7 @@ function WidgetDetailPanel({
   placedIds: Set<string>;
   /** widgetId → list of tabs where it is currently placed in the active workspace */
   placedTabsMap: Record<string, string[]>;
-  checkAccess: (entitlements: (string | TradingEntitlement)[]) => boolean;
+  checkAccess: CheckAccessFn;
   onAdd: (widgetId: string) => void;
   onRemoveFromTab: (widgetId: string, fromTab: string) => void;
 }) {
@@ -101,7 +93,7 @@ function WidgetDetailPanel({
   }
 
   const def = widgetSelection.data as WidgetDefinition & { isPlaced: boolean; hasAccess: boolean };
-  const hasAccess = checkAccess(def.requiredEntitlements);
+  const hasAccess = checkAccess(def);
   const isPlaced = placedIds.has(def.id);
   const isDisabled = !hasAccess || (def.singleton && isPlaced);
 
@@ -206,7 +198,11 @@ function WidgetDetailPanel({
             <p className="text-xs text-muted-foreground">Required entitlements</p>
             <div className="flex flex-wrap gap-1">
               {def.requiredEntitlements.map((e) => {
-                const label = isTradingEntitlement(e) ? `${e.domain}/${e.tier}` : e;
+                const label = isTradingEntitlement(e)
+                  ? `${e.domain}/${e.tier}`
+                  : isStrategyFamilyEntitlement(e)
+                    ? `family:${e.family.toLowerCase()}/${e.tier}`
+                    : (e as string);
                 return (
                   <Badge
                     key={label}

@@ -1,11 +1,19 @@
 import type { LucideIcon } from "lucide-react";
 import type { ComponentType } from "react";
-import type { TradingEntitlement } from "@/lib/config/auth";
+import type { StrategyArchetype, StrategyFamily, VenueAssetGroupV2 } from "@/lib/architecture-v2";
+import type { StrategyFamilyEntitlement, TradingEntitlement } from "@/lib/config/auth";
 
 export interface WidgetComponentProps {
   instanceId: string;
   config?: Record<string, unknown>;
 }
+
+/**
+ * An entitlement requirement on a widget. Strings name flat entitlements
+ * (`"data-pro"`, `"reporting"`, …); structured shapes name trading-domain
+ * or v2 strategy-family entitlements with tier semantics (premium ≥ basic).
+ */
+export type WidgetEntitlement = string | TradingEntitlement | StrategyFamilyEntitlement;
 
 export interface WidgetDefinition {
   id: string;
@@ -22,10 +30,34 @@ export interface WidgetDefinition {
   defaultW: number;
   defaultH: number;
 
-  requiredEntitlements: (string | TradingEntitlement)[];
+  /**
+   * OR-semantics: widget unlocks when the user satisfies **any** of these
+   * entries. Existing widgets keep this shape — no migration required.
+   */
+  requiredEntitlements: WidgetEntitlement[];
+  /**
+   * AND-semantics (optional): widget unlocks only when the user satisfies
+   * **every** entry here, in addition to passing `requiredEntitlements`.
+   * Use this when a widget needs both an asset-group axis and a strategy
+   * family axis (e.g. CARRY_AND_YIELD on CeFi). Empty / undefined = no
+   * extra requirement.
+   */
+  requiredEntitlementsAll?: WidgetEntitlement[];
+
   availableOn: string[];
   singleton?: boolean;
   component: ComponentType<WidgetComponentProps>;
+
+  // ── Descriptive tags (no gating implied here — gating goes through
+  //    requiredEntitlements / requiredEntitlementsAll). Used by the widget
+  //    catalogue, the locked-item explanations, and future scope-aware
+  //    rendering. Empty / undefined = "applies to all".
+  /** Strategy families this widget is relevant to (v2 taxonomy). */
+  families?: StrategyFamily[];
+  /** Strategy archetypes this widget is relevant to (v2 taxonomy). */
+  archetypes?: StrategyArchetype[];
+  /** Venue asset groups this widget is relevant to (CEFI / DEFI / SPORTS / TRADFI / PREDICTION). */
+  assetGroups?: VenueAssetGroupV2[];
 }
 
 export interface WidgetPlacement {

@@ -73,12 +73,65 @@ const TIER_ORDER: Record<TradingTier, number> = { basic: 0, premium: 1 };
 
 /** Premium tier satisfies basic requirements; basic only satisfies basic. */
 export function checkTradingEntitlement(
-  userEnts: readonly (EntitlementOrWildcard | TradingEntitlement)[],
+  userEnts: readonly (EntitlementOrWildcard | TradingEntitlement | StrategyFamilyEntitlement)[],
   required: TradingEntitlement,
 ): boolean {
   if ((userEnts as readonly unknown[]).includes("*")) return true;
   return userEnts.some(
     (e) => isTradingEntitlement(e) && e.domain === required.domain && TIER_ORDER[e.tier] >= TIER_ORDER[required.tier],
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Strategy-family entitlement — gates access by v2 strategy family
+// (CARRY_AND_YIELD, ML_DIRECTIONAL, …). Orthogonal to the asset-group axis
+// above. A user may carry both forms; widgets that need both gate via
+// `requiredEntitlementsAll` (AND-semantics, see widget-registry.ts).
+// ---------------------------------------------------------------------------
+
+/**
+ * The 8 v2 strategy families. Mirrored from `lib/architecture-v2/enums.ts`
+ * to avoid a hard dependency from `lib/config/auth.ts` (foundational config)
+ * back into the architecture-v2 facade.
+ */
+export const STRATEGY_FAMILY_KEYS = [
+  "ML_DIRECTIONAL",
+  "RULES_DIRECTIONAL",
+  "CARRY_AND_YIELD",
+  "ARBITRAGE_STRUCTURAL",
+  "MARKET_MAKING",
+  "EVENT_DRIVEN",
+  "VOL_TRADING",
+  "STAT_ARB_PAIRS",
+] as const;
+
+export type StrategyFamilyKey = (typeof STRATEGY_FAMILY_KEYS)[number];
+
+export interface StrategyFamilyEntitlement {
+  family: StrategyFamilyKey;
+  tier: TradingTier;
+}
+
+export function isStrategyFamilyEntitlement(e: unknown): e is StrategyFamilyEntitlement {
+  return (
+    typeof e === "object" &&
+    e !== null &&
+    "family" in e &&
+    "tier" in e &&
+    STRATEGY_FAMILY_KEYS.includes((e as StrategyFamilyEntitlement).family) &&
+    TRADING_TIERS.includes((e as StrategyFamilyEntitlement).tier)
+  );
+}
+
+/** Premium tier satisfies basic requirements; basic only satisfies basic. */
+export function checkStrategyFamilyEntitlement(
+  userEnts: readonly (EntitlementOrWildcard | TradingEntitlement | StrategyFamilyEntitlement)[],
+  required: StrategyFamilyEntitlement,
+): boolean {
+  if ((userEnts as readonly unknown[]).includes("*")) return true;
+  return userEnts.some(
+    (e) =>
+      isStrategyFamilyEntitlement(e) && e.family === required.family && TIER_ORDER[e.tier] >= TIER_ORDER[required.tier],
   );
 }
 
@@ -94,7 +147,7 @@ export interface AuthPersona {
   displayName: string;
   role: UserRole;
   org: Org;
-  entitlements: readonly (EntitlementOrWildcard | TradingEntitlement)[];
+  entitlements: readonly (EntitlementOrWildcard | TradingEntitlement | StrategyFamilyEntitlement)[];
   description: string;
   /**
    * Catalogue slot labels (`{archetype}@{category}-{instrument}-{venue}`)
@@ -206,11 +259,15 @@ export const SUBSCRIPTION_TIERS = [
  */
 export type ClientTier = "Client Full" | "Client Premium" | "DeFi Client" | "Data Pro" | "Data Basic" | "Custom";
 
-export function deriveClientTier(entitlements: readonly (EntitlementOrWildcard | TradingEntitlement)[]): ClientTier {
+export function deriveClientTier(
+  entitlements: readonly (EntitlementOrWildcard | TradingEntitlement | StrategyFamilyEntitlement)[],
+): ClientTier {
   if ((entitlements as readonly unknown[]).includes("*")) return "Client Full";
   const hasDefi = entitlements.some((e) => isTradingEntitlement(e) && e.domain === "trading-defi");
   if (hasDefi) return "DeFi Client";
-  const set = new Set(entitlements.filter((e) => !isTradingEntitlement(e))) as Set<EntitlementOrWildcard>;
+  const set = new Set(
+    entitlements.filter((e) => !isTradingEntitlement(e) && !isStrategyFamilyEntitlement(e)),
+  ) as Set<EntitlementOrWildcard>;
   const hasMl = set.has("ml-full");
   const hasReporting = set.has("reporting");
   const hasExecutionFull = set.has("execution-full");

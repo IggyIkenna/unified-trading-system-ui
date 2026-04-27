@@ -6,7 +6,7 @@ import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverAnchor, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { WidgetHeaderEndSlotContext } from "@/components/widgets/widget-chrome-context";
-import { isTradingEntitlement, checkTradingEntitlement, type TradingEntitlement } from "@/lib/config/auth";
+import { checkWidgetAccess } from "@/lib/widgets/access";
 import { useAuth } from "@/hooks/use-auth";
 import { useActiveLayouts, useWorkspaceStore } from "@/lib/stores/workspace-store";
 import { cn } from "@/lib/utils";
@@ -64,15 +64,9 @@ class WidgetErrorBoundary extends React.Component<
   }
 }
 
-function useHasAnyEntitlement(required: (string | TradingEntitlement)[]): boolean {
-  const { hasEntitlement, isAdmin, isInternal, user } = useAuth();
-  if (isAdmin() || isInternal()) return true;
-  if (required.length === 0) return true;
-  const userEnts = user?.entitlements ?? [];
-  return required.some((e) => {
-    if (isTradingEntitlement(e)) return checkTradingEntitlement(userEnts, e);
-    return hasEntitlement(e as never);
-  });
+function useHasWidgetAccess(definition: WidgetDefinition): boolean {
+  const { user } = useAuth();
+  return checkWidgetAccess(user, definition);
 }
 
 function WidgetBody({
@@ -200,7 +194,7 @@ export function WidgetWrapper({
   const isMultiTab = allTabIds.length > 1;
 
   const activeDef = getWidget(resolvedActiveId) ?? definition;
-  const hasAccess = useHasAnyEntitlement(activeDef.requiredEntitlements);
+  const hasAccess = useHasWidgetAccess(activeDef);
 
   const currentAllWidgetIds = React.useMemo(() => allLayouts.map((l) => l.widgetId), [allLayouts]);
 

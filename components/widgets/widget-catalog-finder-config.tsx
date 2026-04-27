@@ -1,6 +1,5 @@
 "use client";
 
-import type { TradingEntitlement } from "@/lib/config/auth";
 import { finderText } from "@/components/shared/finder/finder-text-sizes";
 import type {
   FinderColumnDef,
@@ -12,6 +11,8 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Check, Lock } from "lucide-react";
 import { getAllWidgets, type WidgetDefinition } from "./widget-registry";
+
+type CheckAccessFn = (def: Pick<WidgetDefinition, "requiredEntitlements" | "requiredEntitlementsAll">) => boolean;
 
 interface CategoryData {
   category: string;
@@ -37,7 +38,7 @@ function buildCategories(): FinderItem<CategoryData>[] {
 function buildWidgetItems(
   selections: FinderSelections,
   placedIds: Set<string>,
-  checkAccess: (entitlements: (string | TradingEntitlement)[]) => boolean,
+  checkAccess: CheckAccessFn,
 ): FinderItem<WidgetDefinition & { isPlaced: boolean; hasAccess: boolean; showCategory: boolean }>[] {
   const categorySelection = selections["category"];
   // No category selected → show all widgets (global search mode)
@@ -56,16 +57,13 @@ function buildWidgetItems(
     data: {
       ...w,
       isPlaced: placedIds.has(w.id),
-      hasAccess: checkAccess(w.requiredEntitlements),
+      hasAccess: checkAccess(w),
       showCategory,
     },
   }));
 }
 
-export function buildCatalogColumns(
-  placedIds: Set<string>,
-  checkAccess: (entitlements: (string | TradingEntitlement)[]) => boolean,
-): FinderColumnDef[] {
+export function buildCatalogColumns(placedIds: Set<string>, checkAccess: CheckAccessFn): FinderColumnDef[] {
   return [
     {
       id: "category",

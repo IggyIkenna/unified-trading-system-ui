@@ -3,12 +3,16 @@ import { describe, expect, it } from "vitest";
 import {
   ALL_ENTITLEMENTS,
   CLIENT_TIER_FEATURES,
+  STRATEGY_FAMILY_KEYS,
   TRADING_DOMAINS,
   TRADING_TIERS,
+  checkStrategyFamilyEntitlement,
   checkTradingEntitlement,
   deriveClientTier,
+  isStrategyFamilyEntitlement,
   isTradingEntitlement,
   type EntitlementOrWildcard,
+  type StrategyFamilyEntitlement,
   type TradingEntitlement,
 } from "@/lib/config/auth";
 
@@ -45,9 +49,7 @@ describe("isTradingEntitlement", () => {
 
 describe("checkTradingEntitlement", () => {
   it("wildcard user satisfies anything", () => {
-    expect(
-      checkTradingEntitlement(["*"] as const, { domain: "trading-defi", tier: "premium" }),
-    ).toBe(true);
+    expect(checkTradingEntitlement(["*"] as const, { domain: "trading-defi", tier: "premium" })).toBe(true);
   });
 
   it("exact match (basic) satisfies basic requirement", () => {
@@ -87,13 +89,89 @@ describe("checkTradingEntitlement", () => {
   });
 
   it("plain entitlements in the list do not falsely satisfy", () => {
-    const ents: readonly (EntitlementOrWildcard | TradingEntitlement)[] = [
-      "data-pro",
-      "execution-full",
-    ];
+    const ents: readonly (EntitlementOrWildcard | TradingEntitlement)[] = ["data-pro", "execution-full"];
+    expect(checkTradingEntitlement(ents, { domain: "trading-defi", tier: "basic" })).toBe(false);
+  });
+});
+
+describe("isStrategyFamilyEntitlement", () => {
+  it("returns true for well-formed strategy family entitlement", () => {
+    const e: StrategyFamilyEntitlement = { family: "CARRY_AND_YIELD", tier: "basic" };
+    expect(isStrategyFamilyEntitlement(e)).toBe(true);
+  });
+
+  it("returns false for trading entitlement (different shape)", () => {
+    expect(isStrategyFamilyEntitlement({ domain: "trading-defi", tier: "basic" })).toBe(false);
+  });
+
+  it("returns false for invalid family / tier", () => {
+    expect(isStrategyFamilyEntitlement({ family: "NOT_A_FAMILY", tier: "basic" })).toBe(false);
+    expect(isStrategyFamilyEntitlement({ family: "CARRY_AND_YIELD", tier: "ultra" })).toBe(false);
+  });
+
+  it("returns false for null / wildcard / plain string", () => {
+    expect(isStrategyFamilyEntitlement(null)).toBe(false);
+    expect(isStrategyFamilyEntitlement("*")).toBe(false);
+    expect(isStrategyFamilyEntitlement("data-pro")).toBe(false);
+  });
+});
+
+describe("checkStrategyFamilyEntitlement", () => {
+  it("wildcard user satisfies any family", () => {
+    expect(checkStrategyFamilyEntitlement(["*"] as const, { family: "CARRY_AND_YIELD", tier: "premium" })).toBe(true);
+  });
+
+  it("exact match satisfies", () => {
     expect(
-      checkTradingEntitlement(ents, { domain: "trading-defi", tier: "basic" }),
+      checkStrategyFamilyEntitlement([{ family: "CARRY_AND_YIELD", tier: "basic" }], {
+        family: "CARRY_AND_YIELD",
+        tier: "basic",
+      }),
+    ).toBe(true);
+  });
+
+  it("premium tier satisfies basic", () => {
+    expect(
+      checkStrategyFamilyEntitlement([{ family: "CARRY_AND_YIELD", tier: "premium" }], {
+        family: "CARRY_AND_YIELD",
+        tier: "basic",
+      }),
+    ).toBe(true);
+  });
+
+  it("basic does not satisfy premium", () => {
+    expect(
+      checkStrategyFamilyEntitlement([{ family: "CARRY_AND_YIELD", tier: "basic" }], {
+        family: "CARRY_AND_YIELD",
+        tier: "premium",
+      }),
     ).toBe(false);
+  });
+
+  it("wrong family never satisfies", () => {
+    expect(
+      checkStrategyFamilyEntitlement([{ family: "ML_DIRECTIONAL", tier: "premium" }], {
+        family: "CARRY_AND_YIELD",
+        tier: "basic",
+      }),
+    ).toBe(false);
+  });
+
+  it("trading entitlements in the list do not falsely satisfy", () => {
+    expect(
+      checkStrategyFamilyEntitlement([{ domain: "trading-defi", tier: "premium" }], {
+        family: "CARRY_AND_YIELD",
+        tier: "basic",
+      }),
+    ).toBe(false);
+  });
+});
+
+describe("STRATEGY_FAMILY_KEYS", () => {
+  it("contains the 8 v2 families", () => {
+    expect(STRATEGY_FAMILY_KEYS).toHaveLength(8);
+    expect(STRATEGY_FAMILY_KEYS).toContain("CARRY_AND_YIELD");
+    expect(STRATEGY_FAMILY_KEYS).toContain("ML_DIRECTIONAL");
   });
 });
 
@@ -103,30 +181,17 @@ describe("deriveClientTier", () => {
   });
 
   it("returns DeFi Client when user has a trading-defi entitlement", () => {
-    expect(
-      deriveClientTier([
-        { domain: "trading-defi", tier: "basic" },
-        "data-pro",
-      ]),
-    ).toBe("DeFi Client");
+    expect(deriveClientTier([{ domain: "trading-defi", tier: "basic" }, "data-pro"])).toBe("DeFi Client");
   });
 
   it("returns Client Full for full bundle", () => {
-    expect(
-      deriveClientTier([
-        "data-pro",
-        "execution-full",
-        "ml-full",
-        "strategy-full",
-        "reporting",
-      ]),
-    ).toBe("Client Full");
+    expect(deriveClientTier(["data-pro", "execution-full", "ml-full", "strategy-full", "reporting"])).toBe(
+      "Client Full",
+    );
   });
 
   it("returns Client Premium for premium bundle (no ml)", () => {
-    expect(
-      deriveClientTier(["data-pro", "execution-full", "strategy-full"]),
-    ).toBe("Client Premium");
+    expect(deriveClientTier(["data-pro", "execution-full", "strategy-full"])).toBe("Client Premium");
   });
 
   it("returns Data Pro for data-pro only", () => {
