@@ -43,6 +43,13 @@ interface PageEntitlementGateProps {
    * CARRY_AND_YIELD because it carries Carry & Yield-tagged widgets).
    */
   acceptFamilies?: StrategyFamilyKey[];
+  /**
+   * If set, the user's `assigned_strategies` list is checked: any slot whose
+   * archetype prefix is in this list grants page access. Use when a page
+   * surfaces archetype-specific widgets (e.g. DeFi page accepts users with
+   * a CARRY_BASIS_PERP slot even without `trading-defi` domain entitlement).
+   */
+  acceptArchetypes?: string[];
   /** Human-readable feature name for the lock message */
   featureName: string;
   /** Optional description below the lock title */
@@ -54,6 +61,7 @@ export function PageEntitlementGate({
   entitlement,
   entitlements,
   acceptFamilies,
+  acceptArchetypes,
   featureName,
   description,
   children,
@@ -76,6 +84,18 @@ export function PageEntitlementGate({
     const allowed = new Set<StrategyFamilyKey>(acceptFamilies);
     const hasAcceptableFamily = userEnts.some((e) => isStrategyFamilyEntitlement(e) && allowed.has(e.family));
     if (hasAcceptableFamily) return <>{children}</>;
+  }
+
+  // Slot-label fallback: if the user's assigned_strategies includes a slot
+  // whose archetype prefix is in `acceptArchetypes`, let the page render.
+  if (acceptArchetypes && acceptArchetypes.length > 0 && user?.assigned_strategies?.length) {
+    const allowed = new Set<string>(acceptArchetypes);
+    const hasAcceptableSlot = user.assigned_strategies.some((slot) => {
+      const at = slot.indexOf("@");
+      const archetype = at === -1 ? slot : slot.slice(0, at);
+      return allowed.has(archetype);
+    });
+    if (hasAcceptableSlot) return <>{children}</>;
   }
 
   // Locked — render content blurred with overlay

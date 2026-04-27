@@ -292,6 +292,7 @@ export default function TradingServiceLayout({ children }: { children: React.Rea
         <EntitlementGate
           entitlement={{ domain: "trading-common", tier: "basic" }}
           acceptAnyFamilyEntitlement
+          acceptAnyAssignedStrategy
           serviceName="Trading"
         >
           <AllWidgetProviders>

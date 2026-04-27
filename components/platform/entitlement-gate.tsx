@@ -30,6 +30,14 @@ interface EntitlementGateProps {
    * out, and the widget layer does the family-specific filtering.
    */
   acceptAnyFamilyEntitlement?: boolean;
+  /**
+   * If true, a non-empty `assigned_strategies` slot list on the user is
+   * enough to satisfy the gate. Use on routes where any closed-list scope
+   * implies trading access (e.g. Patrick has only `trading-defi` + slots,
+   * not `trading-common` — but he's a real client who needs the Trading
+   * shell). Inner widget gates handle per-archetype access.
+   */
+  acceptAnyAssignedStrategy?: boolean;
   serviceName: string;
   description?: string;
   children: React.ReactNode;
@@ -64,6 +72,7 @@ export function EntitlementGate({
   entitlement,
   entitlements,
   acceptAnyFamilyEntitlement,
+  acceptAnyAssignedStrategy,
   serviceName,
   description,
   children,
@@ -79,6 +88,10 @@ export function EntitlementGate({
   if (hasAnyEntitlement(requiredList, hasEntitlement, userEnts)) return <>{children}</>;
 
   if (acceptAnyFamilyEntitlement && userHoldsAnyFamilyEntitlement(userEnts)) {
+    return <>{children}</>;
+  }
+
+  if (acceptAnyAssignedStrategy && (user?.assigned_strategies?.length ?? 0) > 0) {
     return <>{children}</>;
   }
 

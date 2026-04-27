@@ -24,7 +24,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { checkTradingEntitlement, isTradingEntitlement, type TradingEntitlement } from "@/lib/config/auth";
+import {
+  checkTradingEntitlement,
+  isTradingEntitlement,
+  type StrategyFamilyEntitlement,
+  type TradingEntitlement,
+} from "@/lib/config/auth";
 import { useWorkspaceStore } from "@/lib/stores/workspace-store";
 import { cn } from "@/lib/utils";
 import { isPathActive, isServiceTabActive } from "@/lib/utils/nav-helpers";
@@ -60,7 +65,7 @@ const FAMILY_ICON_MAP: Record<string, LucideIcon> = {
 
 interface TradingVerticalNavProps {
   tabs: ServiceTab[];
-  entitlements?: readonly (string | TradingEntitlement)[];
+  entitlements?: readonly (string | TradingEntitlement | StrategyFamilyEntitlement)[];
   /** Optional slot rendered at the bottom of the nav (e.g. Live/As-Of toggle) */
   bottomSlot?: React.ReactNode;
 }
