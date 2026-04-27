@@ -167,7 +167,14 @@ registerWidget({
     { family: "CARRY_AND_YIELD", tier: "basic" },
   ],
   families: ["CARRY_AND_YIELD"],
-  archetypes: ["YIELD_ROTATION_LENDING"],
+  // Archetypes per docs:
+  // - YIELD_ROTATION_LENDING (codex archetypes/yield-rotation-lending.md §"What it does"):
+  //   "supply assets to lending protocols and rotate".
+  // - CARRY_STAKED_BASIS (carry-staked-basis.md step 2): "PLEDGE: deposit stETH as
+  //   collateral on Aave ... BORROW USDC".
+  // - CARRY_RECURSIVE_STAKED (carry-recursive-staked.md): "PLEDGE 1 stETH on Aave
+  //   ... BORROW 0.60 ETH" loop.
+  archetypes: ["YIELD_ROTATION_LENDING", "CARRY_STAKED_BASIS", "CARRY_RECURSIVE_STAKED"],
   assetGroups: ["DEFI"],
   category: "DeFi",
   availableOn: ["defi"],
@@ -221,7 +228,12 @@ registerWidget({
     { family: "CARRY_AND_YIELD", tier: "basic" },
   ],
   families: ["CARRY_AND_YIELD"],
-  archetypes: ["YIELD_STAKING_SIMPLE", "CARRY_STAKED_BASIS"],
+  // All 3 staking archetypes per codex docs:
+  // - YIELD_STAKING_SIMPLE (yield-staking-simple.md): pure stake/unstake.
+  // - CARRY_STAKED_BASIS (carry-staked-basis.md step 1 STAKE): leg of the basis trade.
+  // - CARRY_RECURSIVE_STAKED (carry-recursive-staked.md): "Loop 0: STAKE 1 ETH on Lido"
+  //   plus per-loop "STAKE 0.60 ETH on Lido".
+  archetypes: ["YIELD_STAKING_SIMPLE", "CARRY_STAKED_BASIS", "CARRY_RECURSIVE_STAKED"],
   assetGroups: ["DEFI"],
   category: "DeFi",
   availableOn: ["defi"],
@@ -275,7 +287,12 @@ registerWidget({
     { family: "CARRY_AND_YIELD", tier: "basic" },
   ],
   families: ["CARRY_AND_YIELD"],
-  archetypes: ["YIELD_ROTATION_LENDING", "YIELD_STAKING_SIMPLE"],
+  // Per family doc carry-and-yield.md §"UI dashboard (shared)" line 131:
+  // "Rate / APY curves over time per venue" applies to all Carry archetypes.
+  // Per-archetype rate sources: lending APY (YIELD_ROTATION_LENDING), staking
+  // reward (YIELD_STAKING_SIMPLE), funding rate (CARRY_BASIS_PERP), staking +
+  // funding (CARRY_STAKED_BASIS).
+  archetypes: ["YIELD_ROTATION_LENDING", "YIELD_STAKING_SIMPLE", "CARRY_BASIS_PERP", "CARRY_STAKED_BASIS"],
   assetGroups: ["DEFI"],
   category: "DeFi",
   availableOn: ["defi"],
@@ -293,6 +310,18 @@ registerWidget({
   defaultW: 24,
   defaultH: 5,
   requiredEntitlements: [{ domain: "trading-defi", tier: "basic" }],
+  // Trade-execution log is generic across the Carry & Yield family per the
+  // family doc §"Execution semantics" and per-archetype "Token / position
+  // flow" sections (TRADE / LEND / STAKE / BORROW / BRIDGE actions).
+  families: ["CARRY_AND_YIELD"],
+  archetypes: [
+    "CARRY_BASIS_PERP",
+    "CARRY_STAKED_BASIS",
+    "CARRY_RECURSIVE_STAKED",
+    "YIELD_ROTATION_LENDING",
+    "YIELD_STAKING_SIMPLE",
+  ],
+  assetGroups: ["DEFI"],
   category: "DeFi",
   availableOn: ["defi"],
   singleton: true,
@@ -309,6 +338,17 @@ registerWidget({
   defaultW: 8,
   defaultH: 6,
   requiredEntitlements: [{ domain: "trading-defi", tier: "basic" }],
+  // Generic config editor — every Carry & Yield archetype has its own config
+  // schema (see per-archetype §"Config schema" in codex), all editable here.
+  families: ["CARRY_AND_YIELD"],
+  archetypes: [
+    "CARRY_BASIS_PERP",
+    "CARRY_STAKED_BASIS",
+    "CARRY_RECURSIVE_STAKED",
+    "YIELD_ROTATION_LENDING",
+    "YIELD_STAKING_SIMPLE",
+  ],
+  assetGroups: ["DEFI"],
   category: "DeFi",
   availableOn: ["defi"],
   singleton: true,
@@ -329,7 +369,11 @@ registerWidget({
     { family: "CARRY_AND_YIELD", tier: "basic" },
   ],
   families: ["CARRY_AND_YIELD"],
-  archetypes: ["YIELD_STAKING_SIMPLE", "CARRY_RECURSIVE_STAKED"],
+  // All 3 staking archetypes earn rewards. Per family doc carry-and-yield.md
+  // §"UI dashboard (shared)": "Carry yield accrued vs paid" — generic to the
+  // family's reward attribution. Per-archetype P&L sections all reference
+  // staking yield as a P&L component.
+  archetypes: ["YIELD_STAKING_SIMPLE", "CARRY_STAKED_BASIS", "CARRY_RECURSIVE_STAKED"],
   assetGroups: ["DEFI"],
   category: "DeFi",
   availableOn: ["defi"],
@@ -351,7 +395,11 @@ registerWidget({
     { family: "CARRY_AND_YIELD", tier: "basic" },
   ],
   families: ["CARRY_AND_YIELD"],
-  archetypes: ["CARRY_BASIS_PERP"],
+  // Funding rate is the primary alpha source for both archetypes per docs:
+  // - CARRY_BASIS_PERP (carry-basis-perp.md step 1): "FUNDING RATE SCAN".
+  // - CARRY_STAKED_BASIS (carry-staked-basis.md step 4 + §"What it does"):
+  //   "Earn staking yield + funding rate simultaneously".
+  archetypes: ["CARRY_BASIS_PERP", "CARRY_STAKED_BASIS"],
   assetGroups: ["DEFI", "CEFI"],
   category: "DeFi",
   availableOn: ["defi"],
@@ -369,6 +417,15 @@ registerWidget({
   defaultW: 8,
   defaultH: 6,
   requiredEntitlements: [{ domain: "trading-defi", tier: "basic" }],
+  // Per-coin / per-venue allocation weights map to the two archetypes that
+  // explicitly declare multi-coin or multi-venue rotation in their docs:
+  // - CARRY_BASIS_PERP §"Example instances": "multicoin-usdt-prod (auto-rotate
+  //   across BTC/ETH/SOL)".
+  // - YIELD_ROTATION_LENDING §"TARGET ALLOCATION": "compute per-venue target
+  //   allocation based on APY + capacity + gas".
+  families: ["CARRY_AND_YIELD"],
+  archetypes: ["CARRY_BASIS_PERP", "YIELD_ROTATION_LENDING"],
+  assetGroups: ["DEFI"],
   category: "DeFi",
   availableOn: ["defi"],
   singleton: true,
@@ -385,6 +442,19 @@ registerWidget({
   defaultW: 8,
   defaultH: 8,
   requiredEntitlements: [{ domain: "trading-defi", tier: "basic" }],
+  // Per family doc carry-and-yield.md §"UI dashboard (shared)" line 132:
+  // "Health factor gauge (for leveraged variants)". The leveraged Carry
+  // archetypes per docs:
+  // - CARRY_STAKED_BASIS (target_health_factor in config schema, kill switch
+  //   on max_health_factor_breach).
+  // - CARRY_RECURSIVE_STAKED (health_factor_target / health_factor_kill,
+  //   "Aave health factor < kill threshold" in §"Risk profile").
+  // - YIELD_ROTATION_LENDING uses lending but is single-sided supply (no
+  //   borrow), so HF doesn't apply per the doc's §"Risk profile": "very low
+  //   (no leverage)".
+  families: ["CARRY_AND_YIELD"],
+  archetypes: ["CARRY_STAKED_BASIS", "CARRY_RECURSIVE_STAKED"],
+  assetGroups: ["DEFI"],
   category: "DeFi",
   availableOn: ["defi"],
   singleton: true,
@@ -401,6 +471,15 @@ registerWidget({
   defaultW: 8,
   defaultH: 6,
   requiredEntitlements: [{ domain: "trading-defi", tier: "basic" }],
+  // Per-archetype P&L attribution sections call out staking yield as a
+  // distinct component for the 3 staking archetypes:
+  // - YIELD_STAKING_SIMPLE §"P&L attribution": "Staking yield".
+  // - CARRY_STAKED_BASIS §"P&L attribution": "Staking yield: stETH rebase ×
+  //   holding period".
+  // - CARRY_RECURSIVE_STAKED §"P&L attribution": "Leveraged staking yield".
+  families: ["CARRY_AND_YIELD"],
+  archetypes: ["YIELD_STAKING_SIMPLE", "CARRY_STAKED_BASIS", "CARRY_RECURSIVE_STAKED"],
+  assetGroups: ["DEFI"],
   category: "DeFi",
   availableOn: ["defi"],
   singleton: true,
@@ -417,6 +496,18 @@ registerWidget({
   defaultW: 24,
   defaultH: 7,
   requiredEntitlements: [{ domain: "trading-defi", tier: "basic" }],
+  // Per family doc carry-and-yield.md §"UI dashboard (shared)" lines 131,
+  // 135: "Rate / APY curves over time per venue" + "Carry yield accrued vs
+  // paid" — generic across the whole Carry & Yield family.
+  families: ["CARRY_AND_YIELD"],
+  archetypes: [
+    "CARRY_BASIS_PERP",
+    "CARRY_STAKED_BASIS",
+    "CARRY_RECURSIVE_STAKED",
+    "YIELD_ROTATION_LENDING",
+    "YIELD_STAKING_SIMPLE",
+  ],
+  assetGroups: ["DEFI"],
   category: "DeFi",
   availableOn: ["defi"],
   singleton: true,
@@ -434,6 +525,14 @@ registerWidget({
   defaultW: 12,
   defaultH: 6,
   requiredEntitlements: [{ domain: "trading-defi", tier: "basic" }],
+  // "Cross-venue spot/perp basis" matches the two basis archetypes:
+  // - CARRY_BASIS_PERP §"Token / position flow" step 2: "BUY spot ... SELL
+  //   perp at venue with highest funding".
+  // - CARRY_STAKED_BASIS §"What it does": pairs LST (functioning as spot)
+  //   with short perp.
+  families: ["CARRY_AND_YIELD"],
+  archetypes: ["CARRY_BASIS_PERP", "CARRY_STAKED_BASIS"],
+  assetGroups: ["DEFI"],
   category: "DeFi",
   availableOn: ["defi", "strategies"],
   singleton: true,

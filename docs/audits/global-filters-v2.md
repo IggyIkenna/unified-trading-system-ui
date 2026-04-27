@@ -489,10 +489,104 @@ I'd like to nail down the answers to §11.6 before touching `WidgetDefinition` o
 
 ---
 
+## 12 — Widget tagging methodology + Carry & Yield audit (2026-04-27)
+
+> Written after the user pointed out that earlier widget tagging was partly guesswork. This section sets the methodology going forward AND documents a corrective audit of the 5 widgets I tagged earlier plus 7 more I should have tagged. Each tag now cites the codex doc that justifies it.
+
+### 12.1 Methodology rule (now in user memory)
+
+For every widget tag (`families`, `archetypes`, `assetGroups`), I must:
+
+1. Read the relevant codex docs end-to-end first — at minimum the family doc + every per-archetype doc the tag implies.
+2. Cite the doc + section in a comment immediately above the tag.
+3. If the doc doesn't directly support the tag, **don't ship it** — ask the user.
+
+The rule is stored in `~/.claude/projects/.../memory/feedback_read_docs_dont_guess.md` and indexed in `MEMORY.md`. Anti-patterns to avoid: tagging from widget descriptions alone, archetype-name pattern-matching, "this seems related" inference.
+
+### 12.2 Source docs read for the Carry & Yield audit
+
+- `codex/09-strategy/architecture-v2/families/carry-and-yield.md` — family-level UI surfaces in §"UI dashboard (shared)" lines 129-138 are the SSOT for what the family needs.
+- All 6 per-archetype docs:
+  - `archetypes/carry-basis-perp.md`
+  - `archetypes/carry-basis-dated.md`
+  - `archetypes/carry-staked-basis.md`
+  - `archetypes/carry-recursive-staked.md`
+  - `archetypes/yield-rotation-lending.md`
+  - `archetypes/yield-staking-simple.md`
+- Cross-cutting: `architecture-v2/README.md` §"11 action types" for primitives (TRANSFER, BRIDGE, STAKE, LEND, etc.).
+
+### 12.3 What the family doc actually says about UI
+
+Direct quote from `carry-and-yield.md` §"UI dashboard (shared)":
+
+```
+- Rate / APY curves over time per venue
+- Current spreads + rebalance history
+- Delta exposure tracker (for basis archetypes)
+- Health factor gauge (for leveraged variants)
+- Per-venue P&L attribution
+- Carry yield accrued vs paid
+- Gas cost per rebalance
+- Liquidation distance (leveraged variants)
+```
+
+Two important qualifiers in that list: **"for basis archetypes"** (delta exposure) and **"for leveraged variants"** (health factor, liquidation). Those are explicit narrowing conditions — not every widget applies to every Carry archetype.
+
+### 12.4 Audit of my earlier 5 tags — corrections shipped
+
+| Widget                 | Before                                               | After                                                                        | Why I missed it before                                                                                                                                    |
+| ---------------------- | ---------------------------------------------------- | ---------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `defi-lending`         | `["YIELD_ROTATION_LENDING"]`                         | `["YIELD_ROTATION_LENDING", "CARRY_STAKED_BASIS", "CARRY_RECURSIVE_STAKED"]` | Didn't read `carry-staked-basis.md` step 2 ("PLEDGE on Aave") or `carry-recursive-staked.md` loop ("BORROW 0.60 ETH") — both pledge to lending protocols. |
+| `defi-staking`         | `["YIELD_STAKING_SIMPLE", "CARRY_STAKED_BASIS"]`     | + `"CARRY_RECURSIVE_STAKED"`                                                 | Recursive staked literally calls STAKE inside its loop ("STAKE 0.60 ETH on Lido"). Missed by description-only reading.                                    |
+| `defi-rates-overview`  | `["YIELD_ROTATION_LENDING", "YIELD_STAKING_SIMPLE"]` | + `"CARRY_BASIS_PERP", "CARRY_STAKED_BASIS"`                                 | Family doc explicitly says "Rate / APY curves over time per venue" applies to every Carry archetype — funding rate is a "rate."                           |
+| `defi-staking-rewards` | `["YIELD_STAKING_SIMPLE", "CARRY_RECURSIVE_STAKED"]` | + `"CARRY_STAKED_BASIS"`                                                     | Staked basis earns staking yield (carry-staked-basis.md §"P&L attribution": "Staking yield: stETH rebase × holding period").                              |
+| `defi-funding-matrix`  | `["CARRY_BASIS_PERP"]`                               | + `"CARRY_STAKED_BASIS"`                                                     | Staked basis explicitly: "Earn staking yield + funding rate simultaneously." Funding is the second leg.                                                   |
+
+### 12.5 New tags applied to 7 previously-untagged Carry widgets
+
+Each citation block is in the code as a comment above the `archetypes:` key. Summary:
+
+| Widget                     | Tags applied                                       | Citation                                                                                         |
+| -------------------------- | -------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `defi-trade-history`       | All 5 Carry archetypes                             | Generic execution log; family doc + per-archetype "Token / position flow"                        |
+| `defi-strategy-config`     | All 5 Carry archetypes                             | Each archetype has a §"Config schema" — generic config editor                                    |
+| `defi-waterfall-weights`   | `["CARRY_BASIS_PERP", "YIELD_ROTATION_LENDING"]`   | Multi-coin rotation in basis-perp; per-venue allocation in rotation-lending                      |
+| `defi-health-factor`       | `["CARRY_STAKED_BASIS", "CARRY_RECURSIVE_STAKED"]` | Family doc: "Health factor gauge (for **leveraged variants**)"; rotation-lending has no leverage |
+| `defi-reward-pnl`          | The 3 staking archetypes                           | Per-archetype §"P&L attribution" calls out staking yield as a distinct component                 |
+| `defi-yield-chart`         | All 5 Carry archetypes                             | Family doc: "Rate / APY curves over time" + "Carry yield accrued vs paid"                        |
+| `enhanced-basis-dashboard` | `["CARRY_BASIS_PERP", "CARRY_STAKED_BASIS"]`       | Both archetypes pair spot/perp; rotation/staking are single-sided                                |
+
+### 12.6 Widgets I deliberately did NOT tag, and why
+
+| Widget                | Why no Carry tag                                                                                                                                                          |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `defi-wallet-summary` | Pre-trade infra — chain selector / address. Archetype-agnostic.                                                                                                           |
+| `defi-swap`           | Generic SWAP primitive (one of the 11 action types). Description "supports basis trade mode" doesn't make it a CARRY widget; the swap is a leg, not the archetype output. |
+| `defi-liquidity`      | Family doc §"Not in this family": "Yield farming with impermanent loss as primary risk (that's MARKET_MAKING — active LP)." LP belongs to a different family.             |
+| `defi-flash-loans`    | `yield-rotation-lending.md §"Not in this archetype"`: flash loans in this codebase belong to `LIQUIDATION_CAPTURE` (Arbitrage / Structural family). Not Carry.            |
+| `defi-transfer`       | TRANSFER + BRIDGE are universal primitives in `architecture-v2/README.md §"11 action types"`. Used by all archetypes across all families — not family-specific.           |
+
+### 12.7 Open question I'm not resolving without you
+
+`carry-basis-dated` is the only Carry archetype I haven't directly tagged any widget for. Per the doc it covers TradFi commodities/equity-index basis (CME futures vs underlying spot) and Deribit dated futures. The DeFi widget set doesn't cover it. The right thing is probably to tag relevant TradFi widgets (when/if those exist) — but I'm not auditing the TradFi widget tree in this round. Flag for later.
+
+### 12.8 Other families — not done in this round
+
+I've only audited Carry & Yield this round. **Desmond's other 3 archetype families remain untagged**:
+
+- `ML_DIRECTIONAL_CONTINUOUS` (ML Directional family) — likely tags terminal/order/position widgets
+- `ARBITRAGE_PRICE_DISPERSION` (Arbitrage / Structural) — likely tags arb-specific widgets
+- `STAT_ARB_CROSS_SECTIONAL` (Stat Arb / Pairs) — likely tags pair-trade / signal widgets
+
+Until those are tagged with citations from the corresponding `codex/09-strategy/architecture-v2/archetypes/<archetype>.md` files, Desmond's full scope can't be expressed at the widget level. He currently passes all gates only because his `trading-defi` + `trading-common` entitlements satisfy widgets via the asset-group axis — which is the _legacy_ path, not the v2 family/archetype-aware one.
+
+---
+
 ## 9 — Change log
 
-| Date       | What                                                                                                                                                                                                                                                                                                                                                      |
-| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 2026-04-27 | Doc started. Audit complete. Phase 1 design ready for review.                                                                                                                                                                                                                                                                                             |
-| 2026-04-27 | Decisions locked: 4-pill bar (no Asset Class), Family→Archetype is a single grouped multi-select with checkboxes (tri-state on family rows). Asset-group filtering kept reversible — see §10.                                                                                                                                                             |
-| 2026-04-27 | §11 added: persona-grounded gating-system design after a proper end-to-end read of all 32 personas + 7 playbook docs. Identifies four orthogonal axes, three parallel scope mechanisms today (`TradingEntitlement` + `StrategyFamilyEntitlement` + `assigned_strategies`), and proposes a unified `UserEntitlements` shape. Five open questions in §11.6. |
+| Date       | What                                                                                                                                                                                                                                                                                                                                                            |
+| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-04-27 | Doc started. Audit complete. Phase 1 design ready for review.                                                                                                                                                                                                                                                                                                   |
+| 2026-04-27 | Decisions locked: 4-pill bar (no Asset Class), Family→Archetype is a single grouped multi-select with checkboxes (tri-state on family rows). Asset-group filtering kept reversible — see §10.                                                                                                                                                                   |
+| 2026-04-27 | §11 added: persona-grounded gating-system design after a proper end-to-end read of all 32 personas + 7 playbook docs. Identifies four orthogonal axes, three parallel scope mechanisms today (`TradingEntitlement` + `StrategyFamilyEntitlement` + `assigned_strategies`), and proposes a unified `UserEntitlements` shape. Five open questions in §11.6.       |
+| 2026-04-27 | §12 added: widget-tagging methodology + Carry & Yield audit. Corrected 5 earlier tags with citation comments; added archetype tags to 7 more Carry-relevant widgets; explicitly listed widgets that should NOT be tagged Carry and why. Documented the rule (now in user memory) — read codex docs end-to-end before tagging, cite the section, ask if unclear. |

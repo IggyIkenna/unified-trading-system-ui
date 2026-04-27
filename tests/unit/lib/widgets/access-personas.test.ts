@@ -107,9 +107,11 @@ describe("widget access — slot-match path (closed-list-only persona)", () => {
       entitlements: ["data-pro" as const],
       assigned_strategies: ["YIELD_ROTATION_LENDING@aave-multichain-usdc-prod"] as const,
     };
-    // defi-funding-matrix is tagged CARRY_BASIS_PERP — not in our slot list.
+    // defi-funding-matrix is tagged CARRY_BASIS_PERP + CARRY_STAKED_BASIS
+    // (per codex docs — funding rate is the alpha source for both). Neither
+    // matches our YIELD_ROTATION_LENDING slot.
     const def = getWidget("defi-funding-matrix");
-    expect(def?.archetypes).toEqual(["CARRY_BASIS_PERP"]);
+    expect(def?.archetypes).toEqual(["CARRY_BASIS_PERP", "CARRY_STAKED_BASIS"]);
     expect(checkWidgetAccess(slotOnlyUser, def!), "defi-funding-matrix should stay locked").toBe(false);
   });
 
