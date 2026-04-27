@@ -163,10 +163,10 @@ export function PnLChartWidget(_props: WidgetComponentProps) {
 
   return (
     <div className="flex h-full flex-col px-3 pt-5 pb-3 gap-4 overflow-hidden">
-      <div ref={headerRef} className="flex items-center justify-between gap-4 flex-wrap">
-        <div className="flex items-center gap-3 flex-wrap">
+      <div ref={headerRef} className="flex items-center justify-between gap-2 flex-wrap">
+        <div className="flex items-center gap-2 flex-wrap">
           <h3 className="text-base font-semibold">{METRIC_TITLES[activeTab]}</h3>
-          <div className="flex items-center gap-4 text-xs">
+          <div className="flex items-center gap-3 text-xs">
             <div className="flex items-center gap-1.5">
               <StatusDot status="live" className="size-2" />
               <span className="text-muted-foreground">Live</span>
@@ -195,19 +195,14 @@ export function PnLChartWidget(_props: WidgetComponentProps) {
               </span>
             </div>
           </div>
-          <Badge variant="outline" className="text-micro">
-            {context.mode === "live" ? (
-              <span className="flex items-center gap-1">
-                <Radio className="size-2.5 animate-pulse text-[var(--status-live)]" />
-                Live
-              </span>
-            ) : (
+          {context.mode === "batch" && (
+            <Badge variant="outline" className="text-micro">
               <span className="flex items-center gap-1">
                 <Database className="size-2.5" />
                 Batch ({context.asOfDatetime?.split("T")[0]})
               </span>
-            )}
-          </Badge>
+            </Badge>
+          )}
           {(timeseriesLoading || liveBatchLoading) && <Spinner size="sm" className="size-3.5 text-muted-foreground" />}
         </div>
 
