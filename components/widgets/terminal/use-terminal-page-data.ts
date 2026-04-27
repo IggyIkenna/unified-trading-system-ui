@@ -76,6 +76,42 @@ const DEFAULT_INSTRUMENTS: TerminalInstrument[] = [
     change: 0.42,
   },
   {
+    symbol: "AAPL",
+    name: "Apple Inc.",
+    venue: "NASDAQ",
+    category: "TradFi",
+    instrumentKey: "NASDAQ:AAPL",
+    midPrice: 264.0,
+    change: 0.0,
+  },
+  {
+    symbol: "MSFT",
+    name: "Microsoft Corp.",
+    venue: "NASDAQ",
+    category: "TradFi",
+    instrumentKey: "NASDAQ:MSFT",
+    midPrice: 425.0,
+    change: 0.0,
+  },
+  {
+    symbol: "GOOGL",
+    name: "Alphabet Inc. (Class A)",
+    venue: "NASDAQ",
+    category: "TradFi",
+    instrumentKey: "NASDAQ:GOOGL",
+    midPrice: 200.0,
+    change: 0.0,
+  },
+  {
+    symbol: "JPM",
+    name: "JPMorgan Chase & Co.",
+    venue: "NYSE",
+    category: "TradFi",
+    instrumentKey: "NYSE:JPM",
+    midPrice: 240.0,
+    change: 0.0,
+  },
+  {
     symbol: "WETH-USDC-500",
     name: "WETH/USDC (0.05%)",
     venue: "UNISWAPV3-ETHEREUM",
@@ -297,12 +333,24 @@ export function useTerminalPageData(): TerminalPageResult {
     return warnings;
   }, [linkedStrategy, orderSize, selectedInstrument, orderType]);
 
+  // Initial chart fetch grabs a 7-day window ending at asOf — gives the user a
+  // populated chart on first paint instead of one sparse day. Backend reads the
+  // 7 days in parallel (~200ms total cold).
+  const initialFromDate = React.useMemo(() => {
+    if (!asOfParam) return undefined;
+    const d = new Date(`${asOfParam}T00:00:00Z`);
+    d.setUTCDate(d.getUTCDate() - 7);
+    return d.toISOString().slice(0, 10);
+  }, [asOfParam]);
+
   const { data: candlesApiData } = useCandles(
     selectedInstrument?.venue ?? "BINANCE-FUTURES",
     selectedInstrument?.symbol ?? "BTCUSDT",
     timeframe,
-    200,
+    500,
     modeParam,
+    asOfParam,
+    initialFromDate,
     asOfParam,
   );
   const { data: orderbookApiData } = useOrderBook(

@@ -5,6 +5,11 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Allow a second `next dev` from the same project root (e.g. one mock-mode
+  // server on :3000 and one real-API server on :3100) by giving them
+  // separate compile dirs via NEXT_DIST_DIR. Default `.next` is unchanged
+  // when the env is unset.
+  distDir: process.env.NEXT_DIST_DIR || ".next",
   typescript: {
     // TODO: set back to false after regenerating lib/types/api-generated.ts
     // Current generated file has syntax errors from openapi-typescript

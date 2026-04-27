@@ -23,6 +23,15 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "vitest.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", ".next/dev/types/**/*.ts"],
+  "include": [
+    "next-env.d.ts",
+    "vitest.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    ".next-3100/types/**/*.ts",
+    ".next-3100/dev/types/**/*.ts"
+  ],
   "exclude": ["node_modules", "_reference", "coverage", "tests/e2e", "tests/widgets", "archive", "functions"]
 }

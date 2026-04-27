@@ -17,6 +17,8 @@ config/docker-build.env.staging.firebase.local
 # Common ignores
 node_modules/
 .next/
+# Per-instance build dir for a second `next dev` (NEXT_DIST_DIR=.next-3100)
+.next-3100/
 .DS_Store
 *.pyc
 
@@ -27,6 +29,7 @@ playwright-report/
 # Archive/backup zips
 *.zip
 /coverage/
+extra/
 
 # pnpm is canonical — block npm's lockfile from being re-committed
 package-lock.json
@@ -58,6 +61,14 @@ yarn-error.log*
 
 # Firebase deploy cache (machine-generated, never commit)
 .firebase/
+
+# Firebase emulator export dumps (one-off `firebase emulators:export <dir>` output;
+# the canonical persistent export lives under .local-dev-cache/emulator-state)
+/firebase-export-*/
+
+# Playwright MCP accessibility-tree snapshots dumped into repo root by browser
+# automation runs (e.g. filters-*.yml, post-mm.yml). Subdir YAMLs are unaffected.
+/*.yml
 
 # Orphan-route audit runtime report (scanner regenerates on every run)
 scripts/.orphan-audit-report.json
