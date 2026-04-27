@@ -750,6 +750,13 @@ export function useTerminalPageData(): TerminalPageResult {
     liveCandle,
   ]);
 
+  // Synthetic-data flag: in mock mode, candleData comes from generateCandleData
+  // (a deterministic local generator), not from any API. Drives the visible
+  // "MOCK DATA" badge so the user never reads synthetic prices as real.
+  // Real-mode never produces synthetic candles — empty real-API responses
+  // surface as the chart's "No chart data available" empty state, not as data.
+  const isSyntheticData = isMockMode && candleData.length > 0;
+
   const indicatorOverlays = React.useMemo(() => {
     if (!candleData || candleData.length === 0) return [];
     const closes = candleData.map((c) => c.close);
@@ -939,6 +946,7 @@ export function useTerminalPageData(): TerminalPageResult {
       spread,
       spreadBps,
       candleData: candleData as unknown as Array<Record<string, unknown>>,
+      isSyntheticData,
       loadMoreCandles,
       isLoadingMoreHistory,
       indicatorOverlays,
@@ -989,6 +997,7 @@ export function useTerminalPageData(): TerminalPageResult {
       spread,
       spreadBps,
       candleData,
+      isSyntheticData,
       loadMoreCandles,
       isLoadingMoreHistory,
       indicatorOverlays,

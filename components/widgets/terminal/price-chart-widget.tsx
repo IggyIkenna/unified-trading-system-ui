@@ -37,6 +37,7 @@ export function PriceChartWidget(_props: WidgetComponentProps) {
     error,
     loadMoreCandles,
     isLoadingMoreHistory,
+    isSyntheticData,
   } = useTerminalData();
 
   // The chart is always "historical-up-to-a-point" — there is no Live vs As-Of
@@ -182,6 +183,27 @@ export function PriceChartWidget(_props: WidgetComponentProps) {
               <div className="absolute left-2 top-2 z-10 rounded bg-background/80 px-2 py-1 text-nano text-muted-foreground">
                 Loading older history…
               </div>
+            )}
+            {isSyntheticData && (
+              <>
+                {/* Corner badge: never hidden, never optional. */}
+                <div
+                  className="absolute right-2 top-2 z-10 rounded border border-amber-500/60 bg-amber-500/15 px-2 py-1 text-nano font-semibold uppercase tracking-wider text-amber-200"
+                  data-testid="synthetic-data-badge"
+                  title="These bars are locally generated, not real market data. Switch off mock mode to see real GCS-backed candles."
+                >
+                  Mock data — synthetic
+                </div>
+                {/* Diagonal watermark behind candles — visible when looking at the chart at all. */}
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center overflow-hidden"
+                >
+                  <span className="rotate-[-22deg] text-[6vw] font-black uppercase tracking-widest text-amber-500/10">
+                    Synthetic
+                  </span>
+                </div>
+              </>
             )}
           </div>
         )}

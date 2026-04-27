@@ -38,6 +38,9 @@ export interface TerminalData {
   spread: number;
   spreadBps: number;
   candleData: Array<Record<string, unknown>>;
+  /** True when candleData was generated locally (mock fallback) rather than coming from the API.
+   * Drives the visible "MOCK DATA" badge so the user never reads synthetic prices as real. */
+  isSyntheticData: boolean;
   /** Trigger fetching one earlier day of candles and prepending to candleData. No-op while inflight or at history limit. */
   loadMoreCandles: () => void;
   /** Whether a scroll-back fetch is currently in flight. */
