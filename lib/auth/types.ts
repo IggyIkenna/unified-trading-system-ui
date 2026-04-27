@@ -1,4 +1,11 @@
-import type { UserRole, Entitlement, EntitlementOrWildcard, TradingEntitlement, Org } from "@/lib/config/auth";
+import type {
+  UserRole,
+  Entitlement,
+  EntitlementOrWildcard,
+  StrategyFamilyEntitlement,
+  TradingEntitlement,
+  Org,
+} from "@/lib/config/auth";
 
 /** Account status from the backend user_profiles collection. */
 export type UserStatus = "active" | "pending_approval" | "rejected" | "disabled" | "unknown";
@@ -19,7 +26,14 @@ export interface AuthUser {
   displayName: string;
   role: UserRole;
   org: Org;
-  entitlements: readonly (EntitlementOrWildcard | TradingEntitlement)[];
+  entitlements: readonly (EntitlementOrWildcard | TradingEntitlement | StrategyFamilyEntitlement)[];
+  /**
+   * Closed list of strategy slot labels this user is routed to (mirrors the
+   * `assigned_strategies` field on `AuthPersona`). When set, this is the
+   * narrowest scope — widgets tagged with a matching archetype unlock even
+   * if the user lacks broader entitlements. See `lib/widgets/access.ts`.
+   */
+  assigned_strategies?: readonly string[];
   authorized?: boolean;
   status?: UserStatus;
   capabilities?: string[];

@@ -111,6 +111,12 @@ async function enrichUserFromBackend(fbUser: FirebaseUser): Promise<AuthUser> {
     role: persona?.role ?? "client",
     org: persona?.org ?? { id: "default", name: "Default" },
     entitlements: [],
+    // Slot-label scope is keyed off the persona id (canonical), not Firebase
+    // claims — claims have a 1KB cap and slot lists can grow into the dozens
+    // (Desmond has 11). Real prod clients will have this synced from the
+    // user-management-api or a Firestore lookup; for demo/staging the persona
+    // registry is sufficient.
+    ...(persona?.assigned_strategies ? { assigned_strategies: persona.assigned_strategies } : {}),
   };
 
   // Check custom claims first — written by the Admin SDK via /api/admin/set-claims

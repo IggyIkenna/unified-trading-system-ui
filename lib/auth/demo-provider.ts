@@ -1,5 +1,5 @@
 import { getPersonaByEmail, getPersonaById } from "@/lib/auth/personas";
-import type { Entitlement, TradingEntitlement } from "@/lib/config/auth";
+import type { AuthPersona, Entitlement } from "@/lib/config/auth";
 import { ALL_ENTITLEMENTS } from "@/lib/config/auth";
 import type { AuthProvider, AuthUser } from "./types";
 
@@ -8,14 +8,7 @@ export { derivePersonaInstruments } from "./derive-persona-instruments";
 const STORAGE_KEY = "portal_user";
 const TOKEN_KEY = "portal_token";
 
-function personaToAuthUser(persona: {
-  id: string;
-  email: string;
-  displayName: string;
-  role: "internal" | "client" | "admin";
-  org: { id: string; name: string };
-  entitlements: readonly (string | TradingEntitlement)[];
-}): AuthUser {
+function personaToAuthUser(persona: AuthPersona): AuthUser {
   return {
     id: persona.id,
     email: persona.email,
@@ -23,6 +16,7 @@ function personaToAuthUser(persona: {
     role: persona.role,
     org: persona.org,
     entitlements: persona.entitlements as AuthUser["entitlements"],
+    ...(persona.assigned_strategies ? { assigned_strategies: persona.assigned_strategies } : {}),
   };
 }
 

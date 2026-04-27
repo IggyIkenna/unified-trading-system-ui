@@ -224,7 +224,12 @@ const STAGING_USERS = [
     password: "demo123",
     claims: {
       role: "client",
-      entitlements: ["data-pro", "execution-full", "reporting"],
+      // Mirrors lib/auth/personas.ts `elysium-defi`. Note: getPersonaByEmail()
+      // matches the FIRST persona by email — `elysium-defi` (base tier) wins
+      // over `elysium-defi-full` (upgrade preview). The base persona's
+      // entitlements + assigned_strategies are what the firebase provider
+      // hydrates onto `AuthUser` post-login.
+      entitlements: ["data-pro", "execution-full", { domain: "trading-defi", tier: "basic" }, "reporting"],
     },
   },
   {
