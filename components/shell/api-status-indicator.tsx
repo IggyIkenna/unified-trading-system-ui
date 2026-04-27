@@ -55,15 +55,9 @@ export function ApiStatusIndicator() {
           if (data?.degraded_reasons?.length > 0) {
             setApiStatus("degraded");
             setDegradedReason(data.degraded_reasons[0]);
-          } else if (
-            data?.upstream_checks?.some(
-              (c: { status: string }) => c.status !== "ok",
-            )
-          ) {
+          } else if (data?.upstream_checks?.some((c: { status: string }) => c.status !== "ok")) {
             setApiStatus("degraded");
-            const failed = data.upstream_checks.find(
-              (c: { status: string }) => c.status !== "ok",
-            );
+            const failed = data.upstream_checks.find((c: { status: string }) => c.status !== "ok");
             setDegradedReason(failed?.name ?? "upstream check failed");
           } else {
             setApiStatus("reachable");
@@ -90,7 +84,7 @@ export function ApiStatusIndicator() {
       : apiStatus === "offline"
         ? "Backend API not reachable"
         : apiStatus === "mock"
-          ? "Running on mock data — no backend connection"
+          ? "Running on mock data: no backend connection"
           : "API reachable";
 
   return (
@@ -110,12 +104,7 @@ export function ApiStatusIndicator() {
         data-testid="api-status-dot"
         data-status={apiStatus}
       >
-        <Circle
-          className={cn(
-            "size-1.5 fill-current",
-            apiStatus === "reachable" && "animate-pulse",
-          )}
-        />
+        <Circle className={cn("size-1.5 fill-current", apiStatus === "reachable" && "animate-pulse")} />
         <span className="hidden sm:inline">{statusLabels[apiStatus]}</span>
       </span>
     </div>

@@ -4,23 +4,8 @@ import * as React from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Briefcase,
-  ArrowRight,
-  Shield,
-  TrendingUp,
-  FileText,
-  CheckCircle2,
-  PieChart,
-  BarChart3,
-} from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Briefcase, ArrowRight, Shield, TrendingUp, FileText, CheckCircle2, PieChart, BarChart3 } from "lucide-react";
 
 export default function InvestmentServicePage() {
   return (
@@ -38,14 +23,12 @@ export default function InvestmentServicePage() {
             </Badge>
             <h1 className="text-3xl font-bold">Investment Management</h1>
             <p className="mt-2 text-lg text-muted-foreground">
-              Deep dive into your portfolio performance. Every trade, every
-              order, every position — broken down by strategy, asset, and venue
-              with clear visuals.
+              Deep dive into your portfolio performance. Every trade, every order, every position: broken down by
+              strategy, asset, and venue with clear visuals.
             </p>
             <p className="mt-2 text-sm text-muted-foreground">
-              FCA-authorised discretionary management. Co-invest at the same
-              terms as our own capital. Full transparency through your investor
-              portal.
+              FCA-authorised discretionary management. Co-invest at the same terms as our own capital. Full transparency
+              through your investor portal.
             </p>
           </div>
 
@@ -60,43 +43,43 @@ export default function InvestmentServicePage() {
                 <div className="space-y-1">
                   <div className="text-sm font-medium">Portfolio Overview</div>
                   <p className="text-xs text-muted-foreground">
-                    NAV, MTD return, max drawdown, Sharpe ratio — all at a glance.
-                    Allocation breakdown by strategy (momentum, carry, yield, arb).
+                    NAV, MTD return, max drawdown, Sharpe ratio: all at a glance. Allocation breakdown by strategy
+                    (momentum, carry, yield, arb).
                   </p>
                 </div>
                 <div className="space-y-1">
                   <div className="text-sm font-medium">Trade &amp; Order History</div>
                   <p className="text-xs text-muted-foreground">
-                    Every trade, every order — filterable by instrument type, venue,
-                    strategy. Full audit trail with slippage analysis and MiFID II fields.
+                    Every trade, every order: filterable by instrument type, venue, strategy. Full audit trail with
+                    slippage analysis and MiFID II fields.
                   </p>
                 </div>
                 <div className="space-y-1">
                   <div className="text-sm font-medium">Settlement Tracking</div>
                   <p className="text-xs text-muted-foreground">
-                    Real-time settlement status — confirming, settled, pending, failed.
-                    Account balances, recent transfers, fee breakdowns.
+                    Real-time settlement status: confirming, settled, pending, failed. Account balances, recent
+                    transfers, fee breakdowns.
                   </p>
                 </div>
                 <div className="space-y-1">
                   <div className="text-sm font-medium">Report Generation</div>
                   <p className="text-xs text-muted-foreground">
-                    Generate on-demand or schedule recurring reports — performance,
-                    regulatory, executive summaries. Export to CSV/XLSX.
+                    Generate on-demand or schedule recurring reports: performance, regulatory, executive summaries.
+                    Export to CSV/XLSX.
                   </p>
                 </div>
                 <div className="space-y-1">
                   <div className="text-sm font-medium">P&amp;L Attribution</div>
                   <p className="text-xs text-muted-foreground">
-                    10-factor P&amp;L waterfall — see exactly where your returns come from.
-                    Drill into any strategy for factor-level breakdown.
+                    10-factor P&amp;L waterfall: see exactly where your returns come from. Drill into any strategy for
+                    factor-level breakdown.
                   </p>
                 </div>
                 <div className="space-y-1">
                   <div className="text-sm font-medium">Reconciliation</div>
                   <p className="text-xs text-muted-foreground">
-                    Live vs batch reconciliation with break detection. Investigate,
-                    accept, reject, or book corrections — full workflow.
+                    Live vs batch reconciliation with break detection. Investigate, accept, reject, or book corrections:
+                    full workflow.
                   </p>
                 </div>
               </div>
@@ -112,8 +95,7 @@ export default function InvestmentServicePage() {
               </CardHeader>
               <CardContent>
                 <CardDescription>
-                  Full FCA authorisation (FRN 975797) with segregated client
-                  accounts and investor protections
+                  Full FCA authorisation (FRN 975797) with segregated client accounts and investor protections
                 </CardDescription>
               </CardContent>
             </Card>
@@ -124,8 +106,8 @@ export default function InvestmentServicePage() {
               </CardHeader>
               <CardContent>
                 <CardDescription>
-                  Invest via Separately Managed Account (SMA) with custom
-                  parameters, or access fund structure through our affiliate
+                  Invest via Separately Managed Account (SMA) with custom parameters, or access fund structure through
+                  our affiliate
                 </CardDescription>
               </CardContent>
             </Card>
@@ -136,8 +118,7 @@ export default function InvestmentServicePage() {
               </CardHeader>
               <CardContent>
                 <CardDescription>
-                  Co-invest alongside Odum principals at identical fee terms and
-                  execution quality
+                  Co-invest alongside Odum principals at identical fee terms and execution quality
                 </CardDescription>
               </CardContent>
             </Card>
@@ -147,59 +128,33 @@ export default function InvestmentServicePage() {
           <Card className="mb-8">
             <CardHeader>
               <CardTitle>Sample Strategy Performance</CardTitle>
-              <CardDescription>
-                Live performance since February 2026
-              </CardDescription>
+              <CardDescription>Live performance since February 2026</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-4 gap-4 text-center mb-6">
                 <div>
-                  <div className="text-2xl font-bold text-emerald-400">
-                    +34.2%
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    Since Feb 2026
-                  </div>
+                  <div className="text-2xl font-bold text-emerald-400">+34.2%</div>
+                  <div className="text-xs text-muted-foreground">Since Feb 2026</div>
                 </div>
                 <div>
                   <div className="text-2xl font-bold">2.8</div>
-                  <div className="text-xs text-muted-foreground">
-                    Sharpe Ratio
-                  </div>
+                  <div className="text-xs text-muted-foreground">Sharpe Ratio</div>
                 </div>
                 <div>
                   <div className="text-2xl font-bold text-rose-400">-3.8%</div>
-                  <div className="text-xs text-muted-foreground">
-                    Max Drawdown
-                  </div>
+                  <div className="text-xs text-muted-foreground">Max Drawdown</div>
                 </div>
                 <div>
                   <div className="text-2xl font-bold">0.08</div>
-                  <div className="text-xs text-muted-foreground">
-                    Correlation to SPX
-                  </div>
+                  <div className="text-xs text-muted-foreground">Correlation to SPX</div>
                 </div>
               </div>
               {/* Time Series Chart */}
               <div className="h-[200px] w-full bg-muted/30 rounded-lg p-4">
                 <svg viewBox="0 0 400 150" className="w-full h-full">
                   {/* Grid lines */}
-                  <line
-                    x1="40"
-                    y1="20"
-                    x2="40"
-                    y2="130"
-                    stroke="var(--border)"
-                    strokeWidth="1"
-                  />
-                  <line
-                    x1="40"
-                    y1="130"
-                    x2="390"
-                    y2="130"
-                    stroke="var(--border)"
-                    strokeWidth="1"
-                  />
+                  <line x1="40" y1="20" x2="40" y2="130" stroke="var(--border)" strokeWidth="1" />
+                  <line x1="40" y1="130" x2="390" y2="130" stroke="var(--border)" strokeWidth="1" />
                   <line
                     x1="40"
                     y1="75"
@@ -222,59 +177,24 @@ export default function InvestmentServicePage() {
                   />
 
                   {/* Y-axis labels */}
-                  <text
-                    x="35"
-                    y="25"
-                    fontSize="10"
-                    fill="var(--muted-foreground)"
-                    textAnchor="end"
-                  >
+                  <text x="35" y="25" fontSize="10" fill="var(--muted-foreground)" textAnchor="end">
                     40%
                   </text>
-                  <text
-                    x="35"
-                    y="77"
-                    fontSize="10"
-                    fill="var(--muted-foreground)"
-                    textAnchor="end"
-                  >
+                  <text x="35" y="77" fontSize="10" fill="var(--muted-foreground)" textAnchor="end">
                     20%
                   </text>
-                  <text
-                    x="35"
-                    y="133"
-                    fontSize="10"
-                    fill="var(--muted-foreground)"
-                    textAnchor="end"
-                  >
+                  <text x="35" y="133" fontSize="10" fill="var(--muted-foreground)" textAnchor="end">
                     0%
                   </text>
 
                   {/* X-axis labels */}
-                  <text
-                    x="40"
-                    y="145"
-                    fontSize="10"
-                    fill="var(--muted-foreground)"
-                  >
+                  <text x="40" y="145" fontSize="10" fill="var(--muted-foreground)">
                     Feb
                   </text>
-                  <text
-                    x="215"
-                    y="145"
-                    fontSize="10"
-                    fill="var(--muted-foreground)"
-                    textAnchor="middle"
-                  >
+                  <text x="215" y="145" fontSize="10" fill="var(--muted-foreground)" textAnchor="middle">
                     Mar
                   </text>
-                  <text
-                    x="390"
-                    y="145"
-                    fontSize="10"
-                    fill="var(--muted-foreground)"
-                    textAnchor="end"
-                  >
+                  <text x="390" y="145" fontSize="10" fill="var(--muted-foreground)" textAnchor="end">
                     Today
                   </text>
 
@@ -293,13 +213,7 @@ export default function InvestmentServicePage() {
 
                   {/* Gradient definition */}
                   <defs>
-                    <linearGradient
-                      id="greenGradient"
-                      x1="0%"
-                      y1="0%"
-                      x2="0%"
-                      y2="100%"
-                    >
+                    <linearGradient id="greenGradient" x1="0%" y1="0%" x2="0%" y2="100%">
                       <stop offset="0%" stopColor="#4ade80" />
                       <stop offset="100%" stopColor="#4ade80" stopOpacity="0" />
                     </linearGradient>
@@ -307,13 +221,7 @@ export default function InvestmentServicePage() {
 
                   {/* Current value marker */}
                   <circle cx="390" cy="36" r="4" fill="#4ade80" />
-                  <text
-                    x="375"
-                    y="28"
-                    fontSize="11"
-                    fill="#4ade80"
-                    fontWeight="bold"
-                  >
+                  <text x="375" y="28" fontSize="11" fill="#4ade80" fontWeight="bold">
                     +34.2%
                   </text>
                 </svg>
@@ -326,8 +234,8 @@ export default function InvestmentServicePage() {
             <CardHeader>
               <CardTitle>Fee Structure</CardTitle>
               <CardDescription>
-                FCA-regulated investment management. Fees are disclosed at the
-                second call alongside the mandate structure.
+                FCA-regulated investment management. Fees are disclosed at the second call alongside the mandate
+                structure.
               </CardDescription>
             </CardHeader>
           </Card>
@@ -357,7 +265,6 @@ export default function InvestmentServicePage() {
               </div>
             </div>
           </div>
-
         </div>
       </main>
 
@@ -368,8 +275,7 @@ export default function InvestmentServicePage() {
             <div className="text-center mb-8">
               <h2 className="text-2xl font-bold">See It In Action</h2>
               <p className="mt-2 text-muted-foreground">
-                Preview the investor portal with portfolio overview, P&amp;L
-                attribution, and settlement tracking.
+                Preview the investor portal with portfolio overview, P&amp;L attribution, and settlement tracking.
               </p>
             </div>
 
@@ -377,41 +283,25 @@ export default function InvestmentServicePage() {
             <Card className="mb-6 border-rose-500/20">
               <CardHeader>
                 <CardTitle className="text-base">Portfolio Overview</CardTitle>
-                <CardDescription>
-                  Real-time NAV, allocation, and performance tracking
-                </CardDescription>
+                <CardDescription>Real-time NAV, allocation, and performance tracking</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-4 gap-4 text-center mb-4">
                   <div className="rounded-lg border border-border/50 bg-muted/30 p-3">
-                    <div className="text-xl font-bold font-mono text-emerald-400">
-                      $2.4M
-                    </div>
-                    <div className="text-[10px] text-muted-foreground">
-                      Net Asset Value
-                    </div>
+                    <div className="text-xl font-bold font-mono text-emerald-400">$2.4M</div>
+                    <div className="text-[10px] text-muted-foreground">Net Asset Value</div>
                   </div>
                   <div className="rounded-lg border border-border/50 bg-muted/30 p-3">
-                    <div className="text-xl font-bold font-mono text-emerald-400">
-                      +12.8%
-                    </div>
-                    <div className="text-[10px] text-muted-foreground">
-                      MTD Return
-                    </div>
+                    <div className="text-xl font-bold font-mono text-emerald-400">+12.8%</div>
+                    <div className="text-[10px] text-muted-foreground">MTD Return</div>
                   </div>
                   <div className="rounded-lg border border-border/50 bg-muted/30 p-3">
-                    <div className="text-xl font-bold font-mono text-rose-400">
-                      -2.1%
-                    </div>
-                    <div className="text-[10px] text-muted-foreground">
-                      Max Drawdown
-                    </div>
+                    <div className="text-xl font-bold font-mono text-rose-400">-2.1%</div>
+                    <div className="text-[10px] text-muted-foreground">Max Drawdown</div>
                   </div>
                   <div className="rounded-lg border border-border/50 bg-muted/30 p-3">
                     <div className="text-xl font-bold font-mono">2.6</div>
-                    <div className="text-[10px] text-muted-foreground">
-                      Sharpe Ratio
-                    </div>
+                    <div className="text-[10px] text-muted-foreground">Sharpe Ratio</div>
                   </div>
                 </div>
                 <div className="space-y-2">
@@ -447,9 +337,7 @@ export default function InvestmentServicePage() {
                     >
                       <span className="font-medium">{row.strategy}</span>
                       <div className="flex items-center gap-4 font-mono text-xs">
-                        <span className="text-muted-foreground">
-                          {row.alloc}
-                        </span>
+                        <span className="text-muted-foreground">{row.alloc}</span>
                         <span className="text-emerald-400">{row.pnl}</span>
                         <span className="text-emerald-400">{row.attr}</span>
                       </div>
@@ -462,12 +350,8 @@ export default function InvestmentServicePage() {
             {/* Settlement Preview */}
             <Card className="border-rose-500/20">
               <CardHeader>
-                <CardTitle className="text-base">
-                  Settlement &amp; Reporting
-                </CardTitle>
-                <CardDescription>
-                  Monthly statements, fee calculations, and audit trail
-                </CardDescription>
+                <CardTitle className="text-base">Settlement &amp; Reporting</CardTitle>
+                <CardDescription>Monthly statements, fee calculations, and audit trail</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
@@ -531,68 +415,59 @@ export default function InvestmentServicePage() {
               <Card className="border-muted">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm">Why Managed Only</CardTitle>
-                  <CardDescription className="text-xs">
-                    FCA-regulated discretionary management
-                  </CardDescription>
+                  <CardDescription className="text-xs">FCA-regulated discretionary management</CardDescription>
                 </CardHeader>
                 <CardContent className="text-xs text-muted-foreground space-y-1.5">
                   <p>
-                    Investment management is a regulated activity. All
-                    portfolios are managed by our FCA-authorised team with full
-                    audit trail, best execution monitoring, and regulatory
-                    reporting built in.
+                    Investment management is a regulated activity. All portfolios are managed by our FCA-authorised team
+                    with full audit trail, best execution monitoring, and regulatory reporting built in.
                   </p>
                 </CardContent>
               </Card>
               <Card className="border-rose-500/30">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm">Managed</CardTitle>
-                  <CardDescription className="text-xs">
-                    Full discretionary management
-                  </CardDescription>
+                  <CardDescription className="text-xs">Full discretionary management</CardDescription>
                 </CardHeader>
                 <CardContent className="text-xs text-muted-foreground space-y-1.5">
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
-                    Fully discretionary portfolio management
+                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Fully discretionary portfolio
+                    management
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
-                    Co-invest at same terms as house principals
+                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Co-invest at same terms as house
+                    principals
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
-                    SMA or fund structure via affiliate
+                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> SMA or fund structure via affiliate
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
-                    Monthly NAV reporting and performance attribution
+                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Monthly NAV reporting and performance
+                    attribution
                   </div>
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm">BYO Thesis</CardTitle>
-                  <CardDescription className="text-xs">
-                    Your investment thesis, we build and execute
-                  </CardDescription>
+                  <CardDescription className="text-xs">Your investment thesis, we build and execute</CardDescription>
                 </CardHeader>
                 <CardContent className="text-xs text-muted-foreground space-y-1.5">
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
-                    Bring your investment thesis or strategy ideas
+                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Bring your investment thesis or
+                    strategy ideas
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
-                    We backtest, build, and deploy the strategy
+                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> We backtest, build, and deploy the
+                    strategy
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
-                    Managed execution on our infrastructure
+                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Managed execution on our
+                    infrastructure
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
-                    Custom risk parameters and allocation constraints
+                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Custom risk parameters and allocation
+                    constraints
                   </div>
                 </CardContent>
               </Card>
@@ -605,9 +480,7 @@ export default function InvestmentServicePage() {
       <section className="border-t border-border">
         <div className="container px-4 py-16 md:px-6">
           <div className="rounded-xl border border-primary/20 bg-primary/5 p-8 text-center max-w-2xl mx-auto">
-            <h3 className="text-lg font-semibold mb-2">
-              Ready to get started?
-            </h3>
+            <h3 className="text-lg font-semibold mb-2">Ready to get started?</h3>
             <p className="text-sm text-muted-foreground mb-6">
               Book a demo to see the platform in action, or get in touch with our team.
             </p>

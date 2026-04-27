@@ -106,7 +106,7 @@ export function DartMaturityLadderDiagram(): React.JSX.Element {
       aria-labelledby="dart-ladder-diagram-title"
     >
       <figcaption id="dart-ladder-diagram-title" className="mb-4 text-sm font-semibold text-foreground">
-        8-stage maturity ladder — one slot, one path to live
+        8-stage maturity ladder: one slot, one path to live
       </figcaption>
 
       <WidgetScroll axes="horizontal" scrollbarSize="thin" className="w-full">
@@ -147,7 +147,7 @@ export function DartMaturityLadderDiagram(): React.JSX.Element {
             y={40}
             className="fill-zinc-700 text-[11px] font-semibold uppercase tracking-wide dark:fill-zinc-300"
           >
-            Research phase — any promoted slot can be re-run over a new regime window
+            Research phase: any promoted slot can be re-run over a new regime window
           </text>
           <line
             x1={LEFT_PAD + 3 * (STAGE_WIDTH + STAGE_GAP)}
@@ -303,7 +303,7 @@ export function DartMaturityLadderDiagram(): React.JSX.Element {
             y={LADDER_Y + STAGE_HEIGHT + 92}
             className="fill-zinc-700 text-[11px] font-semibold uppercase tracking-wide dark:fill-zinc-300"
           >
-            Automated watchdog — 14-day paper gate · first non-zero allocation · ops only demote on incident
+            Automated watchdog: 14-day paper gate · first non-zero allocation · ops only demote on incident
           </text>
         </svg>
       </WidgetScroll>

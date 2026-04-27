@@ -14,14 +14,7 @@ import { Briefcase, CheckCircle2, Shield } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";
 import { OnboardingWizardTail } from "./onboarding-wizard-tail";
-import {
-  INV_OPTS,
-  REG_ACTIVITIES,
-  REG_ADDONS,
-  REG_ENGAGEMENT,
-  REG_FUND_OPTS,
-  type ApplicantType,
-} from "./signup-data";
+import { INV_OPTS, REG_ACTIVITIES, REG_ADDONS, REG_ENGAGEMENT, REG_FUND_OPTS, type ApplicantType } from "./signup-data";
 import { OnboardingBackBtn, OnboardingNextBtn, StepIndicator } from "./signup-ui-bits";
 
 export function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | "investment" }) {
@@ -242,7 +235,7 @@ export function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | 
             fbCode === "auth/email-already-in-use"
               ? "An account with this email already exists. Sign in instead."
               : fbCode === "auth/weak-password"
-                ? "Password is too weak — use at least 6 characters."
+                ? "Password is too weak: use at least 6 characters."
                 : "Account creation failed. Please try again.";
           setSubmitError(msg);
           setCreatingAccount(false);
@@ -352,7 +345,7 @@ export function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | 
                         You have an incomplete application for {resumeDraft.company} ({resumeDraft.email}).
                         {resumeDraft.step < 5
                           ? " You can continue where you left off."
-                          : " Your application was submitted — you can upload remaining documents."}
+                          : " Your application was submitted: you can upload remaining documents."}
                       </p>
                     </div>
                     <div className="flex gap-2">
@@ -527,8 +520,7 @@ export function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | 
                 {applicantType === "company" && (
                   <div className="space-y-1.5">
                     <Label className="text-xs">
-                      Entity registered address{" "}
-                      <span className="text-muted-foreground">(for contract generation)</span>
+                      Entity registered address <span className="text-muted-foreground">(for contract generation)</span>
                     </Label>
                     <Input
                       type="text"
@@ -603,7 +595,7 @@ export function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | 
         {step >= 2 && firebaseUid && (
           <div className="text-center text-xs text-emerald-400 mb-2 flex items-center justify-center gap-1.5">
             <CheckCircle2 className="size-3" />
-            Account created — your progress is saved. You can close and resume anytime by logging in.
+            Account created: your progress is saved. You can close and resume anytime by logging in.
           </div>
         )}
 
@@ -732,7 +724,7 @@ export function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | 
                     href="/contact?service=regulatory"
                     className="text-xs text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    Feeling overwhelmed? Just get in touch — we&apos;ll walk you through it.
+                    Feeling overwhelmed? Just get in touch: we&apos;ll walk you through it.
                   </Link>
                   <OnboardingNextBtn
                     disabled={!selOpts.has("ar") && !selOpts.has("advisor")}

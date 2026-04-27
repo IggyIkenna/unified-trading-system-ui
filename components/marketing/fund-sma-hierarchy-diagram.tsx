@@ -60,7 +60,7 @@ export function FundSmaHierarchyDiagram(): React.JSX.Element {
               textAnchor="middle"
               className="fill-zinc-900 text-[14px] font-semibold dark:fill-zinc-100"
             >
-              Odum — Manager of the Strategy
+              Odum: Manager of the Strategy
             </text>
             <text x="480" y="60" textAnchor="middle" className="fill-zinc-600 text-[11px] dark:fill-zinc-400">
               IM where appointed · no custody role

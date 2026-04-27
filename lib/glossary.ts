@@ -32,31 +32,31 @@ export const GLOSSARY: Readonly<Record<string, GlossaryEntry>> = {
     id: "cefi",
     label: "CeFi",
     definition:
-      "Centralised Finance — custodial crypto exchanges like Binance, OKX, Deribit, Coinbase, Bybit. Distinct from DeFi (non-custodial protocols).",
+      "Centralised Finance: custodial crypto exchanges like Binance, OKX, Deribit, Coinbase, Bybit. Distinct from DeFi (non-custodial protocols).",
   },
   defi: {
     id: "defi",
     label: "DeFi",
     definition:
-      "Decentralised Finance — non-custodial on-chain protocols like Uniswap, Aave, Lido, GMX, Hyperliquid. Distinct from CeFi (custodial exchanges).",
+      "Decentralised Finance: non-custodial on-chain protocols like Uniswap, Aave, Lido, GMX, Hyperliquid. Distinct from CeFi (custodial exchanges).",
   },
   tradfi: {
     id: "tradfi",
     label: "TradFi",
     definition:
-      "Traditional Finance — regulated equities, options, futures, FX via venues like CME, ICE, CBOE, NYSE, IBKR.",
+      "Traditional Finance: regulated equities, options, futures, FX via venues like CME, ICE, CBOE, NYSE, IBKR.",
   },
   dart: {
     id: "dart",
     label: "DART",
     definition:
-      "Data Analytics, Research & Trading. The set of services Odum uses internally to build, research, promote, execute, and monitor its own systematic strategies — packaged for client use.",
+      "Data Analytics, Research & Trading. The set of services Odum uses internally to build, research, promote, execute, and monitor its own systematic strategies: packaged for client use.",
   },
   sma: {
     id: "sma",
     label: "SMA",
     definition:
-      "Separately Managed Accounts — client holds their own venue accounts; Odum runs the strategy via a scoped execute-plus-read API key. One client, one book.",
+      "Separately Managed Accounts: client holds their own venue accounts; Odum runs the strategy via a scoped execute-plus-read API key. One client, one book.",
   },
   pooled: {
     id: "pooled",
@@ -68,19 +68,19 @@ export const GLOSSARY: Readonly<Record<string, GlossaryEntry>> = {
     id: "fca",
     label: "FCA",
     definition:
-      "Financial Conduct Authority — the UK financial regulator. Odum Research Ltd holds FCA authorisation under FRN 975797.",
+      "Financial Conduct Authority: the UK financial regulator. Odum Research Ltd holds FCA authorisation under FRN 975797.",
   },
   mlro: {
     id: "mlro",
     label: "MLRO",
     definition:
-      "Money Laundering Reporting Officer — the statutory role responsible for anti-money-laundering oversight under the UK's FCA regulatory regime. Operated internally at Odum.",
+      "Money Laundering Reporting Officer: the statutory role responsible for anti-money-laundering oversight under the UK's FCA regulatory regime. Operated internally at Odum.",
   },
   mifid: {
     id: "mifid",
     label: "MiFID II",
     definition:
-      "Markets in Financial Instruments Directive II — the EU/UK regulatory framework for investment-services firms covering best-execution, transaction reporting, client classification, and market-conduct rules.",
+      "Markets in Financial Instruments Directive II: the EU/UK regulatory framework for investment-services firms covering best-execution, transaction reporting, client classification, and market-conduct rules.",
   },
   ar: {
     id: "ar",
@@ -92,42 +92,42 @@ export const GLOSSARY: Readonly<Record<string, GlossaryEntry>> = {
     id: "aif",
     label: "AIF",
     definition:
-      "Alternative Investment Fund — a collective-investment vehicle raising capital from professional investors against a defined policy. Covers hedge funds, private-equity funds, and most non-retail crypto and DeFi funds under EU law.",
+      "Alternative Investment Fund: a collective-investment vehicle raising capital from professional investors against a defined policy. Covers hedge funds, private-equity funds, and most non-retail crypto and DeFi funds under EU law.",
   },
   aifm: {
     id: "aifm",
     label: "AIFM",
     definition:
-      "Alternative Investment Fund Manager — the EU-regulated role responsible for managing an AIF. Odum uses an EU-regulated affiliate with AIFM permissions to cover activity outside UK FCA scope.",
+      "Alternative Investment Fund Manager: the EU-regulated role responsible for managing an AIF. Odum uses an EU-regulated affiliate with AIFM permissions to cover activity outside UK FCA scope.",
   },
   hwm: {
     id: "hwm",
     label: "high-water mark",
     definition:
-      "A performance-fee reference point — fees accrue only on profits above the prior peak NAV, so you don't pay twice for recovering the same ground.",
+      "A performance-fee reference point: fees accrue only on profits above the prior peak NAV, so you don't pay twice for recovering the same ground.",
   },
   pnl: {
     id: "pnl",
     label: "P&L",
-    definition: "Profit and loss — the running tally of gains and losses on a position, strategy, or book.",
+    definition: "Profit and loss: the running tally of gains and losses on a position, strategy, or book.",
   },
   var: {
     id: "var",
     label: "VaR",
     definition:
-      "Value at Risk — a statistical estimate of potential loss over a given time horizon at a given confidence level. Parametric and historical variants both surfaced in Odum reporting.",
+      "Value at Risk: a statistical estimate of potential loss over a given time horizon at a given confidence level. Parametric and historical variants both surfaced in Odum reporting.",
   },
   maturity: {
     id: "maturity",
     label: "maturity",
     definition:
-      "A strategy's promotion stage — code-audited → backtested → paper → live-tiny → live-allocated. One-way progression; pre-backtested slots are not visible externally.",
+      "A strategy's promotion stage: code-audited → backtested → paper → live-tiny → live-allocated. One-way progression; pre-backtested slots are not visible externally.",
   },
   allocator: {
     id: "allocator",
     label: "allocator",
     definition:
-      "An investor deploying capital into managed strategies — typically a family office, fund-of-funds, endowment, or institutional principal choosing external managers.",
+      "An investor deploying capital into managed strategies: typically a family office, fund-of-funds, endowment, or institutional principal choosing external managers.",
   },
   aum: {
     id: "aum",
@@ -139,7 +139,7 @@ export const GLOSSARY: Readonly<Record<string, GlossaryEntry>> = {
     id: "venue",
     label: "venue",
     definition:
-      "A trading counterparty where orders land — an exchange, broker, on-chain protocol, or bookmaker. Coverage scope is defined per client by a set of venue packs.",
+      "A trading counterparty where orders land: an exchange, broker, on-chain protocol, or bookmaker. Coverage scope is defined per client by a set of venue packs.",
   },
   basis: {
     id: "basis",
@@ -157,13 +157,13 @@ export const GLOSSARY: Readonly<Record<string, GlossaryEntry>> = {
     id: "stat-arb",
     label: "stat-arb",
     definition:
-      "Statistical arbitrage — strategies that trade short-term mean-reversion in correlated instrument pairs or baskets. Pairs stat-arb uses a z-score signal; cross-sectional stat-arb ranks a basket.",
+      "Statistical arbitrage: strategies that trade short-term mean-reversion in correlated instrument pairs or baskets. Pairs stat-arb uses a z-score signal; cross-sectional stat-arb ranks a basket.",
   },
   sharpe: {
     id: "sharpe",
     label: "Sharpe ratio",
     definition:
-      "Risk-adjusted return — mean excess return divided by return volatility. Annualised. Used to compare strategies on a risk-normalised basis.",
+      "Risk-adjusted return: mean excess return divided by return volatility. Annualised. Used to compare strategies on a risk-normalised basis.",
   },
   drawdown: {
     id: "drawdown",
@@ -181,13 +181,13 @@ export const GLOSSARY: Readonly<Record<string, GlossaryEntry>> = {
     id: "im",
     label: "IM",
     definition:
-      "Investment Management — Odum allocates client capital to its own systematic strategies under Odum's FCA permissions, reporting on the shared operating surface.",
+      "Investment Management: Odum allocates client capital to its own systematic strategies under Odum's FCA permissions, reporting on the shared operating surface.",
   },
   nav: {
     id: "nav",
     label: "NAV",
     definition:
-      "Net Asset Value — the per-share or per-partition value of a fund or managed account, struck at the published valuation point by the fund administrator.",
+      "Net Asset Value: the per-share or per-partition value of a fund or managed account, struck at the published valuation point by the fund administrator.",
   },
   mtm: {
     id: "mtm",
@@ -211,13 +211,13 @@ export const GLOSSARY: Readonly<Record<string, GlossaryEntry>> = {
     id: "mtd",
     label: "MTD",
     definition:
-      "Month-to-date — cumulative return or P&L from the first day of the current calendar month to the current point.",
+      "Month-to-date: cumulative return or P&L from the first day of the current calendar month to the current point.",
   },
   tca: {
     id: "tca",
     label: "TCA",
     definition:
-      "Transaction Cost Analysis — post-trade measurement of execution quality against benchmarks such as arrival price, VWAP, and implementation shortfall.",
+      "Transaction Cost Analysis: post-trade measurement of execution quality against benchmarks such as arrival price, VWAP, and implementation shortfall.",
   },
   "mean-reversion": {
     id: "mean-reversion",
@@ -229,13 +229,13 @@ export const GLOSSARY: Readonly<Record<string, GlossaryEntry>> = {
     id: "twap",
     label: "TWAP",
     definition:
-      "Time-Weighted Average Price — an execution algorithm that slices an order evenly across a time window, benchmarked against the average price over the same window.",
+      "Time-Weighted Average Price: an execution algorithm that slices an order evenly across a time window, benchmarked against the average price over the same window.",
   },
   vwap: {
     id: "vwap",
     label: "VWAP",
     definition:
-      "Volume-Weighted Average Price — an execution algorithm that paces participation with observed venue volume, and the corresponding price benchmark.",
+      "Volume-Weighted Average Price: an execution algorithm that paces participation with observed venue volume, and the corresponding price benchmark.",
   },
   "odum-signals": {
     id: "odum-signals",
@@ -253,13 +253,13 @@ export const GLOSSARY: Readonly<Record<string, GlossaryEntry>> = {
     id: "category-prediction",
     label: "Prediction",
     definition:
-      "Prediction and non-sports event markets where positions reference outcomes (politics, macro, other events) — not the same as generic single-name directional equity credit.",
+      "Prediction and non-sports event markets where positions reference outcomes (politics, macro, other events): not the same as generic single-name directional equity credit.",
   },
   "q-instr-spot": {
     id: "q-instr-spot",
     label: "spot",
     definition:
-      "Cash instruments — you hold or deliver the asset. Drives margin, inventory, and basis vs perps, dated futures, and event-settled tickets on the same underlier.",
+      "Cash instruments: you hold or deliver the asset. Drives margin, inventory, and basis vs perps, dated futures, and event-settled tickets on the same underlier.",
   },
   "q-instr-perp": {
     id: "q-instr-perp",
@@ -271,31 +271,31 @@ export const GLOSSARY: Readonly<Record<string, GlossaryEntry>> = {
     id: "q-instr-dated-future",
     label: "dated future",
     definition:
-      "A contract with a fixed expiry, roll, or delivery — term structure, calendar rolls, and basis work sit here. Separately risk-managed from 24/7 perp stacks.",
+      "A contract with a fixed expiry, roll, or delivery: term structure, calendar rolls, and basis work sit here. Separately risk-managed from 24/7 perp stacks.",
   },
   "q-instr-option": {
     id: "q-instr-option",
     label: "option",
     definition:
-      "Outright, spread, and vol-aware optionality — for convexity, hedging, and vol trading. Pairs with TCA and vol reporting in Odum’s risk and execution layers.",
+      "Outright, spread, and vol-aware optionality: for convexity, hedging, and vol trading. Pairs with TCA and vol reporting in Odum’s risk and execution layers.",
   },
   "q-instr-lending": {
     id: "q-instr-lending",
     label: "lending",
     definition:
-      "Secured and unsecured borrow/lend, repo-style legs, and funding for shorts — a core part of short availability and net carry, especially on digital-asset books.",
+      "Secured and unsecured borrow/lend, repo-style legs, and funding for shorts: a core part of short availability and net carry, especially on digital-asset books.",
   },
   "q-instr-staking": {
     id: "q-instr-staking",
     label: "staking",
     definition:
-      "On-chain or venue-native staking, liquid staking, and restaking — yield and lock-up are explicit in the mandate; not generic passive spot at an exchange alone.",
+      "On-chain or venue-native staking, liquid staking, and restaking: yield and lock-up are explicit in the mandate; not generic passive spot at an exchange alone.",
   },
   "q-instr-lp": {
     id: "q-instr-lp",
     label: "lp",
     definition:
-      "Concentrated liquidity and market-making in AMMs and hybrid CLOB+LP venues — you earn from fees, incentives, and take inventory risk, not a single passive ticket.",
+      "Concentrated liquidity and market-making in AMMs and hybrid CLOB+LP venues: you earn from fees, incentives, and take inventory risk, not a single passive ticket.",
   },
   "q-instr-event-settled": {
     id: "q-instr-event-settled",
@@ -307,31 +307,31 @@ export const GLOSSARY: Readonly<Record<string, GlossaryEntry>> = {
     id: "q-strat-ml-directional",
     label: "ml directional",
     definition:
-      "Model-driven, systematic directional or long/short risk — you may bring models, lease ours, or both; execution, limits, and reporting stay inside Odum’s controlled pipeline.",
+      "Model-driven, systematic directional or long/short risk: you may bring models, lease ours, or both; execution, limits, and reporting stay inside Odum’s controlled pipeline.",
   },
   "q-strat-rules-directional": {
     id: "q-strat-rules-directional",
     label: "rules directional",
     definition:
-      "Hand-built, auditable rules and heuristics (not ML) with explicit parameters — the profile compliance and the allocator can read without a black box.",
+      "Hand-built, auditable rules and heuristics (not ML) with explicit parameters: the profile compliance and the allocator can read without a black box.",
   },
   "q-strat-stat-arb": {
     id: "q-strat-stat-arb",
     label: "stat arb",
     definition:
-      "Short-horizon relative value — mean-reversion, pairs, cross-sectional rankings. Risk is basket and correlation, not a single name’s macro bet.",
+      "Short-horizon relative value: mean-reversion, pairs, cross-sectional rankings. Risk is basket and correlation, not a single name’s macro bet.",
   },
   "q-strat-arbitrage": {
     id: "q-strat-arbitrage",
     label: "arbitrage",
     definition:
-      "Cross-venue, cross-instrument, or cross-chain mispricing with hedged or locked economics — you care more about dislocation and capacity than one-way beta.",
+      "Cross-venue, cross-instrument, or cross-chain mispricing with hedged or locked economics: you care more about dislocation and capacity than one-way beta.",
   },
   "q-strat-carry": {
     id: "q-strat-carry",
     label: "carry",
     definition:
-      "Funding, basis, staking, and roll — harvesting structural payoffs with explicit hedge sizing. A common home for 24/7 books that are not single-name directional risk.",
+      "Funding, basis, staking, and roll: harvesting structural payoffs with explicit hedge sizing. A common home for 24/7 books that are not single-name directional risk.",
   },
   "q-strat-event-driven": {
     id: "q-strat-event-driven",
@@ -343,13 +343,13 @@ export const GLOSSARY: Readonly<Record<string, GlossaryEntry>> = {
     id: "q-strat-market-making",
     label: "market making",
     definition:
-      "Two-sided liquidity provision, quotes, and inventory risk — you think in spread capture, vol of inventory, and venue incentives, not one-way positioning.",
+      "Two-sided liquidity provision, quotes, and inventory risk: you think in spread capture, vol of inventory, and venue incentives, not one-way positioning.",
   },
   "q-strat-vol-trading": {
     id: "q-strat-vol-trading",
     label: "vol trading",
     definition:
-      "Trades in implied vs realised vol, skew, and term structure — options, var, and vol-aware digital structures, with greeks and scenario risk in the read.",
+      "Trades in implied vs realised vol, skew, and term structure: options, var, and vol-aware digital structures, with greeks and scenario risk in the read.",
   },
   "service-combo": {
     id: "service-combo",
@@ -361,13 +361,13 @@ export const GLOSSARY: Readonly<Record<string, GlossaryEntry>> = {
     id: "fund-structure-na",
     label: "NA",
     definition:
-      "Not applicable yet or not chosen — e.g. scoping platform or umbrella fit before a vehicle (SMA, fund, or wrapper) is in place. We still route operational questions.",
+      "Not applicable yet or not chosen: e.g. scoping platform or umbrella fit before a vehicle (SMA, fund, or wrapper) is in place. We still route operational questions.",
   },
   "q-licence-eu-only": {
     id: "q-licence-eu-only",
     label: "EU only",
     definition:
-      "You want the group’s AIFM / EU home first. UK FCA direct routes are out of the initial pass — we can revisit if client geography shifts.",
+      "You want the group’s AIFM / EU home first. UK FCA direct routes are out of the initial pass: we can revisit if client geography shifts.",
   },
   "q-licence-uk-only": {
     id: "q-licence-uk-only",
@@ -378,25 +378,25 @@ export const GLOSSARY: Readonly<Record<string, GlossaryEntry>> = {
     id: "q-licence-eu-or-uk",
     label: "EU or UK",
     definition:
-      "Either a single EEA AIFM home or a single UK FCA home will do — the choice is driven by your clients, substance, and market access, not a commitment to both yet.",
+      "Either a single EEA AIFM home or a single UK FCA home will do: the choice is driven by your clients, substance, and market access, not a commitment to both yet.",
   },
   "q-licence-eu-and-uk": {
     id: "q-licence-eu-and-uk",
     label: "EU and UK",
     definition:
-      "You will need both EU and UK permissions or parallel access — a heavier control and governance design; the umbrella and operator pattern is sized accordingly.",
+      "You will need both EU and UK permissions or parallel access: a heavier control and governance design; the umbrella and operator pattern is sized accordingly.",
   },
   "q-licence-other": {
     id: "q-licence-other",
     label: "other",
     definition:
-      "A nonstandard region, hybrid, or TBD case — we capture text and then route a bespoke compliance and legal review on substance and pass-porting options.",
+      "A nonstandard region, hybrid, or TBD case: we capture text and then route a bespoke compliance and legal review on substance and pass-porting options.",
   },
   "q-legend-asset-categories": {
     id: "q-legend-asset-categories",
     label: "asset-class categories",
     definition:
-      "Broad sleeves that bound which venue packs, data feeds, and risk models are in scope. Select every one you will touch — you can go narrow in venue scope later.",
+      "Broad sleeves that bound which venue packs, data feeds, and risk models are in scope. Select every one you will touch: you can go narrow in venue scope later.",
   },
   "q-legend-instrument-types": {
     id: "q-legend-instrument-types",
@@ -408,7 +408,7 @@ export const GLOSSARY: Readonly<Record<string, GlossaryEntry>> = {
     id: "q-legend-venue-scope",
     label: "Venue scope",
     definition:
-      "All supported venues, or a named subset. It is a scope, compliance, and data-footprint decision — you are not picking every brand in this one field.",
+      "All supported venues, or a named subset. It is a scope, compliance, and data-footprint decision: you are not picking every brand in this one field.",
   },
   "q-venue-all": {
     id: "q-venue-all",
@@ -426,31 +426,31 @@ export const GLOSSARY: Readonly<Record<string, GlossaryEntry>> = {
     id: "q-legend-strategy-styles",
     label: "Strategy styles",
     definition:
-      "The families of strategy you expect to run — it calibrates research, backtest baselines, and which catalogue lanes matter. It is not a commitment to one archetype.",
+      "The families of strategy you expect to run: it calibrates research, backtest baselines, and which catalogue lanes matter. It is not a commitment to one archetype.",
   },
   "q-legend-service-family": {
     id: "q-legend-service-family",
     label: "service family",
     definition:
-      "The buy-side line: IM with Odum, DART as operator, or umbrella cover — or an explicit stack of lines. Drives the contract, permissions boundary, and onboarding pack.",
+      "The buy-side line: IM with Odum, DART as operator, or umbrella cover: or an explicit stack of lines. Drives the contract, permissions boundary, and onboarding pack.",
   },
   "q-legend-fund-structure": {
     id: "q-legend-fund-structure",
     label: "Fund structure",
     definition:
-      "SMA, pooled, or TBD. Shapes who holds accounts, who administers the books, and how reporting and fees are run — we wire execution and control to the vehicle.",
+      "SMA, pooled, or TBD. Shapes who holds accounts, who administers the books, and how reporting and fees are run: we wire execution and control to the vehicle.",
   },
   "q-invite-only": {
     id: "q-invite-only",
     label: "Invite-only",
     definition:
-      "Access is by invitation or code so responses line up to a specific cohort, commercial path, and follow-up — it is not a public marketing form.",
+      "Access is by invitation or code so responses line up to a specific cohort, commercial path, and follow-up: it is not a public marketing form.",
   },
   "q-entity-jurisdiction": {
     id: "q-entity-jurisdiction",
     label: "Operating entity jurisdiction",
     definition:
-      "Where the firm that will take regulated activity (or the holding above it) is domiciled — the hook for AIFM, FCA, or umbrella structure. Not your personal address.",
+      "Where the firm that will take regulated activity (or the holding above it) is domiciled: the hook for AIFM, FCA, or umbrella structure. Not your personal address.",
   },
   "q-operating-currencies": {
     id: "q-operating-currencies",
@@ -462,19 +462,19 @@ export const GLOSSARY: Readonly<Record<string, GlossaryEntry>> = {
     id: "q-targets-rolling",
     label: "Business targets",
     definition:
-      "AUM, revenue, run-rate, or milestone goals you are willing to state — for umbrella planning and capacity, not a term-sheet commitment. Blank is acceptable.",
+      "AUM, revenue, run-rate, or milestone goals you are willing to state: for umbrella planning and capacity, not a term-sheet commitment. Blank is acceptable.",
   },
   "q-reg-umbrella-section": {
     id: "q-reg-umbrella-section",
     label: "Regulatory Umbrella details",
     definition:
-      "Extra axes when you are seeking FCA-recognised cover or a combined DART+umbrella stack — we size MLRO, substance, and reporting without duplicating the main path briefings here.",
+      "Extra axes when you are seeking FCA-recognised cover or a combined DART+umbrella stack: we size MLRO, substance, and reporting without duplicating the main path briefings here.",
   },
   "dart-full": {
     id: "dart-full",
     label: "DART Full",
     definition:
-      "DART Full: unrestricted platform access — research, ML, strategy promotion, execution, analytics, reporting.",
+      "DART Full: unrestricted platform access: research, ML, strategy promotion, execution, analytics, reporting.",
   },
   "dart-signals-in": {
     id: "dart-signals-in",
@@ -486,31 +486,31 @@ export const GLOSSARY: Readonly<Record<string, GlossaryEntry>> = {
     id: "regulatory-umbrella",
     label: "Regulatory Umbrella",
     definition:
-      "Odum's FCA-regulated wrapper allowing clients to operate regulated activity under Odum's permissions (AIFM, AR, MiFID II coverage). Cross-cutting — can overlay any engagement shape regardless of who holds the exchange API keys.",
+      "Odum's FCA-regulated wrapper allowing clients to operate regulated activity under Odum's permissions (AIFM, AR, MiFID II coverage). Cross-cutting: can overlay any engagement shape regardless of who holds the exchange API keys.",
   },
   "investment-management": {
     id: "im",
     label: "Investment Management",
     definition:
-      "Investment Management — Odum allocates client capital to its own systematic strategies under Odum's FCA permissions, reporting on the shared operating surface.",
+      "Investment Management: Odum allocates client capital to its own systematic strategies under Odum's FCA permissions, reporting on the shared operating surface.",
   },
   "prediction-markets": {
     id: "prediction-markets",
     label: "prediction markets",
     definition:
-      "Markets where participants buy and sell contracts that pay out based on real-world event outcomes — elections, economic data, sports results. Includes crypto-native platforms (e.g. Polymarket) and regulated exchanges (e.g. Kalshi). Odum covers both event-settled and continuous prediction market instruments.",
+      "Markets where participants buy and sell contracts that pay out based on real-world event outcomes: elections, economic data, sports results. Includes crypto-native platforms (e.g. Polymarket) and regulated exchanges (e.g. Kalshi). Odum covers both event-settled and continuous prediction market instruments.",
   },
   prop: {
     id: "prop",
     label: "prop desk",
     definition:
-      "Proprietary trading — the manager trades the firm's own capital, or a principal's capital, rather than managing a pooled fund or separately managed account.",
+      "Proprietary trading: the manager trades the firm's own capital, or a principal's capital, rather than managing a pooled fund or separately managed account.",
   },
   archetype: {
     id: "archetype",
     label: "archetype",
     definition:
-      "Odum's taxonomy of strategy execution patterns — e.g. ML directional (continuous), carry basis (perp or dated), market making, stat-arb pairs. Archetypes map to DART execution workflows and reporting views.",
+      "Odum's taxonomy of strategy execution patterns: e.g. ML directional (continuous), carry basis (perp or dated), market making, stat-arb pairs. Archetypes map to DART execution workflows and reporting views.",
   },
   "market-making": {
     id: "market-making",
@@ -522,19 +522,19 @@ export const GLOSSARY: Readonly<Record<string, GlossaryEntry>> = {
     id: "treasury-management",
     label: "treasury management",
     definition:
-      "Active management of idle capital across venues, chains, or currencies — sweep accounts, stablecoin yield, collateral optimisation, and inter-venue transfer flows.",
+      "Active management of idle capital across venues, chains, or currencies: sweep accounts, stablecoin yield, collateral optimisation, and inter-venue transfer flows.",
   },
   stbt: {
     id: "stbt",
     label: "STBT",
     definition:
-      "Sell today, buy tomorrow — short-term overnight position, opened on day T and closed on day T+1. Originally an Indian-equities convention for one-day shorts, used loosely to mean any ~1-day overnight hold.",
+      "Sell today, buy tomorrow: short-term overnight position, opened on day T and closed on day T+1. Originally an Indian-equities convention for one-day shorts, used loosely to mean any ~1-day overnight hold.",
   },
   "execution-alpha": {
     id: "execution-alpha",
     label: "execution alpha",
     definition:
-      "The P&L improvement from superior execution — slippage reduction, queue priority, latency optimisation, smart order routing, and post-trade analysis. Separate from strategy (signal) alpha.",
+      "The P&L improvement from superior execution: slippage reduction, queue priority, latency optimisation, smart order routing, and post-trade analysis. Separate from strategy (signal) alpha.",
   },
 
   // ── Instrument types ─────────────────────────────────────────────────────
@@ -542,7 +542,7 @@ export const GLOSSARY: Readonly<Record<string, GlossaryEntry>> = {
     id: "spot",
     label: "spot",
     definition:
-      "Immediate delivery instruments traded at the current market price. No expiry, no leverage embedded — P&L is simply the price change on the position held.",
+      "Immediate delivery instruments traded at the current market price. No expiry, no leverage embedded: P&L is simply the price change on the position held.",
   },
   "dated-future": {
     id: "dated-future",
@@ -554,7 +554,7 @@ export const GLOSSARY: Readonly<Record<string, GlossaryEntry>> = {
     id: "options",
     label: "options",
     definition:
-      "Contracts giving the holder the right — but not the obligation — to buy (call) or sell (put) an asset at a strike price before or at expiry. Pricing depends on implied volatility, time to expiry, and delta.",
+      "Contracts giving the holder the right: but not the obligation: to buy (call) or sell (put) an asset at a strike price before or at expiry. Pricing depends on implied volatility, time to expiry, and delta.",
   },
   lending: {
     id: "lending",
@@ -578,7 +578,7 @@ export const GLOSSARY: Readonly<Record<string, GlossaryEntry>> = {
     id: "event-settled",
     label: "event-settled markets",
     definition:
-      "Instruments whose settlement is determined by a discrete real-world event rather than continuous price — sports match outcomes, election results, economic data releases. Payoff is binary or bracket-based.",
+      "Instruments whose settlement is determined by a discrete real-world event rather than continuous price: sports match outcomes, election results, economic data releases. Payoff is binary or bracket-based.",
   },
 
   // ── Strategy families ────────────────────────────────────────────────────
@@ -586,13 +586,13 @@ export const GLOSSARY: Readonly<Record<string, GlossaryEntry>> = {
     id: "strategy-family",
     label: "Strategy family",
     definition:
-      "A grouping of strategies by the style of edge they generate — carry, arbitrage, market-making, directional signal, volatility, portfolio, etc. Families are the top-level taxonomy used to route clients to the kind of strategy they are interested in or already run. A family contains one or more archetypes; each archetype is a concrete recipe instantiated across venues, instruments, and timeframes.",
+      "A grouping of strategies by the style of edge they generate: carry, arbitrage, market-making, directional signal, volatility, portfolio, etc. Families are the top-level taxonomy used to route clients to the kind of strategy they are interested in or already run. A family contains one or more archetypes; each archetype is a concrete recipe instantiated across venues, instruments, and timeframes.",
   },
   "strategy-archetype": {
     id: "strategy-archetype",
     label: "Strategy archetype",
     definition:
-      "A concrete recipe inside a strategy family — e.g. CARRY_BASIS_PERP (funding-rate carry via perpetuals) is an archetype of the Carry & Yield family. Archetypes define the mechanics; instances are archetypes pinned to specific venues, instruments, timeframes, and share classes.",
+      "A concrete recipe inside a strategy family: e.g. CARRY_BASIS_PERP (funding-rate carry via perpetuals) is an archetype of the Carry & Yield family. Archetypes define the mechanics; instances are archetypes pinned to specific venues, instruments, timeframes, and share classes.",
   },
   "ml-directional": {
     id: "ml-directional",
@@ -604,25 +604,25 @@ export const GLOSSARY: Readonly<Record<string, GlossaryEntry>> = {
     id: "rules-directional",
     label: "Rules Directional",
     definition:
-      "Strategies based on deterministic logic — technical indicators, statistical thresholds, or heuristics — to generate buy/sell signals. No ML training loop; logic is explicit and auditable.",
+      "Strategies based on deterministic logic: technical indicators, statistical thresholds, or heuristics: to generate buy/sell signals. No ML training loop; logic is explicit and auditable.",
   },
   "carry-yield": {
     id: "carry-yield",
     label: "Carry & Yield",
     definition:
-      "Strategies that earn a premium from holding an asset or position over time — funding rates on perpetuals, basis between spot and futures, staking rewards, or lending yield. Return comes from the carry, not price direction.",
+      "Strategies that earn a premium from holding an asset or position over time: funding rates on perpetuals, basis between spot and futures, staking rewards, or lending yield. Return comes from the carry, not price direction.",
   },
   arbitrage: {
     id: "arbitrage",
     label: "Arbitrage / Structural Edge",
     definition:
-      "Strategies that exploit price discrepancies across venues, time, or related instruments — cross-exchange arb, liquidation capture, funding arb, or index rebalancing front-running. Edge is structural rather than predictive.",
+      "Strategies that exploit price discrepancies across venues, time, or related instruments: cross-exchange arb, liquidation capture, funding arb, or index rebalancing front-running. Edge is structural rather than predictive.",
   },
   "event-driven": {
     id: "event-driven",
     label: "Event-Driven",
     definition:
-      "Strategies that trade around scheduled or unscheduled events — earnings, data releases, token unlocks, governance votes, sports fixtures. Alpha comes from predicting or reacting to the event outcome.",
+      "Strategies that trade around scheduled or unscheduled events: earnings, data releases, token unlocks, governance votes, sports fixtures. Alpha comes from predicting or reacting to the event outcome.",
   },
   "vol-trading": {
     id: "vol-trading",
@@ -642,7 +642,7 @@ export const GLOSSARY: Readonly<Record<string, GlossaryEntry>> = {
     id: "staked-basis",
     label: "staked basis / recursive staking",
     definition:
-      "Using liquid staking tokens (e.g. stETH) as collateral to borrow, buy more staking tokens, and repeat — capturing the spread between staking yield and borrow rate. Risk is liquidation if collateral value drops sharply.",
+      "Using liquid staking tokens (e.g. stETH) as collateral to borrow, buy more staking tokens, and repeat: capturing the spread between staking yield and borrow rate. Risk is liquidation if collateral value drops sharply.",
   },
   "yield-rotation": {
     id: "yield-rotation",
@@ -660,7 +660,7 @@ export const GLOSSARY: Readonly<Record<string, GlossaryEntry>> = {
     id: "vol-trading-archetype",
     label: "vol trading (options / surface / skew)",
     definition:
-      "Trading implied volatility directly via options — selling expensive vol, buying cheap vol, trading skew steepening/flattening, or exploiting surface dislocations between strikes and expiries.",
+      "Trading implied volatility directly via options: selling expensive vol, buying cheap vol, trading skew steepening/flattening, or exploiting surface dislocations between strikes and expiries.",
   },
   "stat-arb-pairs": {
     id: "stat-arb-pairs",

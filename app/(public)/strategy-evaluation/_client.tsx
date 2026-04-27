@@ -306,7 +306,7 @@ interface StepConfig {
 
 const STEPS: readonly StepConfig[] = [
   { n: 1, title: "About you", sections: "A" },
-  { n: 2, title: "What you’re trying to do", sections: "B–C" },
+  { n: 2, title: "What you’re trying to do", sections: "B-C" },
   { n: 3, title: "Strategy profile", sections: "D" },
   { n: 4, title: "Evidence", sections: "E" },
   { n: 5, title: "Operating setup", sections: "F" },
@@ -767,7 +767,7 @@ export default function StrategyEvaluationFormClient({
       // failed and the form would otherwise claim success on nothing.
       const responseBody = (await res.json().catch(() => ({}))) as { ok?: boolean; submissionId?: string };
       if (!responseBody.submissionId) {
-        throw new Error("Server returned 200 but no submission ID — persistence likely failed. Please try again.");
+        throw new Error("Server returned 200 but no submission ID: persistence likely failed. Please try again.");
       }
       localStorage.removeItem(STORAGE_KEY);
       pendingFilesRef.current.clear();
@@ -812,7 +812,7 @@ export default function StrategyEvaluationFormClient({
           <div className="text-center space-y-2">
             <Badge variant="outline">{isRefile ? "Updated" : "Received"}</Badge>
             <h1 className="text-2xl font-bold">
-              {isRefile ? "Your evaluation has been updated." : "Thank you — your evaluation has been received."}
+              {isRefile ? "Your evaluation has been updated." : "Thank you: your evaluation has been received."}
             </h1>
             <p className="text-muted-foreground">
               {isRefile ? (
@@ -960,7 +960,7 @@ export default function StrategyEvaluationFormClient({
         <div className="mb-6 rounded-md border border-emerald-500/30 bg-emerald-500/5 px-4 py-3 text-sm">
           <p className="font-medium text-emerald-200">Editing your earlier submission</p>
           <p className="mt-1 text-xs text-emerald-200/80">
-            Your previous answers are loaded below. Make any changes and submit again — we&rsquo;ll file the new version
+            Your previous answers are loaded below. Make any changes and submit again: we&rsquo;ll file the new version
             alongside the original. Uploaded files carry over; re-attach a file to overwrite that slot.
           </p>
         </div>
@@ -1142,7 +1142,7 @@ export default function StrategyEvaluationFormClient({
                       { value: "switzerland", label: "Switzerland" },
                       { value: "uae", label: "UAE (DIFC / ADGM)" },
                       { value: "other", label: "Other (specify below)" },
-                      { value: "exploring", label: "Not yet incorporated — exploring" },
+                      { value: "exploring", label: "Not yet incorporated: exploring" },
                     ] as { value: string; label: string }[]
                   ).map(({ value, label }) => (
                     <label key={value} className="flex items-center gap-2 text-sm cursor-pointer">
@@ -1170,7 +1170,7 @@ export default function StrategyEvaluationFormClient({
                 <Label className="text-sm font-medium">Current or intended client-facing route</Label>
                 <p className="text-xs text-muted-foreground">
                   Two main client-facing operating routes are available; engagements can also combine both. Pick the
-                  closest match — the final operating model is agreed at the fit call.
+                  closest match: the final operating model is agreed at the fit call.
                 </p>
                 <div className="flex flex-col gap-2 mt-2">
                   {(
@@ -1294,9 +1294,9 @@ export default function StrategyEvaluationFormClient({
                     <div className="flex flex-wrap gap-x-6 gap-y-3">
                       {(
                         [
-                          { value: "yes", label: "Yes — we'll fundraise independently" },
-                          { value: "no", label: "No — capital is already committed" },
-                          { value: "exploring", label: "Exploring — no decision yet" },
+                          { value: "yes", label: "Yes: we'll fundraise independently" },
+                          { value: "no", label: "No: capital is already committed" },
+                          { value: "exploring", label: "Exploring: no decision yet" },
                         ] as { value: string; label: string }[]
                       ).map(({ value, label }) => (
                         <label key={value} className="flex items-center gap-2 text-sm cursor-pointer">
@@ -1382,7 +1382,7 @@ export default function StrategyEvaluationFormClient({
                   <div className="space-y-1">
                     <Label className="text-sm font-medium">Minimum subscription expectations</Label>
                     <p className="text-xs text-muted-foreground">
-                      Target minimum ticket size and any flexibility notes. Odum does not impose a fixed minimum — this
+                      Target minimum ticket size and any flexibility notes. Odum does not impose a fixed minimum: this
                       is a commercial conversation based on your LP mix.
                     </p>
                     <Input
@@ -1580,7 +1580,7 @@ export default function StrategyEvaluationFormClient({
               <SectionHeading letter="D" title="Strategy profile" />
               <p className="text-xs text-muted-foreground -mt-2">
                 These answers help us understand the markets, instruments, and style of the strategy so we can prepare
-                the right review and walkthrough. High-level answers are fine — hover any term for a definition.
+                the right review and walkthrough. High-level answers are fine: hover any term for a definition.
               </p>
 
               <div className="space-y-1">
@@ -1707,14 +1707,14 @@ export default function StrategyEvaluationFormClient({
                 <div className="flex flex-wrap gap-x-6 gap-y-3 mt-2">
                   {(
                     [
-                      { value: "intraday", label: "Intraday — closes by session end" },
+                      { value: "intraday", label: "Intraday: closes by session end" },
                       {
                         value: "stbt",
-                        label: "Overnight — ~1 day",
+                        label: "Overnight: ~1 day",
                         hint: "a.k.a. STBT (sell-today-buy-tomorrow)",
                       },
-                      { value: "positional", label: "Positional — multi-day to weeks" },
-                      { value: "long_term", label: "Long-term — weeks to months" },
+                      { value: "positional", label: "Positional: multi-day to weeks" },
+                      { value: "long_term", label: "Long-term: weeks to months" },
                       { value: "mixed", label: "Mixed / variable" },
                     ] as { value: string; label: string; hint?: string }[]
                   ).map(({ value, label, hint }) => (
@@ -1739,7 +1739,7 @@ export default function StrategyEvaluationFormClient({
               <div className="space-y-1">
                 <Label className="text-sm font-medium">How do you see this fitting into our system?</Label>
                 <p className="text-xs text-muted-foreground">
-                  Optional — share any context on your current tech stack, how standalone the strategy is, or what level
+                  Optional: share any context on your current tech stack, how standalone the strategy is, or what level
                   of integration you&rsquo;re expecting. Odum will map the taxonomy formally.
                 </p>
                 <Textarea
@@ -1769,8 +1769,8 @@ export default function StrategyEvaluationFormClient({
                 <div className="flex flex-wrap gap-x-6 gap-y-3">
                   {(
                     [
-                      { value: "yes", label: "Yes — full backtest completed" },
-                      { value: "partial", label: "Partial — early prototype / in progress" },
+                      { value: "yes", label: "Yes: full backtest completed" },
+                      { value: "partial", label: "Partial: early prototype / in progress" },
                       { value: "no", label: "Not yet backtested" },
                     ] as { value: string; label: string }[]
                   ).map(({ value, label }) => (
@@ -1788,8 +1788,8 @@ export default function StrategyEvaluationFormClient({
                 </div>
                 {form.hasBacktest === "no" && (
                   <p className="text-xs text-muted-foreground italic">
-                    That&rsquo;s fine — skip the backtest-methodology, evidence, and performance sections. For DART
-                    Full, Odum rebuilds the strategy including the backtest.
+                    That&rsquo;s fine: skip the backtest-methodology, evidence, and performance sections. For DART Full,
+                    Odum rebuilds the strategy including the backtest.
                   </p>
                 )}
               </div>
@@ -1800,7 +1800,7 @@ export default function StrategyEvaluationFormClient({
                     <Label className="text-sm font-medium">Data granularity</Label>
                     <p className="text-xs text-muted-foreground">
                       Select every granularity the backtest relies on. Strategies often use L2 for signal generation and
-                      trades for fill simulation — pick all that apply.
+                      trades for fill simulation: pick all that apply.
                     </p>
                     <div className="flex flex-col gap-2">
                       {(
@@ -1813,7 +1813,7 @@ export default function StrategyEvaluationFormClient({
                           {
                             value: "trades",
                             label: "Trades only (prints, no quotes)",
-                            hint: "Executed-print stream only — common for VWAP/TWAP algos and bar-generating systems",
+                            hint: "Executed-print stream only: common for VWAP/TWAP algos and bar-generating systems",
                           },
                           {
                             value: "l1",
@@ -1978,12 +1978,12 @@ export default function StrategyEvaluationFormClient({
                           { value: "market", label: "Market orders", hint: "Cross the spread immediately" },
                           {
                             value: "limit_passive",
-                            label: "Limit — passive (post on book)",
+                            label: "Limit: passive (post on book)",
                             hint: "Join the queue; earn maker fees / spread",
                           },
                           {
                             value: "limit_aggressive",
-                            label: "Limit — aggressive (crossing)",
+                            label: "Limit: aggressive (crossing)",
                             hint: "Cross through the book at a limit price",
                           },
                           { value: "ioc_fok", label: "IOC / FOK", hint: "Immediate-or-Cancel / Fill-or-Kill" },
@@ -2033,7 +2033,7 @@ export default function StrategyEvaluationFormClient({
                           {
                             value: "always_fill",
                             label: "Always-fill at signal price",
-                            hint: "Zero execution alpha baseline — fills at the price requested",
+                            hint: "Zero execution alpha baseline: fills at the price requested",
                           },
                           {
                             value: "spread_crossing",
@@ -2208,7 +2208,7 @@ export default function StrategyEvaluationFormClient({
           <>
             {form.hasBacktest === "no" && (
               <div className="rounded-md border border-border/60 bg-card/40 px-4 py-4 text-sm text-muted-foreground">
-                <p className="font-medium text-foreground">No backtest yet — nothing to file in this step.</p>
+                <p className="font-medium text-foreground">No backtest yet: nothing to file in this step.</p>
                 <p className="mt-1 text-xs">
                   You marked &ldquo;Not yet backtested&rdquo; in the previous step. For DART Full, Odum rebuilds the
                   strategy including the backtest. Click <strong>Next</strong> to continue.
@@ -2220,10 +2220,10 @@ export default function StrategyEvaluationFormClient({
               <section className="space-y-4 pt-0 first:pt-0">
                 <SectionHeading letter="F" title="Tear sheet, account statements, or other evidence" />
                 <p className="text-xs text-muted-foreground -mt-2">
-                  Attach the supporting documents. Files cache in your browser until you submit — you can view /
-                  download them immediately to verify they&rsquo;re correct. Upload to Odum&rsquo;s regulated storage
-                  happens when you press <strong>Submit evaluation</strong>. On localhost nothing is uploaded; filename
-                  and size are recorded as a draft only.
+                  Attach the supporting documents. Files cache in your browser until you submit: you can view / download
+                  them immediately to verify they&rsquo;re correct. Upload to Odum&rsquo;s regulated storage happens
+                  when you press <strong>Submit evaluation</strong>. On localhost nothing is uploaded; filename and size
+                  are recorded as a draft only.
                 </p>
 
                 {(
@@ -2231,7 +2231,7 @@ export default function StrategyEvaluationFormClient({
                     {
                       key: "backtestMethodologyDoc" as const,
                       label: "Backtest methodology document",
-                      hint: "PDF, Word, or Markdown — describes how the backtest was run",
+                      hint: "PDF, Word, or Markdown: describes how the backtest was run",
                       accept: ".pdf,.doc,.docx,.md,.txt",
                     },
                     {
@@ -2249,13 +2249,13 @@ export default function StrategyEvaluationFormClient({
                     {
                       key: "tradeLogCsv" as const,
                       label: "Trade log CSV",
-                      hint: "One row per trade or fill — at minimum timestamp, side, instrument, size, price",
+                      hint: "One row per trade or fill: at minimum timestamp, side, instrument, size, price",
                       accept: ".csv,.tsv,.parquet",
                     },
                     {
                       key: "equityCurveCsv" as const,
                       label: "Equity curve CSV",
-                      hint: "Timestamp + account / strategy equity at that point — i.e. NAV: realised P&L plus unrealised P&L on open positions, marked-to-market. Daily granularity is fine; intraday welcome if you have it.",
+                      hint: "Timestamp + account / strategy equity at that point: i.e. NAV: realised P&L plus unrealised P&L on open positions, marked-to-market. Daily granularity is fine; intraday welcome if you have it.",
                       accept: ".csv,.tsv,.parquet",
                     },
                   ] as {
@@ -2283,7 +2283,7 @@ export default function StrategyEvaluationFormClient({
                       We&rsquo;ll derive metrics + the day-flow narrative from your CSV.
                     </p>
                     <p className="mt-1 text-xs text-emerald-200/70">
-                      You can skip the pipeline narrative below and the Key performance metrics section — we&rsquo;ll
+                      You can skip the pipeline narrative below and the Key performance metrics section: we&rsquo;ll
                       compute Sharpe, drawdown, win rate etc. from the data you uploaded. The methodology / assumptions
                       / tear-sheet uploads above are still helpful but not required.
                     </p>
@@ -2294,7 +2294,7 @@ export default function StrategyEvaluationFormClient({
                   <div className="space-y-1">
                     <Label className="text-sm font-medium">One-day pipeline sample description</Label>
                     <p className="text-xs text-muted-foreground">
-                      Narrative — how a single trading day flows end-to-end through the pipeline.
+                      Narrative: how a single trading day flows end-to-end through the pipeline.
                     </p>
                     <Textarea
                       rows={3}
@@ -2496,7 +2496,7 @@ export default function StrategyEvaluationFormClient({
                       { value: "whitelist", label: "Whitelisted addresses / destinations only" },
                       { value: "approval_required", label: "Operational approval required before each transfer" },
                       { value: "automated_limits", label: "Automated within pre-agreed size / frequency limits" },
-                      { value: "na", label: "N/A — no cross-venue rebalancing expected" },
+                      { value: "na", label: "N/A: no cross-venue rebalancing expected" },
                       { value: "other", label: "Other / needs discussion (note below)" },
                     ] as { value: string; label: string }[]
                   ).map(({ value, label }) => (
@@ -2515,7 +2515,7 @@ export default function StrategyEvaluationFormClient({
                 </div>
                 <Textarea
                   rows={2}
-                  placeholder="Optional notes — e.g. withdrawal destinations, cold-wallet anchor, approver list, typical rebalance cadence."
+                  placeholder="Optional notes: e.g. withdrawal destinations, cold-wallet anchor, approver list, typical rebalance cadence."
                   value={form.rebalancingNotes}
                   onChange={(e) => setField("rebalancingNotes", e.target.value)}
                 />
@@ -2533,7 +2533,7 @@ export default function StrategyEvaluationFormClient({
                 <p className="mt-1 text-xs">
                   Step back to{" "}
                   <button type="button" onClick={() => setCurrentStep(2)} className="underline">
-                    Step 2 — Path &amp; relationship
+                    Step 2: Path &amp; relationship
                   </button>{" "}
                   and pick a primary path so we can show the path-specific questions.
                 </p>
@@ -2542,7 +2542,7 @@ export default function StrategyEvaluationFormClient({
             {/* Section J — Path A only */}
             {form.commercialPath === "A" && (
               <section className="space-y-4 pt-0 first:pt-0">
-                <SectionHeading letter="J" title="Running through DART — what we’d need" />
+                <SectionHeading letter="J" title="Running through DART: what we’d need" />
 
                 <div className="space-y-1">
                   <Label className="text-sm font-medium">
@@ -2571,7 +2571,7 @@ export default function StrategyEvaluationFormClient({
             {/* Section K — Path B only */}
             {form.commercialPath === "B" && (
               <section className="space-y-4 pt-8 border-t border-border/40">
-                <SectionHeading letter="K" title="Sending signals into Odum — how it would work" />
+                <SectionHeading letter="K" title="Sending signals into Odum: how it would work" />
 
                 <div className="rounded-lg border border-border/60 bg-muted/30 p-4 text-sm space-y-2 text-muted-foreground">
                   <p>
@@ -2582,24 +2582,24 @@ export default function StrategyEvaluationFormClient({
                   </p>
                   <ul className="list-disc list-inside space-y-1 text-xs">
                     <li>
-                      <Term id="execution-alpha">Execution alpha</Term> — smart order routing, latency optimisation,
+                      <Term id="execution-alpha">Execution alpha</Term>: smart order routing, latency optimisation,
                       passive/aggressive fill selection
                     </li>
                     <li>
-                      Full <Term id="tca">TCA</Term> suite — slippage analysis, fill quality benchmarking, venue
+                      Full <Term id="tca">TCA</Term> suite: slippage analysis, fill quality benchmarking, venue
                       comparison
                     </li>
                     <li>
                       <Term id="twap">TWAP</Term> / <Term id="vwap">VWAP</Term> and custom execution algorithms
                     </li>
                     <li>
-                      <Term id="treasury-management">Treasury management</Term> — idle capital sweeps, cross-venue
+                      <Term id="treasury-management">Treasury management</Term>: idle capital sweeps, cross-venue
                       collateral optimisation
                     </li>
                     <li>
                       Real-time and end-of-day <Term id="pnl">P&amp;L</Term>, position, and order-ledger views
                     </li>
-                    <li>Post-trade analytics — regime attribution, drawdown decomposition, fee breakdown</li>
+                    <li>Post-trade analytics: regime attribution, drawdown decomposition, fee breakdown</li>
                   </ul>
                   <p className="text-xs">
                     The questions below help us understand how your signals arrive and what execution and analytics
@@ -2628,8 +2628,8 @@ export default function StrategyEvaluationFormClient({
                   <Label className="text-sm font-medium">Signal format and delivery</Label>
                   <p className="text-xs text-muted-foreground">
                     Can your signals map into the eight-field schema linked above? Describe how signals are generated
-                    and delivered — batch file, webhook push, REST pull, or other — and the expected latency from
-                    decision to delivery.
+                    and delivered: batch file, webhook push, REST pull, or other: and the expected latency from decision
+                    to delivery.
                   </p>
                   <Textarea
                     rows={4}
@@ -2656,7 +2656,7 @@ export default function StrategyEvaluationFormClient({
             {/* Section L — Path C only */}
             {form.commercialPath === "C" && (
               <section className="space-y-4 pt-8 border-t border-border/40">
-                <SectionHeading letter="L" title="Regulated operating model — what needs evidencing" />
+                <SectionHeading letter="L" title="Regulated operating model: what needs evidencing" />
 
                 <p className="text-sm text-muted-foreground">
                   The <Term id="regulatory-umbrella">Regulatory Umbrella</Term> is cross-cutting and does not prescribe
@@ -2667,13 +2667,13 @@ export default function StrategyEvaluationFormClient({
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">Who holds the API keys / faces the exchange?</Label>
                   <p className="text-xs text-muted-foreground">
-                    This does not affect eligibility for regulatory coverage — it just determines the oversight model.
+                    This does not affect eligibility for regulatory coverage: it just determines the oversight model.
                   </p>
                   <div className="flex flex-col gap-2">
                     {(
                       [
-                        { value: "client", label: "Client — we hold our own API keys and face the exchange directly" },
-                        { value: "odum", label: "Odum — we prefer Odum to operate the keys and face the exchange" },
+                        { value: "client", label: "Client: we hold our own API keys and face the exchange directly" },
+                        { value: "odum", label: "Odum: we prefer Odum to operate the keys and face the exchange" },
                         { value: "mixed", label: "Mixed / not yet decided" },
                       ] as { value: string; label: string }[]
                     ).map(({ value, label }) => (
@@ -2695,8 +2695,8 @@ export default function StrategyEvaluationFormClient({
                 <div className="space-y-1">
                   <Label className="text-sm font-medium">Data access and integration scope</Label>
                   <p className="text-xs text-muted-foreground">
-                    What data — positions, orders, trades, balances — does Odum need read access to in order to fulfil
-                    the regulatory and reporting obligations?
+                    What data: positions, orders, trades, balances: does Odum need read access to in order to fulfil the
+                    regulatory and reporting obligations?
                   </p>
                   <Textarea
                     rows={4}
@@ -2723,7 +2723,7 @@ export default function StrategyEvaluationFormClient({
             {/* Section L₂ — Path D / Odum Signals only */}
             {form.commercialPath === "D" && (
               <section className="space-y-4 pt-8 border-t border-border/40">
-                <SectionHeading letter="L" title="Odum-provided signals — delivery shape" />
+                <SectionHeading letter="L" title="Odum-provided signals: delivery shape" />
 
                 <div className="rounded-md border border-primary/30 bg-primary/5 px-4 py-3 text-sm">
                   <p className="font-medium">Odum Signals payload schema</p>
@@ -2804,7 +2804,7 @@ export default function StrategyEvaluationFormClient({
                         {
                           value: "odum_standard",
                           label: "Use Odum's standard payload schema",
-                          hint: "Field-by-field spec at /briefings/signals-out — simplest path",
+                          hint: "Field-by-field spec at /briefings/signals-out: simplest path",
                         },
                         {
                           value: "custom",
@@ -2833,7 +2833,7 @@ export default function StrategyEvaluationFormClient({
                     <Textarea
                       className="mt-2"
                       rows={3}
-                      placeholder="Describe your schema — required fields, instrument identifier convention, signed/unsigned, lifecycle markers, etc. We'll follow up to collect the full spec."
+                      placeholder="Describe your schema: required fields, instrument identifier convention, signed/unsigned, lifecycle markers, etc. We'll follow up to collect the full spec."
                       value={form.pathDSchemaNotes}
                       onChange={(e) => setField("pathDSchemaNotes", e.target.value)}
                     />
@@ -2857,7 +2857,7 @@ export default function StrategyEvaluationFormClient({
                   <Label className="text-sm font-medium">Where will you execute these signals?</Label>
                   <p className="text-xs text-muted-foreground">
                     Your own venue accounts, an in-house OMS, a third-party execution provider, or a mix. Helpful
-                    context for sizing recommendations and reconciliation expectations — we don&rsquo;t need account
+                    context for sizing recommendations and reconciliation expectations: we don&rsquo;t need account
                     details, just the operating shape.
                   </p>
                   <Textarea
@@ -2893,14 +2893,14 @@ export default function StrategyEvaluationFormClient({
           <>
             {/* Section N */}
             <section className="space-y-4 pt-0 first:pt-0">
-              <SectionHeading letter="N" title="Paper trading — what you’ve done" />
+              <SectionHeading letter="N" title="Paper trading: what you’ve done" />
 
               <div className="space-y-2 rounded-md border border-border/60 bg-card/40 px-4 py-3">
                 <Label className="text-sm font-medium">Has this strategy been paper traded?</Label>
                 <div className="flex flex-wrap gap-x-6 gap-y-3">
                   {(
                     [
-                      { value: "yes", label: "Yes — ran in a paper / shadow environment" },
+                      { value: "yes", label: "Yes: ran in a paper / shadow environment" },
                       { value: "no", label: "Not paper traded" },
                     ] as { value: string; label: string }[]
                   ).map(({ value, label }) => (
@@ -2918,8 +2918,8 @@ export default function StrategyEvaluationFormClient({
                 </div>
                 {form.hasPaperTraded === "no" && (
                   <p className="text-xs text-muted-foreground italic">
-                    Fine to skip — paper trading is validation, not a prerequisite. If you&rsquo;re going DART Full,
-                    Odum runs the paper phase during incubation.
+                    Fine to skip: paper trading is validation, not a prerequisite. If you&rsquo;re going DART Full, Odum
+                    runs the paper phase during incubation.
                   </p>
                 )}
               </div>
@@ -2967,14 +2967,14 @@ export default function StrategyEvaluationFormClient({
 
             {/* Section O */}
             <section className="space-y-4 pt-8 border-t border-border/40">
-              <SectionHeading letter="O" title="Live trading — what you’ve done" />
+              <SectionHeading letter="O" title="Live trading: what you’ve done" />
 
               <div className="space-y-2 rounded-md border border-border/60 bg-card/40 px-4 py-3">
                 <Label className="text-sm font-medium">Has this strategy been live traded?</Label>
                 <div className="flex flex-wrap gap-x-6 gap-y-3">
                   {(
                     [
-                      { value: "yes", label: "Yes — traded with real capital" },
+                      { value: "yes", label: "Yes: traded with real capital" },
                       { value: "no", label: "Not live traded" },
                     ] as { value: string; label: string }[]
                   ).map(({ value, label }) => (
@@ -2992,7 +2992,7 @@ export default function StrategyEvaluationFormClient({
                 </div>
                 {form.hasLiveTraded === "no" && (
                   <p className="text-xs text-muted-foreground italic">
-                    No live track record yet — that&rsquo;s expected for many submissions. DART Full includes the
+                    No live track record yet: that&rsquo;s expected for many submissions. DART Full includes the
                     live-tiny to live-allocated progression as part of incubation.
                   </p>
                 )}
@@ -3068,7 +3068,7 @@ export default function StrategyEvaluationFormClient({
           )}
           {submitError && (
             <div className="mb-4 rounded-md border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-              <p className="font-medium">Submission failed — please try again.</p>
+              <p className="font-medium">Submission failed: please try again.</p>
               {submitErrorDetail && <p className="mt-1 font-mono text-xs break-words">{submitErrorDetail}</p>}
               <p className="mt-1 text-xs">
                 If the problem persists, email{" "}
@@ -3122,7 +3122,7 @@ export default function StrategyEvaluationFormClient({
           </div>
           {uploadStatus && <p className="text-xs text-muted-foreground mt-3">{uploadStatus}</p>}
           <p className="text-xs text-muted-foreground text-center mt-4">
-            This form is confidential. Odum Capital Ltd — FCA authorised · FRN 975797
+            This form is confidential. Odum Capital Ltd: FCA authorised · FRN 975797
           </p>
         </div>
       </form>

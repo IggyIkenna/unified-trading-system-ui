@@ -1,14 +1,14 @@
-// DART Trading Infrastructure \u2014 data for the platform product deck.
+// DART Trading Infrastructure: data for the platform product deck.
 // Marketing label: DART Trading Infrastructure (single engagement route on the public site).
 // "DART" is retained as the legal/contract / service-category label per SERVICE_LABELS SSOT.
 // Client-provided / Odum-provided / hybrid signals are capabilities WITHIN this single
-// route \u2014 not separate top-level products.
-// Last restructured: April 2026 \u2014 reframed around three-route marketing model,
+// route: not separate top-level products.
+// Last restructured: April 2026: reframed around three-route marketing model,
 // named-competitor landscape, IP-protection boundary, and how-to-start.
 
 export const slides = [
   // ══════════════════════════════════════════════════════════════
-  // ACT I \u2014 HOW WE GOT HERE (one slide for platform buyers)
+  // ACT I: HOW WE GOT HERE (one slide for platform buyers)
   // ══════════════════════════════════════════════════════════════
 
   // ── Slide 1: Cover ────────────────────────────────────────
@@ -17,7 +17,7 @@ export const slides = [
     type: "cover",
     title: "DART Trading Infrastructure — Without The Build",
     subtitle:
-      "DART \u2014 the same operating system we use for our own capital, available to you. One engagement route with a signal-capability spectrum: client-provided signals (you keep IP upstream), Odum-provided signals, or hybrid. Materially faster to start than the 18–24 months of a build-it-yourself cycle, where appropriate and subject to scope review.",
+      "DART: the same operating system we use for our own capital, available to you. One engagement route with a signal-capability spectrum: client-provided signals (you keep IP upstream), Odum-provided signals, or hybrid. Materially faster to start than the 18–24 months of a build-it-yourself cycle, where appropriate and subject to scope review.",
     tagline: "DART Trading Infrastructure Deck",
     stats: [
       { value: "5", label: "Asset Classes" },
@@ -34,7 +34,7 @@ export const slides = [
     type: "doctrine",
     title: "Why This Is Hard To Buy",
     subtitle:
-      "To replicate what DART provides, you would need to integrate 80+ venues across 5 asset classes, 28 DeFi protocols on 11 chains, 65+ sports data sources \u2014 each with different schemas, settlement logic, and connectivity. Most firms give up at the third asset class.",
+      "To replicate what DART provides, you would need to integrate 80+ venues across 5 asset classes, 28 DeFi protocols on 11 chains, 65+ sports data sources: each with different schemas, settlement logic, and connectivity. Most firms give up at the third asset class.",
     points: [
       {
         problem:
@@ -43,17 +43,16 @@ export const slides = [
           "Same code path, same data, same features, same risk controls. Promotion is a configuration change, not a rewrite.",
       },
       {
-        problem: "Venue integration is a treadmill \u2014 schemas drift, endpoints change, rate limits surprise you.",
+        problem: "Venue integration is a treadmill: schemas drift, endpoints change, rate limits surprise you.",
         solution: "One normalised schema across 80+ venues. Adding a venue benefits every strategy automatically.",
       },
       {
         problem: "Compliance and reporting are bolted on at the end, costing 6–12 months of rework to pass audit.",
-        solution:
-          "Compliance is a first-class layer \u2014 the same one we built for our own FCA-authorised operations.",
+        solution: "Compliance is a first-class layer: the same one we built for our own FCA-authorised operations.",
       },
       {
         problem:
-          "Cross-asset is genuinely hard \u2014 crypto, TradFi, DeFi, sports, prediction each have incompatible assumptions.",
+          "Cross-asset is genuinely hard: crypto, TradFi, DeFi, sports, prediction each have incompatible assumptions.",
         solution:
           "One canonical ontology for instruments, venues, timeframes, strategy archetypes. Cross-domain questions become comparable.",
       },
@@ -61,13 +60,13 @@ export const slides = [
     differentiators: [
       "Three years of compounding architectural decisions",
       "Team personally traded across TradFi, crypto, and sports before Odum",
-      "Platform runs $7.5M of our own capital \u2014 this is not a prototype",
+      "Platform runs $7.5M of our own capital: this is not a prototype",
     ],
     conclusion: "You can build it. Or you can start materially faster, subject to scope review.",
   },
 
   // ══════════════════════════════════════════════════════════════
-  // ACT II \u2014 THE MARKET PROBLEM
+  // ACT II: THE MARKET PROBLEM
   // ══════════════════════════════════════════════════════════════
 
   // ── Slide 3: What Other Vendors Give You ──────────────────
@@ -81,7 +80,7 @@ export const slides = [
       {
         competitor: "Bloomberg / Refinitiv",
         users: "TradFi desks",
-        gap: "TradFi data at $24K\u2013$30K/user/year. Data only. No crypto depth, no DeFi, no sports, no prediction. No research environment, no execution, no managed money, no compliance wrapper.",
+        gap: "TradFi data at $24K-$30K/user/year. Data only. No crypto depth, no DeFi, no sports, no prediction. No research environment, no execution, no managed money, no compliance wrapper.",
         color: "cyan",
       },
       {
@@ -123,7 +122,7 @@ export const slides = [
       {
         competitor: "FalconX / Galaxy / Wintermute OTC",
         users: "Crypto prime brokers",
-        gap: "Execution, OTC, lending \u2014 crypto-only. No research stack, no DeFi programmability, no cross-asset unification, no research-to-live path.",
+        gap: "Execution, OTC, lending: crypto-only. No research stack, no DeFi programmability, no cross-asset unification, no research-to-live path.",
         color: "emerald",
       },
       {
@@ -135,16 +134,16 @@ export const slides = [
       {
         competitor: "Citadel / Jane Street / Two Sigma (internal)",
         users: "Not for sale",
-        gap: "The reference architecture for cross-domain quant. Not a product. Even they do not unify crypto + DeFi + sports + prediction + TradFi in one stack \u2014 combinatory scope sits outside their mandate.",
+        gap: "The reference architecture for cross-domain quant. Not a product. Even they do not unify crypto + DeFi + sports + prediction + TradFi in one stack: combinatory scope sits outside their mandate.",
         color: "emerald",
       },
     ],
     callout:
-      "Odum is what you get when you take the institutional discipline of a top-tier quant firm and apply it to the full cross-domain spread \u2014 and then package it for external clients under a live FCA permission.",
+      "Odum is what you get when you take the institutional discipline of a top-tier quant firm and apply it to the full cross-domain spread: and then package it for external clients under a live FCA permission.",
   },
 
   // ══════════════════════════════════════════════════════════════
-  // ACT III \u2014 THE DART SOLUTION
+  // ACT III: THE DART SOLUTION
   // ══════════════════════════════════════════════════════════════
 
   // ── Slide 4: One Platform, Your Scope ─────────────────────
@@ -163,11 +162,11 @@ export const slides = [
     ],
   },
 
-  // ── Slide 5: DART \u2014 Two Modes, One System ─────────────────
+  // ── Slide 5: DART: Two Modes, One System ─────────────────
   {
     id: 5,
     type: "packaging",
-    title: "DART Trading Infrastructure \u2014 One Route, Signal-Capability Spectrum",
+    title: "DART Trading Infrastructure: One Route, Signal-Capability Spectrum",
     subtitle:
       "DART is a single engagement route with capability options depending on where your strategy IP sits: client-provided signals (IP upstream of Odum), Odum-provided signals, or hybrid. All capabilities run on the same infrastructure. Commercial terms scale with scope and are scoped per engagement.",
     services: [
@@ -175,13 +174,13 @@ export const slides = [
         name: "Client-Provided Signals (capability)",
         stages: ["Execution", "Governance"],
         model: "Fixed Tier-B access + per-signal or P&L share",
-        desc: "You keep strategy IP upstream at your endpoint. DART receives structured instructions via the published schema and runs the pipe \u2014 execution, monitoring, reconciliation, reporting. We see the orders, not the reasoning. (Legal/contract label: DART Signals-In.)",
+        desc: "You keep strategy IP upstream at your endpoint. DART receives structured instructions via the published schema and runs the pipe: execution, monitoring, reconciliation, reporting. We see the orders, not the reasoning. (Legal/contract label: DART Signals-In.)",
       },
       {
         name: "Odum-Provided / Hybrid Signals (capability)",
         stages: ["Instruments & Data", "Research", "Decision", "Execution", "Governance"],
         model: "Fixed access + metered research compute + IP-tier exclusivity",
-        desc: "Research and promote on Odum infrastructure, or combine Odum-provided signals with your own. Feature engineering, ML pipelines, simulation, promotion, execution, reporting \u2014 all on the same stack. Bespoke strategy builds are a development fee plus retainer or performance share, available by separate agreement.",
+        desc: "Research and promote on Odum infrastructure, or combine Odum-provided signals with your own. Feature engineering, ML pipelines, simulation, promotion, execution, reporting: all on the same stack. Bespoke strategy builds are a development fee plus retainer or performance share, available by separate agreement.",
       },
       {
         name: "Data + Research (entry)",
@@ -316,7 +315,7 @@ export const slides = [
   },
 
   // ══════════════════════════════════════════════════════════════
-  // ACT IV \u2014 PROOF
+  // ACT IV: PROOF
   // ══════════════════════════════════════════════════════════════
 
   // ── Slide 8: Your Alpha Stays Yours ───────────────────────
@@ -328,17 +327,17 @@ export const slides = [
       "DART is engineered so we cannot see your strategy logic when you run client-provided signals. When Odum-provided / hybrid signals are used, separation is contractual and technical. Here is the boundary by layer.",
     points: [
       {
-        problem: "Client-provided signals capability \u2014 can you see my strategy logic?",
+        problem: "Client-provided signals capability: can you see my strategy logic?",
         solution:
-          "No. You send structured instructions \u2014 instrument, side, size, constraints. Signal generation stays upstream at your endpoint. We see the orders, not the reasoning behind them.",
+          "No. You send structured instructions: instrument, side, size, constraints. Signal generation stays upstream at your endpoint. We see the orders, not the reasoning behind them.",
       },
       {
-        problem: "Odum-provided / hybrid signal capability \u2014 can you see the code I develop?",
+        problem: "Odum-provided / hybrid signal capability: can you see the code I develop?",
         solution:
-          "Yes \u2014 you are building on our infrastructure. We partition your tenant, we do not trade the same strategy, and we will not front-run you. Contractual non-compete on bespoke territory.",
+          "Yes: you are building on our infrastructure. We partition your tenant, we do not trade the same strategy, and we will not front-run you. Contractual non-compete on bespoke territory.",
       },
       {
-        problem: "Data only \u2014 can you see what I do with the feeds?",
+        problem: "Data only: can you see what I do with the feeds?",
         solution: "No. You get normalised feeds. We never see the strategies you build on top.",
       },
       {
@@ -348,7 +347,7 @@ export const slides = [
       },
     ],
     differentiators: [
-      "Tenant-level partitioning \u2014 no cross-tenant data access",
+      "Tenant-level partitioning: no cross-tenant data access",
       "HMAC-signed payload envelopes on client-provided signal flows",
       "Written non-compete on bespoke strategy territory",
     ],
@@ -374,7 +373,7 @@ export const slides = [
       },
       {
         problem: "Risk controls are reimplemented for live.",
-        solution: "Same risk controls carry through from research to live \u2014 nothing to rebuild.",
+        solution: "Same risk controls carry through from research to live: nothing to rebuild.",
       },
       {
         problem: "Months of engineering to promote a strategy.",
@@ -382,9 +381,9 @@ export const slides = [
       },
     ],
     differentiators: [
-      "Validation history, data history, operational familiarity accumulate \u2014 not reset",
+      "Validation history, data history, operational familiarity accumulate: not reset",
       "A strategy that passes backtest behaves the same way in production",
-      "Shard-level failure isolation \u2014 one venue outage does not cascade to others",
+      "Shard-level failure isolation: one venue outage does not cascade to others",
     ],
     conclusion: "Promotion is a configuration change. That continuity is what makes the platform difficult to leave.",
   },
@@ -393,7 +392,7 @@ export const slides = [
   {
     id: 10,
     type: "operations",
-    title: "Why Not Build \u2014 Or AI-Build \u2014 It Yourself",
+    title: "Why Not Build: Or AI-Build: It Yourself",
     columns: [
       {
         title: "If You Build",
@@ -402,7 +401,7 @@ export const slides = [
           "Build a normalised contracts-first schema layer",
           "Build backtesting that actually matches production",
           "Build execution, monitoring, risk, compliance tooling",
-          "18\u201324 months before you can trade \u2014 then operate it",
+          "18-24 months before you can trade: then operate it",
         ],
       },
       {
@@ -412,22 +411,22 @@ export const slides = [
           "Backtest to live on shared infrastructure",
           "Execution algorithms across all connected venues",
           "Monitoring, risk, reporting, compliance included",
-          "Materially faster to start than a build-it-yourself cycle, subject to scope review \u2014 then scale",
+          "Materially faster to start than a build-it-yourself cycle, subject to scope review: then scale",
         ],
       },
       {
         title: "What AI Cannot Replace",
         items: [
-          "Decades of desk experience \u2014 personally traded each asset class",
+          "Decades of desk experience: personally traded each asset class",
           "Knowing what a good fill looks like across venue microstructures",
           "Reconciling positions across chains when a bridge fails",
           "Debugging a drawdown under pressure at 3am",
-          "Operational experience compounds over years \u2014 not prompt-engineered",
+          "Operational experience compounds over years: not prompt-engineered",
         ],
       },
     ],
     callout:
-      "We use AI heavily in development and operations \u2014 and believe anyone should. But the system works because there are experienced humans making the critical decisions. AI accelerates the build. Experience is what makes it work.",
+      "We use AI heavily in development and operations: and believe anyone should. But the system works because there are experienced humans making the critical decisions. AI accelerates the build. Experience is what makes it work.",
     metrics: [
       { value: "3", label: "Years Building" },
       { value: "80+", label: "Venues Integrated" },
@@ -443,13 +442,13 @@ export const slides = [
     title: "Proof Points",
     achieved: [
       {
-        text: "Our own capital \u2014 $7.5M AUM",
+        text: "Our own capital: $7.5M AUM",
         detail:
           "30%+ annualised on crypto mean reversion (1-year track record). Bitcoin fund of funds (5-year track record).",
       },
       {
-        text: "First DART client \u2014 Elysium DeFi",
-        detail: "$125K signed, growing to $250K+ annual. Three strategies at 5\u201320% yield.",
+        text: "First DART client: Elysium DeFi",
+        detail: "$125K signed, growing to $250K+ annual. Three strategies at 5-20% yield.",
       },
       {
         text: "First Regulated Operating Models client",
@@ -482,7 +481,7 @@ export const slides = [
   },
 
   // ══════════════════════════════════════════════════════════════
-  // ACT V \u2014 FORWARD
+  // ACT V: FORWARD
   // ══════════════════════════════════════════════════════════════
 
   // ── Slide 12: Commercial Model ────────────────────────────
@@ -500,7 +499,7 @@ export const slides = [
       {
         problem: "How does that compare to building in-house?",
         solution:
-          "An in-house team to build and operate equivalent infrastructure is 5\u201310 engineers at $150K\u2013$250K each, plus 12\u201318 months before you can trade. DART is materially faster to start, subject to scope review, at a fraction of the cost.",
+          "An in-house team to build and operate equivalent infrastructure is 5-10 engineers at $150K-$250K each, plus 12-18 months before you can trade. DART is materially faster to start, subject to scope review, at a fraction of the cost.",
       },
       {
         problem: "What about bespoke strategy builds?",
@@ -510,11 +509,11 @@ export const slides = [
       {
         problem: "Can I start small and expand?",
         solution:
-          "Yes. Start with data or research access and expand to execution, full platform, or bespoke builds. Same infrastructure throughout \u2014 expanding is adding access, not migrating.",
+          "Yes. Start with data or research access and expand to execution, full platform, or bespoke builds. Same infrastructure throughout: expanding is adding access, not migrating.",
       },
     ],
     differentiators: [
-      "12-month annual contracts \u2014 first conversation is always about scope",
+      "12-month annual contracts: first conversation is always about scope",
       "Looking at live data shortly after signing, subject to scope review",
       "First platform client already live and growing",
     ],
@@ -522,7 +521,7 @@ export const slides = [
   },
 
   // ══════════════════════════════════════════════════════════════
-  // ACT VI \u2014 CLOSE
+  // ACT VI: CLOSE
   // ══════════════════════════════════════════════════════════════
 
   // ── Slide 13: How To Start ────────────────────────────────
@@ -531,33 +530,38 @@ export const slides = [
     type: "ask",
     title: "How To Start",
     subtitle:
-      "The next step is a fit-review conversation \u2014 asset classes, current setup, gaps, and which DART signal capability (client-provided / Odum-provided / hybrid) fits your operating model. Begin via /start-your-review for new prospect-style enquiries or /contact for advisor / partnership introductions.",
+      "Builder route through DART Trading Infrastructure. The funnel matches the public flow: light questionnaire, briefings, fit call, depth Strategy Evaluation, tailored Strategy Review, walkthrough, Commercial Tailoring, signup. /start-your-review is the prospect entry; /contact is the advisor / partnership introduction.",
     asks: [
       {
-        title: "Scoping Conversation",
+        title: "Step 1. Read the DART briefing",
         items: [
-          "Which asset classes are you focused on?",
-          "What does your current infrastructure look like?",
-          "Where are the gaps \u2014 data, research, execution, monitoring?",
-          "Client-provided signals (keep IP upstream), Odum-provided signals, or hybrid?",
+          "Submit the light questionnaire at /questionnaire to unlock the briefings hub on this device, or use the shared access code odum-briefings-2026",
+          "Read /briefings/dart-trading-infrastructure (Signals-In, Full pipeline, Odum-provided signals; backtest-vs-live T+1 differentiator)",
+          "Forward to engineering / trading colleagues; the same access code works for them",
         ],
       },
       {
-        title: "Trial Period",
+        title: "Step 2. Initial fit call",
         items: [
-          "Set up a trial on data and research layers",
-          "See the normalisation quality, coverage, and backtesting environment",
-          "Evaluate before committing to anything broader",
-          "No commitment to explore",
+          "15-minute Calendly via /contact (or /start-your-review for prospect-style enquiries)",
+          "Confirm asset classes, current infrastructure, gaps (data, research, execution, monitoring)",
+          "Decide which DART shape fits: Signals-In (your alpha, our execution), Full (research-to-execution on one stack), or Odum-provided signals (selected counterparty)",
         ],
       },
       {
-        title: "Timeline",
+        title: "Step 3. Strategy Evaluation + Review",
         items: [
-          "Data access: assessed case by case",
-          "Research environment: assessed case by case",
-          "Execution integration: assessed case by case",
-          "Full platform or bespoke: scoped per engagement, available by separate agreement",
+          "Submit the Path B builder wizard at /strategy-evaluation (eight-step DDQ: methodology, performance evidence, venue / instrument scope, regulatory wrapper sub-checkbox)",
+          "Upload backtests, audit trails, mandate or compliance docs at your own pace",
+          "We issue a per-prospect Strategy Review by magic link (tailored pre-demo prep). Builder emphasis covers proposed DART shape, briefing excerpts, workflows in scope, curated examples filtered against your seed, route-specific risks",
+        ],
+      },
+      {
+        title: "Step 4. Walkthrough, tailoring, onboard",
+        items: [
+          "Operator-led platform walkthrough: research, trading, execution, observe, reports modules scoped to your evaluation answers (demo / UAT mode)",
+          "Commercial Tailoring: venue packs, chain packs, instrument-type packs, contract scope, twelve-month minimum",
+          "Signup, scoped venue API key issuance, paper-trading promotion ladder, live-tiny, live-allocated",
         ],
       },
     ],
@@ -570,20 +574,30 @@ export const slides = [
     type: "demo",
     title: "See It Live",
     subtitle:
-      "Click any card to open the live platform in demo mode. Representative fills, positions, and P&L against a demo persona \u2014 never real client capital.",
+      "Click any card to open the live platform in demo mode. Representative fills, positions, and P&L against a demo persona; never real client capital.",
     previewLink: "/dashboard",
     sections: [
       {
         name: "DART Trading Infrastructure (public)",
-        desc: "DART overview \u2014 one route, signal-capability spectrum",
+        desc: "DART overview: one route, signal-capability spectrum",
         link: "/platform",
       },
       {
-        name: "DART Trading Infrastructure briefing",
-        desc: "Capability-by-capability walk-through (code: odum-briefings-2026)",
+        name: "Light Questionnaire",
+        desc: "Two-minute intake. Submit unlocks the briefings hub on this device and emails the access code",
+        link: "/questionnaire",
+      },
+      {
+        name: "DART Briefing",
+        desc: "Capability-by-capability walk-through (access code: odum-briefings-2026)",
         link: "/briefings/dart-trading-infrastructure",
       },
-      { name: "Dashboard (demo)", desc: "Positions, returns, risk, alerts \u2014 demo persona", link: "/dashboard" },
+      {
+        name: "Strategy Evaluation",
+        desc: "Path B builder wizard (eight-step DDQ). The depth gate before we issue a tailored Strategy Review",
+        link: "/strategy-evaluation",
+      },
+      { name: "Dashboard (demo)", desc: "Positions, returns, risk, alerts (demo persona)", link: "/dashboard" },
       {
         name: "Instruments & Coverage",
         desc: "12,000+ instruments across 5 asset classes",
@@ -597,6 +611,6 @@ export const slides = [
       { name: "Trading & Positions", desc: "Live positions, orders, attribution", link: "/services/trading/positions" },
       { name: "Executive Reporting", desc: "IBOR, reconciliation, performance", link: "/services/reports/executive" },
     ],
-    note: "Platform links require sign-in (investor@odum-research.com / OdumIR2026!). Public-site links open in a new tab; no sign-in required.",
+    note: "Platform links require sign-in (investor@odum-research.com / OdumIR2026!). Public-site links open in a new tab; no sign-in required. Strategy Review is a per-prospect magic-link surface (admin-issued after the depth Strategy Evaluation) and is not in this list.",
   },
 ];

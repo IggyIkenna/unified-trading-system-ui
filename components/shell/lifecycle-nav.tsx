@@ -182,6 +182,7 @@ export function LifecycleNav({
       <div className="flex items-center gap-2 min-w-0">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 group mr-1 shrink-0">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/images/odum-logo.png"
             alt="Odum Research"
@@ -208,9 +209,11 @@ export function LifecycleNav({
                     className={cn(
                       "flex items-center rounded-md border border-transparent transition-all duration-150",
                       isActive && !allLocked && "border-primary/20 bg-primary/10 text-primary",
-                      !isActive && !allLocked &&
+                      !isActive &&
+                        !allLocked &&
                         "hover:border-border hover:bg-muted text-muted-foreground hover:text-foreground",
-                      allLocked && "text-muted-foreground/50 hover:border-border hover:bg-muted hover:text-muted-foreground",
+                      allLocked &&
+                        "text-muted-foreground/50 hover:border-border hover:bg-muted hover:text-muted-foreground",
                     )}
                   >
                     <Link
@@ -255,7 +258,7 @@ export function LifecycleNav({
                             <Link
                               href={`/services/${item.path.split("/services/")[1]?.split("/")[0] || "overview"}`}
                               className="flex items-center justify-between opacity-50 cursor-not-allowed"
-                              title="Not part of your subscription — upgrade to access"
+                              title="Not part of your subscription: upgrade to access"
                             >
                               <span>{item.label}</span>
                               <Badge variant="outline" className="text-[9px] px-1 py-0 h-4">

@@ -199,7 +199,7 @@ export function DataServicesShowcase() {
                   )}
                 >
                   <div className={cn("text-xs font-semibold", color.text)}>{DATA_ASSET_GROUP_LABELS[cat]}</div>
-                  <div className="mt-1 text-lg font-bold">{count?.toLocaleString() || "—"}</div>
+                  <div className="mt-1 text-lg font-bold">{count?.toLocaleString() || "-"}</div>
                   <div className="text-[10px] text-muted-foreground">instruments</div>
                 </div>
               );

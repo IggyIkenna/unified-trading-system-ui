@@ -1,12 +1,7 @@
 "use client";
 
 import * as React from "react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { getTerm } from "@/lib/glossary";
 import { cn } from "@/lib/utils";
 
@@ -52,14 +47,12 @@ export function Term({ id, children, className }: TermProps) {
               "cursor-help border-b border-dotted border-muted-foreground/60 hover:border-foreground focus-visible:outline-none focus-visible:border-foreground transition-colors",
               className,
             )}
-            aria-label={`${entry.label} — ${entry.definition}`}
+            aria-label={`${entry.label}: ${entry.definition}`}
           >
             {label}
           </span>
         </TooltipTrigger>
-        <TooltipContent className="max-w-xs text-xs leading-relaxed">
-          {entry.definition}
-        </TooltipContent>
+        <TooltipContent className="max-w-xs text-xs leading-relaxed">{entry.definition}</TooltipContent>
       </Tooltip>
     </TooltipProvider>
   );

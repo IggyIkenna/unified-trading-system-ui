@@ -15,7 +15,7 @@ const STAGES = [
     hoverBorder: "border-sky-400/70",
     textClass: "text-sky-400",
     detail:
-      "Connect to 128 venues across crypto, TradFi, DeFi, sports, and prediction markets. Raw data is normalised into a single schema — one API, every asset class. This is where your journey starts.",
+      "Connect to 128 venues across crypto, TradFi, DeFi, sports, and prediction markets. Raw data is normalised into a single schema: one API, every asset class. This is where your journey starts.",
     services: ["Data Catalogue", "Market Data API", "Historical Downloads"],
     example:
       "A quant team connects to our API and starts pulling normalised BTC/USD data from Binance, CME, and Hyperliquid simultaneously.",
@@ -46,12 +46,7 @@ const STAGES = [
     textClass: "text-amber-400",
     detail:
       "Backtest strategies across historical data. Compare variants side-by-side. Promote winners through paper trading, then to live. A controlled pipeline from research to production.",
-    services: [
-      "Backtesting",
-      "Paper Trading",
-      "Candidate Pipeline",
-      "Approval Workflow",
-    ],
+    services: ["Backtesting", "Paper Trading", "Candidate Pipeline", "Approval Workflow"],
     example:
       "Your ETH basis strategy shows a Sharpe of 2.1 in backtest. Promote it to paper trading for 7 days, then approve for live deployment.",
   },
@@ -65,15 +60,10 @@ const STAGES = [
     hoverBorder: "border-emerald-400/70",
     textClass: "text-emerald-400",
     detail:
-      "The same code that ran your backtest now runs live — zero divergence by design. Deploy from our research pipeline or bring your own via API. Multi-venue execution with institutional algorithms, real-time position management, and T+1 monitoring to catch any drift between simulation and reality.",
-    services: [
-      "Live Execution",
-      "Smart Order Routing",
-      "T+1 Diff Monitoring",
-      "Position Management",
-    ],
+      "The same code that ran your backtest now runs live: zero divergence by design. Deploy from our research pipeline or bring your own via API. Multi-venue execution with institutional algorithms, real-time position management, and T+1 monitoring to catch any drift between simulation and reality.",
+    services: ["Live Execution", "Smart Order Routing", "T+1 Diff Monitoring", "Position Management"],
     example:
-      "Your strategy executes simultaneously on Binance, Hyperliquid, and Deribit. Next morning, the T+1 report shows 0.02% divergence from backtest — within tolerance.",
+      "Your strategy executes simultaneously on Binance, Hyperliquid, and Deribit. Next morning, the T+1 report shows 0.02% divergence from backtest: within tolerance.",
   },
   {
     num: "5",
@@ -85,7 +75,7 @@ const STAGES = [
     hoverBorder: "border-teal-400/70",
     textClass: "text-teal-400",
     detail:
-      "Institutional execution algorithms — TWAP, VWAP, SOR, Almgren-Chriss — across 128 venues. Smart order routing finds the best price. Best execution monitoring and transaction cost analysis built in.",
+      "Institutional execution algorithms: TWAP, VWAP, SOR, Almgren-Chriss: across 128 venues. Smart order routing finds the best price. Best execution monitoring and transaction cost analysis built in.",
     services: ["TWAP/VWAP", "Smart Order Routing", "Best Execution", "TCA"],
     example:
       "Your ETH basis strategy routes a $2M order through Almgren-Chriss across Binance and Hyperliquid. TCA report shows 0.3bps improvement vs TWAP.",
@@ -101,12 +91,7 @@ const STAGES = [
     textClass: "text-cyan-400",
     detail:
       "Monitor risk exposure, P&L, and execution quality in real time. Receive alerts on limit breaches, model drift, or venue issues. Reconcile positions between batch and live systems.",
-    services: [
-      "Risk Dashboard",
-      "Alerting",
-      "Execution Analytics",
-      "Reconciliation",
-    ],
+    services: ["Risk Dashboard", "Alerting", "Execution Analytics", "Reconciliation"],
     example:
       "An alert fires: margin utilisation on Binance hits 78%. The risk dashboard shows which strategies are driving it and suggests rebalancing.",
   },
@@ -120,15 +105,10 @@ const STAGES = [
     hoverBorder: "border-rose-400/70",
     textClass: "text-rose-400",
     detail:
-      "Manage client subscriptions, capital allocation, fee schedules, and user access. Internal operations — onboarding, deployment, configuration — all in one place.",
-    services: [
-      "Client Management",
-      "Capital Allocation",
-      "Fee Schedules",
-      "Deployments",
-    ],
+      "Manage client subscriptions, capital allocation, fee schedules, and user access. Internal operations: onboarding, deployment, configuration: all in one place.",
+    services: ["Client Management", "Capital Allocation", "Fee Schedules", "Deployments"],
     example:
-      "Onboard a new client, set their risk limits, assign strategy allocations, and configure their fee schedule — all from the admin dashboard.",
+      "Onboard a new client, set their risk limits, assign strategy allocations, and configure their fee schedule: all from the admin dashboard.",
   },
   {
     num: "8",
@@ -141,12 +121,7 @@ const STAGES = [
     textClass: "text-slate-400",
     detail:
       "Generate P&L attribution reports, settlement statements, and regulatory filings. Full audit trail for compliance. Clients see their own scoped reports; internal sees everything.",
-    services: [
-      "P&L Attribution",
-      "Settlement",
-      "Regulatory Reporting",
-      "Audit Trail",
-    ],
+    services: ["P&L Attribution", "Settlement", "Regulatory Reporting", "Audit Trail"],
     example:
       "Monthly performance report auto-generated for Alpha Capital: +4.2% MTD, Sharpe 1.8, with full factor-level attribution and fee transparency.",
   },
@@ -180,14 +155,8 @@ export function OperatingModelStages() {
                 hoveredIdx !== null && hoveredIdx !== i && "opacity-40",
               )}
             >
-              <div
-                className={cn("text-lg md:text-xl font-bold", stage.textClass)}
-              >
-                {stage.num}
-              </div>
-              <div className="text-xs md:text-sm font-semibold mt-1">
-                {stage.name}
-              </div>
+              <div className={cn("text-lg md:text-xl font-bold", stage.textClass)}>{stage.num}</div>
+              <div className="text-xs md:text-sm font-semibold mt-1">{stage.name}</div>
               <div className="text-[10px] md:text-xs text-muted-foreground mt-1 text-center leading-tight hidden sm:block">
                 {stage.short}
               </div>
@@ -206,10 +175,7 @@ export function OperatingModelStages() {
       >
         {hovered && (
           <div
-            className={cn(
-              "rounded-xl border p-5",
-              `border-${hovered.color}-400/30 bg-${hovered.color}-400/5`,
-            )}
+            className={cn("rounded-xl border p-5", `border-${hovered.color}-400/30 bg-${hovered.color}-400/5`)}
             style={{
               borderColor: `color-mix(in srgb, var(--color-${hovered.color}-400, #888) 30%, transparent)`,
               backgroundColor: `color-mix(in srgb, var(--color-${hovered.color}-400, #888) 5%, transparent)`,
@@ -220,9 +186,7 @@ export function OperatingModelStages() {
                 <h3 className={cn("text-sm font-bold mb-2", hovered.textClass)}>
                   {hovered.num}. {hovered.name}
                 </h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  {hovered.detail}
-                </p>
+                <p className="text-xs text-muted-foreground leading-relaxed">{hovered.detail}</p>
                 <p className="text-[11px] text-foreground/60 mt-3 italic border-l-2 border-border pl-3">
                   {hovered.example}
                 </p>
@@ -254,8 +218,8 @@ export function OperatingModelStages() {
       </div>
 
       <p className="text-center text-xs text-muted-foreground mt-6 max-w-lg mx-auto">
-        Hover any stage to see what happens there. Clients enter at any stage —
-        workflows connect at the appropriate boundary.
+        Hover any stage to see what happens there. Clients enter at any stage: workflows connect at the appropriate
+        boundary.
       </p>
     </div>
   );

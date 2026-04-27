@@ -24,7 +24,7 @@ export default function PrivacyPage() {
             <p>
               We use collected information to provide and facilitate access to our services, manage your account and
               service entitlements, process transactions, and communicate with you. Your account identity determines
-              which platform services, data tiers, and features are available to you — access permissions are associated
+              which platform services, data tiers, and features are available to you: access permissions are associated
               with your registered email and organisation. We also use information to improve our platform and ensure
               compliance with regulatory obligations. We do not sell personal data to third parties.
             </p>

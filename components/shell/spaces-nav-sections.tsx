@@ -133,19 +133,19 @@ export function SpacesNavSections() {
       </GatedMenuItem>
       <GatedMenuItem
         href="/dashboard"
-        label="DART — Research, Trading, Execution"
+        label="DART: Research, Trading, Execution"
         sectionTitle={CLIENT_ACCESS_SECTION}
         accessType="signin"
       >
-        DART — Research, Trading, Execution
+        DART: Research, Trading, Execution
       </GatedMenuItem>
       <GatedMenuItem
         href="/services/signals/dashboard"
-        label="Odum Signals — Counterparty Dashboard"
+        label="Odum Signals: Counterparty Dashboard"
         sectionTitle={CLIENT_ACCESS_SECTION}
         accessType="signin"
       >
-        Odum Signals — Counterparty Dashboard
+        Odum Signals: Counterparty Dashboard
       </GatedMenuItem>
       {/*
        * G1.1 intentional static link — the IM Strategy Catalogue is

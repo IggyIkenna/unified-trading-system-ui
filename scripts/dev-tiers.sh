@@ -89,6 +89,15 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+# ─── Pull local-dev secrets from GCS Secret Manager ──────────────────────────
+# Sourced before any tier-specific dispatch so every code path (firebase-local
+# handoff, T0/T1/T2, --stop, --status) sees the same env. Secrets in the
+# DEV_SECRETS manifest land as exported env vars; Cloud Run prod mounts the
+# same GSM names via secretKeyRef so app code reads `process.env.<NAME>`
+# identically in both environments. Skip with DEV_SECRETS_SKIP=1.
+# shellcheck source=load-dev-secrets.sh
+source "$SCRIPT_DIR/load-dev-secrets.sh" || true
+
 # When --firebase-local is set, hand off to the npm script that boots the
 # Firebase Emulator Suite (Auth + Firestore + Storage) concurrently with
 # the Next.js dev server. Bypasses the rest of dev-tiers.sh — emulator

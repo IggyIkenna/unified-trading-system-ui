@@ -63,7 +63,7 @@ export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
           </desc>
 
           {/* ============================================================
-              LEFT COLUMN — Pooled Fund route (EU / affiliate-supported)
+              LEFT COLUMN: Pooled Fund route (EU / affiliate-supported)
               Container: x=20..460, width 440. Inner cells centred on 240.
               Two-up sub-row centres: 130 (left) and 350 (right).
               ============================================================ */}
@@ -445,7 +445,7 @@ export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
           </g>
 
           {/* ============================================================
-              RIGHT COLUMN — SMA route (UK / direct)
+              RIGHT COLUMN: SMA route (UK / direct)
               Container: x=500..940, width 440. Inner cells centred on 720.
               Two-up sub-row centres: 600 (left) and 820 (right).
               ============================================================ */}
@@ -770,7 +770,7 @@ export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
           </g>
 
           {/* ============================================================
-              BOTTOM LEGEND — three pills spanning both columns
+              BOTTOM LEGEND: three pills spanning both columns
               ============================================================ */}
           <g>
             <rect
@@ -810,7 +810,7 @@ export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
 
           {/* Footer note */}
           <text x="480" y="785" textAnchor="middle" className="fill-zinc-500 text-[10px] italic dark:fill-zinc-500">
-            Illustrative operating structure only — final legal, regulatory, and distribution posture depends on the
+            Illustrative operating structure only: final legal, regulatory, and distribution posture depends on the
             executed agreements and jurisdictional scope.
           </text>
 

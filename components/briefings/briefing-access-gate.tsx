@@ -46,7 +46,7 @@ export function BriefingAccessGate({ children }: { children: React.ReactNode }) 
       </p>
       <p className="text-xs text-muted-foreground text-center max-w-md mb-6" data-testid="briefing-gate-email-hint">
         Already filled out the questionnaire on another device? Check your email for the access code from{" "}
-        <span className="font-medium text-foreground">hello@mail.odum-research.com</span> — paste it below and
+        <span className="font-medium text-foreground">hello@mail.odum-research.com</span>: paste it below and
         you&apos;re in.
       </p>
       {cookieDeclined ? (
@@ -55,8 +55,8 @@ export function BriefingAccessGate({ children }: { children: React.ReactNode }) 
           data-testid="briefing-gate-cookie-warning"
           className="mb-4 max-w-sm rounded border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs text-amber-200"
         >
-          You declined cookies, so this session won&apos;t persist across page reloads — you&apos;ll need to re-enter
-          the code each time. To stay signed in, accept cookies via the banner at the bottom of the page.
+          You declined cookies, so this session won&apos;t persist across page reloads: you&apos;ll need to re-enter the
+          code each time. To stay signed in, accept cookies via the banner at the bottom of the page.
         </div>
       ) : null}
       <form
@@ -87,7 +87,7 @@ export function BriefingAccessGate({ children }: { children: React.ReactNode }) 
         <Link href="/questionnaire" className="text-primary hover:underline" data-testid="gate-request-access-link">
           Request one →
         </Link>{" "}
-        — fill out a short questionnaire and we&apos;ll email you a code plus a calendar link to book a call. Or{" "}
+        : fill out a short questionnaire and we&apos;ll email you a code plus a calendar link to book a call. Or{" "}
         <Link href={contactHrefFromPath(pathname, "request-access")} className="text-primary hover:underline">
           contact us
         </Link>{" "}

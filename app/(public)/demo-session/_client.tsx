@@ -101,7 +101,7 @@ export default function DemoSessionClient({ session }: { session: DemoSessionDoc
         <ul className="mt-2 space-y-1 text-muted-foreground list-disc pl-5">
           <li>No production client data is loaded.</li>
           <li>No real account credentials accepted; no withdrawal or destructive actions available.</li>
-          <li>No silent transition to production — sign-up + onboarding happen separately.</li>
+          <li>No silent transition to production: sign-up + onboarding happen separately.</li>
         </ul>
       </div>
 

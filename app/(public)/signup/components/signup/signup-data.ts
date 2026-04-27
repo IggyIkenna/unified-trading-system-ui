@@ -19,7 +19,7 @@ export const SERVICES = [
     icon: Layers,
     color: "text-cyan-400",
     price: "Contact us",
-    desc: "Data, research, execution, reconciliation, reporting — the full trading lifecycle on one platform.",
+    desc: "Data, research, execution, reconciliation, reporting: the full trading lifecycle on one platform.",
   },
   {
     id: "signals",
@@ -63,7 +63,7 @@ export const REG_ACTIVITIES = [
     id: "dealing_agent",
     label: "Dealing in Investments as Agent",
     tooltip:
-      "Execute trades on behalf of your clients across regulated markets. You act as agent — Odum provides the regulatory framework, venue connectivity, and best execution oversight.",
+      "Execute trades on behalf of your clients across regulated markets. You act as agent: Odum provides the regulatory framework, venue connectivity, and best execution oversight.",
   },
   {
     id: "arranging",
@@ -75,11 +75,11 @@ export const REG_ACTIVITIES = [
     id: "making_arrangements",
     label: "Making Arrangements with a View to Transactions",
     tooltip:
-      "Facilitate the process that leads to investment transactions — for example, providing research, platforms, or infrastructure that enables clients to trade.",
+      "Facilitate the process that leads to investment transactions: for example, providing research, platforms, or infrastructure that enables clients to trade.",
   },
   {
     id: "managing",
-    label: "Managing Investments (SMA only — see Fund Management below for fund structures)",
+    label: "Managing Investments (SMA only: see Fund Management below for fund structures)",
     tooltip:
       "Discretionary portfolio management for professional clients. You make investment decisions on behalf of clients within agreed mandates. Requires suitability assessment and ongoing reporting.",
   },
@@ -163,14 +163,14 @@ const SOF_FIELDS: DeclarationField[] = [
   {
     id: "expected_volume",
     label: "Expected annual trading volume",
-    placeholder: "e.g. GBP 500,000 — 1,000,000",
+    placeholder: "e.g. GBP 500,000: 1,000,000",
   },
 ];
 const WEALTH_FIELDS: DeclarationField[] = [
   {
     id: "net_worth",
     label: "Approximate net worth (excluding primary residence)",
-    placeholder: "e.g. GBP 1,000,000 — 5,000,000",
+    placeholder: "e.g. GBP 1,000,000: 5,000,000",
   },
   {
     id: "liquid_assets",

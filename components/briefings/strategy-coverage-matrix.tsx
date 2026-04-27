@@ -76,21 +76,21 @@ function statusGlyph(status: CoverageStatus | null): {
     return {
       symbol: "●",
       className: "text-emerald-500",
-      title: "Supported — strategies run live in this cell.",
+      title: "Supported: strategies run live in this cell.",
     };
   }
   if (status === "PARTIAL") {
     return {
       symbol: "◐",
       className: "text-amber-500",
-      title: "Partial — adapter or config gap; not every instrument in this cell is live.",
+      title: "Partial: adapter or config gap; not every instrument in this cell is live.",
     };
   }
   if (status === "BLOCKED") {
     return {
-      symbol: "—",
+      symbol: "-",
       className: "text-muted-foreground/40",
-      title: "Blocked — a structural reason prevents this cell (named in the codex).",
+      title: "Blocked: a structural reason prevents this cell (named in the codex).",
     };
   }
   return {
@@ -184,7 +184,7 @@ export function StrategyCoverageMatrix({ archetypes }: StrategyCoverageMatrixPro
           <span className="font-mono text-amber-500">◐</span> Partial
         </span>
         <span>
-          <span className="font-mono text-muted-foreground/40">—</span> Blocked (by design or venue)
+          <span className="font-mono text-muted-foreground/40">-</span> Blocked (by design or venue)
         </span>
         <span>
           <span className="font-mono text-muted-foreground/20">·</span> Not applicable

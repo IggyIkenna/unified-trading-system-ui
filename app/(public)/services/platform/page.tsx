@@ -2,13 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Activity,
   ArrowRight,
@@ -18,7 +12,7 @@ import {
   Layers,
   Shield,
   TrendingUp,
-  Zap
+  Zap,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -76,40 +70,27 @@ export default function PlatformServicePage() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-amber-950/40 via-background to-background" />
         <div className="container relative px-4 py-20 md:px-6 md:py-28">
           <div className="mx-auto max-w-3xl text-center">
-            <Badge
-              variant="outline"
-              className="mb-4 border-amber-500/30 text-amber-400 text-xs"
-            >
+            <Badge variant="outline" className="mb-4 border-amber-500/30 text-amber-400 text-xs">
               <Layers className="mr-1.5 size-3" />
               Live Trading Platform
             </Badge>
             <h1 className="text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
-              One screen.{" "}
-              <span className="text-amber-400">Every venue. Every trade.</span>
+              One screen. <span className="text-amber-400">Every venue. Every trade.</span>
             </h1>
             <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-              See all your trades across every product in one normalised view.
-              Live P&amp;L, position monitoring, risk analytics — and every
-              morning, compare yesterday&apos;s live trades against what the
-              backtest would have done.
+              See all your trades across every product in one normalised view. Live P&amp;L, position monitoring, risk
+              analytics: and every morning, compare yesterday&apos;s live trades against what the backtest would have
+              done.
             </p>
             <p className="mt-2 text-sm text-muted-foreground max-w-xl mx-auto">
-              Full web dashboards for monitoring and control, with API access
-              for custom integrations. The same code runs your backtests and
-              your live strategies.
+              Full web dashboards for monitoring and control, with API access for custom integrations. The same code
+              runs your backtests and your live strategies.
             </p>
             <div className="mt-12 grid grid-cols-4 gap-4">
               {HERO_METRICS.map((m) => (
-                <div
-                  key={m.label}
-                  className="rounded-lg border border-border bg-card/60 px-4 py-3"
-                >
-                  <div className="text-2xl font-bold font-mono text-amber-400">
-                    {m.value}
-                  </div>
-                  <div className="text-xs text-muted-foreground mt-0.5">
-                    {m.label}
-                  </div>
+                <div key={m.label} className="rounded-lg border border-border bg-card/60 px-4 py-3">
+                  <div className="text-2xl font-bold font-mono text-amber-400">{m.value}</div>
+                  <div className="text-xs text-muted-foreground mt-0.5">{m.label}</div>
                 </div>
               ))}
             </div>
@@ -127,9 +108,9 @@ export default function PlatformServicePage() {
                 <CardContent className="pt-5">
                   <div className="text-sm font-medium mb-1">DART</div>
                   <p className="text-xs text-muted-foreground">
-                    Full DART trading terminal with candlestick charts, technical indicators
-                    (Bollinger Bands, EMA, SMA), live order book, depth chart, and
-                    manual execution panel. Trade any instrument from one screen.
+                    Full DART trading terminal with candlestick charts, technical indicators (Bollinger Bands, EMA,
+                    SMA), live order book, depth chart, and manual execution panel. Trade any instrument from one
+                    screen.
                   </p>
                 </CardContent>
               </Card>
@@ -137,8 +118,8 @@ export default function PlatformServicePage() {
                 <CardContent className="pt-5">
                   <div className="text-sm font-medium mb-1">10-Factor P&amp;L Waterfall</div>
                   <p className="text-xs text-muted-foreground">
-                    P&amp;L broken down by funding, carry, basis, delta, gamma, vega, theta,
-                    slippage, fees, and rebates. Drill into any strategy for factor attribution.
+                    P&amp;L broken down by funding, carry, basis, delta, gamma, vega, theta, slippage, fees, and
+                    rebates. Drill into any strategy for factor attribution.
                   </p>
                 </CardContent>
               </Card>
@@ -146,8 +127,8 @@ export default function PlatformServicePage() {
                 <CardContent className="pt-5">
                   <div className="text-sm font-medium mb-1">Position Grid</div>
                   <p className="text-xs text-muted-foreground">
-                    All positions across every venue — spot, perps, futures, options, DeFi,
-                    predictions. Unrealised P&amp;L, exposure, margin utilisation, collapsible by venue.
+                    All positions across every venue: spot, perps, futures, options, DeFi, predictions. Unrealised
+                    P&amp;L, exposure, margin utilisation, collapsible by venue.
                   </p>
                 </CardContent>
               </Card>
@@ -155,8 +136,8 @@ export default function PlatformServicePage() {
                 <CardContent className="pt-5">
                   <div className="text-sm font-medium mb-1">Risk Dashboard</div>
                   <p className="text-xs text-muted-foreground">
-                    VaR, Greeks, position limits, circuit breaker status. Kill switch for
-                    emergency stops. Margin utilisation by venue with real-time alerts.
+                    VaR, Greeks, position limits, circuit breaker status. Kill switch for emergency stops. Margin
+                    utilisation by venue with real-time alerts.
                   </p>
                 </CardContent>
               </Card>
@@ -164,8 +145,8 @@ export default function PlatformServicePage() {
                 <CardContent className="pt-5">
                   <div className="text-sm font-medium mb-1">Strategy Management</div>
                   <p className="text-xs text-muted-foreground">
-                    See all strategies live — by archetype (basis, arb, momentum, yield),
-                    asset class, and status. AUM, P&amp;L sparklines, execution mode toggle.
+                    See all strategies live: by archetype (basis, arb, momentum, yield), asset class, and status. AUM,
+                    P&amp;L sparklines, execution mode toggle.
                   </p>
                 </CardContent>
               </Card>
@@ -173,15 +154,15 @@ export default function PlatformServicePage() {
                 <CardContent className="pt-5">
                   <div className="text-sm font-medium mb-1">Live vs Batch Reconciliation</div>
                   <p className="text-xs text-muted-foreground">
-                    Every morning, compare yesterday&apos;s live trades against backtest.
-                    Break detection for position, P&amp;L, and fee mismatches with investigation workflow.
+                    Every morning, compare yesterday&apos;s live trades against backtest. Break detection for position,
+                    P&amp;L, and fee mismatches with investigation workflow.
                   </p>
                 </CardContent>
               </Card>
             </div>
             <p className="text-xs text-muted-foreground mt-4 text-center">
-              Plus: DeFi operations (swaps, lending, staking), sports and prediction market panels,
-              options chain, order bundles, and full audit trail.
+              Plus: DeFi operations (swaps, lending, staking), sports and prediction market panels, options chain, order
+              bundles, and full audit trail.
             </p>
           </div>
         </div>
@@ -190,9 +171,7 @@ export default function PlatformServicePage() {
       {/* Block 1: Detailed feature list */}
       <section className="container px-4 py-16 md:px-6">
         <div className="mx-auto max-w-4xl">
-          <h2 className="text-2xl font-bold mb-2">
-            What the Live Trading Platform Includes
-          </h2>
+          <h2 className="text-2xl font-bold mb-2">What the Live Trading Platform Includes</h2>
           <p className="text-sm text-muted-foreground mb-8">
             Six core capabilities for operating a live systematic trading book.
           </p>
@@ -226,7 +205,7 @@ export default function PlatformServicePage() {
             <div className="text-center mb-8">
               <h2 className="text-2xl font-bold">See It In Action</h2>
               <p className="mt-2 text-muted-foreground">
-                Illustrative trading dashboard, P&amp;L waterfall, and position grid — representative of the live
+                Illustrative trading dashboard, P&amp;L waterfall, and position grid: representative of the live
                 terminal layout.
               </p>
             </div>
@@ -234,12 +213,8 @@ export default function PlatformServicePage() {
             {/* P&L Waterfall (illustrative) */}
             <Card className="mb-6 border-amber-500/20">
               <CardHeader>
-                <CardTitle className="text-base">
-                  P&L Attribution Waterfall
-                </CardTitle>
-                <CardDescription>
-                  Today&apos;s P&L decomposed by factor
-                </CardDescription>
+                <CardTitle className="text-base">P&L Attribution Waterfall</CardTitle>
+                <CardDescription>Today&apos;s P&L decomposed by factor</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid gap-2 md:grid-cols-5">
@@ -270,26 +245,15 @@ export default function PlatformServicePage() {
                       color: "text-rose-400",
                     },
                   ].map((f) => (
-                    <div
-                      key={f.factor}
-                      className="rounded-lg border border-border/50 bg-muted/30 p-3 text-center"
-                    >
-                      <div className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                        {f.factor}
-                      </div>
-                      <div
-                        className={`text-sm font-bold font-mono mt-1 ${f.color}`}
-                      >
-                        {f.value}
-                      </div>
+                    <div key={f.factor} className="rounded-lg border border-border/50 bg-muted/30 p-3 text-center">
+                      <div className="text-[10px] text-muted-foreground uppercase tracking-wider">{f.factor}</div>
+                      <div className={`text-sm font-bold font-mono mt-1 ${f.color}`}>{f.value}</div>
                     </div>
                   ))}
                 </div>
                 <div className="mt-4 flex items-center justify-between rounded-lg border border-amber-500/30 bg-amber-500/5 px-4 py-3">
                   <span className="text-sm font-medium">Net P&L</span>
-                  <span className="text-lg font-bold font-mono text-emerald-400">
-                    +$21,100
-                  </span>
+                  <span className="text-lg font-bold font-mono text-emerald-400">+$21,100</span>
                 </div>
               </CardContent>
             </Card>
@@ -299,9 +263,7 @@ export default function PlatformServicePage() {
               <Card className="border-amber-500/20">
                 <CardHeader>
                   <CardTitle className="text-base">Position Grid</CardTitle>
-                  <CardDescription>
-                    Live positions across venues
-                  </CardDescription>
+                  <CardDescription>Live positions across venues</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
@@ -340,22 +302,12 @@ export default function PlatformServicePage() {
                         className="flex items-center justify-between rounded-lg border border-border/50 bg-muted/30 px-3 py-2"
                       >
                         <div>
-                          <div className="text-sm font-medium font-mono">
-                            {p.instrument}
-                          </div>
-                          <div className="text-[10px] text-muted-foreground">
-                            {p.venue}
-                          </div>
+                          <div className="text-sm font-medium font-mono">{p.instrument}</div>
+                          <div className="text-[10px] text-muted-foreground">{p.venue}</div>
                         </div>
                         <div className="text-right">
-                          <div className="text-xs text-muted-foreground">
-                            {p.size}
-                          </div>
-                          <div
-                            className={`text-sm font-mono font-medium ${p.color}`}
-                          >
-                            {p.pnl}
-                          </div>
+                          <div className="text-xs text-muted-foreground">{p.size}</div>
+                          <div className={`text-sm font-mono font-medium ${p.color}`}>{p.pnl}</div>
                         </div>
                       </div>
                     ))}
@@ -382,12 +334,8 @@ export default function PlatformServicePage() {
                         key={item.label}
                         className="flex items-center justify-between rounded-lg border border-border/50 bg-muted/30 px-3 py-2"
                       >
-                        <span className="text-sm text-muted-foreground">
-                          {item.label}
-                        </span>
-                        <span className="text-sm font-medium font-mono">
-                          {item.value}
-                        </span>
+                        <span className="text-sm text-muted-foreground">{item.label}</span>
+                        <span className="text-sm font-medium font-mono">{item.value}</span>
                       </div>
                     ))}
                   </div>
@@ -403,75 +351,63 @@ export default function PlatformServicePage() {
         <div className="container px-4 md:px-6">
           <div className="mx-auto max-w-4xl">
             <h3 className="text-lg font-semibold mb-2">How You Can Use This</h3>
-            <p className="text-sm text-muted-foreground mb-6">
-              Choose your level of control. Mix and match as needed.
-            </p>
+            <p className="text-sm text-muted-foreground mb-6">Choose your level of control. Mix and match as needed.</p>
             <div className="grid md:grid-cols-3 gap-4">
               <Card>
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm">Self-Service</CardTitle>
-                  <CardDescription className="text-xs">
-                    Full dashboards and API — no code required
-                  </CardDescription>
+                  <CardDescription className="text-xs">Full dashboards and API: no code required</CardDescription>
                 </CardHeader>
                 <CardContent className="text-xs text-muted-foreground space-y-1.5">
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
-                    Monitor P&amp;L, positions, and risk from the web dashboard
+                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Monitor P&amp;L, positions, and risk
+                    from the web dashboard
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
-                    Deploy and configure strategies without writing code
+                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Deploy and configure strategies
+                    without writing code
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
-                    Self-managed risk limits and circuit breakers
+                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Self-managed risk limits and circuit
+                    breakers
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
-                    Full API access for programmatic integrations
+                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Full API access for programmatic
+                    integrations
                   </div>
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm">Managed</CardTitle>
-                  <CardDescription className="text-xs">
-                    We operate the platform for you
-                  </CardDescription>
+                  <CardDescription className="text-xs">We operate the platform for you</CardDescription>
                 </CardHeader>
                 <CardContent className="text-xs text-muted-foreground space-y-1.5">
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
-                    Odum team monitors and manages live trading
+                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Odum team monitors and manages live
+                    trading
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
-                    24/7 operational support
+                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> 24/7 operational support
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
-                    Proactive risk intervention
+                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Proactive risk intervention
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
-                    Monthly performance reviews
+                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Monthly performance reviews
                   </div>
                 </CardContent>
               </Card>
               <Card className="border-muted">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm">Why Integrated</CardTitle>
-                  <CardDescription className="text-xs">
-                    Built-in controls and connectivity
-                  </CardDescription>
+                  <CardDescription className="text-xs">Built-in controls and connectivity</CardDescription>
                 </CardHeader>
                 <CardContent className="text-xs text-muted-foreground space-y-1.5">
                   <p>
-                    Real-time risk controls, venue connectivity, and regulatory
-                    compliance require integrated infrastructure. This ensures
-                    every trade is auditable, every position is monitored, and
-                    circuit breakers work instantly.
+                    Real-time risk controls, venue connectivity, and regulatory compliance require integrated
+                    infrastructure. This ensures every trade is auditable, every position is monitored, and circuit
+                    breakers work instantly.
                   </p>
                 </CardContent>
               </Card>
@@ -484,9 +420,7 @@ export default function PlatformServicePage() {
       <section className="border-t border-border">
         <div className="container px-4 py-16 md:px-6">
           <div className="rounded-xl border border-primary/20 bg-primary/5 p-8 text-center max-w-2xl mx-auto">
-            <h3 className="text-lg font-semibold mb-2">
-              Ready to get started?
-            </h3>
+            <h3 className="text-lg font-semibold mb-2">Ready to get started?</h3>
             <p className="text-sm text-muted-foreground mb-6">
               Book a demo to see the platform in action, or get in touch with our team.
             </p>

@@ -179,7 +179,7 @@ export function DebugFooter() {
                             {user?.id === p.id && <span className="ml-1 text-[10px] text-amber-400">(active)</span>}
                           </span>
                           <span className="text-[10px] text-muted-foreground">
-                            {p.org.name} — {p.role}
+                            {p.org.name}: {p.role}
                           </span>
                         </div>
                       </DropdownMenuItem>

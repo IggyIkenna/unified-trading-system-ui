@@ -86,7 +86,7 @@ export function ArbitrageGalaxy() {
     canvas.height = H * dpr;
     ctx.scale(dpr, dpr);
 
-    const R = Math.min(W, H) * 0.13; // node radius — large enough for text
+    const R = Math.min(W, H) * 0.13; // node radius: large enough for text
 
     const stars = Array.from({ length: 60 }, () => ({
       x: Math.random() * W,
@@ -287,7 +287,7 @@ export function ArbitrageGalaxy() {
     }
 
     let lastFrame = 0;
-    const FRAME_INTERVAL = 1000 / 24; // 24fps — smooth enough, half the CPU
+    const FRAME_INTERVAL = 1000 / 24; // 24fps: smooth enough, half the CPU
     function loop(ts: number) {
       if (ts - lastFrame >= FRAME_INTERVAL) {
         renderFrame(ts);

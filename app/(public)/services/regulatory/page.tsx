@@ -30,8 +30,8 @@ export default function RegulatoryServicePage() {
             <CardHeader>
               <CardTitle className="text-lg">The Client Portal</CardTitle>
               <CardDescription>
-                Once approved, your clients get their own login with full reporting — the same institutional tools we
-                use internally.
+                Once approved, your clients get their own login with full reporting: the same institutional tools we use
+                internally.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -46,7 +46,7 @@ export default function RegulatoryServicePage() {
                 <div className="space-y-1">
                   <div className="text-sm font-medium">Trade History</div>
                   <p className="text-xs text-muted-foreground">
-                    Every trade your clients execute — filterable, exportable, with full audit trail. Slippage analysis
+                    Every trade your clients execute: filterable, exportable, with full audit trail. Slippage analysis
                     and best execution records included.
                   </p>
                 </div>
@@ -214,7 +214,7 @@ export default function RegulatoryServicePage() {
                 <CheckCircle2 className="size-5 text-emerald-400 shrink-0" />
                 <div>
                   <div className="font-medium">
-                    Fund Structure — Crypto Spot{" "}
+                    Fund Structure: Crypto Spot{" "}
                     <Badge variant="outline" className="ml-2 text-[10px] px-1.5 py-0">
                       FCA
                     </Badge>{" "}
@@ -229,7 +229,7 @@ export default function RegulatoryServicePage() {
                 <CheckCircle2 className="size-5 text-primary shrink-0" />
                 <div>
                   <div className="font-medium">
-                    Fund Structure — Derivatives &amp; Traditional Markets{" "}
+                    Fund Structure: Derivatives &amp; Traditional Markets{" "}
                     <Badge variant="outline" className="ml-2 text-[10px] px-1.5 py-0">
                       EU ESMA
                     </Badge>
@@ -318,7 +318,7 @@ export default function RegulatoryServicePage() {
                 <CardTitle>Fund Management</CardTitle>
                 <div className="text-2xl font-bold">Contact Us</div>
                 <CardDescription>
-                  Two paths depending on asset class — we manage both under full FCA + EU authorisation
+                  Two paths depending on asset class: we manage both under full FCA + EU authorisation
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -416,8 +416,8 @@ export default function RegulatoryServicePage() {
               <h2 className="text-2xl font-bold">See It In Action</h2>
               <p className="mt-2 text-muted-foreground">
                 Apply online, upload documents at your own pace, and get operational in weeks. Once approved, your
-                clients get their own portal — portfolio performance, trade history, compliance reports, and settlement
-                tracking — the same institutional reporting tools we use internally.
+                clients get their own portal: portfolio performance, trade history, compliance reports, and settlement
+                tracking: the same institutional reporting tools we use internally.
               </p>
             </div>
           </div>

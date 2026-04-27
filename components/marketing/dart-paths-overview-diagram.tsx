@@ -25,7 +25,7 @@ export function DartPathsOverviewDiagram(): React.JSX.Element {
       aria-labelledby="dart-paths-diagram-title"
     >
       <figcaption id="dart-paths-diagram-title" className="mb-4 text-sm font-semibold text-foreground">
-        DART — where you sit, where Odum sits, where we meet
+        DART: where you sit, where Odum sits, where we meet
       </figcaption>
 
       <WidgetScroll axes="horizontal" scrollbarSize="thin" className="w-full">
@@ -84,7 +84,7 @@ export function DartPathsOverviewDiagram(): React.JSX.Element {
             textAnchor="middle"
             className="fill-zinc-600 text-[11px] font-semibold uppercase tracking-wide dark:fill-zinc-400"
           >
-            Odum — shared stack
+            Odum: shared stack
           </text>
           <text
             x="830"
@@ -92,7 +92,7 @@ export function DartPathsOverviewDiagram(): React.JSX.Element {
             textAnchor="middle"
             className="fill-zinc-600 text-[11px] font-semibold uppercase tracking-wide dark:fill-zinc-400"
           >
-            Venues — sub-account or your own
+            Venues: sub-account or your own
           </text>
 
           {/* Column dividers (subtle guide lines) */}
@@ -428,7 +428,7 @@ export function DartPathsOverviewDiagram(): React.JSX.Element {
 
       <div className="mt-6 border-t border-border pt-4">
         <p className="mb-3 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-          Sibling commercial paths — same underlying stack, different boundary
+          Sibling commercial paths: same underlying stack, different boundary
         </p>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           <Link

@@ -8,7 +8,7 @@ import Link from "next/link";
 export const metadata = {
   title: "Briefings | Odum Research",
   description:
-    "The depth behind Odum's three routes — Odum-Managed Strategies, DART Trading Infrastructure, and Regulated Operating Models.",
+    "The depth behind Odum's three routes: Odum-Managed Strategies, DART Trading Infrastructure, and Regulated Operating Models.",
 };
 
 /**
@@ -150,7 +150,7 @@ export default function BriefingsHubPage() {
 
       {/*
         Developer Documentation link removed from the public briefings hub
-        per user review 2026-04-26 — it reads as a random technical escape
+        per user review 2026-04-26: it reads as a random technical escape
         hatch on a commercial briefing lobby. Devs can reach it from the
         DART briefing body, the public footer, or directly via /docs once
         they're inside the funnel.

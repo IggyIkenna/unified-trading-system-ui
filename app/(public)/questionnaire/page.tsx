@@ -348,7 +348,7 @@ function QuestionnaireForm() {
         sink: "localStorage",
         error:
           consent === "declined"
-            ? "Please accept the consent banner at the bottom of the page to continue — we need to store a small flag in your browser so the access code we send unlocks the briefings hub on your next visit."
+            ? "Please accept the consent banner at the bottom of the page to continue: we need to store a small flag in your browser so the access code we send unlocks the briefings hub on your next visit."
             : "Please accept the consent banner at the bottom of the page to continue.",
       });
       // Scroll to the banner so it's visible if they missed it.
@@ -449,7 +449,7 @@ function QuestionnaireForm() {
         sink: outcome.sink,
         error:
           emailReason === "no_api_key"
-            ? "Email backend isn't configured for this environment yet — try staging or prod, or contact info@odum-research.com."
+            ? "Email backend isn't configured for this environment yet: try staging or prod, or contact info@odum-research.com."
             : `We couldn't deliver a confirmation to ${state.email || "that address"}. Check the email and try again. (${emailReason})`,
       });
       setSubmitting(false);
@@ -492,21 +492,21 @@ function QuestionnaireForm() {
 
       {/* Hero card explaining what this page is + what happens on submit.
           Matches the layout the operator preferred in the previous version
-          of the website — clear gating rationale up front, sets expectation
+          of the website: clear gating rationale up front, sets expectation
           before the form. */}
       <div data-testid="questionnaire-hero-card" className="mb-8 rounded-md border border-border/60 px-6 py-5">
         <h1 className="flex items-center gap-3 text-2xl font-semibold">
           <Lock className="size-6 text-amber-500" aria-hidden />
-          Deep Dive — request access
+          Deep Dive: request access
         </h1>
         <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
           For confidentiality, the briefings, developer docs, founder story, and the live Sandbox demo are gated. Tell
-          us about your firm and stack below — six quick questions — and we&apos;ll tailor what you see.
+          us about your firm and stack below: six quick questions: and we&apos;ll tailor what you see.
         </p>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
           On submit you&apos;ll unlock the Deep Dive immediately, get an emailed code for return visits, and a Calendly
-          link to book a 30-minute walk-through call. The Strategy Evaluation pack is the next step after that —
-          required to unlock the curated Sandbox demo.
+          link to book a 30-minute walk-through call. The Strategy Evaluation pack is the next step after that: required
+          to unlock the curated Sandbox demo.
         </p>
       </div>
 
@@ -713,9 +713,9 @@ function QuestionnaireForm() {
           <div className="mt-2 flex flex-wrap gap-2">
             {(
               [
-                { value: "SMA" as const, label: "SMA — Separately Managed Account" },
+                { value: "SMA" as const, label: "SMA: Separately Managed Account" },
                 { value: "Pooled" as const, label: "Pooled fund" },
-                { value: "prop" as const, label: "Prop — trading own capital" },
+                { value: "prop" as const, label: "Prop: trading own capital" },
                 { value: "NA" as const, label: "Not yet decided / Other" },
               ] as const
             ).map(({ value, label }) => (
@@ -763,8 +763,8 @@ function QuestionnaireForm() {
             <div className="mt-2 space-y-1">
               {(
                 [
-                  { value: "neutral", label: "Market neutral — carry, arb, stat arb (delta-hedged)" },
-                  { value: "directional", label: "Directional — ML signals, trend, event-driven" },
+                  { value: "neutral", label: "Market neutral: carry, arb, stat arb (delta-hedged)" },
+                  { value: "directional", label: "Directional: ML signals, trend, event-driven" },
                   { value: "both", label: "Both / No preference" },
                 ] as const
               ).map(({ value, label }) => (
@@ -789,9 +789,9 @@ function QuestionnaireForm() {
             <div className="mt-2 space-y-1">
               {(
                 [
-                  { value: "low", label: "Low — capital preservation, stable yield (SUPPORTED strategies only)" },
-                  { value: "medium", label: "Medium — balanced growth and protection" },
-                  { value: "high", label: "High — growth-focused, higher volatility acceptable" },
+                  { value: "low", label: "Low: capital preservation, stable yield (SUPPORTED strategies only)" },
+                  { value: "medium", label: "Medium: balanced growth and protection" },
+                  { value: "high", label: "High: growth-focused, higher volatility acceptable" },
                 ] as const
               ).map(({ value, label }) => (
                 <label key={value} className="flex items-center gap-2">
@@ -816,7 +816,7 @@ function QuestionnaireForm() {
               {(
                 [
                   { value: "none", label: "None / Spot only (1x, no margin)" },
-                  { value: "low", label: "Low (2–3x max)" },
+                  { value: "low", label: "Low (2-3x max)" },
                   { value: "medium", label: "Medium (~5x max)" },
                   { value: "any", label: "Any (unconstrained)" },
                 ] as const
@@ -842,7 +842,7 @@ function QuestionnaireForm() {
           <fieldset data-testid="axis-share-class">
             <legend className="font-medium">10. Base currency preference</legend>
             <p className="mt-1 text-xs text-muted-foreground">
-              Preferred denomination for strategy P&amp;L. Select all that apply — leave blank for no preference.
+              Preferred denomination for strategy P&amp;L. Select all that apply: leave blank for no preference.
             </p>
             <div className="mt-2 flex flex-wrap gap-2">
               {(
@@ -889,7 +889,7 @@ function QuestionnaireForm() {
               onChange={(e) => setState((s) => ({ ...s, target_sharpe_min_str: e.target.value }))}
             />
             <p className="mt-1 text-xs text-muted-foreground">
-              Used for display annotation and ranking — not a hard filter.
+              Used for display annotation and ranking: not a hard filter.
             </p>
           </fieldset>
         </section>
@@ -903,7 +903,7 @@ function QuestionnaireForm() {
             <header>
               <h2 className="text-lg font-semibold">Regulatory Umbrella details</h2>
               <p className="mt-1 text-sm text-muted-foreground">
-                These help us tailor the umbrella structure to your firm. Skip any you&apos;re unsure of — we&apos;ll
+                These help us tailor the umbrella structure to your firm. Skip any you&apos;re unsure of: we&apos;ll
                 follow up.
               </p>
             </header>
@@ -1005,9 +1005,9 @@ function QuestionnaireForm() {
               <div className="mt-2 space-y-1">
                 {(
                   [
-                    { value: "yes", label: "Yes — we have / will appoint our own MLRO" },
-                    { value: "no", label: "No — we&apos;d like Odum&apos;s MLRO to cover us" },
-                    { value: "unsure", label: "Not sure yet — discuss" },
+                    { value: "yes", label: "Yes: we have / will appoint our own MLRO" },
+                    { value: "no", label: "No: we&apos;d like Odum&apos;s MLRO to cover us" },
+                    { value: "unsure", label: "Not sure yet: discuss" },
                   ] as const
                 ).map(({ value, label }) => (
                   <label key={value} className="flex items-center gap-2">
@@ -1029,7 +1029,7 @@ function QuestionnaireForm() {
             <fieldset data-testid="axis-targets">
               <legend className="font-medium">11. Business targets (free text)</legend>
               <p className="mt-1 text-xs text-muted-foreground">
-                AUM / revenue / headcount / licence-milestone — whatever best captures the plan. Blank entries are fine.
+                AUM / revenue / headcount / licence-milestone: whatever best captures the plan. Blank entries are fine.
               </p>
               <label className="mt-3 block text-sm">
                 First 3 months
@@ -1228,7 +1228,7 @@ function QuestionnaireForm() {
           </button>
           {result !== null && result.success && (
             <span data-testid="questionnaire-success" className="text-green-700">
-              Saved ({result.sink}) — redirecting…
+              Saved ({result.sink}): redirecting…
             </span>
           )}
           {result !== null && !result.success && (
@@ -1244,8 +1244,8 @@ function QuestionnaireForm() {
         <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Optional</p>
         <h2 className="mt-1 text-lg font-semibold">Strategy Evaluation Pack</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          If you have an existing strategy to submit for evaluation — incubation, signal integration, or regulatory
-          coverage — the full DDQ covers backtest methodology, performance evidence, path-specific questions, and
+          If you have an existing strategy to submit for evaluation: incubation, signal integration, or regulatory
+          coverage: the full DDQ covers backtest methodology, performance evidence, path-specific questions, and
           deployment readiness.
         </p>
         <a

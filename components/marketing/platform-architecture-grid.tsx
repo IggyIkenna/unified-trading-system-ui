@@ -3,15 +3,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-const STAGES = [
-  "Acquire",
-  "Build",
-  "Promote",
-  "Run",
-  "Observe",
-  "Manage",
-  "Report",
-] as const;
+const STAGES = ["Acquire", "Build", "Promote", "Run", "Observe", "Manage", "Report"] as const;
 type Stage = (typeof STAGES)[number];
 
 const LANES = [
@@ -66,92 +58,57 @@ const INTENSITY: Record<Lane, number[]> = {
 
 // Descriptions for each intersection
 const DESCRIPTIONS: Record<string, string> = {
-  "data-Acquire":
-    "Ingest market data from 128 venues across crypto, TradFi, DeFi, sports, and prediction markets.",
-  "data-Build":
-    "Normalise and store data in a unified schema. Build historical datasets for backtesting.",
-  "data-Promote":
-    "Validate data quality and freshness before strategies go live.",
-  "data-Run":
-    "Stream real-time data feeds to execution and monitoring systems.",
-  "data-Observe":
-    "Monitor data pipeline health, coverage gaps, and SLA compliance.",
-  "data-Manage":
-    "Manage data subscriptions, access tiers, and client entitlements.",
+  "data-Acquire": "Ingest market data from 128 venues across crypto, TradFi, DeFi, sports, and prediction markets.",
+  "data-Build": "Normalise and store data in a unified schema. Build historical datasets for backtesting.",
+  "data-Promote": "Validate data quality and freshness before strategies go live.",
+  "data-Run": "Stream real-time data feeds to execution and monitoring systems.",
+  "data-Observe": "Monitor data pipeline health, coverage gaps, and SLA compliance.",
+  "data-Manage": "Manage data subscriptions, access tiers, and client entitlements.",
   "data-Report": "Generate data quality reports and usage analytics.",
 
   "ml-Acquire": "Collect features from data pipelines for model training.",
-  "ml-Build":
-    "Train ML models — direction prediction, volatility, regime detection, momentum.",
-  "ml-Promote":
-    "Validate models with champion/challenger testing before deployment.",
+  "ml-Build": "Train ML models: direction prediction, volatility, regime detection, momentum.",
+  "ml-Promote": "Validate models with champion/challenger testing before deployment.",
   "ml-Run": "Run inference in real-time to generate trading signals.",
   "ml-Observe": "Monitor model accuracy, drift, and prediction latency.",
   "ml-Manage": "Manage model versions, feature sets, and training schedules.",
-  "ml-Report":
-    "Report on model performance, feature importance, and signal quality.",
+  "ml-Report": "Report on model performance, feature importance, and signal quality.",
 
-  "strategy-Acquire":
-    "Access market data and features to inform strategy design.",
-  "strategy-Build":
-    "Design strategies, configure signal-to-trade parameters, set risk limits.",
-  "strategy-Promote":
-    "Backtest strategies, compare variants, promote winners to paper trading.",
-  "strategy-Run":
-    "Execute strategies live across venues with real-time position management.",
-  "strategy-Observe":
-    "Monitor strategy P&L, risk exposure, and execution quality.",
-  "strategy-Manage":
-    "Manage strategy configurations, versioning, and deployment schedules.",
-  "strategy-Report":
-    "Attribute P&L by factor, compare backtest vs live results.",
+  "strategy-Acquire": "Access market data and features to inform strategy design.",
+  "strategy-Build": "Design strategies, configure signal-to-trade parameters, set risk limits.",
+  "strategy-Promote": "Backtest strategies, compare variants, promote winners to paper trading.",
+  "strategy-Run": "Execute strategies live across venues with real-time position management.",
+  "strategy-Observe": "Monitor strategy P&L, risk exposure, and execution quality.",
+  "strategy-Manage": "Manage strategy configurations, versioning, and deployment schedules.",
+  "strategy-Report": "Attribute P&L by factor, compare backtest vs live results.",
 
-  "execution-Acquire":
-    "Connect to venue APIs and establish trading connectivity.",
+  "execution-Acquire": "Connect to venue APIs and establish trading connectivity.",
   "execution-Build": "Configure execution algorithms (TWAP, VWAP, IS, SOR).",
-  "execution-Promote":
-    "Test execution quality in paper mode before live deployment.",
+  "execution-Promote": "Test execution quality in paper mode before live deployment.",
   "execution-Run":
     "Same code runs backtest and live. Route orders, manage fills, track slippage. Monitor T+1 diffs between simulation and reality.",
-  "execution-Observe":
-    "Monitor fill rates, latency, venue health, and circuit breakers.",
-  "execution-Manage":
-    "Manage venue credentials, execution limits, and algorithm parameters.",
-  "execution-Report":
-    "Generate TCA reports, execution quality analytics, and cost attribution.",
+  "execution-Observe": "Monitor fill rates, latency, venue health, and circuit breakers.",
+  "execution-Manage": "Manage venue credentials, execution limits, and algorithm parameters.",
+  "execution-Report": "Generate TCA reports, execution quality analytics, and cost attribution.",
 
   "capital-Acquire": "Onboard client capital and set up custody arrangements.",
-  "capital-Build":
-    "Define investment mandates, risk guidelines, and benchmark targets.",
+  "capital-Build": "Define investment mandates, risk guidelines, and benchmark targets.",
   "capital-Promote": "Review capital allocation proposals before deployment.",
   "capital-Run": "Allocate capital across strategies and venues in real-time.",
-  "capital-Observe":
-    "Monitor portfolio exposure, margin utilisation, and cash balances.",
-  "capital-Manage":
-    "Manage client subscriptions, fee schedules, and billing cycles.",
-  "capital-Report":
-    "Generate NAV reports, settlement statements, and investor letters.",
+  "capital-Observe": "Monitor portfolio exposure, margin utilisation, and cash balances.",
+  "capital-Manage": "Manage client subscriptions, fee schedules, and billing cycles.",
+  "capital-Report": "Generate NAV reports, settlement statements, and investor letters.",
 
-  "compliance-Acquire":
-    "Establish regulatory framework and client due diligence.",
-  "compliance-Build":
-    "Configure compliance rules, position limits, and reporting templates.",
-  "compliance-Promote":
-    "Validate regulatory compliance before strategy promotion.",
-  "compliance-Run":
-    "Enforce best execution, pre-trade checks, and position limits.",
-  "compliance-Observe":
-    "Monitor for regulatory breaches, unusual activity, and audit triggers.",
-  "compliance-Manage":
-    "Manage compliance rules, regulatory submissions, and evidence collection.",
-  "compliance-Report":
-    "Generate MiFID II reports, FCA submissions, and audit evidence packs.",
+  "compliance-Acquire": "Establish regulatory framework and client due diligence.",
+  "compliance-Build": "Configure compliance rules, position limits, and reporting templates.",
+  "compliance-Promote": "Validate regulatory compliance before strategy promotion.",
+  "compliance-Run": "Enforce best execution, pre-trade checks, and position limits.",
+  "compliance-Observe": "Monitor for regulatory breaches, unusual activity, and audit triggers.",
+  "compliance-Manage": "Manage compliance rules, regulatory submissions, and evidence collection.",
+  "compliance-Report": "Generate MiFID II reports, FCA submissions, and audit evidence packs.",
 };
 
-const COLOR_MAP: Record<
-  string,
-  { bg: string; glow: string; dim: string; text: string; rail: string }
-> = {
+const COLOR_MAP: Record<string, { bg: string; glow: string; dim: string; text: string; rail: string }> = {
   sky: {
     bg: "bg-sky-400",
     glow: "shadow-[0_0_12px_rgba(56,189,248,0.6)]",
@@ -229,9 +186,7 @@ export function PlatformArchitectureGrid() {
     stage: string;
   } | null>(null);
 
-  const tooltipText = hovered
-    ? DESCRIPTIONS[`${hovered.lane}-${hovered.stage}`]
-    : null;
+  const tooltipText = hovered ? DESCRIPTIONS[`${hovered.lane}-${hovered.stage}`] : null;
 
   return (
     <div className="max-w-5xl mx-auto">
@@ -249,9 +204,7 @@ export function PlatformArchitectureGrid() {
             <span
               className={cn(
                 "text-[10px] md:text-xs font-medium transition-all",
-                hovered?.stage === stage
-                  ? "text-foreground font-semibold"
-                  : "text-muted-foreground",
+                hovered?.stage === stage ? "text-foreground font-semibold" : "text-muted-foreground",
               )}
             >
               {stage}
@@ -275,19 +228,14 @@ export function PlatformArchitectureGrid() {
                   hovered && hovered.lane !== lane.id ? "opacity-40" : "",
                 )}
               >
-                <span className={cn("text-xs font-semibold", colors.text)}>
-                  {lane.label}
-                </span>
-                <span className="text-[9px] text-muted-foreground hidden md:block">
-                  {lane.sub}
-                </span>
+                <span className={cn("text-xs font-semibold", colors.text)}>{lane.label}</span>
+                <span className="text-[9px] text-muted-foreground hidden md:block">{lane.sub}</span>
               </div>
 
               {/* Dots */}
               {STAGES.map((stage, si) => {
                 const intensity = intensities[si];
-                const isThis =
-                  hovered?.lane === lane.id && hovered?.stage === stage;
+                const isThis = hovered?.lane === lane.id && hovered?.stage === stage;
                 const isLaneHovered = hovered?.lane === lane.id;
                 const isStageHovered = hovered?.stage === stage;
 
@@ -308,11 +256,7 @@ export function PlatformArchitectureGrid() {
                         isThis && "scale-100",
                         !isThis && isLaneHovered && "opacity-60",
                         !isThis && isStageHovered && "opacity-60",
-                        hovered &&
-                          !isThis &&
-                          !isLaneHovered &&
-                          !isStageHovered &&
-                          "opacity-20",
+                        hovered && !isThis && !isLaneHovered && !isStageHovered && "opacity-20",
                       )}
                     />
 
@@ -321,13 +265,9 @@ export function PlatformArchitectureGrid() {
                       <div className="absolute z-50 bottom-full mb-2 left-1/2 -translate-x-1/2 w-56 pointer-events-none">
                         <div className="bg-card border border-border rounded-lg p-3 shadow-xl text-xs leading-relaxed">
                           <div className="flex items-center gap-1.5 mb-1.5">
-                            <span className={cn("font-semibold", colors.text)}>
-                              {lane.label}
-                            </span>
+                            <span className={cn("font-semibold", colors.text)}>{lane.label}</span>
                             <span className="text-muted-foreground">×</span>
-                            <span className="font-semibold text-foreground">
-                              {stage}
-                            </span>
+                            <span className="font-semibold text-foreground">{stage}</span>
                           </div>
                           <p className="text-muted-foreground">{tooltipText}</p>
                         </div>

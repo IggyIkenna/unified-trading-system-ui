@@ -1,16 +1,9 @@
 import type { Entitlement, UserRole } from "@/lib/config/auth";
 import { ALL_ENTITLEMENTS } from "@/lib/config/auth";
 import type { User as FirebaseUser } from "firebase/auth";
-import {
-  onAuthStateChanged as firebaseOnAuthStateChanged,
-  signInWithEmailAndPassword,
-  signOut,
-} from "firebase/auth";
+import { onAuthStateChanged as firebaseOnAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
-import {
-  fetchAuthorization,
-  type AuthorizeResult,
-} from "./authorize-client";
+import { fetchAuthorization, type AuthorizeResult } from "./authorize-client";
 import { getFirebaseAuth, getFirebaseDb } from "./firebase-config";
 import type { AuthProvider, AuthUser, UserStatus } from "./types";
 
@@ -18,6 +11,20 @@ function mapBackendRole(role: AuthorizeResult["role"]): UserRole {
   if (role === "admin" || role === "owner") return "admin";
   if (role === "editor") return "internal";
   return "client";
+}
+
+/**
+ * Map a custom-claim `role` value (set by `seed-firebase-users.mjs` /
+ * `/api/admin/set-claims`) onto our internal `UserRole` union. Returns
+ * `null` if the claim is missing or unrecognised so the caller can
+ * fall back to a different signal (backend authorize, default client).
+ */
+function mapClaimRole(role: unknown): UserRole | null {
+  if (typeof role !== "string") return null;
+  if (role === "admin" || role === "owner") return "admin";
+  if (role === "internal" || role === "editor") return "internal";
+  if (role === "client" || role === "viewer") return "client";
+  return null;
 }
 
 const CAPABILITY_TO_ENTITLEMENT: Record<string, Entitlement[]> = {
@@ -45,9 +52,7 @@ const CAPABILITY_TO_ENTITLEMENT: Record<string, Entitlement[]> = {
   "investor.archive": ["investor-archive"],
 };
 
-function mapCapabilitiesToEntitlements(
-  capabilities: string[],
-): readonly (Entitlement | typeof ALL_ENTITLEMENTS)[] {
+function mapCapabilitiesToEntitlements(capabilities: string[]): readonly (Entitlement | typeof ALL_ENTITLEMENTS)[] {
   if (capabilities.includes("*")) return [ALL_ENTITLEMENTS];
   const entitlements = new Set<Entitlement>();
   for (const cap of capabilities) {
@@ -85,9 +90,7 @@ async function fetchGrantedEntitlements(
   }
 }
 
-async function enrichUserFromBackend(
-  fbUser: FirebaseUser,
-): Promise<AuthUser> {
+async function enrichUserFromBackend(fbUser: FirebaseUser): Promise<AuthUser> {
   const base: AuthUser = {
     id: fbUser.uid,
     email: fbUser.email ?? "",
@@ -97,13 +100,21 @@ async function enrichUserFromBackend(
     entitlements: [],
   };
 
-  // Check custom claims first — written by the Admin SDK via /api/admin/set-claims.
-  // These are the strongest signal: server-signed, enforced at the token level.
+  // Check custom claims first — written by the Admin SDK via /api/admin/set-claims
+  // (or `seed-firebase-users.mjs` for staging / local emulator). These are the
+  // strongest signal: server-signed, enforced at the token level.
+  //
+  // Both `entitlements` AND `role` are honoured. Previously only `entitlements`
+  // was read, so admin personas with `["*"]` came through with the hardcoded
+  // `role: "client"` fallback — `useAuth.isAdmin()` returned false and the
+  // dashboard's internal-only Admin tile filter dropped it (5 → 4 tiles).
   const idTokenResult = await fbUser.getIdTokenResult();
   const claimsEntitlements = idTokenResult.claims["entitlements"];
+  const claimRole = mapClaimRole(idTokenResult.claims["role"]);
   if (Array.isArray(claimsEntitlements) && claimsEntitlements.length > 0) {
     return {
       ...base,
+      role: claimRole ?? base.role,
       entitlements: claimsEntitlements as AuthUser["entitlements"],
       authorized: true,
       status: "active",
@@ -128,12 +139,7 @@ async function enrichUserFromBackend(
       ? backendEntitlements
       : [
           ...backendEntitlements,
-          ...granted.filter(
-            (g) =>
-              !backendEntitlements.some(
-                (e) => JSON.stringify(e) === JSON.stringify(g),
-              ),
-          ),
+          ...granted.filter((g) => !backendEntitlements.some((e) => JSON.stringify(e) === JSON.stringify(g))),
         ];
     return {
       ...base,
@@ -179,11 +185,7 @@ export class FirebaseAuthProvider implements AuthProvider {
     const auth = getFirebaseAuth();
     if (!auth) return null;
     try {
-      const credential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password,
-      );
+      const credential = await signInWithEmailAndPassword(auth, email, password);
       this.cachedToken = await credential.user.getIdToken();
       this.user = await enrichUserFromBackend(credential.user);
       return this.user;
@@ -229,7 +231,7 @@ export class FirebaseAuthProvider implements AuthProvider {
 
   onAuthStateChanged(callback: (user: AuthUser | null) => void): () => void {
     const auth = getFirebaseAuth();
-    if (!auth) return () => { };
+    if (!auth) return () => {};
     return firebaseOnAuthStateChanged(auth, (fbUser) => {
       if (fbUser) {
         fbUser.getIdToken().then((t: string) => {

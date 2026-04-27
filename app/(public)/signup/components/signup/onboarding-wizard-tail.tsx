@@ -50,8 +50,8 @@ export function OnboardingWizardTail(props: OnboardingWizardTailProps) {
           <CardHeader>
             <CardTitle className="text-lg">No uploads needed at signup</CardTitle>
             <CardDescription>
-              Investment Management contracts are generated from your firm details; KYC / AML documents
-              are handled after approval via a signed-URL drop-box.
+              Investment Management contracts are generated from your firm details; KYC / AML documents are handled
+              after approval via a signed-URL drop-box.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -59,16 +59,16 @@ export function OnboardingWizardTail(props: OnboardingWizardTailProps) {
               <p className="font-medium text-foreground">What happens next</p>
               <ul className="mt-2 list-disc pl-5 space-y-1 text-muted-foreground">
                 <li>
-                  We generate the <strong>investment management agreement</strong> and the custody / SMA
-                  letters from the entity details you&apos;ve provided.
+                  We generate the <strong>investment management agreement</strong> and the custody / SMA letters from
+                  the entity details you&apos;ve provided.
                 </li>
                 <li>
-                  An Odum team member reviews your application and emails you the draft contracts plus a
-                  secure upload link for any KYC / AML documents needed at that stage.
+                  An Odum team member reviews your application and emails you the draft contracts plus a secure upload
+                  link for any KYC / AML documents needed at that stage.
                 </li>
                 <li>
-                  Once everything&apos;s signed, your account is activated and you&apos;ll receive an email
-                  verification link before first sign-in.
+                  Once everything&apos;s signed, your account is activated and you&apos;ll receive an email verification
+                  link before first sign-in.
                 </li>
               </ul>
             </div>
@@ -84,9 +84,8 @@ export function OnboardingWizardTail(props: OnboardingWizardTailProps) {
           <CardHeader>
             <CardTitle className="text-lg">No uploads needed at signup</CardTitle>
             <CardDescription>
-              Regulatory Umbrella contracts are generated from your engagement type and entity
-              details; KYC / AML and PEP documents are handled after approval via a signed-URL
-              drop-box.
+              Regulatory Umbrella contracts are generated from your engagement type and entity details; KYC / AML and
+              PEP documents are handled after approval via a signed-URL drop-box.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -94,18 +93,16 @@ export function OnboardingWizardTail(props: OnboardingWizardTailProps) {
               <p className="font-medium text-foreground">What happens next</p>
               <ul className="mt-2 list-disc pl-5 space-y-1 text-muted-foreground">
                 <li>
-                  We draft the <strong>engagement-specific contract pack</strong> (AR or Advisory
-                  agreement, scope of regulated activities, add-on services) from the entity details
-                  you&apos;ve provided.
+                  We draft the <strong>engagement-specific contract pack</strong> (AR or Advisory agreement, scope of
+                  regulated activities, add-on services) from the entity details you&apos;ve provided.
                 </li>
                 <li>
-                  An Odum compliance team member reviews your application and emails you the draft
-                  contracts plus a secure upload link for KYC / AML / PEP documents needed at that
-                  stage.
+                  An Odum compliance team member reviews your application and emails you the draft contracts plus a
+                  secure upload link for KYC / AML / PEP documents needed at that stage.
                 </li>
                 <li>
-                  Once everything&apos;s signed, your account is activated and you&apos;ll receive an
-                  email verification link before first sign-in.
+                  Once everything&apos;s signed, your account is activated and you&apos;ll receive an email verification
+                  link before first sign-in.
                 </li>
               </ul>
             </div>
@@ -161,8 +158,8 @@ export function OnboardingWizardTail(props: OnboardingWizardTailProps) {
             <div className="rounded-lg border p-4 space-y-1.5">
               <h3 className="text-sm font-semibold">Documents</h3>
               <p className="text-xs text-muted-foreground">
-                No documents are uploaded at signup. After approval an Odum operator emails you a
-                signed-URL drop-box for KYC / AML / PEP documents.
+                No documents are uploaded at signup. After approval an Odum operator emails you a signed-URL drop-box
+                for KYC / AML / PEP documents.
               </p>
             </div>
             {submitError && (
@@ -199,7 +196,7 @@ export function OnboardingWizardTail(props: OnboardingWizardTailProps) {
                     [FileText, "We review your documents and application"],
                     [Briefcase, "We create your organisation and set up your accounts"],
                     [Zap, "You receive login credentials and connect your venue API keys"],
-                    [CheckCircle2, "Your portal goes live — reporting, compliance, and monitoring ready"],
+                    [CheckCircle2, "Your portal goes live: reporting, compliance, and monitoring ready"],
                   ] as const
                 ).map(([Icon, text], i) => (
                   <li key={i} className="flex items-start gap-3">

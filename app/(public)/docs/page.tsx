@@ -25,7 +25,7 @@ import type { ReactNode } from "react";
 export const metadata = {
   title: "Developer Documentation | Odum Research",
   description:
-    "Integration guide to the Unified Trading System — four catalogues, three paths, and the UAC public contracts.",
+    "Integration guide to the Unified Trading System: four catalogues, three paths, and the UAC public contracts.",
 };
 
 /**
@@ -56,7 +56,7 @@ const CATALOGUES: ReadonlyArray<{
   {
     title: "Data Catalogue",
     tagline:
-      "Venues, asset classes, instrument types, date coverage, capture status and data-quality flags — the observability surface across every feed the platform ingests.",
+      "Venues, asset classes, instrument types, date coverage, capture status and data-quality flags: the observability surface across every feed the platform ingests.",
     live: "/services/data/overview",
     liveLabel: "Open Data Catalogue",
     briefing: { href: "/briefings/dart-signals-in", label: "DART Signals-In briefing" },
@@ -65,7 +65,7 @@ const CATALOGUES: ReadonlyArray<{
   {
     title: "Strategy Catalogue",
     tagline:
-      "18 archetypes × category × instrument-type — with lock state (PUBLIC / IM-reserved / client-exclusive) and maturity (code-written → paper → live-allocated). Filtered by role and entitlement.",
+      "18 archetypes × category × instrument-type: with lock state (PUBLIC / IM-reserved / client-exclusive) and maturity (code-written → paper → live-allocated). Filtered by role and entitlement.",
     live: "/services/strategy-catalogue",
     liveLabel: "Open Strategy Catalogue",
     briefing: { href: "/briefings/platform", label: "DART Start-here briefing" },
@@ -99,7 +99,7 @@ const PATHS: ReadonlyArray<{
   entryBriefing: { href: string; label: string };
 }> = [
   {
-    label: "Path A — Signals-in",
+    label: "Path A: Signals-in",
     slug: "signals-in",
     who: "You have alpha. You want our infrastructure to ingest, validate, risk-check, and route it to venues.",
     what: "Send instructions through the instruction schema; we handle normalisation, execution, fills, position and P&L.",
@@ -107,7 +107,7 @@ const PATHS: ReadonlyArray<{
     entryBriefing: { href: "/briefings/dart-signals-in", label: "DART Signals-In briefing" },
   },
   {
-    label: "Path B — Full pipeline",
+    label: "Path B: Full pipeline",
     slug: "full-pipeline",
     who: "Quants, systematic desks. You want the whole pipeline: data → features → research → strategy → backtest → paper → live.",
     what: "Pick a strategy archetype (or bring your own), use the ML catalogue for signal models, backtest against the data catalogue, promote through paper → live-tiny → live-allocated.",
@@ -115,7 +115,7 @@ const PATHS: ReadonlyArray<{
     entryBriefing: { href: "/briefings/dart-full", label: "DART Full briefing" },
   },
   {
-    label: "Path C — Execution only",
+    label: "Path C: Execution only",
     slug: "execution-only",
     who: "Asset managers, trading desks. You already have strategies; you want execution + TCA.",
     what: "Submit parent orders; we run execution algos, produce fills, and return TCA benchmarked against arrival / VWAP / IS.",
@@ -127,7 +127,7 @@ const PATHS: ReadonlyArray<{
 const UAC_FACADES: ReadonlyArray<{ name: string; what: string }> = [
   {
     name: "market",
-    what: "Normalised market data — orderbooks, trades, candles, funding, basis. One schema across 100+ venues and 5 asset classes.",
+    what: "Normalised market data: orderbooks, trades, candles, funding, basis. One schema across 100+ venues and 5 asset classes.",
   },
   {
     name: "instruction",
@@ -135,7 +135,7 @@ const UAC_FACADES: ReadonlyArray<{ name: string; what: string }> = [
   },
   {
     name: "strategy",
-    what: "Strategy availability, lock state, maturity, and archetype capability — what's offered to whom and where it is on the promotion ladder.",
+    what: "Strategy availability, lock state, maturity, and archetype capability: what's offered to whom and where it is on the promotion ladder.",
   },
   {
     name: "execution",
@@ -143,8 +143,8 @@ const UAC_FACADES: ReadonlyArray<{ name: string; what: string }> = [
   },
   { name: "position", what: "Positions, exposures, balances, P&L at instrument / strategy / account / org scope." },
   { name: "account", what: "Organisation hierarchy, fund structure (SMA vs pooled), share classes, trader roles." },
-  { name: "features", what: "Derived series — feature definitions, training windows, coverage manifests." },
-  { name: "prediction", what: "Event markets (political / economic / sports outcomes) — quote schema, resolution." },
+  { name: "features", what: "Derived series: feature definitions, training windows, coverage manifests." },
+  { name: "prediction", what: "Event markets (political / economic / sports outcomes): quote schema, resolution." },
   { name: "sports", what: "Pre-match and in-play odds, venue-normalised selections, settlement." },
   {
     name: "reference",
@@ -161,7 +161,7 @@ const NAV_SECTIONS: ReadonlyArray<DocsNavSection> = [
   { id: "intro", label: "Introduction" },
   { id: "catalogues", label: "The four catalogues" },
   { id: "paths", label: "Three integration paths" },
-  { id: "uac", label: "UAC — schema surface" },
+  { id: "uac", label: "UAC: schema surface" },
   { id: "api-reference", label: "API reference" },
   { id: "access", label: "Access & authentication" },
   { id: "org-scoping", label: "Organisation & entitlements" },
@@ -193,7 +193,7 @@ const API_REFERENCES: ReadonlyArray<ApiRef> = [
     method: "GET",
     path: "/v1/market/orderbook/{venue}/{symbol}",
     description:
-      "L2 snapshot normalised across 100+ venues. Same `CanonicalOrderBook` shape regardless of asset class — CeFi perps, DeFi AMM pools, TradFi futures, prediction-market outcome books.",
+      "L2 snapshot normalised across 100+ venues. Same `CanonicalOrderBook` shape regardless of asset class: CeFi perps, DeFi AMM pools, TradFi futures, prediction-market outcome books.",
     uacType: "CanonicalOrderBook",
     pythonType: `from unified_api_contracts.market import CanonicalOrderBook
 
@@ -289,7 +289,7 @@ class CanonicalOrder:
     method: "GET",
     path: "/v1/strategy/availability",
     description:
-      "Returns the strategy catalogue sliced to what your principal is entitled to see. Applies role × lock-state × maturity filtering server-side — a SaaS subscriber sees only PUBLIC strategies, an IM client sees their CLIENT_EXCLUSIVE plus PUBLIC, Odum admin sees everything.",
+      "Returns the strategy catalogue sliced to what your principal is entitled to see. Applies role × lock-state × maturity filtering server-side: a SaaS subscriber sees only PUBLIC strategies, an IM client sees their CLIENT_EXCLUSIVE plus PUBLIC, Odum admin sees everything.",
     uacType: "StrategyAvailabilityEntry",
     pythonType: `from unified_api_contracts.strategy import (
     StrategyAvailabilityEntry, LockState, StrategyMaturity
@@ -371,18 +371,22 @@ class CanonicalAccountSnapshot:
 ];
 
 const BRIEFINGS: ReadonlyArray<{ slug: string; title: string; summary: string }> = [
-  { slug: "platform", title: "DART — Start here", summary: "Orientation across the platform and the two DART paths." },
+  { slug: "platform", title: "DART: Start here", summary: "Orientation across the platform and the two DART paths." },
   {
     slug: "dart-signals-in",
-    title: "DART — Signals-in",
+    title: "DART: Signals-in",
     summary: "Instruction-schema fit-check and execution-only onboarding.",
   },
   {
     slug: "dart-full",
-    title: "DART — Full pipeline",
+    title: "DART: Full pipeline",
     summary: "Data → research → strategy → execute, with commitment tiers.",
   },
-  { slug: "signals-out", title: PRODUCT_LABELS.odumSignals, summary: "Licensing Odum's signals into your own infrastructure." },
+  {
+    slug: "signals-out",
+    title: PRODUCT_LABELS.odumSignals,
+    summary: "Licensing Odum's signals into your own infrastructure.",
+  },
   {
     slug: "investment-management",
     title: "Investment Management",
@@ -525,7 +529,7 @@ export default function DocsPage() {
 
             <BriefingHero
               title="Developer Documentation"
-              tldr="The Unified Trading System is a catalogue-driven platform. This guide points at the four live catalogues, the three integration paths, and the UAC contracts — so you can see what's real today and choose the shortest path in."
+              tldr="The Unified Trading System is a catalogue-driven platform. This guide points at the four live catalogues, the three integration paths, and the UAC contracts: so you can see what's real today and choose the shortest path in."
               cta={{ label: "Book 45-minute call", href: "/contact" }}
             />
 
@@ -552,7 +556,7 @@ export default function DocsPage() {
             </div>
             <p className="text-sm text-foreground/85 leading-relaxed">
               Every surface the platform offers resolves back to one of four catalogues. Each is filtered per user by
-              role, entitlement, lock state and maturity — so what <em>you</em> see is only the subset you&apos;re
+              role, entitlement, lock state and maturity: so what <em>you</em> see is only the subset you&apos;re
               authorised for.
             </p>
             <div className="grid gap-6 md:grid-cols-2">
@@ -599,7 +603,7 @@ export default function DocsPage() {
               </h2>
             </div>
             <p className="text-sm text-foreground/85 leading-relaxed">
-              Most prospects fall into one of three entry shapes. Pick the one that matches your operation — deeper
+              Most prospects fall into one of three entry shapes. Pick the one that matches your operation: deeper
               briefings and entry surfaces are linked below.
             </p>
             <div className="grid gap-6 md:grid-cols-3">
@@ -633,12 +637,12 @@ export default function DocsPage() {
             <div className="flex items-center gap-2">
               <FileCode2 className="size-4 text-muted-foreground" aria-hidden />
               <h2 className="text-sm font-semibold tracking-wide uppercase text-muted-foreground">
-                UAC — the public schema surface
+                UAC: the public schema surface
               </h2>
             </div>
             <p className="text-sm text-foreground/85 leading-relaxed">
               <code className="rounded bg-muted px-1.5 py-0.5 text-xs">unified-api-contracts</code> (UAC) holds the
-              typed schema every service in the platform speaks. It&apos;s the stable integration contract — facades are
+              typed schema every service in the platform speaks. It&apos;s the stable integration contract: facades are
               organised per domain, and a facade is what the eventual public REST/WS endpoints will implement.
             </p>
             <div className="grid gap-3 md:grid-cols-2">
@@ -666,7 +670,7 @@ export default function DocsPage() {
               <span className="rounded bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-amber-700 dark:text-amber-400">
                 Planned v1 REST
               </span>{" "}
-              map one-to-one onto the UAC canonical types — the schema is stable and already enforced internally; the
+              map one-to-one onto the UAC canonical types: the schema is stable and already enforced internally; the
               HTTP surface that exposes it is still on the{" "}
               <Link href="#roadmap" className="text-primary underline-offset-2 hover:underline">
                 roadmap
@@ -692,23 +696,23 @@ export default function DocsPage() {
             </p>
             <div className="grid gap-4 md:grid-cols-3">
               <AuthCard
-                tier="Light — briefings + docs"
+                tier="Light: briefings + docs"
                 purpose="Access code we share after a 45-min call. Covers Briefings Hub and this Developer Documentation."
                 how="Single access code, stored per-browser. No PII, no Firebase."
                 example="You're using it right now."
                 icon={<KeyRound className="size-4 text-muted-foreground" aria-hidden />}
               />
               <AuthCard
-                tier="Staging — demo personas"
+                tier="Staging: demo personas"
                 purpose="Exploratory access to every catalogue and trading surface, sliced by persona (investor / DART client / IM client / admin)."
                 how="Firebase staging project; seeded demo users. Role determines what you see."
                 example="investor@odum-research.co.uk → Investor Relations only. DART client → DART catalogues and tools only."
                 icon={<Lock className="size-4 text-muted-foreground" aria-hidden />}
               />
               <AuthCard
-                tier="Production — clients & internal"
+                tier="Production: clients & internal"
                 purpose="Live entitlements, real fund scoping, per-client catalogue slicing. Your email maps to an org; the JWT carries org_id, fund_id and client_id as custom claims."
-                how="Firebase prod (SSO on request). Every response is filtered by role × org × entitlement × lock state × maturity before it leaves the API — clients see only their org's funds and clients, Odum admin sees the full stack."
+                how="Firebase prod (SSO on request). Every response is filtered by role × org × entitlement × lock state × maturity before it leaves the API: clients see only their org's funds and clients, Odum admin sees the full stack."
                 example="trader@alpha-capital.com → org=alpha-capital → can list Alpha's funds and share classes, submit orders scoped to their client_id, read TCA for their own fills. Cannot see other orgs."
                 icon={<Lock className="size-4 text-muted-foreground" aria-hidden />}
               />
@@ -733,7 +737,7 @@ export default function DocsPage() {
                 <code>{`Organisation (org)
   └── Fund (Pooled or SMA)
         └── Client (share class, or sole client for SMA)
-              └── API keys (per venue, per client — never shared)`}</code>
+              └── API keys (per venue, per client: never shared)`}</code>
               </pre>
               <p className="mt-3 text-xs text-muted-foreground leading-relaxed">
                 SSOT:{" "}
@@ -769,14 +773,14 @@ export default function DocsPage() {
                   <span className="font-medium text-foreground/85">Today:</span>{" "}
                   <code className="rounded bg-muted px-1 py-0.5 text-[11px]">org_id</code> ships as a custom claim.{" "}
                   <code className="rounded bg-muted px-1 py-0.5 text-[11px]">fund_ids</code> and{" "}
-                  <code className="rounded bg-muted px-1 py-0.5 text-[11px]">client_ids</code> are a tracked gap — until
+                  <code className="rounded bg-muted px-1 py-0.5 text-[11px]">client_ids</code> are a tracked gap: until
                   they ship, the UI narrows via a dropdown picker + one API roundtrip per page.
                 </p>
               </div>
 
               <div className="space-y-2 rounded-md border border-border/60 bg-background p-4 text-sm">
                 <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-                  Example — list clients in your org
+                  Example: list clients in your org
                 </p>
                 <pre className="overflow-x-auto rounded-md border border-border/60 bg-muted/40 p-3 text-xs leading-relaxed">
                   <code>{`curl -H "Authorization: Bearer $ODUM_TOKEN" \\
@@ -798,7 +802,7 @@ export default function DocsPage() {
 }`}</code>
                 </pre>
                 <p className="text-xs text-muted-foreground leading-relaxed">
-                  No <code className="rounded bg-muted px-1 py-0.5 text-[11px]">?org_id=</code> query param — the JWT is
+                  No <code className="rounded bg-muted px-1 py-0.5 text-[11px]">?org_id=</code> query param: the JWT is
                   the scope. You only ever see your own org.
                 </p>
               </div>
@@ -810,27 +814,27 @@ export default function DocsPage() {
               </p>
               <ul className="mt-2 space-y-1.5 text-sm text-muted-foreground leading-relaxed">
                 <li>
-                  <code className="rounded bg-muted px-1 py-0.5 text-xs">GET /v1/account/clients</code> — returns only
+                  <code className="rounded bg-muted px-1 py-0.5 text-xs">GET /v1/account/clients</code>: returns only
                   funds / clients in your <code>org_id</code>.
                 </li>
                 <li>
-                  <code className="rounded bg-muted px-1 py-0.5 text-xs">GET /v1/position/snapshot</code> — requires{" "}
+                  <code className="rounded bg-muted px-1 py-0.5 text-xs">GET /v1/position/snapshot</code>: requires{" "}
                   <code>client_id</code> to be in your claim&apos;s <code>client_ids</code>; 403 otherwise.
                 </li>
                 <li>
-                  <code className="rounded bg-muted px-1 py-0.5 text-xs">POST /v1/execution/orders</code> — rejects if
+                  <code className="rounded bg-muted px-1 py-0.5 text-xs">POST /v1/execution/orders</code>: rejects if
                   the <code>client_id</code> on the order is outside your entitlement, or the <code>strategy_id</code>{" "}
                   is lock-state <code>CLIENT_EXCLUSIVE</code> for a different client.
                 </li>
                 <li>
-                  <code className="rounded bg-muted px-1 py-0.5 text-xs">GET /v1/strategy/availability</code> —
+                  <code className="rounded bg-muted px-1 py-0.5 text-xs">GET /v1/strategy/availability</code>:
                   pre-filters by role × lock state × maturity before returning. SaaS subscriber sees PUBLIC only; IM
                   client sees PUBLIC + their CLIENT_EXCLUSIVE; admin sees everything.
                 </li>
                 <li>
-                  <code className="rounded bg-muted px-1 py-0.5 text-xs">GET /v1/reports/*</code> — pooled funds vs SMA
+                  <code className="rounded bg-muted px-1 py-0.5 text-xs">GET /v1/reports/*</code>: pooled funds vs SMA
                   funds render different aggregation shapes; the report surface is shared between Investment Management
-                  and the Regulatory Umbrella — the narrative differs, the code path does not.
+                  and the Regulatory Umbrella: the narrative differs, the code path does not.
                 </li>
               </ul>
             </div>
@@ -840,7 +844,7 @@ export default function DocsPage() {
             <div className="flex items-center gap-2">
               <BookOpen className="size-4 text-muted-foreground" aria-hidden />
               <h2 className="text-sm font-semibold tracking-wide uppercase text-muted-foreground">
-                Business context — briefings
+                Business context: briefings
               </h2>
             </div>
             <p className="text-sm text-foreground/85 leading-relaxed">
@@ -863,7 +867,7 @@ export default function DocsPage() {
 
           <section id="roadmap" className="space-y-4 scroll-mt-24">
             <h2 className="text-sm font-semibold tracking-wide uppercase text-muted-foreground">
-              Roadmap — what&apos;s coming to this surface
+              Roadmap: what&apos;s coming to this surface
             </h2>
             <ul className="space-y-2 text-sm text-foreground/85 leading-relaxed">
               <li>
@@ -887,8 +891,8 @@ export default function DocsPage() {
                 simulated fills, parallel to CeFi TCA.
               </li>
               <li>
-                <span className="font-medium">{PRODUCT_LABELS.odumSignals} marketplace.</span> Subscribing to
-                {" "}{PRODUCT_LABELS.odumSignals} under a licence, without needing full execution on our infrastructure.
+                <span className="font-medium">{PRODUCT_LABELS.odumSignals} marketplace.</span> Subscribing to{" "}
+                {PRODUCT_LABELS.odumSignals} under a licence, without needing full execution on our infrastructure.
               </li>
             </ul>
           </section>
@@ -896,7 +900,7 @@ export default function DocsPage() {
           <section id="contact" className="scroll-mt-24 rounded-md border border-border/60 bg-muted/30 p-6 text-sm">
             <p className="font-medium">Ready to scope an integration?</p>
             <p className="mt-1 text-muted-foreground">
-              Book a 45-minute call — we&apos;ll walk through which path fits, which catalogue slice you need, and when
+              Book a 45-minute call: we&apos;ll walk through which path fits, which catalogue slice you need, and when
               the public API would close the gap.
             </p>
             <div className="mt-3 flex flex-wrap gap-4 text-sm">

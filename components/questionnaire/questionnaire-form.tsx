@@ -597,8 +597,8 @@ export function QuestionnaireForm({ returnPath, compact = false }: Questionnaire
             <div className="mt-2 space-y-1">
               {(
                 [
-                  { value: "neutral", label: "Market neutral — carry, arb, stat arb (delta-hedged)" },
-                  { value: "directional", label: "Directional — ML signals, trend, event-driven" },
+                  { value: "neutral", label: "Market neutral: carry, arb, stat arb (delta-hedged)" },
+                  { value: "directional", label: "Directional: ML signals, trend, event-driven" },
                   { value: "both", label: "Both / No preference" },
                 ] as const
               ).map(({ value, label }) => (
@@ -622,9 +622,9 @@ export function QuestionnaireForm({ returnPath, compact = false }: Questionnaire
             <div className="mt-2 space-y-1">
               {(
                 [
-                  { value: "low", label: "Low — capital preservation, stable yield (SUPPORTED strategies only)" },
-                  { value: "medium", label: "Medium — balanced growth and protection" },
-                  { value: "high", label: "High — growth-focused, higher volatility acceptable" },
+                  { value: "low", label: "Low: capital preservation, stable yield (SUPPORTED strategies only)" },
+                  { value: "medium", label: "Medium: balanced growth and protection" },
+                  { value: "high", label: "High: growth-focused, higher volatility acceptable" },
                 ] as const
               ).map(({ value, label }) => (
                 <label key={value} className="flex items-center gap-2">
@@ -648,7 +648,7 @@ export function QuestionnaireForm({ returnPath, compact = false }: Questionnaire
               {(
                 [
                   { value: "none", label: "None / Spot only (1x, no margin)" },
-                  { value: "low", label: "Low (2–3x max)" },
+                  { value: "low", label: "Low (2-3x max)" },
                   { value: "medium", label: "Medium (~5x max)" },
                   { value: "any", label: "Any (unconstrained)" },
                 ] as const
@@ -673,7 +673,7 @@ export function QuestionnaireForm({ returnPath, compact = false }: Questionnaire
           <fieldset data-testid="axis-share-class">
             <legend className="font-medium">10. Base currency preference</legend>
             <p className="mt-1 text-xs text-muted-foreground">
-              Preferred denomination for strategy P&amp;L. Select all that apply — leave blank for no preference.
+              Preferred denomination for strategy P&amp;L. Select all that apply: leave blank for no preference.
             </p>
             <div className="mt-2 flex flex-wrap gap-2">
               {(
@@ -719,7 +719,7 @@ export function QuestionnaireForm({ returnPath, compact = false }: Questionnaire
               onChange={(e) => setState((s) => ({ ...s, target_sharpe_min_str: e.target.value }))}
             />
             <p className="mt-1 text-xs text-muted-foreground">
-              Used for display annotation and ranking — not a hard filter.
+              Used for display annotation and ranking: not a hard filter.
             </p>
           </fieldset>
         </section>
@@ -732,7 +732,7 @@ export function QuestionnaireForm({ returnPath, compact = false }: Questionnaire
             <header>
               <h2 className="text-lg font-semibold">Regulatory Umbrella details</h2>
               <p className="mt-1 text-sm text-muted-foreground">
-                These help us tailor the umbrella structure to your firm. Skip any you&apos;re unsure of — we&apos;ll
+                These help us tailor the umbrella structure to your firm. Skip any you&apos;re unsure of: we&apos;ll
                 follow up.
               </p>
             </header>
@@ -815,9 +815,9 @@ export function QuestionnaireForm({ returnPath, compact = false }: Questionnaire
               <div className="mt-2 space-y-1">
                 {(
                   [
-                    { value: "yes", label: "Yes — we have / will appoint our own MLRO" },
-                    { value: "no", label: "No — we&apos;d like Odum&apos;s MLRO to cover us" },
-                    { value: "unsure", label: "Not sure yet — discuss" },
+                    { value: "yes", label: "Yes: we have / will appoint our own MLRO" },
+                    { value: "no", label: "No: we&apos;d like Odum&apos;s MLRO to cover us" },
+                    { value: "unsure", label: "Not sure yet: discuss" },
                   ] as const
                 ).map(({ value, label }) => (
                   <label key={value} className="flex items-center gap-2">
@@ -838,7 +838,7 @@ export function QuestionnaireForm({ returnPath, compact = false }: Questionnaire
             <fieldset data-testid="axis-targets">
               <legend className="font-medium">11. Business targets (free text)</legend>
               <p className="mt-1 text-xs text-muted-foreground">
-                AUM / revenue / headcount / licence-milestone — whatever best captures the plan. Blank entries are fine.
+                AUM / revenue / headcount / licence-milestone: whatever best captures the plan. Blank entries are fine.
               </p>
               <label className="mt-3 block text-sm">
                 First 3 months
@@ -1016,7 +1016,7 @@ export function QuestionnaireForm({ returnPath, compact = false }: Questionnaire
           </button>
           {result !== null && result.success && (
             <span data-testid="questionnaire-success" className="text-green-700">
-              Thanks — Deep Dive unlocked on this browser. You won&apos;t need to fill this in again here. We&apos;ve
+              Thanks: Deep Dive unlocked on this browser. You won&apos;t need to fill this in again here. We&apos;ve
               also emailed your access code (so you can return on a different device) and a link to book a 30-minute
               walk-through call. Redirecting…
             </span>
@@ -1042,8 +1042,8 @@ export function QuestionnaireForm({ returnPath, compact = false }: Questionnaire
           <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Optional</p>
           <h2 className="mt-1 text-lg font-semibold">Strategy Evaluation Pack</h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            If you have an existing strategy to submit for evaluation — incubation, signal integration, or regulatory
-            coverage — the full DDQ covers backtest methodology, performance evidence, path-specific questions, and
+            If you have an existing strategy to submit for evaluation: incubation, signal integration, or regulatory
+            coverage: the full DDQ covers backtest methodology, performance evidence, path-specific questions, and
             deployment readiness.
           </p>
           <a

@@ -104,7 +104,7 @@ const DART_MODES: readonly DartMode[] = [
     pill: "Research → Execution",
     title: "Full research-to-execution workflow",
     oneLine:
-      "Use more of the DART stack — research and testing through to live trading and observation in one controlled workflow.",
+      "Use more of the DART stack: research and testing through to live trading and observation in one controlled workflow.",
     bullets: [
       "Research, testing, promotion, and live trading in one workflow.",
       "Shared monitoring and reporting across the engagement.",

@@ -4,9 +4,9 @@ import { BriefingAccessGate } from "@/components/briefings/briefing-access-gate"
 import { MarketingStaticFromFile } from "@/components/marketing/marketing-static-from-file";
 
 export const metadata: Metadata = {
-  title: "Our Story — Odum Research",
+  title: "Our Story: Odum Research",
   description:
-    "Odum's founder story: why two and a half years on a crypto arb desk led us to build a unified trading operating system — and why we offer it to other firms through a dual-incentive partnership model.",
+    "Odum's founder story: why two and a half years on a crypto arb desk led us to build a unified trading operating system: and why we offer it to other firms through a dual-incentive partnership model.",
 };
 
 /**

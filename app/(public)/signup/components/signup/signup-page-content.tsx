@@ -4,10 +4,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import * as React from "react";
 
-import {
-  QUESTIONNAIRE_ENVELOPE_LOCAL_STORAGE_KEY,
-  QUESTIONNAIRE_LOCAL_STORAGE_KEY,
-} from "@/lib/questionnaire/types";
+import { QUESTIONNAIRE_ENVELOPE_LOCAL_STORAGE_KEY, QUESTIONNAIRE_LOCAL_STORAGE_KEY } from "@/lib/questionnaire/types";
 
 import { GenericSignup } from "./generic-signup";
 import { OnboardingWizard } from "./onboarding-wizard";
@@ -43,10 +40,7 @@ export function SignupPageContent() {
   );
 }
 
-type QuestionnaireState =
-  | "loading"
-  | "missing"
-  | { readonly kind: "present"; readonly email: string | null };
+type QuestionnaireState = "loading" | "missing" | { readonly kind: "present"; readonly email: string | null };
 
 function useQuestionnaireState(): QuestionnaireState {
   const [state, setState] = React.useState<QuestionnaireState>("loading");
@@ -77,17 +71,18 @@ function useQuestionnaireState(): QuestionnaireState {
 /** Gate card shown when no questionnaire response is on file yet.
  *  Preserves the `?service=` query param so return-to-signup keeps context. */
 function QuestionnairePrompt({ service }: { service?: string }) {
-  const questionnaireHref = service && service.length > 0
-    ? `/questionnaire?service=${encodeURIComponent(mapSignupServiceToQuestionnaire(service))}`
-    : "/questionnaire";
+  const questionnaireHref =
+    service && service.length > 0
+      ? `/questionnaire?service=${encodeURIComponent(mapSignupServiceToQuestionnaire(service))}`
+      : "/questionnaire";
   const signupReturnHref = service && service.length > 0 ? `/signup?service=${service}` : "/signup";
   return (
     <div className="mx-auto max-w-xl space-y-5 rounded-lg border border-border/60 bg-card/40 p-6">
       <h1 className="text-xl font-semibold tracking-tight text-foreground">Start with the questionnaire</h1>
       <p className="text-sm leading-relaxed text-muted-foreground">
-        Before we set up an account, we ask every prospect to complete a short 2-minute questionnaire.
-        It lets us pre-configure the right path for you (IM / DART / Signals / Regulatory Umbrella)
-        and skip the redundant questions at signup.
+        Before we set up an account, we ask every prospect to complete a short 2-minute questionnaire. It lets us
+        pre-configure the right path for you (IM / DART / Signals / Regulatory Umbrella) and skip the redundant
+        questions at signup.
       </p>
       <div className="flex flex-wrap gap-3 pt-1">
         <Link
@@ -99,7 +94,7 @@ function QuestionnairePrompt({ service }: { service?: string }) {
         <Link
           href={signupReturnHref}
           className="inline-flex items-center rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
-          title="Skip the pre-check — only do this if you know what you're doing."
+          title="Skip the pre-check: only do this if you know what you're doing."
         >
           I&apos;ve already filled it in, continue
         </Link>
@@ -118,8 +113,8 @@ function QuestionnaireAttachedBanner({ email }: { email: string | null }) {
     <div className="mx-auto mb-6 max-w-3xl rounded-md border border-border/40 bg-muted/20 px-4 py-2.5 text-xs text-muted-foreground">
       {email !== null ? (
         <>
-          Questionnaire on file for <span className="font-medium text-foreground">{email}</span> &mdash;
-          we&apos;ll attach your answers to this signup.
+          Questionnaire on file for <span className="font-medium text-foreground">{email}</span> &mdash; we&apos;ll
+          attach your answers to this signup.
         </>
       ) : (
         <>Questionnaire on file &mdash; we&apos;ll attach your answers once you provide an email below.</>

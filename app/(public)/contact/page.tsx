@@ -76,7 +76,7 @@ const CONTACT_TRACKS: readonly ContactTrack[] = [
     id: "general",
     title: "General enquiry",
     description:
-      "Anything that doesn't fit the other tracks — questions about the firm, fit conversations, or replies to a previous thread.",
+      "Anything that doesn't fit the other tracks: questions about the firm, fit conversations, or replies to a previous thread.",
     cta: {
       label: "Email the team",
       href: mailtoWithSubject("General enquiry"),
@@ -88,7 +88,7 @@ const CONTACT_TRACKS: readonly ContactTrack[] = [
     id: "existing-client",
     title: "Existing client or counterparty",
     description:
-      "Already onboarded? Sign in to reach the right desk through your authenticated portal — operational queries are routed there, not through the public form.",
+      "Already onboarded? Sign in to reach the right desk through your authenticated portal: operational queries are routed there, not through the public form.",
     cta: { label: "Sign in", href: "/login", external: false },
     icon: UserCheck,
   },
@@ -246,7 +246,7 @@ function ContactPageContent() {
         trackEvent("contact_track_selected", { track: "form-submit", inquiry: formData.inquiry || "unspecified" });
       }
     } catch {
-      setSubmitError(`Failed to send — please email us directly at ${PRIMARY_CONTACT_EMAIL}`);
+      setSubmitError(`Failed to send: please email us directly at ${PRIMARY_CONTACT_EMAIL}`);
     } finally {
       setSubmitting(false);
     }
@@ -265,8 +265,8 @@ function ContactPageContent() {
             </div>
             <h1 className="text-3xl font-bold tracking-tight md:text-4xl">Contact Odum</h1>
             <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
-              Most prospect conversations move faster after a short fit review. Start there if you can — the four
-              contact tracks below cover everything else.
+              Most prospect conversations move faster after a short fit review. Start there if you can: the four contact
+              tracks below cover everything else.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Button asChild size="lg" onClick={handleStartReviewClick}>
@@ -283,7 +283,7 @@ function ContactPageContent() {
               </Button>
             </div>
             <p className="mt-3 text-xs text-muted-foreground">
-              The fit review is a short questionnaire — it routes you to the right briefing and the right desk. Replies
+              The fit review is a short questionnaire: it routes you to the right briefing and the right desk. Replies
               within two business days.
             </p>
           </section>
@@ -494,7 +494,7 @@ function ContactPageContent() {
                 </p>
                 <p className="mt-3 inline-flex items-center gap-2 text-xs">
                   <MapPin className="size-3" />
-                  Authorised &amp; regulated by the FCA — FRN 975797.
+                  Authorised &amp; regulated by the FCA: FRN 975797.
                 </p>
               </CardContent>
             </Card>

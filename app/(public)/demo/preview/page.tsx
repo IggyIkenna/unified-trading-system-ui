@@ -17,7 +17,7 @@ function DemoBanner() {
       <div className="container mx-auto flex items-center justify-center gap-3 text-sm font-medium">
         <AlertCircle className="size-4 flex-shrink-0" />
         <span className="text-center">
-          Static walkthrough — illustrative UI only. Full interactive session is available after onboarding and sign-in.
+          Static walkthrough: illustrative UI only. Full interactive session is available after onboarding and sign-in.
         </span>
       </div>
     </div>
@@ -296,7 +296,7 @@ export default function DemoPreview() {
                           <div className="text-center">
                             <div className="text-muted-foreground">Sharpe</div>
                             <div className="font-semibold text-emerald-500">
-                              {bt.sharpe != null ? formatNumber(bt.sharpe, 2) : "—"}
+                              {bt.sharpe != null ? formatNumber(bt.sharpe, 2) : "-"}
                             </div>
                           </div>
                           <div className="text-center">

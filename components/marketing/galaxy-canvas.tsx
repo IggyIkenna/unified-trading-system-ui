@@ -29,11 +29,11 @@ const NODES = [
 
 // Fixed positions as fractions of W×H, matching the reference image pentagon
 const POS = [
-  { fx: 0.17, fy: 0.38 }, // TradFi      — left mid
-  { fx: 0.5, fy: 0.17 }, // CeFi        — top center
-  { fx: 0.83, fy: 0.38 }, // DeFi        — right mid
-  { fx: 0.26, fy: 0.8 }, // Sports      — bottom left
-  { fx: 0.74, fy: 0.8 }, // Predictions — bottom right
+  { fx: 0.17, fy: 0.38 }, // TradFi     : left mid
+  { fx: 0.5, fy: 0.17 }, // CeFi       : top center
+  { fx: 0.83, fy: 0.38 }, // DeFi       : right mid
+  { fx: 0.26, fy: 0.8 }, // Sports     : bottom left
+  { fx: 0.74, fy: 0.8 }, // Predictions: bottom right
 ];
 
 const CONNECTIONS = [

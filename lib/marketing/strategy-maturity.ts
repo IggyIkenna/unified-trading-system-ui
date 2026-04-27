@@ -28,14 +28,14 @@ export type StrategyMaturityPhaseId = (typeof STRATEGY_MATURITY_PHASE)[keyof typ
 
 /** UK English, prospect-facing; one line per phase — aligned to codex §1 “Meaning” column. */
 export const STRATEGY_MATURITY_PUBLIC_BULLETS: readonly { phase: StrategyMaturityPhaseId; line: string }[] = [
-  { phase: "smoke", line: "Smoke — pre-backtest; mock or fixture data only; wiring smoke test." },
-  { phase: "backtest_minimal", line: "Backtest (minimal) — under one year of history; not viable yet." },
-  { phase: "backtest_1yr", line: "Backtest (one year) — one clean year; minimum viability bar." },
-  { phase: "backtest_multi_year", line: "Backtest (multi-year) — extended history (three years or more preferred)." },
-  { phase: "paper_1d", line: "Paper (day one) — first 24h on the paper matching engine." },
-  { phase: "paper_14d", line: "Paper (14 days) — first statistically meaningful paper window." },
-  { phase: "paper_stable", line: "Paper (stable) — extended paper (30+ days); promotion ready." },
-  { phase: "live_early", line: "Live (early) — initial live; small seed capital." },
-  { phase: "live_stable", line: "Live (stable) — mature live at scaled capital." },
-  { phase: "retired", line: "Retired — terminal; instance decommissioned; P&L history preserved." },
+  { phase: "smoke", line: "Smoke: pre-backtest; mock or fixture data only; wiring smoke test." },
+  { phase: "backtest_minimal", line: "Backtest (minimal): under one year of history; not viable yet." },
+  { phase: "backtest_1yr", line: "Backtest (one year): one clean year; minimum viability bar." },
+  { phase: "backtest_multi_year", line: "Backtest (multi-year): extended history (three years or more preferred)." },
+  { phase: "paper_1d", line: "Paper (day one): first 24h on the paper matching engine." },
+  { phase: "paper_14d", line: "Paper (14 days): first statistically meaningful paper window." },
+  { phase: "paper_stable", line: "Paper (stable): extended paper (30+ days); promotion ready." },
+  { phase: "live_early", line: "Live (early): initial live; small seed capital." },
+  { phase: "live_stable", line: "Live (stable): mature live at scaled capital." },
+  { phase: "retired", line: "Retired: terminal; instance decommissioned; P&L history preserved." },
 ];

@@ -230,11 +230,13 @@ export function TradingVerticalNav({ tabs, entitlements, bottomSlot }: TradingVe
     const wrapperClass = cn("px-2", collapsed && "flex justify-center px-1");
     const tooltipLabel = isLocked ? `${tab.label} (locked)` : tab.label;
 
-    const inner = lockedLinkable
-      ? <Link href={tab.lockedRedirectTo as string}>{itemContent}</Link>
-      : isLocked || tab.navDisabled
-        ? <span>{itemContent}</span>
-        : <Link href={tab.href}>{itemContent}</Link>;
+    const inner = lockedLinkable ? (
+      <Link href={tab.lockedRedirectTo as string}>{itemContent}</Link>
+    ) : isLocked || tab.navDisabled ? (
+      <span>{itemContent}</span>
+    ) : (
+      <Link href={tab.href}>{itemContent}</Link>
+    );
 
     return (
       <div key={tab.href} className={wrapperClass}>
@@ -471,7 +473,7 @@ export function TradingVerticalNav({ tabs, entitlements, bottomSlot }: TradingVe
                     </div>
                     {newPanelNameTaken && (
                       <p className="text-[10px] leading-snug text-destructive pl-0.5 pr-6">
-                        Name already in use — choose another.
+                        Name already in use: choose another.
                       </p>
                     )}
                   </div>

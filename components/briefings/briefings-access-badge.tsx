@@ -26,7 +26,7 @@ export function BriefingsAccessBadge(): React.ReactElement {
         <span className="flex items-center gap-1.5 text-emerald-500">
           <ShieldCheck className="size-3.5" aria-hidden />
           <span className="font-medium">Access granted</span>
-          <span className="ml-1 text-muted-foreground">— you&apos;re in the Deep Dive briefings hub.</span>
+          <span className="ml-1 text-muted-foreground">: you&apos;re in the Deep Dive briefings hub.</span>
         </span>
         <button
           type="button"

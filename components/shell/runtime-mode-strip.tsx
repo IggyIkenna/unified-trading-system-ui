@@ -72,7 +72,7 @@ export function RuntimeModeStrip() {
             </span>
           ) : (
             <span>
-              Backend API unreachable — live data unavailable. Please try again shortly or{" "}
+              Backend API unreachable: live data unavailable. Please try again shortly or{" "}
               <a href="/contact" className="underline underline-offset-2 hover:text-red-100">
                 contact support
               </a>

@@ -121,10 +121,10 @@ function cellStatus(cell: CoverageCell | null): CoverageStatus | "NONE" {
 /** Supported / partial only — blocked omitted from the grid */
 function shapeForStatus(status: CoverageStatus): { symbol: string; label: string } | null {
   if (status === "SUPPORTED") {
-    return { symbol: "\u25CF", label: "Supported — live in this cell." };
+    return { symbol: "\u25CF", label: "Supported: live in this cell." };
   }
   if (status === "PARTIAL") {
-    return { symbol: "\u25B2", label: "Partial — adapter or config gap." };
+    return { symbol: "\u25B2", label: "Partial: adapter or config gap." };
   }
   return null;
 }
@@ -339,7 +339,7 @@ function CatalogueTable({ byFamily, BANDS }: CatalogueBandTablesProps) {
                 <FamilyGroup
                   key={familyKey}
                   family={familyKey}
-                  label={`${band.label} — ${meta.label}`}
+                  label={`${band.label}: ${meta.label}`}
                   archetypes={meta.archetypes}
                   accentClass={meta.accentClass}
                 />
@@ -393,7 +393,7 @@ export function StrategyFamilyCatalogue() {
           <span className="inline-flex items-center gap-1.5">
             <span className={cn(CATALOGUE_MARKER_GLYPH, "text-foreground")}>{"\u25B2"}</span> Partial
           </span>
-          <span className="inline-flex items-center gap-1.5 text-muted-foreground/85">Empty — nothing to show</span>
+          <span className="inline-flex items-center gap-1.5 text-muted-foreground/85">Empty: nothing to show</span>
         </div>
         <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Marker colours</p>
         <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-muted-foreground">

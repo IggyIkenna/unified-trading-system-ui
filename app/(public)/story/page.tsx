@@ -137,7 +137,7 @@ export default function MarketingStoryPage() {
                       {/* Circle bullet on the rail. We bypass Tailwind for the
                           left/top/size here because the dev-cycle CSS bundle
                           drops arbitrary-value classes when this file gets
-                          edited mid-HMR — caused circles to overlap the leading
+                          edited mid-HMR: caused circles to overlap the leading
                           digit of each year. Inline style is hot-reload-safe. */}
                       <span
                         aria-hidden

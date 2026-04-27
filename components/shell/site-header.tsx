@@ -182,7 +182,7 @@ export function SiteHeader() {
               ))}
               <div className="mt-3 border-t border-border/40 pt-3">
                 {/*
-                  Deep Dive — single bordered lock card. Pre-unlock: shows
+                  Deep Dive: single bordered lock card. Pre-unlock: shows
                   the lock icon, an "ACCESS CODE REQUIRED" tag, and a
                   "Request access →" link to /questionnaire. Post-unlock:
                   chevron expands to reveal the briefings hub + per-pillar
@@ -370,7 +370,7 @@ export function SiteHeader() {
               {/*
                 When the visitor is already past the briefings gate (i.e. they
                 completed the questionnaire and are reading deep dives), the
-                primary header CTA shouldn't keep saying "Start Your Review" —
+                primary header CTA shouldn't keep saying "Start Your Review":
                 they've already started. Swap to "Submit Strategy Evaluation"
                 with "Book a Fit Call" as a secondary, matching the Next-steps
                 block at the bottom of the briefings hub. Pre-gate the CTA

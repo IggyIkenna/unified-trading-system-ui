@@ -20,15 +20,13 @@ interface SignalFlowDiagramProps {
 }
 
 const TITLES: Readonly<Record<Direction, string>> = {
-  in: "DART Signals-In — client signal to Odum execution",
-  out: "Odum Signals-Out — Odum strategy to counterparty execution",
+  in: "DART Signals-In: client signal to Odum execution",
+  out: "Odum Signals-Out: Odum strategy to counterparty execution",
 };
 
 const DESCRIPTIONS: Readonly<Record<Direction, string>> = {
-  in:
-    "Signals flow one way: client strategy generates the instruction, Odum routes it to the venue on the client's scoped API keys. Fill confirmations, reconciliation artefacts, and allocator reporting flow back to the client. No capital moves; venue custody stays with the client.",
-  out:
-    "Signals flow one way: Odum strategy emits STRATEGY_SIGNAL_EMITTED_EXTERNAL to a counterparty webhook. The counterparty executes on its own infrastructure with its own venue keys. STRATEGY_SIGNAL_ACKNOWLEDGED flows back; no fill data, no positions, no capital crosses the boundary.",
+  in: "Signals flow one way: client strategy generates the instruction, Odum routes it to the venue on the client's scoped API keys. Fill confirmations, reconciliation artefacts, and allocator reporting flow back to the client. No capital moves; venue custody stays with the client.",
+  out: "Signals flow one way: Odum strategy emits STRATEGY_SIGNAL_EMITTED_EXTERNAL to a counterparty webhook. The counterparty executes on its own infrastructure with its own venue keys. STRATEGY_SIGNAL_ACKNOWLEDGED flows back; no fill data, no positions, no capital crosses the boundary.",
 };
 
 interface BoxProps {
@@ -51,16 +49,7 @@ const ACCENT_FILL: Readonly<Record<BoxProps["accent"], string>> = {
 function Box({ x, y, width, height, title, subtitle, accent }: BoxProps) {
   return (
     <g>
-      <rect
-        x={x}
-        y={y}
-        width={width}
-        height={height}
-        rx={8}
-        ry={8}
-        strokeWidth={1.5}
-        className={ACCENT_FILL[accent]}
-      />
+      <rect x={x} y={y} width={width} height={height} rx={8} ry={8} strokeWidth={1.5} className={ACCENT_FILL[accent]} />
       <text
         x={x + width / 2}
         y={y + (subtitle ? height / 2 - 4 : height / 2 + 4)}
@@ -109,30 +98,12 @@ function Arrow({
   const midY = (y1 + y2) / 2;
   return (
     <g>
-      <line
-        x1={x1}
-        y1={y1}
-        x2={x2}
-        y2={y2}
-        strokeWidth={1.5}
-        markerEnd={`url(#${markerId})`}
-        className={className}
-      />
-      <text
-        x={midX}
-        y={midY - 6}
-        textAnchor="middle"
-        className="fill-foreground/80 text-[11px] font-medium"
-      >
+      <line x1={x1} y1={y1} x2={x2} y2={y2} strokeWidth={1.5} markerEnd={`url(#${markerId})`} className={className} />
+      <text x={midX} y={midY - 6} textAnchor="middle" className="fill-foreground/80 text-[11px] font-medium">
         {label}
       </text>
       {sublabel && (
-        <text
-          x={midX}
-          y={midY + 8}
-          textAnchor="middle"
-          className="fill-muted-foreground text-[9px]"
-        >
+        <text x={midX} y={midY + 8} textAnchor="middle" className="fill-muted-foreground text-[9px]">
           {sublabel}
         </text>
       )}
@@ -216,33 +187,12 @@ function SignalsInDiagram() {
       />
 
       {/* Forward arrow: Client → Odum */}
-      <Arrow
-        x1={200}
-        y1={140}
-        x2={410}
-        y2={140}
-        label="instruction"
-        sublabel="eight-field schema"
-      />
+      <Arrow x1={200} y1={140} x2={410} y2={140} label="instruction" sublabel="eight-field schema" />
       {/* Forward arrow: Odum → Venue */}
-      <Arrow
-        x1={610}
-        y1={140}
-        x2={800}
-        y2={140}
-        label="order"
-        sublabel="routed, not reshaped"
-      />
+      <Arrow x1={610} y1={140} x2={800} y2={140} label="order" sublabel="routed, not reshaped" />
 
       {/* Return arrow: Venue → Odum */}
-      <Arrow
-        x1={800}
-        y1={180}
-        x2={610}
-        y2={180}
-        label="fills"
-        className="stroke-muted-foreground/60"
-      />
+      <Arrow x1={800} y1={180} x2={610} y2={180} label="fills" className="stroke-muted-foreground/60" />
       {/* Return arrow: Odum → Client */}
       <Arrow
         x1={410}
@@ -255,21 +205,13 @@ function SignalsInDiagram() {
       />
 
       {/* Custody note */}
-      <text
-        x={WIDTH / 2}
-        y={260}
-        textAnchor="middle"
-        className="fill-muted-foreground text-[11px]"
-      >
-        Default: segregated sub-account at Odum&apos;s venue accounts, held in your name via the exchange sub-account primitive — skips multi-week exchange onboarding. Opt-out: your own venue or prime-broker account.
+      <text x={WIDTH / 2} y={260} textAnchor="middle" className="fill-muted-foreground text-[11px]">
+        Default: segregated sub-account at Odum&apos;s venue accounts, held in your name via the exchange sub-account
+        primitive: skips multi-week exchange onboarding. Opt-out: your own venue or prime-broker account.
       </text>
-      <text
-        x={WIDTH / 2}
-        y={282}
-        textAnchor="middle"
-        className="fill-muted-foreground text-[11px]"
-      >
-        Either way, scoped execute + read API keys only, no withdrawal authority, Odum Research Ltd never holds principal. Your strategic edge never crosses into Odum&apos;s systems.
+      <text x={WIDTH / 2} y={282} textAnchor="middle" className="fill-muted-foreground text-[11px]">
+        Either way, scoped execute + read API keys only, no withdrawal authority, Odum Research Ltd never holds
+        principal. Your strategic edge never crosses into Odum&apos;s systems.
       </text>
     </svg>
   );
@@ -321,23 +263,9 @@ function SignalsOutDiagram() {
       />
 
       {/* Forward: Odum → Counterparty Webhook */}
-      <Arrow
-        x1={200}
-        y1={140}
-        x2={420}
-        y2={140}
-        label="SIGNAL_EMITTED_EXTERNAL"
-        sublabel="D8 payload, signed"
-      />
+      <Arrow x1={200} y1={140} x2={420} y2={140} label="SIGNAL_EMITTED_EXTERNAL" sublabel="D8 payload, signed" />
       {/* Forward: Webhook → Counterparty Execution */}
-      <Arrow
-        x1={620}
-        y1={140}
-        x2={830}
-        y2={140}
-        label="payload delivered"
-        sublabel="counterparty acts"
-      />
+      <Arrow x1={620} y1={140} x2={830} y2={140} label="payload delivered" sublabel="counterparty acts" />
 
       {/* Return: ack only */}
       <Arrow
@@ -351,21 +279,12 @@ function SignalsOutDiagram() {
       />
 
       {/* Fence note */}
-      <text
-        x={WIDTH / 2}
-        y={260}
-        textAnchor="middle"
-        className="fill-muted-foreground text-[11px]"
-      >
-        Odum does NOT see counterparty fills, positions, or venue identities — delivery boundary is the signal itself.
+      <text x={WIDTH / 2} y={260} textAnchor="middle" className="fill-muted-foreground text-[11px]">
+        Odum does NOT see counterparty fills, positions, or venue identities: delivery boundary is the signal itself.
       </text>
-      <text
-        x={WIDTH / 2}
-        y={282}
-        textAnchor="middle"
-        className="fill-muted-foreground text-[11px]"
-      >
-        No capital flows; no venue API keys leave the counterparty&apos;s side; no raw data, features, or model internals cross the fence.
+      <text x={WIDTH / 2} y={282} textAnchor="middle" className="fill-muted-foreground text-[11px]">
+        No capital flows; no venue API keys leave the counterparty&apos;s side; no raw data, features, or model
+        internals cross the fence.
       </text>
     </svg>
   );

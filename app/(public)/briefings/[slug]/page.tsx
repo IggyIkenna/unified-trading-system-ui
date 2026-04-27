@@ -134,14 +134,14 @@ function DartTierComparisonTable() {
                 {row.signalsIn ? (
                   <span className="font-semibold text-emerald-600">✓</span>
                 ) : (
-                  <span className="text-muted-foreground/40">—</span>
+                  <span className="text-muted-foreground/40">-</span>
                 )}
               </td>
               <td className="px-4 py-2.5 text-center">
                 {row.full ? (
                   <span className="font-semibold text-emerald-600">✓</span>
                 ) : (
-                  <span className="text-muted-foreground/40">—</span>
+                  <span className="text-muted-foreground/40">-</span>
                 )}
               </td>
             </tr>
@@ -164,7 +164,7 @@ export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params;
   const pillar = BRIEFING_PILLARS.find((p) => p.slug === slug);
   if (!pillar) return { title: "Briefing | Odum Research" };
-  return { title: `${pillar.title} — Briefings | Odum Research` };
+  return { title: `${pillar.title}: Briefings | Odum Research` };
 }
 
 function DiagramForSlug({ slug }: { slug: BriefingPillar["slug"] }) {
@@ -327,10 +327,10 @@ export default async function BriefingPillarPage({ params }: PageProps) {
             <section id="tier-comparison" className="scroll-mt-24 space-y-4 border-t border-border/40 pt-8">
               <div className="space-y-2 max-w-2xl">
                 <h2 className="text-lg font-semibold tracking-tight text-foreground">
-                  Signals-In vs DART Full — feature matrix
+                  Signals-In vs DART Full: feature matrix
                 </h2>
                 <p className="text-sm text-foreground/80 leading-relaxed">
-                  Both paths share the same execution infrastructure. The boundary is research and promote — those
+                  Both paths share the same execution infrastructure. The boundary is research and promote: those
                   surfaces are excluded from Signals-In by design, not by omission.
                 </p>
               </div>
@@ -360,10 +360,10 @@ export default async function BriefingPillarPage({ params }: PageProps) {
                 <>
                   <div className="space-y-2 max-w-2xl">
                     <h2 className="text-lg font-semibold tracking-tight text-foreground">
-                      Strategy families × categories — what Odum runs
+                      Strategy families × categories: what Odum runs
                     </h2>
                     <p className="text-sm text-foreground/80 leading-relaxed">
-                      The matrix below is the operational coverage map — strategy families down the side, asset-class
+                      The matrix below is the operational coverage map: strategy families down the side, asset-class
                       categories across the top. A filled dot means Odum operates live strategies in that cell; a
                       half-filled dot means adapter or configuration work is in progress for some instruments in the
                       cell. Venue detail, specific slot configurations, and maturity tags are covered at the second

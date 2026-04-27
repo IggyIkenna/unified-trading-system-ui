@@ -3,9 +3,9 @@ import Link from "next/link";
 import { MarketingStaticFromFile } from "@/components/marketing/marketing-static-from-file";
 
 export const metadata: Metadata = {
-  title: "FAQ — Odum Research",
+  title: "FAQ: Odum Research",
   description:
-    "Short answers to the questions we get asked most — product scope, IP protection, strategy decay, regulatory coverage, and onboarding flow.",
+    "Short answers to the questions we get asked most: product scope, IP protection, strategy decay, regulatory coverage, and onboarding flow.",
 };
 
 export default function MarketingFaqPage() {
@@ -18,10 +18,7 @@ export default function MarketingFaqPage() {
             <h2 className="text-sm font-semibold text-foreground">Longer versions</h2>
             <ul className="mt-3 space-y-2 text-sm">
               <li>
-                <Link
-                  href="/our-story"
-                  className="font-medium text-foreground underline-offset-4 hover:underline"
-                >
+                <Link href="/our-story" className="font-medium text-foreground underline-offset-4 hover:underline">
                   Our Story
                 </Link>
                 <span className="text-muted-foreground">
@@ -30,40 +27,22 @@ export default function MarketingFaqPage() {
                 </span>
               </li>
               <li>
-                <Link
-                  href="/story"
-                  className="font-medium text-foreground underline-offset-4 hover:underline"
-                >
+                <Link href="/story" className="font-medium text-foreground underline-offset-4 hover:underline">
                   Timeline
                 </Link>
-                <span className="text-muted-foreground">
-                  {" "}
-                  &mdash; dated milestones from 2011 to today.
-                </span>
+                <span className="text-muted-foreground"> &mdash; dated milestones from 2011 to today.</span>
               </li>
               <li>
-                <Link
-                  href="/briefings"
-                  className="font-medium text-foreground underline-offset-4 hover:underline"
-                >
+                <Link href="/briefings" className="font-medium text-foreground underline-offset-4 hover:underline">
                   Briefings hub
                 </Link>
-                <span className="text-muted-foreground">
-                  {" "}
-                  &mdash; per-path briefings (access-code gated).
-                </span>
+                <span className="text-muted-foreground"> &mdash; per-path briefings (access-code gated).</span>
               </li>
               <li>
-                <Link
-                  href="/docs"
-                  className="font-medium text-foreground underline-offset-4 hover:underline"
-                >
+                <Link href="/docs" className="font-medium text-foreground underline-offset-4 hover:underline">
                   Developer docs
                 </Link>
-                <span className="text-muted-foreground">
-                  {" "}
-                  &mdash; UAC contracts, integration paths, API reference.
-                </span>
+                <span className="text-muted-foreground"> &mdash; UAC contracts, integration paths, API reference.</span>
               </li>
             </ul>
           </div>

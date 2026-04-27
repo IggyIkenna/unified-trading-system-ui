@@ -119,7 +119,7 @@ function Hero() {
           - gold radial top-right (regulatory accent)
           - vertical dark gradient #0B0D10 → #07080A for depth
           All decorative, all aria-hidden. Inline style instead of Tailwind
-          arbitrary classes — multi-layer radial-gradient + comma-separated
+          arbitrary classes: multi-layer radial-gradient + comma-separated
           rgba() values are unreliable through the JIT. */}
       <div aria-hidden className="pointer-events-none absolute inset-0" style={{ background: HERO_BG_GRADIENT }} />
       <div
@@ -433,7 +433,7 @@ function EngagementRoutes() {
                         {/* Bullet dot vertically centred on the first line of
                             text. text-[13px] × leading 1.6 = 20.8px line, so
                             (20.8 − 6) / 2 ≈ 7.4px top offset for a 6px dot.
-                            Inline style — Tailwind arbitrary-value mt-[Npx]
+                            Inline style: Tailwind arbitrary-value mt-[Npx]
                             is unreliable through the JIT in this codebase. */}
                         <span
                           aria-hidden
@@ -654,7 +654,7 @@ const GOVERNANCE_PILLARS: ReadonlyArray<{
   {
     key: "dependency-clarity",
     title: "Dependency clarity",
-    body: "Custody, fund administration, and counterparty onboarding timelines depend on third parties — we do not guarantee coverage we do not control.",
+    body: "Custody, fund administration, and counterparty onboarding timelines depend on third parties: we do not guarantee coverage we do not control.",
   },
 ];
 

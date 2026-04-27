@@ -173,16 +173,16 @@ function TextArea({
 
 const AUM_BANDS = [
   { value: "lt-25m", label: "Less than $25m" },
-  { value: "25-100m", label: "$25m – $100m" },
-  { value: "100-500m", label: "$100m – $500m" },
-  { value: "500m-1b", label: "$500m – $1bn" },
+  { value: "25-100m", label: "$25m-$100m" },
+  { value: "100-500m", label: "$100m-$500m" },
+  { value: "500m-1b", label: "$500m-$1bn" },
   { value: "gt-1b", label: "Over $1bn" },
 ] as const;
 
 const RETURN_HORIZONS = [
   { value: "lt-1y", label: "Less than 12 months" },
-  { value: "1-3y", label: "1 – 3 years" },
-  { value: "3-5y", label: "3 – 5 years" },
+  { value: "1-3y", label: "1-3 years" },
+  { value: "3-5y", label: "3-5 years" },
   { value: "gt-5y", label: "5+ years" },
 ] as const;
 
@@ -257,7 +257,7 @@ export default function AllocatorWizard({
   return (
     <div className="mx-auto max-w-3xl space-y-8">
       <header className="space-y-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">Path A — Allocator</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">Path A: Allocator</p>
         <h1 className="text-2xl font-bold tracking-tight md:text-3xl">Strategy Evaluation</h1>
         <p className="text-sm text-muted-foreground">
           Preference-shaped intake for allocators evaluating Odum-managed strategies. About 5 minutes.{" "}
@@ -354,7 +354,7 @@ export default function AllocatorWizard({
                 <TextInput
                   value={form.allocatorTargetSharpe}
                   onChange={(v) => setField("allocatorTargetSharpe", v)}
-                  placeholder="e.g. 1.5+, range 1.0–2.0"
+                  placeholder="e.g. 1.5+, range 1.0-2.0"
                 />
               </div>
               <div>

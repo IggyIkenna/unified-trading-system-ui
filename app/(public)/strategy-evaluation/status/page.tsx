@@ -46,10 +46,10 @@ interface SubmissionData {
 }
 
 const PATH_LABELS: Record<string, string> = {
-  A: "Path A — DART Full",
-  B: "Path B — DART Signals-In",
-  C: "Path C — Regulatory Umbrella",
-  D: "Path D — Odum Signals",
+  A: "Path A: DART Full",
+  B: "Path B: DART Signals-In",
+  C: "Path C: Regulatory Umbrella",
+  D: "Path D: Odum Signals",
 };
 
 const FILE_FIELDS: { key: keyof SubmissionData; label: string }[] = [
@@ -165,7 +165,7 @@ export default async function StrategyEvaluationStatusPage({
         </Badge>
         <h1 className="text-2xl font-bold">Your submission</h1>
         <p className="mt-2 text-muted-foreground text-sm">
-          Email confirmed for <strong>{data.email ?? "—"}</strong>. We&rsquo;ll be in touch within 3 business days.
+          Email confirmed for <strong>{data.email ?? "-"}</strong>. We&rsquo;ll be in touch within 3 business days.
         </p>
       </div>
 
@@ -174,7 +174,7 @@ export default async function StrategyEvaluationStatusPage({
         <div className="space-y-1">
           <p className="text-sm font-medium text-emerald-200">Email verified, submission received.</p>
           <p className="text-xs text-emerald-200/70">
-            Bookmark this page — the link in your email is the only way back to it.
+            Bookmark this page: the link in your email is the only way back to it.
           </p>
         </div>
       </div>
@@ -184,19 +184,19 @@ export default async function StrategyEvaluationStatusPage({
         <dl className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3 text-sm">
           <div>
             <dt className="text-muted-foreground">Strategy</dt>
-            <dd className="font-medium">{data.strategyName ?? "—"}</dd>
+            <dd className="font-medium">{data.strategyName ?? "-"}</dd>
           </div>
           <div>
             <dt className="text-muted-foreground">Lead researcher</dt>
-            <dd className="font-medium">{data.leadResearcher ?? "—"}</dd>
+            <dd className="font-medium">{data.leadResearcher ?? "-"}</dd>
           </div>
           <div>
             <dt className="text-muted-foreground">Commercial path</dt>
-            <dd className="font-medium">{PATH_LABELS[data.commercialPath ?? ""] ?? data.commercialPath ?? "—"}</dd>
+            <dd className="font-medium">{PATH_LABELS[data.commercialPath ?? ""] ?? data.commercialPath ?? "-"}</dd>
           </div>
           <div>
             <dt className="text-muted-foreground">Submitted</dt>
-            <dd className="font-medium">{data.submittedAt ? new Date(data.submittedAt).toLocaleString() : "—"}</dd>
+            <dd className="font-medium">{data.submittedAt ? new Date(data.submittedAt).toLocaleString() : "-"}</dd>
           </div>
           <div>
             <dt className="text-muted-foreground">Submission ID</dt>
@@ -264,7 +264,7 @@ export default async function StrategyEvaluationStatusPage({
       </div>
 
       <p className="text-xs text-muted-foreground">
-        This page is private to you. Don&rsquo;t share the URL — it bypasses the email confirmation.
+        This page is private to you. Don&rsquo;t share the URL: it bypasses the email confirmation.
       </p>
     </div>
   );

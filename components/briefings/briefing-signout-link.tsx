@@ -24,7 +24,7 @@ function isNonProdEnvironment(): boolean {
   // bakes the www domain; UAT bakes uat; local dev typically has no value
   // or localhost.
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "";
-  if (!siteUrl) return true; // local dev — no var set
+  if (!siteUrl) return true; // local dev: no var set
   if (siteUrl.includes("www.odum-research.com")) return false; // prod
   return true; // uat or any other non-prod URL
 }

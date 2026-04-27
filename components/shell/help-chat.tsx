@@ -156,7 +156,7 @@ export function HelpChat() {
   function handleBriefings(): void {
     appendUser("Read a deep dive");
     appendBot({
-      text: "Deep dives are lightly gated — one access code unlocks all of them. If you don't have one, ask us on a call or via contact.",
+      text: "Deep dives are lightly gated: one access code unlocks all of them. If you don't have one, ask us on a call or via contact.",
       links: [
         { href: "/briefings", label: "Deep Dive hub" },
         { href: "/contact?service=general", label: "Request an access code" },
@@ -193,7 +193,7 @@ export function HelpChat() {
   function handleAccessCode(): void {
     appendUser("Deep dive access code");
     appendBot({
-      text: "Access codes unlock all deep dives and are issued to qualified prospects. Tell us who you are and we'll send one — usually within a working day.",
+      text: "Access codes unlock all deep dives and are issued to qualified prospects. Tell us who you are and we'll send one: usually within a working day.",
       links: [
         { href: "/contact?service=general&action=access", label: "Request an access code" },
         { href: CALENDLY_URL, label: "Or hop on a quick call", external: true },
