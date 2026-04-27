@@ -49,8 +49,7 @@ export function SandboxBanner() {
           Sandbox
         </span>
         <p className="flex-1 leading-snug">
-          Demo environment — data is simulated and sign-in uses demo accounts.
-          The live public site is at{" "}
+          Demo environment. Data is simulated and sign-in uses demo accounts. The live public site is at{" "}
           <a
             href="https://www.odum-research.com"
             className="underline decoration-amber-400/60 underline-offset-2 hover:text-amber-50 hover:decoration-amber-300"

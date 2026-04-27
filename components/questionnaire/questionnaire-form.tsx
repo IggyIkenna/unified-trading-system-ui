@@ -537,7 +537,7 @@ export function QuestionnaireForm({ returnPath, compact = false }: Questionnaire
                 },
                 {
                   value: "prop" as const,
-                  label: "Prop — trading own capital",
+                  label: "Prop (trading own capital)",
                   blurb: "No external investors; the engagement runs against the firm's own capital only.",
                 },
                 {
@@ -571,7 +571,7 @@ export function QuestionnaireForm({ returnPath, compact = false }: Questionnaire
             ))}
           </div>
           <p className="mt-2 text-xs text-muted-foreground">
-            Selecting both <em>SMA</em> and <em>Pooled Fund</em> indicates a combined UK + EU coverage shape — common
+            Selecting both <em>SMA</em> and <em>Pooled Fund</em> indicates a combined UK + EU coverage shape, common
             where the mandate spans both jurisdictions. The final operating model is agreed at the fit call.
           </p>
         </fieldset>

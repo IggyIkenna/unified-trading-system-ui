@@ -12,6 +12,7 @@ import { NextResponse } from "next/server";
 import { randomBytes } from "node:crypto";
 import admin from "firebase-admin";
 import { sendEmail, getSenderFor, escapeHtml } from "@/lib/email/resend";
+import { seedFiltersFromQuestionnaire, type CatalogueSeed } from "@/lib/questionnaire/seed-catalogue-filters";
 
 const INTERNAL_ADDRESS = "info@odum-research.com";
 
@@ -74,6 +75,20 @@ export async function POST(request: Request) {
   // every deploy regardless of whether NEXT_PUBLIC_FIREBASE_* is baked into
   // the image — UAT historically didn't have those vars and was returning 200
   // with no submissionId on every submit.
+  //
+  // catalogue_seed (Funnel Coherence Workstream E5): compute the seeded
+  // catalogue filter from the body and persist alongside the evaluation.
+  // Strategy Review reads this at issue-link time to hydrate the
+  // curated-examples section against the prospect's submitted preferences.
+  // The signed-in catalogue and demo/UAT walkthrough Reality view also
+  // hydrate from this seed.
+  let catalogueSeed: CatalogueSeed | undefined;
+  try {
+    catalogueSeed = seedFiltersFromQuestionnaire(body as Parameters<typeof seedFiltersFromQuestionnaire>[0]);
+  } catch (err) {
+    console.error("[strategy-evaluation] seedFiltersFromQuestionnaire failed", err);
+  }
+
   let submissionId: string | undefined;
   let persistError: string | undefined;
   try {
@@ -85,8 +100,52 @@ export async function POST(request: Request) {
       emailVerified: false,
       parentSubmissionId: parentSubmissionId ?? null,
       submittedAt: admin.firestore.FieldValue.serverTimestamp(),
+      ...(catalogueSeed ? { catalogue_seed: catalogueSeed } : {}),
     });
     submissionId = docRef.id;
+
+    // Refile-aware Strategy Review repointer (2026-04-27). When this submit
+    // is a refile (parentSubmissionId is set), find any active Strategy
+    // Reviews pointing at the parent and update them so:
+    //   - evaluation_id  -> newest submission id (this one)
+    //   - evaluation_ids -> append [newest], keeping the lineage in order
+    //   - catalogue_seed -> overwrite with the latest computed seed
+    // We deliberately ALSO walk the parent's prior parent chain (via
+    // evaluation_ids on the existing review doc) so multi-step refiles
+    // converge: A -> B -> C all roll into one review. Bounded at 8 steps
+    // to avoid runaway loops on a corrupt chain.
+    if (parentSubmissionId && submissionId) {
+      try {
+        const reviewSnap = await db
+          .collection("strategy_reviews")
+          .where("evaluation_id", "==", parentSubmissionId)
+          .get();
+        if (!reviewSnap.empty) {
+          const updates: Promise<unknown>[] = [];
+          for (const reviewDoc of reviewSnap.docs) {
+            const reviewData = reviewDoc.data();
+            const existingIds = Array.isArray(reviewData.evaluation_ids)
+              ? (reviewData.evaluation_ids as unknown[]).filter(
+                  (x): x is string => typeof x === "string" && x.length > 0,
+                )
+              : [];
+            // Seed lineage if missing — must include the parent at minimum.
+            const baseIds = existingIds.length > 0 ? existingIds : [parentSubmissionId];
+            const nextIds = baseIds.includes(submissionId) ? baseIds : [...baseIds, submissionId];
+            const updatePayload: Record<string, unknown> = {
+              evaluation_id: submissionId,
+              evaluation_ids: nextIds,
+              ...(catalogueSeed ? { catalogue_seed: catalogueSeed } : {}),
+            };
+            updates.push(reviewDoc.ref.update(updatePayload));
+          }
+          await Promise.all(updates);
+        }
+      } catch (err) {
+        console.error("[strategy-evaluation] refile-aware review repoint failed", err);
+        // Non-fatal — submission still succeeded, admin can repoint manually.
+      }
+    }
   } catch (err) {
     persistError = err instanceof Error ? err.message : "unknown Firestore error";
     console.error("[strategy-evaluation] Firestore write failed", err);

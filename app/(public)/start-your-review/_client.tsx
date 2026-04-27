@@ -16,47 +16,51 @@ export function StartYourReviewClient() {
     <div className="min-h-screen bg-background">
       <main className="container px-4 py-16 md:px-6 md:py-20">
         <div className="mx-auto max-w-3xl">
-          {/* Hero */}
+          {/* Hero — pitched as a qualified access point, not a workflow
+              explainer. Eyebrow + headline + one short body paragraph;
+              the surrounding "what happens next" rail handles procedural
+              detail so the hero stays clean. */}
           <div className="mb-10">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Start Your Review</p>
             <h1 className="mt-4 text-balance text-3xl font-semibold tracking-tight md:text-4xl">
-              Tell us what you&rsquo;re looking for, and we&rsquo;ll route the conversation properly.
+              Find the right route into Odum.
             </h1>
             <p className="mt-5 text-base leading-relaxed text-muted-foreground md:text-lg">
-              Odum works with a small number of allocators, trading teams, and regulated-structure prospects. Answering
-              a short questionnaire lets us point you at the relevant briefing, the right engagement route, and the
-              right next step &mdash; without a generic discovery call.
+              A short review helps us understand whether you are allocating capital, operating a strategy, or exploring
+              a regulated structure &mdash; then point you to the relevant briefing and next step.
             </p>
           </div>
 
           {/* Primary card with CTAs */}
           <Card className="border-border/80 bg-card/60">
             <CardHeader>
-              <CardTitle className="text-xl">The questionnaire takes a few minutes</CardTitle>
+              <CardTitle className="text-xl">A short routing review</CardTitle>
               <CardDescription className="text-sm leading-relaxed">
-                Six axes: who you are, the engagement type you&rsquo;re considering, the markets you operate in, the
-                strategy styles relevant to your mandate, the structures you can use, and how you currently run trading
-                or allocation.
+                Answer a few questions about your mandate, markets, structure, and operating needs. We use this to share
+                the most relevant briefing before a call.
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                 <Button asChild size="lg">
                   <Link href="/questionnaire" onClick={() => trackEvent("start_review_begin_questionnaire_click")}>
-                    Begin Questionnaire
+                    Start review
                     <ArrowRight className="ml-2 size-4" />
                   </Link>
                 </Button>
                 <Button asChild size="lg" variant="outline">
                   <Link href="/contact" onClick={() => trackEvent("start_review_book_call_click")}>
-                    Book a call instead
+                    Book a call
                   </Link>
                 </Button>
               </div>
             </CardContent>
           </Card>
 
-          {/* Three-step explainer */}
+          {/* Three-step rail — kept as scan structure but copy stripped of
+              "questionnaire mechanics" framing. Reads as outcome-led
+              ("Short review → Relevant briefing → Focused call") rather
+              than instructional. */}
           <section
             aria-labelledby="review-journey"
             className="mt-12 rounded-lg border border-border/60 bg-card/30 p-6 md:p-8"
@@ -73,9 +77,9 @@ export function StartYourReviewClient() {
                   1
                 </span>
                 <div>
-                  <p className="font-medium text-foreground">Questionnaire</p>
+                  <p className="font-medium text-foreground">Short review</p>
                   <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                    A few minutes. Your answers route you to the relevant briefing pillar and unlock the gated material.
+                    Tell us what you are looking to allocate, build, run, or structure.
                   </p>
                 </div>
               </li>
@@ -87,10 +91,10 @@ export function StartYourReviewClient() {
                   2
                 </span>
                 <div>
-                  <p className="font-medium text-foreground">Briefings</p>
+                  <p className="font-medium text-foreground">Relevant briefing</p>
                   <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                    Three pillars covering Odum-managed strategies, DART trading infrastructure, and regulated operating
-                    models. Read what applies; skip what doesn&rsquo;t.
+                    We share the material that fits your route: Odum-Managed Strategies, DART, or Regulated Operating
+                    Models.
                   </p>
                 </div>
               </li>
@@ -102,17 +106,24 @@ export function StartYourReviewClient() {
                   3
                 </span>
                 <div>
-                  <p className="font-medium text-foreground">Fit call</p>
+                  <p className="font-medium text-foreground">Focused call</p>
                   <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                    If your situation looks like a fit on both sides, we schedule a focused call rather than a generic
-                    intro &mdash; your answers do the priming.
+                    If there is a fit, we use the call to discuss the specific mandate rather than run a generic
+                    introduction.
                   </p>
                 </div>
               </li>
             </ol>
             <p className="mt-6 text-xs leading-relaxed text-muted-foreground">
-              If your enquiry is time-sensitive or already specific, you can skip the questionnaire and book a call
-              directly via the secondary CTA above.
+              Already know exactly what you need?{" "}
+              <Link
+                href="/contact"
+                onClick={() => trackEvent("start_review_skip_to_book_click")}
+                className="underline-offset-4 hover:underline"
+              >
+                Book a call instead
+              </Link>
+              .
             </p>
           </section>
         </div>

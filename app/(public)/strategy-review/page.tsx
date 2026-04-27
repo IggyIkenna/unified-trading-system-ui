@@ -86,21 +86,31 @@ async function loadByToken(token: string): Promise<LoadResult> {
     const expiresAt = isoFromTimestamp(data["expiresAt"]);
     const revokedAt = isoFromTimestamp(data["revokedAt"]);
 
-    // Per-route scaffolding (Funnel Coherence plan Workstream C). The
-    // engagementIntent is the load-bearing flag — when present on the
-    // review doc it overrides; when absent we look it up from the linked
-    // strategy_evaluations doc. Path A (allocator) leads with structure;
-    // Path B (builder) leads with DART config.
-    let engagementIntent: "allocator" | "builder" | undefined;
+    // Refile lineage (2026-04-27). When a prospect refiles after a Strategy
+    // Review has been issued, the submit handler updates the review doc:
+    // `evaluation_id` always points at the newest, `evaluation_ids` carries
+    // the full lineage oldest -> newest.
+    const evaluation_ids: string[] = (() => {
+      const raw = data["evaluation_ids"];
+      if (!Array.isArray(raw)) return [];
+      return raw.filter((x): x is string => typeof x === "string" && x.length > 0);
+    })();
+
+    // Per-route scaffolding (Funnel Coherence plan Workstream C +
+    // 2026-04-27 regulatory branch). engagementIntent is the load-bearing
+    // ordering flag — when present on the review doc it overrides;
+    // otherwise we fall back to the linked evaluation. The admin UI also
+    // sets `preferredRoute` (SSOT id) when known to refine bullet copy.
+    let engagementIntent: "allocator" | "builder" | "regulatory" | undefined;
     const reviewIntent = pickString(data, "engagementIntent");
-    if (reviewIntent === "allocator" || reviewIntent === "builder") {
+    if (reviewIntent === "allocator" || reviewIntent === "builder" || reviewIntent === "regulatory") {
       engagementIntent = reviewIntent;
     } else if (evaluation_id) {
       try {
         const evalDoc = await db.collection("strategy_evaluations").doc(evaluation_id).get();
         if (evalDoc.exists) {
           const evalIntent = pickString(evalDoc.data() ?? {}, "engagementIntent");
-          if (evalIntent === "allocator" || evalIntent === "builder") {
+          if (evalIntent === "allocator" || evalIntent === "builder" || evalIntent === "regulatory") {
             engagementIntent = evalIntent;
           }
         }
@@ -108,6 +118,49 @@ async function loadByToken(token: string): Promise<LoadResult> {
         console.error("[strategy-review/page] failed to load linked evaluation for engagementIntent", err);
       }
     }
+
+    // preferredRoute — admin-set, SSOT id. Validated against the four known
+    // route ids; anything else is treated as unset.
+    const PREFERRED_ROUTE_IDS = new Set(["pooled-fund-affiliate", "sma-direct", "combined", "unsure"] as const);
+    const preferredRouteRaw = pickString(data, "preferredRoute");
+    const preferredRoute =
+      preferredRouteRaw && PREFERRED_ROUTE_IDS.has(preferredRouteRaw as "pooled-fund-affiliate")
+        ? (preferredRouteRaw as "pooled-fund-affiliate" | "sma-direct" | "combined" | "unsure")
+        : undefined;
+
+    // catalogue_seed — copied at issue-link time from the linked evaluation.
+    // Defensive: only forward fields with the expected shapes; drop unknown
+    // properties so a polluted Firestore doc can't break the client renderer.
+    const catalogueSeed = (() => {
+      const raw = data["catalogue_seed"];
+      if (!raw || typeof raw !== "object") return undefined;
+      const r = raw as Record<string, unknown>;
+      const assetGroups = Array.isArray(r["assetGroups"])
+        ? r["assetGroups"].filter((x): x is string => typeof x === "string")
+        : [];
+      const instrumentTypes = Array.isArray(r["instrumentTypes"])
+        ? r["instrumentTypes"].filter((x): x is string => typeof x === "string")
+        : [];
+      if (assetGroups.length === 0 && instrumentTypes.length === 0) {
+        // Nothing useful to render — let the scaffold bullets show.
+        const noLikertSignals =
+          typeof r["marketNeutral"] !== "string" &&
+          typeof r["riskProfile"] !== "string" &&
+          typeof r["leveragePreference"] !== "string" &&
+          typeof r["targetSharpeMin"] !== "number";
+        if (noLikertSignals) return undefined;
+      }
+      return {
+        assetGroups,
+        instrumentTypes,
+        ...(typeof r["marketNeutral"] === "string" ? { marketNeutral: r["marketNeutral"] } : {}),
+        ...(typeof r["riskProfile"] === "string" ? { riskProfile: r["riskProfile"] } : {}),
+        ...(typeof r["leveragePreference"] === "string" ? { leveragePreference: r["leveragePreference"] } : {}),
+        ...(typeof r["targetSharpeMin"] === "number" && Number.isFinite(r["targetSharpeMin"])
+          ? { targetSharpeMin: r["targetSharpeMin"] as number }
+          : {}),
+      };
+    })();
 
     // Pre-demo prep fields (Workstream C2 schema). Optional content blocks;
     // the client renders scaffolded sections when admin prose is absent.
@@ -133,7 +186,10 @@ async function loadByToken(token: string): Promise<LoadResult> {
       email,
       prospect_name,
       ...(evaluation_id ? { evaluation_id } : {}),
+      ...(evaluation_ids.length > 0 ? { evaluation_ids } : {}),
       ...(engagementIntent ? { engagementIntent } : {}),
+      ...(preferredRoute ? { preferredRoute } : {}),
+      ...(catalogueSeed ? { catalogue_seed: catalogueSeed } : {}),
       ...(createdAt ? { createdAt } : {}),
       ...(expiresAt ? { expiresAt } : {}),
       ...(revokedAt ? { revokedAt } : {}),

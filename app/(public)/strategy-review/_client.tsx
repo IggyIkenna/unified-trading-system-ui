@@ -38,14 +38,38 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { setBriefingSessionActive } from "@/lib/briefings/session";
 import { SERVICE_LABELS } from "@/lib/copy/service-labels";
+import { STRUCTURE_OPTIONS, type StructureOptionId } from "@/lib/marketing/structure-options";
+import type { CatalogueSeed } from "@/lib/questionnaire/seed-catalogue-filters";
+
+/** Engagement intent — drives section ordering + bullet emphasis. */
+export type ReviewEngagementIntent = "allocator" | "builder" | "regulatory";
+
+/** Lineage-aware evaluation linkage — see /api/strategy-evaluation/submit refile flow. */
+export interface ReviewLineage {
+  /** Newest evaluation id (mirrors the legacy `evaluation_id` field). */
+  readonly latest: string;
+  /** All evaluation ids linked to this review, oldest → newest. */
+  readonly history: readonly string[];
+}
 
 export interface StrategyReviewDoc {
   readonly id: string;
   readonly email: string;
   readonly prospect_name: string;
+  /** Newest evaluation linked to this review. */
   readonly evaluation_id?: string;
-  /** Per-route scaffolding flag — Path A leads with structure; Path B with DART config. */
-  readonly engagementIntent?: "allocator" | "builder";
+  /**
+   * Full evaluation lineage when the prospect has refiled. `evaluation_id`
+   * is always the newest in this list. Absent when only one evaluation
+   * has been linked.
+   */
+  readonly evaluation_ids?: readonly string[];
+  /** allocator / builder / regulatory — drives section ordering + bullet emphasis. */
+  readonly engagementIntent?: ReviewEngagementIntent;
+  /** SSOT route id — refines copy when present (Pooled Fund / SMA / Combined / Unsure). */
+  readonly preferredRoute?: StructureOptionId;
+  /** Catalogue seed copied from the evaluation at issue-link time. */
+  readonly catalogue_seed?: CatalogueSeed;
   readonly createdAt?: string;
   readonly expiresAt?: string;
   readonly revokedAt?: string;
@@ -158,12 +182,27 @@ export default function StrategyReviewClient({ review }: { review: StrategyRevie
         <div className="flex flex-wrap items-center gap-2">
           <Badge variant="outline">Strategy Review</Badge>
           <Badge variant="secondary">Private to {greetingName}</Badge>
+          {review.engagementIntent ? (
+            <Badge variant="outline" className="capitalize">
+              {review.engagementIntent} route
+            </Badge>
+          ) : null}
+          {review.preferredRoute && STRUCTURE_OPTIONS[review.preferredRoute] ? (
+            <Badge variant="outline">
+              {STRUCTURE_OPTIONS[review.preferredRoute].label} ({STRUCTURE_OPTIONS[review.preferredRoute].tag})
+            </Badge>
+          ) : null}
+          {review.evaluation_ids && review.evaluation_ids.length > 1 ? (
+            <Badge variant="outline" title={`Linked evaluations: ${review.evaluation_ids.join(", ")}`}>
+              Refiled · {review.evaluation_ids.length} evaluations
+            </Badge>
+          ) : null}
         </div>
         <h1 className="text-3xl font-bold tracking-tight">Your tailored Strategy Review</h1>
         <p className="text-sm font-medium text-foreground/80">Your tailored pre-demo review.</p>
         <p className="text-sm text-muted-foreground max-w-2xl">
           Prepared by Odum Research after your Strategy Evaluation. This page sets you up for a relevant platform
-          walkthrough — proposed route, briefing excerpts to read first, demo agenda, workflows we expect to show,
+          walkthrough: proposed route, briefing excerpts to read first, demo agenda, workflows we expect to show,
           curated examples, missing information we still need, and route-specific risks to discuss.
         </p>
         <p className="text-xs text-muted-foreground max-w-2xl">
@@ -202,33 +241,83 @@ export default function StrategyReviewClient({ review }: { review: StrategyRevie
       ) : null}
 
       {(() => {
-        // Per-route scaffolding (Funnel Coherence plan Workstream C3 + C4):
-        // Path A (allocator) leads with structure-relevant emphasis;
-        // Path B (builder) leads with DART-config-relevant emphasis. Same
-        // 7 sections in both; only ordering + bullet emphasis shifts.
+        // Per-route scaffolding (Funnel Coherence plan Workstream C3 + C4 +
+        // 2026-04-27 regulatory branch): allocator leads with structure,
+        // builder leads with DART config, regulatory leads with operating
+        // model + governance. Same 7 sections in all three; only ordering
+        // and bullet emphasis shifts. When `preferredRoute` (SSOT id) is
+        // set, the structure-related sections also surface the route name.
+        const intent: ReviewEngagementIntent = review.engagementIntent ?? "builder";
+        const route = review.preferredRoute ? STRUCTURE_OPTIONS[review.preferredRoute] : undefined;
+        const routeLabel = route ? `${route.label} (${route.tag})` : null;
+        const seed = review.catalogue_seed;
+
+        // Curated-examples bullets — when an evaluation seed exists, surface
+        // the asset groups / instrument types / market-neutral / risk axes
+        // we'll filter the catalogue against. Otherwise fall back to the
+        // generic scaffold bullets. Either way the *full* catalogue stays
+        // gated behind Commercial Tailoring.
+        const seedBullets = (() => {
+          if (!seed) return null;
+          const out: string[] = [];
+          if (seed.assetGroups.length > 0) {
+            out.push(`Asset groups in scope: ${seed.assetGroups.join(" · ")}`);
+          }
+          if (seed.instrumentTypes.length > 0) {
+            out.push(`Instrument types: ${seed.instrumentTypes.join(" · ")}`);
+          }
+          if (seed.marketNeutral) {
+            out.push(`Market exposure preference: ${seed.marketNeutral}`);
+          }
+          if (seed.riskProfile) {
+            out.push(`Risk appetite: ${seed.riskProfile}`);
+          }
+          if (seed.leveragePreference) {
+            out.push(`Leverage tolerance: ${seed.leveragePreference}`);
+          }
+          if (typeof seed.targetSharpeMin === "number") {
+            out.push(`Minimum target Sharpe: ${seed.targetSharpeMin}`);
+          }
+          return out.length > 0 ? out : null;
+        })();
+
         const sections: Record<string, React.ReactNode> = {
           "proposed-route": (
             <SectionScaffold
               key="proposed-route"
               title="Proposed route hypothesis"
-              description={
-                review.engagementIntent === "allocator"
-                  ? "Which structure and route fits your mandate — and why."
-                  : "Which of the three Odum routes we think fits — and why."
-              }
-              bullets={
-                review.engagementIntent === "allocator"
-                  ? [
-                      `${SERVICE_LABELS.investment.marketing} — SMA, pooled fund, or other structure`,
-                      "Why this fits the appetite, constraints, and capital scale you described",
-                      "Adjacent or alternative structures worth considering",
-                    ]
-                  : [
-                      `${SERVICE_LABELS.investment.marketing}, ${SERVICE_LABELS.dart.marketing}, or ${SERVICE_LABELS.regulatory.marketing} — and which fits best`,
-                      "Why this hypothesis, given your evaluation answers",
-                      "Adjacent routes worth considering or ruling out",
-                    ]
-              }
+              description={(() => {
+                if (intent === "allocator") return "Which structure and route fits your mandate, and why.";
+                if (intent === "regulatory") return "Which operating model fits the engagement, and why.";
+                return "Which of the three Odum routes we think fits, and why.";
+              })()}
+              bullets={(() => {
+                if (intent === "allocator") {
+                  return [
+                    routeLabel
+                      ? `${SERVICE_LABELS.investment.marketing}: leaning toward ${routeLabel}`
+                      : `${SERVICE_LABELS.investment.marketing}: SMA, pooled fund, or other structure`,
+                    "Why this fits the appetite, constraints, and capital scale you described",
+                    "Adjacent or alternative structures worth considering",
+                  ];
+                }
+                if (intent === "regulatory") {
+                  return [
+                    routeLabel
+                      ? `Operating model: leaning toward ${routeLabel}`
+                      : "Operating model: Odum-as-IM, delegated trading manager, sub-adviser, or affiliate-led pathway",
+                    "Why this fits your jurisdiction, distribution posture, and permission requirements",
+                    "Whether the engagement should run as a single route or combined UK + EU coverage",
+                  ];
+                }
+                return [
+                  `${SERVICE_LABELS.investment.marketing}, ${SERVICE_LABELS.dart.marketing}, or ${SERVICE_LABELS.regulatory.marketing}, and which fits best`,
+                  routeLabel
+                    ? `Operating model: leaning toward ${routeLabel}`
+                    : "Why this hypothesis, given your evaluation answers",
+                  "Adjacent routes worth considering or ruling out",
+                ];
+              })()}
               {...((review.proposedRouteHypothesis ?? review.proposedOperatingModel)
                 ? { notes: review.proposedRouteHypothesis ?? review.proposedOperatingModel }
                 : {})}
@@ -238,20 +327,28 @@ export default function StrategyReviewClient({ review }: { review: StrategyRevie
             <SectionScaffold
               key="briefing-excerpts"
               title="Relevant briefing excerpts"
-              description="Curated paragraphs from the matching pillar briefing — read these before the demo."
-              bullets={
-                review.engagementIntent === "allocator"
-                  ? [
-                      "Odum-Managed Strategies briefing — the allocator-relevant sections",
-                      "Mandate, structure, and reporting passages worth reviewing",
-                      "Supporting links you can revisit during your review window",
-                    ]
-                  : [
-                      "DART Trading Infrastructure briefing — Signals-In vs Full vs Signals-Out as relevant",
-                      "Key passages and decisions worth reviewing first",
-                      "Supporting links you can revisit during your review window",
-                    ]
-              }
+              description="Curated paragraphs from the matching pillar briefing. Read these before the demo."
+              bullets={(() => {
+                if (intent === "allocator") {
+                  return [
+                    "Odum-Managed Strategies briefing: the allocator-relevant sections",
+                    "Mandate, structure, and reporting passages worth reviewing",
+                    "Supporting links you can revisit during your review window",
+                  ];
+                }
+                if (intent === "regulatory") {
+                  return [
+                    "Regulated Operating Models briefing: the structure-relevant sections",
+                    "Custody, supervision, and multi-vehicle reporting passages worth reviewing",
+                    "Companion read: the route-specific pillar (IM or DART) where applicable",
+                  ];
+                }
+                return [
+                  "DART Trading Infrastructure briefing: Signals-In vs Full vs Signals-Out as relevant",
+                  "Key passages and decisions worth reviewing first",
+                  "Supporting links you can revisit during your review window",
+                ];
+              })()}
               {...(review.briefingExcerpts ? { notes: review.briefingExcerpts } : {})}
             />
           ),
@@ -259,24 +356,33 @@ export default function StrategyReviewClient({ review }: { review: StrategyRevie
             <SectionScaffold
               key="demo-agenda"
               title="Demo agenda"
-              description={
-                review.engagementIntent === "allocator"
-                  ? "Reporting and structure surfaces we'll walk through."
-                  : "The DART research / execution / reporting flow we'll walk through."
-              }
-              bullets={
-                review.engagementIntent === "allocator"
-                  ? [
-                      "Reporting surfaces (catalogue, mandate-level perf, illustrative invoices)",
-                      "Structure walkthrough — SMA vs pooled fund operating shape",
-                      "Decision points we want your reaction to (mandate terms, reporting cadence)",
-                    ]
-                  : [
-                      "The flow we'll follow during the operator-led portion",
-                      "What we'll hand over to you for the self-guided review",
-                      "Decision points we want your reaction to",
-                    ]
-              }
+              description={(() => {
+                if (intent === "allocator") return "Reporting and structure surfaces we'll walk through.";
+                if (intent === "regulatory")
+                  return "Operating-model and supervisory-reporting surfaces we'll walk through.";
+                return "The DART research / execution / reporting flow we'll walk through.";
+              })()}
+              bullets={(() => {
+                if (intent === "allocator") {
+                  return [
+                    "Reporting surfaces (catalogue, mandate-level perf, illustrative invoices)",
+                    "Structure walkthrough: SMA vs pooled fund operating shape",
+                    "Decision points we want your reaction to (mandate terms, reporting cadence)",
+                  ];
+                }
+                if (intent === "regulatory") {
+                  return [
+                    "Operating-model walkthrough: appointment chain, custody, and supervisory rollup",
+                    "Supervisory reporting surfaces: NAV, attribution, audit trail, compliance artefacts",
+                    "Decision points we want your reaction to (manager-of-record, custody route, distribution posture)",
+                  ];
+                }
+                return [
+                  "The flow we'll follow during the operator-led portion",
+                  "What we'll hand over to you for the self-guided review",
+                  "Decision points we want your reaction to",
+                ];
+              })()}
               {...((review.demoAgenda ?? review.demoPreparation)
                 ? { notes: review.demoAgenda ?? review.demoPreparation }
                 : {})}
@@ -287,19 +393,27 @@ export default function StrategyReviewClient({ review }: { review: StrategyRevie
               key="workflows"
               title="Workflows / modules likely to be shown"
               description="The specific platform surfaces relevant to your evaluation answers."
-              bullets={
-                review.engagementIntent === "allocator"
-                  ? [
-                      "Strategy catalogue scoped to your asset-group + instrument-type preferences",
-                      "Mandate / fund-level reports and performance views",
-                      "Surfaces we'll skip because they aren't relevant to allocator mandates",
-                    ]
-                  : [
-                      "Modules in scope (research, trading, execution, reporting — as relevant)",
-                      "Asset groups and instrument types we'll demonstrate against",
-                      "Surfaces we'll skip because they aren't relevant to your route",
-                    ]
-              }
+              bullets={(() => {
+                if (intent === "allocator") {
+                  return [
+                    "Strategy catalogue scoped to your asset-group + instrument-type preferences",
+                    "Mandate / fund-level reports and performance views",
+                    "Surfaces we'll skip because they aren't relevant to allocator mandates",
+                  ];
+                }
+                if (intent === "regulatory") {
+                  return [
+                    "Multi-vehicle reporting hierarchy: sub-funds, share classes, SMA books, supervisory rollup",
+                    "Permission scoping: venue / broker / wallet keys, scoped read + execute, no withdrawals",
+                    "Surfaces we'll skip because they aren't relevant to the operating-model conversation",
+                  ];
+                }
+                return [
+                  "Modules in scope (research, trading, execution, reporting, as relevant)",
+                  "Asset groups and instrument types we'll demonstrate against",
+                  "Surfaces we'll skip because they aren't relevant to your route",
+                ];
+              })()}
               {...((review.workflowsShown ?? review.dartConfiguration)
                 ? { notes: review.workflowsShown ?? review.dartConfiguration }
                 : {})}
@@ -309,12 +423,18 @@ export default function StrategyReviewClient({ review }: { review: StrategyRevie
             <SectionScaffold
               key="curated-examples"
               title="Curated examples"
-              description="A small handful of strategies or configurations relevant to your interest. The full catalogue opens later, in Commercial Tailoring."
-              bullets={[
-                "Two or three illustrative strategies aligned to your preferences",
-                "Maturity stage (paper / live-tiny / live) for each example",
-                "Indicative performance ranges — directional, not final",
-              ]}
+              description={
+                seedBullets
+                  ? "Filtered against the preferences you submitted. The full catalogue opens later, in Commercial Tailoring."
+                  : "A small handful of strategies or configurations relevant to your interest. The full catalogue opens later, in Commercial Tailoring."
+              }
+              bullets={
+                seedBullets ?? [
+                  "Two or three illustrative strategies aligned to your preferences",
+                  "Maturity stage (paper / live-tiny / live) for each example",
+                  "Indicative performance ranges, directional rather than final",
+                ]
+              }
               {...(review.curatedExamples ? { notes: review.curatedExamples } : {})}
             />
           ),
@@ -323,19 +443,27 @@ export default function StrategyReviewClient({ review }: { review: StrategyRevie
               key="missing-info"
               title="Missing-information checklist"
               description="What we still need from you to make the demo land."
-              bullets={
-                review.engagementIntent === "allocator"
-                  ? [
-                      "Capital timing + scaling specifics we couldn't fully scope",
-                      "Mandate / IPS documents we'd want sight of before the walkthrough",
-                      "Any decisions you should be ready to make on the call",
-                    ]
-                  : [
-                      "Specifics we couldn't fully scope from your evaluation",
-                      "Documents, data, or access we'll need before the walkthrough",
-                      "Any decisions you should be ready to make on the call",
-                    ]
-              }
+              bullets={(() => {
+                if (intent === "allocator") {
+                  return [
+                    "Capital timing + scaling specifics we couldn't fully scope",
+                    "Mandate / IPS documents we'd want sight of before the walkthrough",
+                    "Any decisions you should be ready to make on the call",
+                  ];
+                }
+                if (intent === "regulatory") {
+                  return [
+                    "Investor jurisdiction + distribution-posture specifics we couldn't fully scope",
+                    "Existing manager / AIFM / fund-admin relationships we should know about",
+                    "Compliance and supervisory documents we'd want sight of before the walkthrough",
+                  ];
+                }
+                return [
+                  "Specifics we couldn't fully scope from your evaluation",
+                  "Documents, data, or access we'll need before the walkthrough",
+                  "Any decisions you should be ready to make on the call",
+                ];
+              })()}
               {...((review.missingInformation ?? review.nextSteps)
                 ? { notes: review.missingInformation ?? review.nextSteps }
                 : {})}
@@ -345,20 +473,28 @@ export default function StrategyReviewClient({ review }: { review: StrategyRevie
             <SectionScaffold
               key="risks"
               title="Route-specific risks and constraints"
-              description="What you should be ready to discuss — both operational and regulatory."
-              bullets={
-                review.engagementIntent === "allocator"
-                  ? [
-                      "Concentration / drawdown sensitivity given your appetite",
-                      "Mandate constraints (venues, leverage, instrument types)",
-                      "Pre-conditions we'd want to confirm before initial allocation",
-                    ]
-                  : [
-                      "Operational constraints we've identified (capacity, latency, venue, treasury)",
-                      "Regulatory wrapper applicability — when relevant to your route",
-                      "Pre-conditions we'd want to confirm before live capital",
-                    ]
-              }
+              description="What you should be ready to discuss, both operational and regulatory."
+              bullets={(() => {
+                if (intent === "allocator") {
+                  return [
+                    "Concentration / drawdown sensitivity given your appetite",
+                    "Mandate constraints (venues, leverage, instrument types)",
+                    "Pre-conditions we'd want to confirm before initial allocation",
+                  ];
+                }
+                if (intent === "regulatory") {
+                  return [
+                    "Permission scope and supervisory responsibility under the proposed structure",
+                    "Custody and fund-administration boundaries: who carries which formal role",
+                    "Pre-conditions we'd want to confirm before mandate documentation",
+                  ];
+                }
+                return [
+                  "Operational constraints we've identified (capacity, latency, venue, treasury)",
+                  "Regulatory wrapper applicability, when relevant to your route",
+                  "Pre-conditions we'd want to confirm before live capital",
+                ];
+              })()}
               {...((review.routeRisks ?? review.riskReview ?? review.regulatoryPathway)
                 ? { notes: review.routeRisks ?? review.riskReview ?? review.regulatoryPathway }
                 : {})}
@@ -366,8 +502,12 @@ export default function StrategyReviewClient({ review }: { review: StrategyRevie
           ),
         };
         // Allocator: structure first, demo agenda focused on reporting,
-        // missing-info before risks. Builder: DART config first, broader
-        // workflows, risks before missing-info.
+        // missing-info before risks.
+        // Builder: DART config first, broader workflows, risks before
+        // missing-info.
+        // Regulatory: operating-model first, missing-info before risks
+        // (you usually need more documentation before the conversation can
+        // sharpen than you do operational data).
         const ALLOCATOR_ORDER = [
           "proposed-route",
           "briefing-excerpts",
@@ -386,7 +526,17 @@ export default function StrategyReviewClient({ review }: { review: StrategyRevie
           "risks",
           "missing-info",
         ] as const;
-        const order = review.engagementIntent === "allocator" ? ALLOCATOR_ORDER : BUILDER_ORDER;
+        const REGULATORY_ORDER = [
+          "proposed-route",
+          "briefing-excerpts",
+          "workflows",
+          "demo-agenda",
+          "missing-info",
+          "risks",
+          "curated-examples",
+        ] as const;
+        const order =
+          intent === "allocator" ? ALLOCATOR_ORDER : intent === "regulatory" ? REGULATORY_ORDER : BUILDER_ORDER;
         return <section className="space-y-5">{order.map((key) => sections[key])}</section>;
       })()}
 

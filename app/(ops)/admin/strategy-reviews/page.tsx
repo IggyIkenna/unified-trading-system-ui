@@ -20,17 +20,24 @@ import { firebaseAuth, firebaseDb } from "@/lib/admin/firebase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { STRUCTURE_OPTION_ORDER, STRUCTURE_OPTIONS } from "@/lib/marketing/structure-options";
 
 interface ReviewDoc {
   readonly id: string;
   readonly email?: string;
   readonly prospect_name?: string;
   readonly evaluation_id?: string;
+  readonly evaluation_ids?: readonly string[];
+  readonly engagementIntent?: "allocator" | "builder" | "regulatory";
+  readonly preferredRoute?: "pooled-fund-affiliate" | "sma-direct" | "combined" | "unsure";
   readonly magicToken?: string;
   readonly createdAt?: { toDate: () => Date } | null;
   readonly expiresAt?: { toDate: () => Date } | null;
   readonly revokedAt?: { toDate: () => Date } | null;
 }
+
+type EngagementIntent = "" | "allocator" | "builder" | "regulatory";
+type PreferredRoute = "" | "pooled-fund-affiliate" | "sma-direct" | "combined" | "unsure";
 
 function fmt(d: ReviewDoc["createdAt"]): string {
   if (!d) return "—";
@@ -70,6 +77,8 @@ function IssueLinkDialog({ open, onClose, onIssued }: { open: boolean; onClose: 
   const [prospectName, setProspectName] = useState("");
   const [evaluationId, setEvaluationId] = useState("");
   const [ttlDays, setTtlDays] = useState("30");
+  const [engagementIntent, setEngagementIntent] = useState<EngagementIntent>("");
+  const [preferredRoute, setPreferredRoute] = useState<PreferredRoute>("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [issued, setIssued] = useState<{ url: string } | null>(null);
@@ -91,6 +100,12 @@ function IssueLinkDialog({ open, onClose, onIssued }: { open: boolean; onClose: 
       }
       if (Number.isFinite(ttlNum) && ttlNum > 0) {
         body.ttl_days = ttlNum;
+      }
+      if (engagementIntent) {
+        body.engagement_intent = engagementIntent;
+      }
+      if (preferredRoute) {
+        body.preferred_route = preferredRoute;
       }
       const res = await fetch("/api/strategy-review/issue-link", {
         method: "POST",
@@ -177,6 +192,46 @@ function IssueLinkDialog({ open, onClose, onIssued }: { open: boolean; onClose: 
                 onChange={(e) => setEvaluationId(e.target.value)}
                 placeholder="strategy_evaluations doc ID"
               />
+              <p className="mt-1 text-[11px] text-muted-foreground">
+                When provided, the review automatically inherits the evaluation&rsquo;s catalogue seed and engagement
+                intent (overridable below) and seeds the refile lineage.
+              </p>
+            </div>
+            <div>
+              <Label htmlFor="sr-intent">Engagement intent (optional)</Label>
+              <select
+                id="sr-intent"
+                value={engagementIntent}
+                onChange={(e) => setEngagementIntent(e.target.value as EngagementIntent)}
+                className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+              >
+                <option value="">Inherit from evaluation</option>
+                <option value="allocator">Allocator (Odum-Managed Strategies)</option>
+                <option value="builder">Builder (DART Trading Infrastructure)</option>
+                <option value="regulatory">Regulatory (Regulated Operating Models)</option>
+              </select>
+              <p className="mt-1 text-[11px] text-muted-foreground">
+                Drives section ordering and bullet emphasis on the Strategy Review page.
+              </p>
+            </div>
+            <div>
+              <Label htmlFor="sr-route">Preferred client-facing route (optional)</Label>
+              <select
+                id="sr-route"
+                value={preferredRoute}
+                onChange={(e) => setPreferredRoute(e.target.value as PreferredRoute)}
+                className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+              >
+                <option value="">Not set</option>
+                {STRUCTURE_OPTION_ORDER.map((id) => (
+                  <option key={id} value={id}>
+                    {STRUCTURE_OPTIONS[id].label} ({STRUCTURE_OPTIONS[id].tag})
+                  </option>
+                ))}
+              </select>
+              <p className="mt-1 text-[11px] text-muted-foreground">
+                Surfaces the route name in the proposed-route hypothesis bullets when set.
+              </p>
             </div>
             <div>
               <Label htmlFor="sr-ttl">Link TTL (days)</Label>
@@ -300,6 +355,7 @@ export default function StrategyReviewsAdminPage() {
             <tr className="border-b text-left text-xs text-muted-foreground">
               <th className="py-2 pr-4 font-medium">Prospect</th>
               <th className="py-2 pr-4 font-medium">Email</th>
+              <th className="py-2 pr-4 font-medium">Intent / route</th>
               <th className="py-2 pr-4 font-medium">Evaluation</th>
               <th className="py-2 pr-4 font-medium">Issued</th>
               <th className="py-2 pr-4 font-medium">Expires</th>
@@ -316,7 +372,20 @@ export default function StrategyReviewsAdminPage() {
                     {row.prospect_name || <span className="text-muted-foreground italic">Unnamed</span>}
                   </td>
                   <td className="py-2 pr-4 text-xs text-muted-foreground">{row.email ?? "—"}</td>
-                  <td className="py-2 pr-4 text-xs font-mono text-muted-foreground">{row.evaluation_id ?? "—"}</td>
+                  <td className="py-2 pr-4 text-xs text-muted-foreground">
+                    <div className="flex flex-col gap-0.5">
+                      <span className="capitalize">{row.engagementIntent ?? "—"}</span>
+                      <span>{row.preferredRoute ? STRUCTURE_OPTIONS[row.preferredRoute].label : ""}</span>
+                    </div>
+                  </td>
+                  <td className="py-2 pr-4 text-xs font-mono text-muted-foreground">
+                    <div className="flex flex-col gap-0.5">
+                      <span>{row.evaluation_id ?? "—"}</span>
+                      {row.evaluation_ids && row.evaluation_ids.length > 1 ? (
+                        <span className="text-[10px] not-italic">refiled · {row.evaluation_ids.length}</span>
+                      ) : null}
+                    </div>
+                  </td>
                   <td className="py-2 pr-4 text-xs text-muted-foreground tabular-nums">{fmt(row.createdAt)}</td>
                   <td className="py-2 pr-4 text-xs text-muted-foreground tabular-nums">{fmt(row.expiresAt)}</td>
                   <td className="py-2 pr-4 text-xs">

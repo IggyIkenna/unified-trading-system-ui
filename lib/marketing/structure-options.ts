@@ -71,7 +71,7 @@ export const STRUCTURE_OPTIONS: Readonly<Record<StructureOptionId, StructureOpti
       "A single engagement can combine the SMA and Pooled Fund routes when the mandate spans UK and EU coverage, multiple investor types, or distinct operating postures across investor segments. The agreed operating model is set out in the documentation.",
     blurb: "A combined structure that spans both routes (UK + EU) under one engagement.",
     odumRole: "Role split across both routes per mandate documentation",
-    custody: "Mixed — fund assets via affiliate route; client-owned accounts via SMA route",
+    custody: "Mixed: fund assets via affiliate route; client-owned accounts via SMA route",
   },
   unsure: {
     id: "unsure",

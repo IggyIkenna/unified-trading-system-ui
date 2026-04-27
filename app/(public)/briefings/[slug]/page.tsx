@@ -4,7 +4,6 @@ import { DocsNav, type DocsNavSection } from "@/components/docs/docs-nav";
 import { DartPathsOverviewDiagram } from "@/components/marketing/dart-paths-overview-diagram";
 import { FundSmaHierarchyDiagram } from "@/components/marketing/fund-sma-hierarchy-diagram";
 import { RegUmbrellaHierarchyDiagram } from "@/components/marketing/reg-umbrella-hierarchy-diagram";
-import { StrategyFamilyCatalogue } from "@/components/marketing/strategy-family-catalogue";
 import { composeRenderers, renderWithTerms } from "@/components/marketing/render-with-terms";
 import {
   BRIEFING_PILLARS,
@@ -256,16 +255,20 @@ export default async function BriefingPillarPage({ params }: PageProps) {
   if (!pillar) notFound();
 
   const showCoverageMatrix = MATRIX_SLUGS.has(pillar.slug);
-  const showFamilyCatalogue = pillar.slug === "dart-trading-infrastructure";
   const showTierComparison = pillar.slug === "dart-trading-infrastructure";
+  // DART briefing keeps the matrix collapsed under "Coverage overview" — the
+  // full archetype × category × instrument-type catalogue moved off this
+  // page entirely (it's shown during the platform walkthrough). IM briefing
+  // continues to render the matrix flat with the operational caption.
+  const coverageMatrixCollapsed = pillar.slug === "dart-trading-infrastructure";
+  const coverageMatrixLabel = coverageMatrixCollapsed ? "Coverage overview" : "Coverage matrix";
 
   // Build the TOC dynamically so it reflects what this pillar actually renders.
   const tocSections: DocsNavSection[] = [
     { id: "overview", label: "Overview" },
     ...pillar.sections.map((s) => ({ id: slugifyId(s.title), label: s.title })),
     ...(showTierComparison ? [{ id: "tier-comparison", label: "Signals-In vs Full" }] : []),
-    ...(showCoverageMatrix ? [{ id: "coverage-matrix", label: "Coverage matrix" }] : []),
-    ...(showFamilyCatalogue ? [{ id: "full-catalogue", label: "Full catalogue" }] : []),
+    ...(showCoverageMatrix ? [{ id: "coverage-matrix", label: coverageMatrixLabel }] : []),
     { id: "key-messages", label: "Key messages" },
     { id: "second-call", label: "The second call" },
     { id: "next-steps", label: "Next steps" },
@@ -337,36 +340,39 @@ export default async function BriefingPillarPage({ params }: PageProps) {
 
           {showCoverageMatrix && (
             <section id="coverage-matrix" className="scroll-mt-24 space-y-4 border-t border-border/40 pt-8">
-              <div className="space-y-2 max-w-2xl">
-                <h2 className="text-lg font-semibold tracking-tight text-foreground">
-                  Strategy families × categories — what Odum runs
-                </h2>
-                <p className="text-sm text-foreground/80 leading-relaxed">
-                  The matrix below is the operational coverage map — strategy families down the side, asset-class
-                  categories across the top. A filled dot means Odum operates live strategies in that cell; a
-                  half-filled dot means adapter or configuration work is in progress for some instruments in the cell.
-                  Venue detail, specific slot configurations, and maturity tags are covered at the second call.
-                </p>
-              </div>
-              <StrategyCoverageMatrix />
-            </section>
-          )}
-
-          {showFamilyCatalogue && (
-            <section id="full-catalogue" className="scroll-mt-24 space-y-4 border-t border-border/40 pt-8">
-              <div className="space-y-2 max-w-3xl">
-                <h2 className="text-lg font-semibold tracking-tight text-foreground">
-                  Full archetype × category × instrument-type catalogue
-                </h2>
-                <p className="text-sm text-foreground/80 leading-relaxed">
-                  The full combinatoric universe Odum operates on. Eighteen archetypes grouped into three family bands
-                  (directional, relative-value, event-driven) mapped across five categories and eight instrument-type
-                  cells. Lock-state posture is shown per cell — public slots are a narrow default, the rest of the
-                  supported surface is reserved for Odum&apos;s investment-management book unless a client-exclusive
-                  carve-out is negotiated.
-                </p>
-              </div>
-              <StrategyFamilyCatalogue />
+              {coverageMatrixCollapsed ? (
+                /* DART briefing — collapsed by default. Light matrix only;
+                   the full archetype × category × instrument-type catalogue
+                   is shown during the platform walkthrough, not here. */
+                <details className="rounded-lg border border-border/60 bg-card/30 p-5 md:p-6">
+                  <summary className="cursor-pointer select-none text-base font-semibold tracking-tight text-foreground">
+                    {coverageMatrixLabel}
+                  </summary>
+                  <div className="mt-5 space-y-4">
+                    <p className="max-w-2xl text-sm text-foreground/80 leading-relaxed">
+                      Strategy families across the asset-class categories Odum operates. The full catalogue is shown
+                      during the platform walkthrough and scoped by engagement type.
+                    </p>
+                    <StrategyCoverageMatrix />
+                  </div>
+                </details>
+              ) : (
+                <>
+                  <div className="space-y-2 max-w-2xl">
+                    <h2 className="text-lg font-semibold tracking-tight text-foreground">
+                      Strategy families × categories — what Odum runs
+                    </h2>
+                    <p className="text-sm text-foreground/80 leading-relaxed">
+                      The matrix below is the operational coverage map — strategy families down the side, asset-class
+                      categories across the top. A filled dot means Odum operates live strategies in that cell; a
+                      half-filled dot means adapter or configuration work is in progress for some instruments in the
+                      cell. Venue detail, specific slot configurations, and maturity tags are covered at the second
+                      call.
+                    </p>
+                  </div>
+                  <StrategyCoverageMatrix />
+                </>
+              )}
             </section>
           )}
 

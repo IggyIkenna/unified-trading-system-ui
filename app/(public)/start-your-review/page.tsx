@@ -16,7 +16,7 @@ import { StartYourReviewClient } from "./_client";
 export const metadata: Metadata = {
   title: "Start Your Review | Odum Research",
   description:
-    "Answer a short questionnaire so we can route you to the relevant briefing and next step. The review takes a few minutes; outcomes range from briefing access through to a tailored fit call.",
+    "A short review to find the right route into Odum — Odum-Managed Strategies, DART, or Regulated Operating Models — followed by the relevant briefing and a focused call.",
 };
 
 export default function StartYourReviewPage() {

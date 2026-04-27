@@ -51,9 +51,15 @@ interface IssueLinkBody {
   readonly prospect_name?: unknown;
   readonly evaluation_id?: unknown;
   readonly ttl_days?: unknown;
+  /** allocator / builder / regulatory — drives Strategy Review section ordering. */
+  readonly engagement_intent?: unknown;
+  /** SSOT route id — pooled-fund-affiliate / sma-direct / combined / unsure. */
+  readonly preferred_route?: unknown;
 }
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const VALID_ENGAGEMENT_INTENTS = new Set(["allocator", "builder", "regulatory"] as const);
+const VALID_PREFERRED_ROUTES = new Set(["pooled-fund-affiliate", "sma-direct", "combined", "unsure"] as const);
 
 /**
  * Admin guard. Returns null when authorized; otherwise a NextResponse to
@@ -99,6 +105,16 @@ export async function POST(req: NextRequest) {
   const ttl_days_raw = typeof body.ttl_days === "number" ? body.ttl_days : DEFAULT_TTL_DAYS;
   const ttl_days = Math.max(1, Math.min(MAX_TTL_DAYS, Math.floor(ttl_days_raw)));
 
+  const engagement_intent =
+    typeof body.engagement_intent === "string" && VALID_ENGAGEMENT_INTENTS.has(body.engagement_intent as "allocator")
+      ? (body.engagement_intent as "allocator" | "builder" | "regulatory")
+      : undefined;
+  const preferred_route =
+    typeof body.preferred_route === "string" &&
+    VALID_PREFERRED_ROUTES.has(body.preferred_route as "pooled-fund-affiliate")
+      ? (body.preferred_route as "pooled-fund-affiliate" | "sma-direct" | "combined" | "unsure")
+      : undefined;
+
   if (!EMAIL_RE.test(email)) {
     return NextResponse.json({ ok: false, error: "Valid email required", reason: "invalid_email" }, { status: 400 });
   }
@@ -122,6 +138,50 @@ export async function POST(req: NextRequest) {
   try {
     const app = getAdminApp();
     const db = admin.firestore(app);
+
+    // Copy catalogue_seed + engagementIntent + parent-lineage hints from
+    // the linked evaluation (when provided) so the Strategy Review surface
+    // can hydrate its curated-examples section against the prospect's
+    // submitted preferences without a follow-up read at render time. We
+    // also use the evaluation's engagementIntent as a fallback when the
+    // admin didn't pass one explicitly.
+    let resolvedIntent = engagement_intent;
+    let catalogueSeed: Record<string, unknown> | undefined;
+    let evaluationIds: string[] | undefined;
+    if (evaluation_id) {
+      try {
+        const evalSnap = await db.collection("strategy_evaluations").doc(evaluation_id).get();
+        if (evalSnap.exists) {
+          const evalData = evalSnap.data() ?? {};
+          if (!resolvedIntent) {
+            const evalIntent = typeof evalData.engagementIntent === "string" ? evalData.engagementIntent : "";
+            if (VALID_ENGAGEMENT_INTENTS.has(evalIntent as "allocator")) {
+              resolvedIntent = evalIntent as "allocator" | "builder" | "regulatory";
+            }
+          }
+          if (evalData.catalogue_seed && typeof evalData.catalogue_seed === "object") {
+            catalogueSeed = evalData.catalogue_seed as Record<string, unknown>;
+          }
+          // Build the lineage history for refile-aware reviews. We treat
+          // the full chain as `[...parents, evaluation_id]` where parents
+          // are walked from `parentSubmissionId` pointers. Capped at 8 to
+          // avoid runaway loops on a corrupt chain.
+          const lineage: string[] = [evaluation_id];
+          let cursor = typeof evalData.parentSubmissionId === "string" ? evalData.parentSubmissionId : "";
+          for (let i = 0; i < 8 && cursor; i += 1) {
+            lineage.unshift(cursor);
+            const parentSnap = await db.collection("strategy_evaluations").doc(cursor).get();
+            if (!parentSnap.exists) break;
+            const parentData = parentSnap.data() ?? {};
+            cursor = typeof parentData.parentSubmissionId === "string" ? parentData.parentSubmissionId : "";
+          }
+          evaluationIds = lineage;
+        }
+      } catch (err) {
+        console.error("[strategy-review/issue-link] failed to read linked evaluation", err);
+      }
+    }
+
     const payload: Record<string, unknown> = {
       magicToken,
       email,
@@ -132,6 +192,18 @@ export async function POST(req: NextRequest) {
     };
     if (evaluation_id) {
       payload.evaluation_id = evaluation_id;
+    }
+    if (evaluationIds && evaluationIds.length > 0) {
+      payload.evaluation_ids = evaluationIds;
+    }
+    if (resolvedIntent) {
+      payload.engagementIntent = resolvedIntent;
+    }
+    if (preferred_route) {
+      payload.preferredRoute = preferred_route;
+    }
+    if (catalogueSeed) {
+      payload.catalogue_seed = catalogueSeed;
     }
     const docRef = await db.collection("strategy_reviews").add(payload);
     docId = docRef.id;

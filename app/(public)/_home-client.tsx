@@ -4,6 +4,7 @@ import { ArrowRight, Globe } from "lucide-react";
 import Link from "next/link";
 
 import { ArbitrageGalaxy } from "@/components/marketing/arbitrage-galaxy";
+import { renderWithTerms } from "@/components/marketing/render-with-terms";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { trackEvent } from "@/lib/analytics/track";
@@ -346,7 +347,7 @@ const ENGAGEMENT_ROUTES: readonly EngagementRoute[] = [
     // belongs on the route's own page.
     summary: "Allocate capital to selected systematic strategies managed by Odum.",
     bullets: [
-      "Available through SMA or fund-route structures where appropriate.",
+      "Available through {{term:sma}} or fund-route structures where appropriate.",
       "Odum acts as investment manager.",
       "Reporting is delivered through the same operating surface used to run the mandate.",
     ],
@@ -358,12 +359,15 @@ const ENGAGEMENT_ROUTES: readonly EngagementRoute[] = [
   },
   {
     key: "dart",
-    title: SERVICE_LABELS.dart.marketing,
+    // Wrap "DART" in the title with the glossary tooltip — first mention of
+    // the acronym on the homepage. Subsequent mentions inside the card (CTA,
+    // bullets) stay plain to avoid dotted-underline noise.
+    title: SERVICE_LABELS.dart.marketing.replace("DART", "{{term:dart|DART}}"),
     summary: "Use Odum's research-to-execution infrastructure to run strategies under the agreed engagement model.",
     bullets: [
       "Client-provided, Odum-provided, or hybrid signal workflows.",
       "Research, testing, execution, monitoring, and reporting in one system.",
-      "Suitable for teams that want infrastructure without allocating capital to Odum-managed strategies.",
+      "Suitable for teams that want to run their own infrastructure without allocating capital to Odum-managed strategies.",
     ],
     href: "/platform",
     cta: "Explore DART Trading Infrastructure",
@@ -376,7 +380,7 @@ const ENGAGEMENT_ROUTES: readonly EngagementRoute[] = [
       "Where the engagement requires it, Odum can help structure the operating model around governance, reporting, and permissions.",
     bullets: [
       "Reviewed case by case; not a generic umbrella service.",
-      "May include SMA pathways, affiliate-supported structures, or other approved arrangements.",
+      "May include {{term:sma}} pathways, affiliate-supported structures, or other approved arrangements.",
       "Governance, reporting, and oversight are aligned to the engagement.",
     ],
     href: "/regulatory",
@@ -415,7 +419,7 @@ function EngagementRoutes() {
                   style={{ backgroundColor: route.accent, opacity: 0.85 }}
                 />
                 <CardHeader className="pt-6">
-                  <CardTitle className="text-lg">{route.title}</CardTitle>
+                  <CardTitle className="text-lg">{renderWithTerms(route.title)}</CardTitle>
                   {/* Summary does the heavy lift — first thing a skimmer
                       reads. Keep at sm but bump line-height for readability. */}
                   <CardDescription className="text-sm leading-[1.65] text-muted-foreground">
@@ -442,7 +446,7 @@ function EngagementRoutes() {
                             opacity: 0.85,
                           }}
                         />
-                        <span>{bullet}</span>
+                        <span>{renderWithTerms(bullet)}</span>
                       </li>
                     ))}
                   </ul>

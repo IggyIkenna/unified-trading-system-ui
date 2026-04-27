@@ -56,7 +56,7 @@ export const GLOSSARY: Readonly<Record<string, GlossaryEntry>> = {
     id: "sma",
     label: "SMA",
     definition:
-      "Separately Managed Account — client holds their own venue accounts; Odum runs the strategy via a scoped execute-plus-read API key. One client, one book.",
+      "Separately Managed Accounts — client holds their own venue accounts; Odum runs the strategy via a scoped execute-plus-read API key. One client, one book.",
   },
   pooled: {
     id: "pooled",

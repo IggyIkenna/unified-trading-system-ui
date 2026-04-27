@@ -79,19 +79,30 @@ export const BRIEFING_PILLARS: readonly BriefingPillar[] = [
       "Clients can use it in two main ways: send their own signals into Odum's execution and reporting layer, or build and run strategies through the full research-to-execution pipeline. In selected cases, Odum can also deliver its own signals to approved counterparties.",
     sections: [
       {
-        title: "Signals-In — your strategy, our execution",
+        title: "Signals-In: your strategy, our execution",
         body: "Your models and signal generation stay on your side. Odum receives structured instructions, then handles execution, reconciliation, position tracking, and reporting. This route fits teams that already have alpha or decision logic, but want a controlled execution and post-trade layer rather than rebuilding the whole operating stack.",
         bodyAfter:
           "The fit call confirms schema compatibility, venues, instruments, and the level of execution control required.",
       },
       {
-        title: "Full pipeline — research to execution on one stack",
+        title: "Full pipeline: research to execution on one stack",
         body: "Build, test, promote, and run strategies on the same components Odum uses internally. This route fits teams that want access to the full DART environment: data, research, backtesting, paper trading, live promotion, execution, monitoring, and reporting.",
         bodyAfter:
           "Where appropriate, client strategy IP is scoped under the agreed commercial relationship and not shared across other client engagements.",
       },
       {
-        title: "Odum-provided signals — selected counterparty arrangements",
+        title: "Backtest-vs-live T+1 comparison (Full only)",
+        // Differentiator the user explicitly wants surfaced — Signals-In
+        // teams keep research on their side and only get the execution +
+        // post-trade slice; Full pipeline teams get the daily comparison
+        // because their backtest, paper, and live runs all live on the
+        // same DART stack.
+        body: "DART Full users get a daily T+1 reconciliation that compares the backtest, paper, and live curves on the same instrument set, the same fee assumptions, and the same execution-quality assumptions. Drift is broken down by source (signal lag, fill price, fees and rebates, slippage, latency, missed fills) so the team can act on real implementation alpha rather than aggregate P&L.",
+        bodyAfter:
+          "This comparison is not available on Signals-In: with Signals-In the strategy logic and historical curves stay on the client side, so DART has no backtest series to compare against. Signals-In users still see live execution and post-trade reporting, but not the side-by-side backtest-vs-live diagnostic.",
+      },
+      {
+        title: "Odum-provided signals: selected counterparty arrangements",
         // Held back deliberately — Signals-Out is not the central DART
         // commercial path, so this section is short, lower-weight, and
         // placed last among the three shapes.
@@ -99,11 +110,11 @@ export const BRIEFING_PILLARS: readonly BriefingPillar[] = [
       },
       {
         title: "Risk, governance, and reporting",
-        body: "Risk controls operate at the execution layer across the three shapes: position monitoring, instrument and venue eligibility, leverage and concentration limits, and kill-switches. Day-to-day work runs in the authenticated platform; equivalent operations are exposed programmatically via the Unified Trading API and service REST endpoints. Reporting carries the same shape across the three workflows — positions, P&L attribution, reconciliation, delivery health, audit trail, and compliance artefacts.",
+        body: "Risk controls operate at the execution layer across the three shapes: position monitoring, instrument and venue eligibility, leverage and concentration limits, and kill-switches. Day-to-day work runs in the authenticated platform; equivalent operations are exposed programmatically via the Unified Trading API and service REST endpoints. Reporting carries the same shape across the three workflows: positions, P&L attribution, reconciliation, delivery health, audit trail, and compliance artefacts.",
       },
       {
         title: "Commitment floor",
-        body: "Twelve-month minimum engagement across the three DART shapes — onboarding, venue provisioning, and per-client setup are real costs the floor recovers. Pricing is per block (venue packs, chain packs, instrument-type packs), mixable across shapes; specific numbers are walked through at the second call.",
+        body: "Twelve-month minimum engagement across the three DART shapes. Onboarding, venue provisioning, and per-client setup are real costs the floor recovers. Pricing is per block (venue packs, chain packs, instrument-type packs), mixable across shapes; specific numbers are walked through at the second call.",
       },
     ],
     keyMessages: [
@@ -112,7 +123,7 @@ export const BRIEFING_PILLARS: readonly BriefingPillar[] = [
       "Full pipeline: research-to-execution on the components Odum uses internally; client strategy IP scoped to the engagement where appropriate.",
       "Odum-provided signals: selected counterparty arrangements, assessed case by case.",
       "Risk, governance, and reporting are applied consistently across the three shapes.",
-      "Twelve-month minimum engagement; per-block pricing — specifics at the second call.",
+      "Twelve-month minimum engagement; per-block pricing, with specifics at the second call.",
     ],
     nextCall:
       "The 45-minute second call confirms which DART shape fits, walks venue and instrument-type compatibility, and scopes the packs your engagement requires. Specific pricing and operational detail are walked through during the call.",
@@ -132,12 +143,12 @@ export const BRIEFING_PILLARS: readonly BriefingPillar[] = [
     sections: [
       {
         title: "Two main client-facing operating routes",
-        body: "Most engagements run through one of two routes — the Pooled Fund route on the EU / affiliate-supported side, or the SMA route on the UK / direct side. A single engagement can also combine both where the mandate spans UK and EU coverage.",
+        body: "Most engagements run through one of two routes: the Pooled Fund route on the EU / affiliate-supported side, or the SMA route on the UK / direct side. A single engagement can also combine both where the mandate spans UK and EU coverage.",
         bullets: [
-          `{{strong:${STRUCTURE_OPTIONS["pooled-fund-affiliate"].label} (${STRUCTURE_OPTIONS["pooled-fund-affiliate"].tag})}} — ${STRUCTURE_OPTIONS["pooled-fund-affiliate"].description}`,
-          `{{strong:${STRUCTURE_OPTIONS["sma-direct"].label} (${STRUCTURE_OPTIONS["sma-direct"].tag})}} — ${STRUCTURE_OPTIONS["sma-direct"].description}`,
-          `{{strong:${STRUCTURE_OPTIONS.combined.label}}} — ${STRUCTURE_OPTIONS.combined.description}`,
-          "{{strong:AR-style arrangement}} — Where a client wants to be customer-facing under its own brand, an AR-style structure may be considered case by case. This normally requires additional onboarding, compliance review, and role clarity.",
+          `{{strong:${STRUCTURE_OPTIONS["pooled-fund-affiliate"].label} (${STRUCTURE_OPTIONS["pooled-fund-affiliate"].tag}).}} ${STRUCTURE_OPTIONS["pooled-fund-affiliate"].description}`,
+          `{{strong:${STRUCTURE_OPTIONS["sma-direct"].label} (${STRUCTURE_OPTIONS["sma-direct"].tag}).}} ${STRUCTURE_OPTIONS["sma-direct"].description}`,
+          `{{strong:${STRUCTURE_OPTIONS.combined.label}.}} ${STRUCTURE_OPTIONS.combined.description}`,
+          "{{strong:AR-style arrangement.}} Where a client wants to be customer-facing under its own brand, an AR-style structure may be considered case by case. This normally requires additional onboarding, compliance review, and role clarity.",
         ],
         bodyAfter: STRUCTURE_ROLE_CLARITY,
       },
@@ -197,11 +208,11 @@ export const BRIEFING_PILLARS: readonly BriefingPillar[] = [
       },
       {
         title: "Reporting surface",
-        body: "Positions, exposures, {{term:pnl|P&L}} attribution by factor, reconciliation breaks, and audit trail. Allocator reporting is a partition of the same operating system Odum's own traders and risk desk use — entitlement-filtered to your share class (Pooled) or SMA partition. Same components, same data, different views.",
+        body: "Positions, exposures, {{term:pnl|P&L}} attribution by factor, reconciliation breaks, and audit trail. Allocator reporting is a partition of the same operating system Odum's own traders and risk desk use, entitlement-filtered to your share class (Pooled) or SMA partition. Same components, same data, different views.",
       },
       {
         title: "Regulatory posture and commitment floor",
-        body: "Odum operates under FCA permissions. {{term:mlro}}, compliance monitoring, and supervisory reporting run internally — not outsourced. Twelve-month minimum engagement; the floor reflects real provisioning costs (legal review, venue onboarding, per-client setup, reconciliation, share-class or SMA mechanics).",
+        body: "Odum operates under FCA permissions. {{term:mlro}}, compliance monitoring, and supervisory reporting run internally, not outsourced. Twelve-month minimum engagement; the floor reflects real provisioning costs (legal review, venue onboarding, per-client setup, reconciliation, share-class or SMA mechanics).",
       },
       {
         title: "Fees",
