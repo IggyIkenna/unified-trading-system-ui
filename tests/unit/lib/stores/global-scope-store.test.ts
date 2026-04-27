@@ -18,7 +18,9 @@ describe("global-scope-store", () => {
     expect(s.organizationIds).toEqual([]);
     expect(s.clientIds).toEqual([]);
     expect(s.strategyIds).toEqual([]);
-    expect(s.strategyFamilyIds).toEqual([]);
+    expect(s.assetGroupIds).toEqual([]);
+    expect(s.strategyFamilyIdsV2).toEqual([]);
+    expect(s.strategyArchetypeIds).toEqual([]);
     expect(s.underlyingIds).toEqual([]);
     expect(s.mode).toBe("live");
     expect(s.asOfDatetime).toBeUndefined();
@@ -39,9 +41,19 @@ describe("global-scope-store", () => {
     expect(useGlobalScope.getState().scope.strategyIds).toEqual(["a", "b"]);
   });
 
-  it("setStrategyFamilyIds replaces the array", () => {
-    act(() => useGlobalScope.getState().setStrategyFamilyIds(["fam-1"]));
-    expect(useGlobalScope.getState().scope.strategyFamilyIds).toEqual(["fam-1"]);
+  it("setAssetGroupIds replaces the array", () => {
+    act(() => useGlobalScope.getState().setAssetGroupIds(["DeFi", "CeFi"]));
+    expect(useGlobalScope.getState().scope.assetGroupIds).toEqual(["DeFi", "CeFi"]);
+  });
+
+  it("setStrategyFamilyIdsV2 replaces the array", () => {
+    act(() => useGlobalScope.getState().setStrategyFamilyIdsV2(["CARRY_AND_YIELD", "ML_DIRECTIONAL"]));
+    expect(useGlobalScope.getState().scope.strategyFamilyIdsV2).toEqual(["CARRY_AND_YIELD", "ML_DIRECTIONAL"]);
+  });
+
+  it("setStrategyArchetypeIds replaces the array", () => {
+    act(() => useGlobalScope.getState().setStrategyArchetypeIds(["CARRY_BASIS_PERP"]));
+    expect(useGlobalScope.getState().scope.strategyArchetypeIds).toEqual(["CARRY_BASIS_PERP"]);
   });
 
   it("setUnderlyingIds replaces the array", () => {

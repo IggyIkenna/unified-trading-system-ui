@@ -1,27 +1,36 @@
 "use client";
 
 /**
- * GlobalScopeFilters — Org / Client / Strategy selectors for Row 1 (lifecycle nav).
- * These are the global data-scoping controls that sit between the lifecycle tabs
- * and the user controls on the right side of the top bar.
+ * GlobalScopeFilters — top-bar Org / Client / Family→Archetype / Strategy.
  *
- * For internal users: shows all orgs, clients, strategies.
- * For external clients: auto-scoped to their org (selector hidden or read-only).
+ * 4-pill design (architecture-v2). The legacy "All Families" pill (which was
+ * actually a 5-asset-group filter) is removed; identity is now expressed via
+ * the v2 strategy taxonomy (8 families × 18 archetypes).
+ *
+ * The asset-group filter is preserved at the data layer via `scope.assetGroupIds`
+ * so a future Asset Class pill can be reintroduced as a single-component edit
+ * (see docs/audits/global-filters-v2.md §10).
+ *
+ * For internal users: shows Org + Client.
+ * For external clients: org locks to the user's org (read-only chip).
  */
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useAuth } from "@/hooks/use-auth";
-import { checkTradingEntitlement, type Entitlement } from "@/lib/config/auth";
+import { ARCHETYPE_TO_FAMILY, FAMILY_METADATA, STRATEGY_FAMILIES_V2 } from "@/lib/architecture-v2";
+import type { StrategyArchetype, StrategyFamily } from "@/lib/architecture-v2";
+import { checkTradingEntitlement } from "@/lib/config/auth";
 import {
   CLIENTS as TRADING_CLIENTS,
   ORGANIZATIONS as TRADING_ORGS,
   STRATEGIES as TRADING_STRATEGIES,
 } from "@/lib/mocks/fixtures/trading-data";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { formatArchetype, formatFamily } from "@/lib/strategy-display";
 import { cn } from "@/lib/utils";
-import { BarChart3, Building2, Check, ChevronDown, ChevronRight, Layers, Users, X } from "lucide-react";
+import { BarChart3, Building2, Check, ChevronDown, ChevronRight, ListTree, Users, X } from "lucide-react";
 import * as React from "react";
 
 interface Organization {
@@ -39,7 +48,7 @@ interface Strategy {
   name: string;
   clientId: string;
   assetClass: string;
-  strategyType: string;
+  archetype: string;
   status: "live" | "paused" | "warning" | "stopped" | "error";
 }
 
@@ -58,23 +67,13 @@ const strategies: Strategy[] = TRADING_STRATEGIES.map((s) => ({
   name: s.name,
   clientId: s.clientId,
   assetClass: s.assetClass,
-  strategyType: s.archetype,
+  archetype: s.archetype,
   status: s.status,
 }));
 
-interface StrategyFamily {
-  id: string;
-  name: string;
-  color: string;
-}
-
-const STRATEGY_FAMILIES: StrategyFamily[] = [
-  { id: "DeFi", name: "DeFi", color: "bg-violet-500" },
-  { id: "CeFi", name: "CeFi", color: "bg-sky-500" },
-  { id: "TradFi", name: "TradFi", color: "bg-amber-500" },
-  { id: "Sports", name: "Sports", color: "bg-emerald-500" },
-  { id: "Prediction", name: "Prediction", color: "bg-rose-500" },
-];
+// ─────────────────────────────────────────────────────────────────────────────
+// CompactMultiSelect — generic checkbox-popover for Org / Client / Strategy
+// ─────────────────────────────────────────────────────────────────────────────
 
 function CompactMultiSelect<T extends { id: string }>({
   icon,
@@ -98,7 +97,6 @@ function CompactMultiSelect<T extends { id: string }>({
   dropdownWidthClass?: string;
 }) {
   const [open, setOpen] = React.useState(false);
-  /** When true, category rows are collapsed and strategy rows are hidden. */
   const [collapsedGroups, setCollapsedGroups] = React.useState<Record<string, boolean>>({});
   const isAllSelected = selectedIds.length === 0;
   const selectedCount = selectedIds.length;
@@ -309,6 +307,204 @@ function CompactMultiSelect<T extends { id: string }>({
   );
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// FamilyArchetypeMultiSelect — grouped checkbox dropdown for the v2 taxonomy
+//
+// Family rows are tri-state checkboxes that select / deselect every archetype
+// under them. Archetype rows toggle independently. The pill label collapses to
+// the family or archetype name when only one is picked, otherwise "N selected".
+// ─────────────────────────────────────────────────────────────────────────────
+
+function FamilyArchetypeMultiSelect({
+  familyIds,
+  archetypeIds,
+  onChange,
+}: {
+  familyIds: string[];
+  archetypeIds: string[];
+  onChange: (next: { familyIds: string[]; archetypeIds: string[] }) => void;
+}) {
+  const [open, setOpen] = React.useState(false);
+  const [collapsed, setCollapsed] = React.useState<Record<string, boolean>>({});
+
+  const isAll = familyIds.length === 0 && archetypeIds.length === 0;
+  const totalSelected = familyIds.length + archetypeIds.length;
+
+  const display = (() => {
+    if (isAll) return "All families";
+    if (familyIds.length === 1 && archetypeIds.length === 0) {
+      return formatFamily(familyIds[0]);
+    }
+    if (familyIds.length === 0 && archetypeIds.length === 1) {
+      return formatArchetype(archetypeIds[0]);
+    }
+    return `${totalSelected} selected`;
+  })();
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="ghost"
+          size="sm"
+          className={cn("h-7 gap-1 px-2 text-xs", !isAll ? "text-foreground font-medium" : "text-muted-foreground")}
+        >
+          <ListTree className="size-3 text-violet-400" />
+          <span className="hidden sm:inline max-w-32 truncate">{display}</span>
+          {totalSelected > 1 && (
+            <Badge variant="secondary" className="h-4 px-1 text-[10px] ml-0.5">
+              {totalSelected}
+            </Badge>
+          )}
+          <ChevronDown className="size-3 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent align="start" className="w-[20rem] p-0 max-h-[50vh] overflow-hidden">
+        <div className="max-h-[50vh] overflow-y-auto overscroll-contain p-1">
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={() => onChange({ familyIds: [], archetypeIds: [] })}
+            onKeyDown={(e) => e.key === "Enter" && onChange({ familyIds: [], archetypeIds: [] })}
+            className={cn(
+              "w-full flex items-center gap-2 px-2 py-1.5 rounded text-sm hover:bg-secondary cursor-pointer",
+              isAll && "bg-secondary",
+            )}
+          >
+            <span
+              className={cn(
+                "size-4 rounded border flex items-center justify-center shrink-0",
+                isAll ? "bg-primary border-primary" : "border-input",
+              )}
+            >
+              {isAll && <Check className="size-3 text-primary-foreground" />}
+            </span>
+            <span className="text-muted-foreground">All families</span>
+          </div>
+          <div className="h-px bg-border my-1" />
+          {STRATEGY_FAMILIES_V2.map((family) => {
+            const meta = FAMILY_METADATA[family];
+            const archetypes = meta.archetypes;
+            const selectedArchInFamily = archetypes.filter((a) => archetypeIds.includes(a));
+            const familyToggleSelected = familyIds.includes(family);
+            const allArchSelected = archetypes.length > 0 && selectedArchInFamily.length === archetypes.length;
+            const someSelected = familyToggleSelected || selectedArchInFamily.length > 0;
+            const allSelected = familyToggleSelected && allArchSelected;
+            const isCollapsed = collapsed[family] === true;
+
+            const toggleFamily = () => {
+              if (allSelected) {
+                // fully selected → clear both family flag and any archetypes
+                onChange({
+                  familyIds: familyIds.filter((f) => f !== family),
+                  archetypeIds: archetypeIds.filter((a) => !(archetypes as readonly string[]).includes(a)),
+                });
+              } else {
+                // not fully selected → select all (set family flag + all archetypes)
+                const otherArchs = archetypeIds.filter((a) => !(archetypes as readonly string[]).includes(a));
+                onChange({
+                  familyIds: [...new Set([...familyIds, family])],
+                  archetypeIds: [...otherArchs, ...archetypes],
+                });
+              }
+            };
+
+            const toggleArchetype = (archetype: StrategyArchetype) => {
+              const isSelected = archetypeIds.includes(archetype);
+              const nextArchetypes = isSelected
+                ? archetypeIds.filter((a) => a !== archetype)
+                : [...archetypeIds, archetype];
+              // Family flag follows archetype state: family is "selected" iff every archetype is selected.
+              const allNowSelected = archetypes.every((a) => nextArchetypes.includes(a));
+              const nextFamilyIds = allNowSelected
+                ? [...new Set([...familyIds, family])]
+                : familyIds.filter((f) => f !== family);
+              onChange({ familyIds: nextFamilyIds, archetypeIds: nextArchetypes });
+            };
+
+            return (
+              <div key={family} className="border-b border-border/50 pb-1 mb-1 last:border-0 last:pb-0 last:mb-0">
+                <div className="flex items-stretch gap-0.5">
+                  <button
+                    type="button"
+                    className="shrink-0 flex items-center justify-center px-1 rounded hover:bg-secondary/80 text-muted-foreground"
+                    aria-expanded={!isCollapsed}
+                    aria-label={isCollapsed ? `Expand ${meta.label}` : `Collapse ${meta.label}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setCollapsed((c) => ({ ...c, [family]: !isCollapsed }));
+                    }}
+                  >
+                    <ChevronRight
+                      className={cn("size-3.5 transition-transform duration-150", !isCollapsed && "rotate-90")}
+                    />
+                  </button>
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    onClick={toggleFamily}
+                    onKeyDown={(e) => e.key === "Enter" && toggleFamily()}
+                    className="flex min-w-0 flex-1 items-center gap-2 px-2 py-1 cursor-pointer hover:bg-secondary/50 rounded"
+                  >
+                    <span
+                      className={cn(
+                        "size-3.5 rounded border flex items-center justify-center shrink-0",
+                        allSelected
+                          ? "bg-primary border-primary"
+                          : someSelected
+                            ? "bg-primary/50 border-primary"
+                            : "border-input",
+                      )}
+                    >
+                      {(allSelected || someSelected) && <Check className="size-2.5 text-primary-foreground" />}
+                    </span>
+                    <span className="text-[10px] font-semibold text-foreground/80 uppercase tracking-wider truncate">
+                      {meta.label}
+                    </span>
+                    <span className="text-[10px] text-muted-foreground/50 ml-auto shrink-0">{archetypes.length}</span>
+                  </div>
+                </div>
+                {!isCollapsed &&
+                  archetypes.map((archetype) => {
+                    const isSelected = archetypeIds.includes(archetype);
+                    return (
+                      <div
+                        key={archetype}
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => toggleArchetype(archetype)}
+                        onKeyDown={(e) => e.key === "Enter" && toggleArchetype(archetype)}
+                        className={cn(
+                          "w-full flex items-center gap-2 pl-7 pr-2 py-1.5 rounded text-sm hover:bg-secondary cursor-pointer",
+                          isSelected && "bg-secondary",
+                        )}
+                      >
+                        <span
+                          className={cn(
+                            "size-4 rounded border flex items-center justify-center shrink-0",
+                            isSelected ? "bg-primary border-primary" : "border-input",
+                          )}
+                        >
+                          {isSelected && <Check className="size-3 text-primary-foreground" />}
+                        </span>
+                        <span className="text-sm">{formatArchetype(archetype)}</span>
+                      </div>
+                    );
+                  })}
+              </div>
+            );
+          })}
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Helpers
+// ─────────────────────────────────────────────────────────────────────────────
+
 /** Asset classes a user is entitled to see, derived from their entitlements. */
 function entitlementAssetClasses(userEnts: readonly (string | { domain: string; tier: string })[]): Set<string> {
   const allowed = new Set<string>();
@@ -323,9 +519,52 @@ function entitlementAssetClasses(userEnts: readonly (string | { domain: string; 
   return allowed;
 }
 
+/** Return strategies that match the v2 family / archetype selection. */
+function filterByFamilyArchetype(
+  list: Strategy[],
+  familyIds: readonly string[],
+  archetypeIds: readonly string[],
+): Strategy[] {
+  if (familyIds.length === 0 && archetypeIds.length === 0) return list;
+  const familySet = new Set(familyIds);
+  const archetypeSet = new Set(archetypeIds);
+  return list.filter((s) => {
+    if (archetypeSet.size > 0) {
+      // Mock data uses kebab-case archetype labels; match by token prefix.
+      const token = s.archetype.split("-")[0];
+      for (const a of archetypeSet) {
+        if ((a as StrategyArchetype).toLowerCase().startsWith(token.toLowerCase())) return true;
+      }
+    }
+    if (familySet.size > 0) {
+      // Match against the row's asset class as a tolerance for mock data
+      // (mock STRATEGIES carry kebab archetype labels, not v2 archetype IDs).
+      // Real data will set strategy_family directly and we'll switch over.
+      for (const archetype of Object.keys(ARCHETYPE_TO_FAMILY) as StrategyArchetype[]) {
+        if (!familySet.has(ARCHETYPE_TO_FAMILY[archetype])) continue;
+        const token = archetype.split("_")[0].toLowerCase();
+        if (s.archetype.toLowerCase().includes(token)) return true;
+      }
+    }
+    return false;
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GlobalScopeFilters
+// ─────────────────────────────────────────────────────────────────────────────
+
 export function GlobalScopeFilters({ className }: { className?: string }) {
   const { isInternal, user } = useAuth();
-  const { scope, setOrganizationIds, setClientIds, setStrategyIds, setStrategyFamilyIds, clearAll } = useGlobalScope();
+  const {
+    scope,
+    setOrganizationIds,
+    setClientIds,
+    setStrategyIds,
+    setStrategyFamilyIdsV2,
+    setStrategyArchetypeIds,
+    clearAll,
+  } = useGlobalScope();
 
   const internalUser = isInternal();
   const isClientScoped = !internalUser && !!user?.org;
@@ -340,7 +579,6 @@ export function GlobalScopeFilters({ className }: { className?: string }) {
     const orgId = user.org.id;
     const orgExists = organizations.some((o) => o.id === orgId);
     if (!orgExists) return;
-    // Only set if not already scoped to this org (avoid overwriting user selection)
     if (!scope.organizationIds.includes(orgId)) {
       setOrganizationIds([orgId]);
     }
@@ -352,7 +590,7 @@ export function GlobalScopeFilters({ className }: { className?: string }) {
    *
    * Primary: filter by org membership in the mock trading-data hierarchy.
    * Fallback: if the persona's org isn't in the mock hierarchy (e.g. "elysium"),
-   * filter by the entitlement-derived asset classes so DeFi-only clients see only
+   * filter by entitlement-derived asset classes so DeFi-only clients see only
    * DeFi strategies, sports-only clients see only sports strategies, etc.
    */
   const clientOrgStrategies = React.useMemo(() => {
@@ -361,7 +599,6 @@ export function GlobalScopeFilters({ className }: { className?: string }) {
     const orgClientIds = clients.filter((c) => c.orgId === orgId).map((c) => c.id);
     const orgStrategies = strategies.filter((s) => orgClientIds.includes(s.clientId));
     if (orgStrategies.length > 0) return orgStrategies;
-    // Fallback: org not in mock hierarchy — scope by entitlement asset classes
     const allowed = entitlementAssetClasses(user?.entitlements ?? []);
     return strategies.filter((s) => allowed.has(s.assetClass));
   }, [isClientScoped, user?.org?.id, user?.entitlements]);
@@ -380,62 +617,55 @@ export function GlobalScopeFilters({ className }: { className?: string }) {
     if (scope.clientIds.length > 0) {
       result = result.filter((s) => scope.clientIds.includes(s.clientId));
     }
-    if (scope.strategyFamilyIds.length > 0) {
-      result = result.filter((s) => scope.strategyFamilyIds.includes(s.assetClass));
+    // Asset-group filter is no longer surfaced as a pill but the field is
+    // honoured at the data layer for reversibility (see docs/audits/global-filters-v2.md §10).
+    if (scope.assetGroupIds.length > 0) {
+      result = result.filter((s) => scope.assetGroupIds.includes(s.assetClass));
     }
+    result = filterByFamilyArchetype(result, scope.strategyFamilyIdsV2, scope.strategyArchetypeIds);
     return result;
-  }, [scope.organizationIds, scope.clientIds, scope.strategyFamilyIds]);
+  }, [
+    scope.organizationIds,
+    scope.clientIds,
+    scope.assetGroupIds,
+    scope.strategyFamilyIdsV2,
+    scope.strategyArchetypeIds,
+  ]);
 
   const activeFilters = [
     scope.organizationIds.length > 0,
     scope.clientIds.length > 0,
     scope.strategyIds.length > 0,
-    scope.strategyFamilyIds.length > 0,
+    scope.strategyFamilyIdsV2.length > 0 || scope.strategyArchetypeIds.length > 0,
   ].filter(Boolean).length;
 
   if (isClientScoped && user?.org) {
     const clientScopeActiveFilters =
-      (scope.strategyIds.length > 0 ? 1 : 0) + (scope.strategyFamilyIds.length > 0 ? 1 : 0);
-    const allowedClasses = entitlementAssetClasses(user?.entitlements ?? []);
-    const allowedFamilies = STRATEGY_FAMILIES.filter((f) => allowedClasses.has(f.id));
-    const strategyAllLabel = allowedClasses.size === 1 ? `All ${[...allowedClasses][0]} Strategies` : "All Strategies";
+      (scope.strategyIds.length > 0 ? 1 : 0) +
+      (scope.strategyFamilyIdsV2.length > 0 || scope.strategyArchetypeIds.length > 0 ? 1 : 0);
     return (
       <div className={cn("flex items-center gap-0.5", className)}>
         <div className="flex items-center gap-1 px-2 py-1 rounded-md bg-secondary/50 text-xs text-muted-foreground">
           <Building2 className="size-3" />
           <span className="font-medium text-foreground">{user.org.name}</span>
         </div>
-        {allowedFamilies.length > 1 && (
-          <>
-            <span className="text-muted-foreground/30 text-xs hidden sm:inline">/</span>
-            <CompactMultiSelect
-              icon={<Layers className="size-3" />}
-              items={allowedFamilies}
-              selectedIds={scope.strategyFamilyIds}
-              onSelectionChange={(ids) => {
-                setStrategyFamilyIds(ids);
-                setStrategyIds([]);
-              }}
-              allLabel="All Asset Classes"
-              renderItem={(family) => (
-                <span className="flex items-center gap-2 flex-1">
-                  <span className={cn("size-2 rounded-full", family.color)} />
-                  {family.name}
-                </span>
-              )}
-              dropdownWidthClass="w-44"
-            />
-          </>
-        )}
+        <span className="text-muted-foreground/30 text-xs hidden sm:inline">/</span>
+        <FamilyArchetypeMultiSelect
+          familyIds={scope.strategyFamilyIdsV2}
+          archetypeIds={scope.strategyArchetypeIds}
+          onChange={(next) => {
+            setStrategyFamilyIdsV2(next.familyIds);
+            setStrategyArchetypeIds(next.archetypeIds);
+            setStrategyIds([]);
+          }}
+        />
         <span className="text-muted-foreground/30 text-xs hidden sm:inline">/</span>
         <CompactMultiSelect
           icon={<BarChart3 className="size-3" />}
-          items={clientOrgStrategies.filter(
-            (s) => scope.strategyFamilyIds.length === 0 || scope.strategyFamilyIds.includes(s.assetClass),
-          )}
+          items={filterByFamilyArchetype(clientOrgStrategies, scope.strategyFamilyIdsV2, scope.strategyArchetypeIds)}
           selectedIds={scope.strategyIds}
           onSelectionChange={setStrategyIds}
-          allLabel={strategyAllLabel}
+          allLabel="All Strategies"
           groupBy={(s) => s.assetClass}
           getGroupLabel={(g) => g}
           renderItem={(strategy) => (
@@ -449,7 +679,7 @@ export function GlobalScopeFilters({ className }: { className?: string }) {
                 )}
               />
               <span className="flex-1 truncate">{strategy.name}</span>
-              <span className="text-[10px] text-muted-foreground">{strategy.strategyType}</span>
+              <span className="text-[10px] text-muted-foreground">{strategy.archetype}</span>
             </span>
           )}
           dropdownWidthClass="w-[32rem]"
@@ -463,7 +693,8 @@ export function GlobalScopeFilters({ className }: { className?: string }) {
               className="h-6 px-1.5 text-[10px] text-muted-foreground hover:text-foreground"
               onClick={() => {
                 setStrategyIds([]);
-                setStrategyFamilyIds([]);
+                setStrategyFamilyIdsV2([]);
+                setStrategyArchetypeIds([]);
               }}
             >
               <X className="size-3 mr-0.5" />
@@ -521,22 +752,14 @@ export function GlobalScopeFilters({ className }: { className?: string }) {
         dropdownWidthClass="w-64"
       />
       <span className="text-muted-foreground/30 text-xs hidden md:inline">/</span>
-      <CompactMultiSelect
-        icon={<Layers className="size-3 text-violet-400" />}
-        items={STRATEGY_FAMILIES}
-        selectedIds={scope.strategyFamilyIds}
-        onSelectionChange={(ids) => {
-          setStrategyFamilyIds(ids);
+      <FamilyArchetypeMultiSelect
+        familyIds={scope.strategyFamilyIdsV2}
+        archetypeIds={scope.strategyArchetypeIds}
+        onChange={(next) => {
+          setStrategyFamilyIdsV2(next.familyIds);
+          setStrategyArchetypeIds(next.archetypeIds);
           setStrategyIds([]);
         }}
-        allLabel="All Families"
-        renderItem={(family) => (
-          <span className="flex items-center gap-2 flex-1">
-            <span className={cn("size-2 rounded-full", family.color)} />
-            {family.name}
-          </span>
-        )}
-        dropdownWidthClass="w-44"
       />
       <span className="text-muted-foreground/30 text-xs hidden md:inline">/</span>
       <CompactMultiSelect
@@ -558,7 +781,7 @@ export function GlobalScopeFilters({ className }: { className?: string }) {
               )}
             />
             <span className="flex-1 truncate">{strategy.name}</span>
-            <span className="text-[10px] text-muted-foreground">{strategy.strategyType}</span>
+            <span className="text-[10px] text-muted-foreground">{strategy.archetype}</span>
           </span>
         )}
         dropdownWidthClass="w-[32rem]"
