@@ -38,6 +38,16 @@ export function Breadcrumbs() {
 
   const isInvestorRelations = pathname.startsWith("/investor-relations");
 
+  // GlobalScopeFilters (Org / Client / Family / Strategy) is only meaningful
+  // on the Trading and Reports terminals where it replaces the per-page scope
+  // selectors that those surfaces previously had inline. On the dashboard,
+  // services overviews, admin / config / devops / ops, and other service hubs
+  // it adds noise without function — there's no "current strategy in view"
+  // for it to scope to. Originally added in commit f115e59f when the filters
+  // moved off the lifecycle nav into the breadcrumb row; the move was applied
+  // unconditionally and that's what this guard corrects (2026-04-27).
+  const showGlobalScope = pathname.startsWith("/services/trading") || pathname.startsWith("/services/reports");
+
   // Build crumbs from URL segments: /services/data/coverage -> ["data", "coverage"]
   const segments = pathname.replace("/services/", "").split("/").filter(Boolean);
   const serviceName = segments[0];
@@ -127,7 +137,7 @@ export function Breadcrumbs() {
           )}
         <PageHelp pathname={pathname} />
       </div>
-      {!isInvestorRelations && <GlobalScopeFilters />}
+      {showGlobalScope && !isInvestorRelations && <GlobalScopeFilters />}
     </nav>
   );
 }
