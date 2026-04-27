@@ -1,6 +1,6 @@
 "use client";
 
-import { Calendar, Radio } from "lucide-react";
+import { Calendar } from "lucide-react";
 import type { WidgetComponentProps } from "../widget-registry";
 import { CandlestickChart, type IndicatorOverlay } from "@/components/trading/candlestick-chart";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -18,8 +18,8 @@ const INDICATORS = [
 
 const QUICK_DATES: Array<{ label: string; offsetDays: number }> = [
   { label: "Yest", offsetDays: -1 },
-  { label: "2d", offsetDays: -2 },
   { label: "1w", offsetDays: -7 },
+  { label: "1mo", offsetDays: -30 },
 ];
 
 export function PriceChartWidget(_props: WidgetComponentProps) {
@@ -39,24 +39,26 @@ export function PriceChartWidget(_props: WidgetComponentProps) {
     isLoadingMoreHistory,
   } = useTerminalData();
 
-  const scopeMode = useGlobalScope((s) => s.scope.mode);
+  // The chart is always "historical-up-to-a-point" — there is no Live vs As-Of
+  // distinction here. The date picker just selects which point to anchor on.
+  // Mode is forced to "batch" so the candles route reads from GCS.
   const asOfDatetime = useGlobalScope((s) => s.scope.asOfDatetime);
   const setMode = useGlobalScope((s) => s.setMode);
   const setAsOfDatetime = useGlobalScope((s) => s.setAsOfDatetime);
 
   const dateInputValue = asOfDatetime ? asOfDatetime.slice(0, 10) : new Date().toISOString().slice(0, 10);
 
-  const handleDateChange = (iso: string) => {
+  const setAnchorDate = (iso: string) => {
     if (!iso) return;
-    if (scopeMode !== "batch") setMode("batch");
-    setAsOfDatetime(`${iso}T20:00:00.000Z`);
+    setMode("batch");
+    // Anchor at end-of-day UTC so a same-day choice covers the full session.
+    setAsOfDatetime(`${iso}T23:59:00.000Z`);
   };
 
   const handleQuickDate = (offsetDays: number) => {
     const d = new Date();
     d.setUTCDate(d.getUTCDate() + offsetDays);
-    if (scopeMode !== "batch") setMode("batch");
-    setAsOfDatetime(`${d.toISOString().slice(0, 10)}T20:00:00.000Z`);
+    setAnchorDate(d.toISOString().slice(0, 10));
   };
 
   if (isLoading) {
@@ -82,44 +84,15 @@ export function PriceChartWidget(_props: WidgetComponentProps) {
     <Card className="absolute inset-0 flex flex-col gap-0 border-0 rounded-none p-0 shadow-none overflow-hidden">
       <CardHeader className="pb-2 pt-2 px-3 shrink-0">
         <div className="flex items-center justify-between gap-2 flex-wrap">
-          {/* Mode + date controls — Live / As-Of date / quick offsets */}
+          {/* "Go to date" — pick any past date; chart anchors there + paginates outward */}
           <div className="flex items-center gap-1.5 flex-wrap">
-            <div className="flex items-center border border-border rounded-md overflow-hidden">
-              <button
-                type="button"
-                onClick={() => setMode("live")}
-                className={
-                  "flex items-center gap-1 px-2 py-0.5 text-nano transition-colors " +
-                  (scopeMode === "live"
-                    ? "bg-emerald-500/10 text-emerald-400 font-medium"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary")
-                }
-              >
-                <Radio className="size-3" />
-                Live
-              </button>
-              <div className="w-px h-3 bg-border" />
-              <button
-                type="button"
-                onClick={() => setMode("batch")}
-                className={
-                  "flex items-center gap-1 px-2 py-0.5 text-nano transition-colors " +
-                  (scopeMode === "batch"
-                    ? "bg-sky-500/10 text-sky-400 font-medium"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary")
-                }
-              >
-                <Calendar className="size-3" />
-                As-Of
-              </button>
-            </div>
             <div className="flex items-center gap-1 px-1.5 py-0.5 border border-border rounded-md">
               <Calendar className="size-3 text-muted-foreground" />
               <input
                 type="date"
-                aria-label="As-of date"
+                aria-label="Go to date"
                 value={dateInputValue}
-                onChange={(e) => handleDateChange(e.target.value)}
+                onChange={(e) => setAnchorDate(e.target.value)}
                 className="bg-transparent text-nano border-none focus:outline-none w-[7.5rem]"
               />
             </div>
@@ -183,10 +156,12 @@ export function PriceChartWidget(_props: WidgetComponentProps) {
             No chart data available for {selectedInstrument.symbol}
           </div>
         ) : (
-          /* Candles and Line share one persistent LWC chart instance — no remount on switch */
+          /* Chart instance persists across timeframe + scroll-back, but remounts
+             when (venue, symbol, asOf) changes so picking a new date auto-fits
+             content to that date's data instead of keeping the prior visible range. */
           <div className="flex-1 min-h-0 relative">
             <CandlestickChart
-              key={`${selectedInstrument.venue}:${selectedInstrument.symbol}`}
+              key={`${selectedInstrument.venue}:${selectedInstrument.symbol}:${dateInputValue}`}
               absoluteFill
               className="absolute inset-0"
               displayType={chartType === "line" ? "line" : "candles"}

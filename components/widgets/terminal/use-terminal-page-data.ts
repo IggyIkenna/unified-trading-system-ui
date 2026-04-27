@@ -698,6 +698,12 @@ export function useTerminalPageData(): TerminalPageResult {
         return mapped;
       }
     }
+    // In real-API mode, return empty when GCS has no data for the chosen date —
+    // the widget renders "No chart data available" so the user sees the actual
+    // empty response instead of synthetic mock candles that masquerade as real.
+    if (!isMockMode) {
+      return [] as RawCandle[];
+    }
     const basePrice = selectedInstrument.midPrice > 0 ? selectedInstrument.midPrice : DEFAULT_INSTRUMENTS[0].midPrice;
     const data = generateCandleData(basePrice, timeframe);
     if (data.length > 0 && isClient && livePrice > 0) {
