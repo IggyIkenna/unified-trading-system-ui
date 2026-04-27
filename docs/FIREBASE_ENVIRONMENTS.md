@@ -31,11 +31,11 @@ Full guide: [codex/14-playbooks/authentication/firebase-local.md](../../unified-
 
 ## Three deviation switches (when local should diverge from staging)
 
-| Switch                       | Effect                                                         | When                                        |
-| ---------------------------- | -------------------------------------------------------------- | ------------------------------------------- |
-| `--no-firebase-local`        | Local server talks to a real Firebase project                  | Reproducing a staging-only bug              |
-| `NEXT_PUBLIC_MOCK_API=true`  | UI uses client-side mock responses, no Firebase at all         | Deterministic test runs / no auth           |
-| `npm run emulators:seed:dev` | Inject extra personas only useful locally (edit dev.mjs first) | Edge cases, scale tests, weird claim shapes |
+| Switch                       | Effect                                                         | When                                                                  |
+| ---------------------------- | -------------------------------------------------------------- | --------------------------------------------------------------------- |
+| `--no-firebase-local`        | Local server talks to a real Firebase project                  | Reproducing a staging-only bug                                        |
+| `NEXT_PUBLIC_MOCK_API=true`  | UI uses client-side mock responses, no Firebase at all         | CI smoke / `pnpm build` / static-E2E only — never local dev with auth |
+| `npm run emulators:seed:dev` | Inject extra personas only useful locally (edit dev.mjs first) | Edge cases, scale tests, weird claim shapes                           |
 
 ## Hydrate from staging snapshot
 

@@ -15,11 +15,16 @@ pnpm install
 
 ## Develop
 
+Local dev runs against the **Firebase Emulator Suite** (Auth + Firestore + Storage on localhost). This is the SSOT — same code path as staging and prod, only the project ID + emulator hosts change. See [codex/14-playbooks/authentication/firebase-local.md](../unified-trading-pm/codex/14-playbooks/authentication/firebase-local.md).
+
 ```bash
-pnpm dev
+bash scripts/dev-tiers.sh --tier 0      # UI + Firebase emulators
+npm run emulators:seed                  # one-off: seed the 25 demo personas
 ```
 
-Dev server starts on `http://localhost:3000`.
+Dev server starts on `http://localhost:3000`. Emulator UI on `http://localhost:4000` (browse the Auth pool / Firestore docs).
+
+`pnpm dev` directly is for build-smoke / mock-only flows — it does not start the emulator suite or set the env vars the SDK needs to point at localhost.
 
 ## Test
 
@@ -51,10 +56,10 @@ NEXT_PUBLIC_MOCK_API=true pnpm build
 
 The UI runs in one of two modes, toggled by a single environment variable:
 
-- `NEXT_PUBLIC_MOCK_API=true` — all API calls served from in-repo fixtures; deterministic, offline, used for builds, static E2E, and demos.
-- `NEXT_PUBLIC_MOCK_API=false` (default) — live backend via `NEXT_PUBLIC_API_BASE_URL`.
+- `NEXT_PUBLIC_MOCK_API=true` — all API calls served from in-repo fixtures; deterministic, offline. **Used by CI smoke gates, `pnpm build` smoke, static-E2E, and static demo deployments only.** Do not enable for interactive local dev — it bypasses Firebase entirely and conflicts with the firebase-emulator SSOT.
+- `NEXT_PUBLIC_MOCK_API=false` (default for local dev + staging + prod) — live backend via `NEXT_PUBLIC_API_BASE_URL`, with auth and Firestore via Firebase (emulator locally, real GCP for staging / prod).
 
-Fixtures, helper contracts, and fallback rules are documented in [`docs/DATA_MODE_IDEOLOGY.md`](docs/DATA_MODE_IDEOLOGY.md).
+Fixtures, helper contracts, and fallback rules are documented in [`docs/core/DATA_MODE_IDEOLOGY.md`](docs/core/DATA_MODE_IDEOLOGY.md). Auth-provider wiring is in [`docs/FIREBASE_ENVIRONMENTS.md`](docs/FIREBASE_ENVIRONMENTS.md).
 
 ## Project Structure
 
