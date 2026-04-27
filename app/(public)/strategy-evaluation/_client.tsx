@@ -940,7 +940,14 @@ export default function StrategyEvaluationFormClient({
         <h1 className="text-2xl font-bold tracking-tight md:text-3xl">Strategy Evaluation</h1>
         <p className="mt-3 text-muted-foreground md:text-base">
           Help us understand what you want to run, allocate to, or structure. We use this to prepare the right review
-          and walkthrough.
+          and walkthrough.{" "}
+          <button
+            type="button"
+            onClick={() => setForm((f) => ({ ...f, engagementIntent: "allocator" }))}
+            className="underline hover:text-foreground"
+          >
+            I&rsquo;m an allocator evaluating Odum-managed strategies &rarr;
+          </button>
         </p>
         <p className="mt-4 text-sm text-muted-foreground">
           You do not need final details yet. High-level answers are enough at this stage. Fields marked{" "}
@@ -1457,36 +1464,18 @@ export default function StrategyEvaluationFormClient({
                       description:
                         "You may need governance, reporting, permissions, SMA/fund structuring, or supervisory coverage.",
                     },
-                    {
-                      value: "ALLOCATOR" as const,
-                      label: "Evaluate Odum-managed strategies",
-                      description: "You are allocating to selected strategies managed by Odum.",
-                    },
                   ] as {
-                    value: "ALLOCATOR" | "A" | "B" | "C";
+                    value: "A" | "B" | "C";
                     label: string;
                     description: string;
                   }[]
                 ).map(({ value, label, description }) => {
-                  const isSelected = value === "ALLOCATOR" ? false : form.commercialPath === value;
+                  const isSelected = form.commercialPath === value;
                   return (
                     <button
                       type="button"
                       key={value}
                       onClick={() => {
-                        if (value === "ALLOCATOR") {
-                          // Bounce to the allocator wizard (same form state, different
-                          // top-level branch). Clears builder-only path selection so
-                          // the allocator wizard isn't carrying stale Path-X data.
-                          setForm((prev) => ({
-                            ...prev,
-                            engagementIntent: "allocator",
-                            commercialPath: "",
-                            commercialPathSecondary: new Set(),
-                            commercialPathTertiary: new Set(),
-                          }));
-                          return;
-                        }
                         setField("commercialPath", value);
                         // Clear residual secondary/tertiary from old hierarchy + auto-
                         // tick the educational checkboxes so we don't fail validation
@@ -1520,6 +1509,38 @@ export default function StrategyEvaluationFormClient({
                     </button>
                   );
                 })}
+
+                {/* Allocator escape-hatch — read-only panel, NOT clickable.
+                    Only the explicit "Switch to allocator intake" button at
+                    the bottom flips engagementIntent. Stops a stray click on
+                    a card-shaped surface from yanking the user out of the
+                    8-step DDQ they're partway through. */}
+                <div className="w-full rounded-lg border border-dashed border-border/60 bg-card/20 p-4 text-left">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-medium md:text-base">Evaluate Odum-managed strategies</p>
+                      <p className="mt-1 text-xs leading-relaxed text-muted-foreground md:text-sm">
+                        You are allocating to selected strategies managed by Odum &mdash; this is the wrong form for
+                        you.
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setForm((prev) => ({
+                        ...prev,
+                        engagementIntent: "allocator",
+                        commercialPath: "",
+                        commercialPathSecondary: new Set(),
+                        commercialPathTertiary: new Set(),
+                      }));
+                    }}
+                    className="mt-3 inline-flex items-center text-sm font-medium underline hover:text-foreground"
+                  >
+                    Switch to allocator intake &rarr;
+                  </button>
+                </div>
               </div>
             </section>
 

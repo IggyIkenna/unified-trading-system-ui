@@ -30,12 +30,12 @@ export default function PreStepGate({ onPickAllocator, onPickBuilder }: PreStepG
           running their own strategy on Odum infrastructure. Pick one to see only the questions that fit.
         </p>
       </header>
+      {/* Cards are read-only panels (not buttons) so users can scan both
+          options without an accidental click jumping them straight into
+          a 20-minute DDQ. The explicit CTA at the bottom of each card is
+          the only commit affordance. */}
       <div className="grid gap-5 md:grid-cols-2">
-        <button
-          type="button"
-          onClick={onPickAllocator}
-          className="group flex h-full flex-col rounded-lg border border-border/80 bg-card/40 p-7 text-left transition-colors hover:border-border hover:bg-card/70 md:p-8"
-        >
+        <div className="flex h-full flex-col rounded-lg border border-border/80 bg-card/40 p-7 text-left md:p-8">
           <p className="font-mono text-[11px] font-semibold uppercase tracking-wider text-primary/85">Path A</p>
           <h2 className="mt-2 text-lg font-semibold md:text-xl">Allocator</h2>
           <p className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">
@@ -46,15 +46,15 @@ export default function PreStepGate({ onPickAllocator, onPickBuilder }: PreStepG
             scaling, structure preferences. We don&rsquo;t ask for methodology or track record &mdash; you&rsquo;re
             evaluating us, not the other way around.
           </p>
-          <span className="mt-6 inline-flex items-center text-sm font-medium text-foreground group-hover:underline">
-            Start allocator intake &rarr;
-          </span>
-        </button>
-        <button
-          type="button"
-          onClick={onPickBuilder}
-          className="group flex h-full flex-col rounded-lg border border-border/80 bg-card/40 p-7 text-left transition-colors hover:border-border hover:bg-card/70 md:p-8"
-        >
+          <button
+            type="button"
+            onClick={onPickAllocator}
+            className="mt-6 inline-flex w-fit items-center rounded-md border border-foreground/80 bg-foreground px-4 py-2 text-sm font-medium text-background transition-colors hover:bg-foreground/90"
+          >
+            Continue as allocator &rarr;
+          </button>
+        </div>
+        <div className="flex h-full flex-col rounded-lg border border-border/80 bg-card/40 p-7 text-left md:p-8">
           <p className="font-mono text-[11px] font-semibold uppercase tracking-wider text-primary/85">Path B</p>
           <h2 className="mt-2 text-lg font-semibold md:text-xl">Builder / counterparty</h2>
           <p className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">
@@ -65,10 +65,14 @@ export default function PreStepGate({ onPickAllocator, onPickBuilder }: PreStepG
             Includes a regulatory-wrapper sub-checkbox if Odum&rsquo;s regulatory cover applies. Signals-In, DART Full,
             and Odum-provided signals all share this path.
           </p>
-          <span className="mt-6 inline-flex items-center text-sm font-medium text-foreground group-hover:underline">
-            Start builder DDQ &rarr;
-          </span>
-        </button>
+          <button
+            type="button"
+            onClick={onPickBuilder}
+            className="mt-6 inline-flex w-fit items-center rounded-md border border-foreground/80 bg-foreground px-4 py-2 text-sm font-medium text-background transition-colors hover:bg-foreground/90"
+          >
+            Continue as builder &rarr;
+          </button>
+        </div>
       </div>
     </div>
   );
