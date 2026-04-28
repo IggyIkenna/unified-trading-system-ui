@@ -162,6 +162,56 @@ export async function archetypesAllowedInCategory(category: string): Promise<str
     .map(([id]) => id);
 }
 
+/**
+ * 2026-04-28 DART tile-split (D.6): instances organised by the research-side
+ * family → archetype → asset_group hierarchy.
+ *
+ * Builds a 3-level grouped index of the strategy instances catalogue:
+ *
+ *   Map<family, Map<archetype, Map<asset_group, slot[]>>>
+ *
+ * Used by the DART Research strategy-selection UIs (/services/research/
+ * strategy/{families,catalog,overview} + /services/research/strategies).
+ * The research lens is family-led — quants think "show me all
+ * CARRY_AND_YIELD strategies" rather than the public catalogue's
+ * asset-group-led "show me all CEFI strategies" ordering.
+ *
+ * Note: family is derived from archetype via `ARCHETYPE_TO_FAMILY` in
+ * `lib/architecture-v2/enums.ts`. Slots whose archetype has no family
+ * mapping are bucketed under the literal string "OTHER".
+ *
+ * SSOT: codex/14-playbooks/dart/dart-terminal-vs-research.md.
+ */
+export async function instancesByFamilyArchetypeAssetGroup(): Promise<
+  Map<string, Map<string, Map<string, StrategyInstrumentsSlot[]>>>
+> {
+  const { ARCHETYPE_TO_FAMILY } = await import("./enums");
+  const data = await loadStrategyInstruments();
+  const out = new Map<string, Map<string, Map<string, StrategyInstrumentsSlot[]>>>();
+  for (const slot of Object.values(data.slots)) {
+    const family = (ARCHETYPE_TO_FAMILY as Record<string, string | undefined>)[slot.archetype_id] ?? "OTHER";
+    const archetype = slot.archetype_id;
+    const assetGroup = slot.category.toUpperCase();
+    let archMap = out.get(family);
+    if (!archMap) {
+      archMap = new Map();
+      out.set(family, archMap);
+    }
+    let agMap = archMap.get(archetype);
+    if (!agMap) {
+      agMap = new Map();
+      archMap.set(archetype, agMap);
+    }
+    const slots = agMap.get(assetGroup);
+    if (slots) {
+      slots.push(slot);
+    } else {
+      agMap.set(assetGroup, [slot]);
+    }
+  }
+  return out;
+}
+
 export async function isBespokeCapable(archetype: string): Promise<boolean> {
   const data = await loadAvailability();
   return data.archetypes[archetype]?.bespoke_capable ?? false;
