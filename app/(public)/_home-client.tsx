@@ -500,7 +500,7 @@ function WhyOdum() {
             that system through structures that can stand up to allocator and regulator scrutiny.
           </p>
           <p className="mt-7 text-sm">
-            <Link href="/our-story" className="font-medium text-foreground underline-offset-4 hover:underline">
+            <Link href="/story" className="font-medium text-foreground underline-offset-4 hover:underline">
               Read the short story
               <ArrowRight className="ml-1 inline size-3.5 align-[-2px]" />
             </Link>

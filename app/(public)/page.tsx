@@ -12,7 +12,7 @@ import { HomePageClient } from "./_home-client";
  *   1. Hero (single primary CTA: Start Your Review)
  *   2. Three engagement-route cards (Odum-Managed Strategies / DART /
  *      Regulated Operating Models)
- *   3. Why Odum exists (~70 words + link to /our-story)
+ *   3. Why Odum exists (~70 words + link to /story)
  *   4. Six-step engagement journey
  *   5. Governance and risk (short, serious)
  *   6. Final CTA (mirror Hero)
