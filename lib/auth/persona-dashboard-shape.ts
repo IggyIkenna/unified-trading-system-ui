@@ -240,6 +240,46 @@ const PERSONA_TILE_SHAPES: Record<string, DashboardTileVisibility> = {
   }),
 
   // ── IM clients — Reports + IR (no DART)
+  // ── Carry & Yield family clients (DART-terminal access only) ─────────
+  // carry-yield-basic: data-pro + execution-basic + reporting + CARRY_AND_YIELD
+  // basic. Should see DART terminal (entitled) but no DART research.
+  "carry-yield-basic-client": tileOverride({
+    "dart-terminal": "visible",
+    "dart-research": "locked",
+    reports: "visible",
+    "investor-relations": "hidden",
+    "odum-signals": "hidden",
+  }),
+  // carry-yield-premium: ml-full + execution-full + premium tier — full DART
+  // research access.
+  "carry-yield-premium-client": tileOverride({
+    "dart-terminal": "visible",
+    "dart-research": "visible",
+    reports: "visible",
+    "investor-relations": "hidden",
+    "odum-signals": "hidden",
+  }),
+
+  // ── Funnel-Coherence demo personas ────────────────────────────────────
+  // demo-allocator: Path A allocator persona — sees Reports only (no DART,
+  // no IR, no Odum Signals). Mirrors the entitlements: ["reporting"] in
+  // lib/auth/personas.ts.
+  "demo-allocator": tileOverride({
+    "dart-terminal": "hidden",
+    "dart-research": "hidden",
+    reports: "visible",
+    "investor-relations": "hidden",
+    "odum-signals": "hidden",
+  }),
+  // demo-investor-lp: LP demo persona — sees Investor Relations + Reports.
+  "demo-investor-lp": tileOverride({
+    "dart-terminal": "hidden",
+    "dart-research": "hidden",
+    reports: "visible",
+    "investor-relations": "visible",
+    "odum-signals": "hidden",
+  }),
+
   "client-im-pooled": tileOverride({
     "dart-terminal": "hidden",
     "dart-research": "hidden",
@@ -487,6 +527,52 @@ const PERSONA_SUBROUTE_SHAPES: Record<string, DashboardSubRouteVisibility> = {
       payloads: "visible",
       "emission-history": "visible",
       "rate-limits": "visible",
+    },
+  }),
+
+  // ── Carry & Yield clients — sub-route shapes ────────────────────────
+  "carry-yield-basic-client": subRouteOverride({
+    "dart-terminal": {
+      terminal: "visible",
+      observe: "visible",
+    },
+    reports: {
+      "pnl-attribution": "visible",
+      catalogue: "visible",
+    },
+  }),
+  "carry-yield-premium-client": subRouteOverride({
+    "dart-terminal": {
+      terminal: "visible",
+      observe: "visible",
+      "strategy-catalogue": "visible",
+    },
+    "dart-research": {
+      "research-overview": "visible",
+      strategies: "visible",
+      backtests: "visible",
+    },
+    reports: {
+      "pnl-attribution": "visible",
+      catalogue: "visible",
+    },
+  }),
+
+  // ── Funnel-Coherence demo personas — sub-route shapes ─────────────────
+  "demo-allocator": subRouteOverride({
+    reports: {
+      "pnl-attribution": "visible",
+      catalogue: "visible",
+    },
+  }),
+  "demo-investor-lp": subRouteOverride({
+    reports: {
+      "pnl-attribution": "visible",
+      catalogue: "visible",
+    },
+    "investor-relations": {
+      board: "visible",
+      "ir-briefings": "visible",
     },
   }),
 

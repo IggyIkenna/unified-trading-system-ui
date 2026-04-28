@@ -28,7 +28,7 @@ describe("persona-dashboard-shape registration", () => {
       return true;
     }).map((p) => `${p.id} (role=${p.role}, email=${p.email})`);
 
-    expect(missing).toEqual([]);
+    expect(missing, `Personas missing PERSONA_TILE_SHAPES entry:\n${missing.join("\n")}`).toEqual([]);
   });
 
   it("every persona has a sub-route shape entry (or role-fallback)", () => {
@@ -53,9 +53,7 @@ describe("persona-dashboard-shape registration", () => {
       // Every shape must declare at least one of the 5 tiles as "visible" or
       // "locked" — a persona with all 5 tiles hidden would never have a
       // dashboard to render. (Even reports-only personas have reports="visible".)
-      const hasAtLeastOneSurfacedTile = Object.values(shape).some(
-        (v) => v === "visible" || v === "locked",
-      );
+      const hasAtLeastOneSurfacedTile = Object.values(shape).some((v) => v === "visible" || v === "locked");
       expect(hasAtLeastOneSurfacedTile, `persona ${p.id} has all tiles hidden`).toBe(true);
     }
   });
