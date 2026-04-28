@@ -17,7 +17,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { doc, serverTimestamp, setDoc } from "firebase/firestore";
+import { collection, doc, getDocs, orderBy, query, serverTimestamp, setDoc } from "firebase/firestore";
 
 import { firebaseDb } from "@/lib/admin/firebase";
 import { getFirebaseAuth } from "@/lib/auth/firebase-config";
@@ -26,19 +26,15 @@ import { SubmissionsNav } from "@/components/admin/submissions-nav";
 import { RESOLVED_PERSONA_TO_AUTH_ID, resolvePersonaFromQuestionnaire } from "@/lib/questionnaire/resolve-persona";
 import type { QuestionnaireResponse } from "@/lib/questionnaire/types";
 
-type SubmissionEnv = "uat" | "prod";
-
 interface QuestionnaireDoc {
   readonly id: string;
-  readonly env: SubmissionEnv;
-  readonly projectId: string;
   readonly categories?: readonly string[];
   readonly instrument_types?: readonly string[];
   readonly venue_scope?: readonly string[] | "all";
   readonly strategy_style?: readonly string[];
   readonly service_family?: string;
   readonly fund_structure?: string;
-  readonly submittedAt?: string | null;
+  readonly submittedAt?: { toDate: () => Date } | null;
   readonly submitted_by?: {
     readonly email?: string;
     readonly firm_name?: string;
@@ -195,49 +191,26 @@ export default function QuestionnairesAdminPage() {
   const [orgLookup, setOrgLookup] = useState<Map<string, OrgLookupEntry>>(new Map());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [envErrors, setEnvErrors] = useState<{ env: SubmissionEnv; reason: string }[]>([]);
 
   useEffect(() => {
     const run = async () => {
       try {
-        // Cross-environment fetch via the server-side Admin SDK route. The
-        // server queries both `odum-staging` (UAT) and `central-element-323112`
-        // (prod) Firestores using the shared Cloud Run compute SA, merges, and
-        // returns rows tagged with their source env.
-        const auth = getFirebaseAuth();
-        const headers: Record<string, string> = {};
-        try {
-          const token = auth?.currentUser ? await auth.currentUser.getIdToken() : null;
-          if (token) headers.Authorization = `Bearer ${token}`;
-        } catch {
-          /* mock mode — token retrieval failure is non-fatal */
+        // Single-env read: each env's admin sees only its own Firestore.
+        // UAT admin -> odum-staging, prod admin -> central-element-323112.
+        // The cross-env helper (/api/admin/submissions) is reserved for
+        // workflows that genuinely span environments (demo-session
+        // seeding, where prod admin issues a UAT-resident demo session).
+        if (firebaseDb === null) {
+          setError("Firebase not configured (mock mode)");
+          return;
         }
-        const res = await fetch("/api/admin/submissions?collection=questionnaires", {
-          headers,
-        });
-        if (!res.ok) {
-          throw new Error(`API ${res.status}`);
-        }
-        const json = (await res.json()) as {
-          ok: boolean;
-          rows: ReadonlyArray<{
-            id: string;
-            env: SubmissionEnv;
-            projectId: string;
-            submittedAt: string | null;
-            data: Record<string, unknown>;
-          }>;
-          errors: ReadonlyArray<{ env: SubmissionEnv; reason: string }>;
-        };
-        const docs: QuestionnaireDoc[] = json.rows.map((r) => ({
-          id: r.id,
-          env: r.env,
-          projectId: r.projectId,
-          submittedAt: r.submittedAt,
-          ...(r.data as Omit<QuestionnaireDoc, "id" | "env" | "projectId" | "submittedAt">),
+        const q = query(collection(firebaseDb, "questionnaires"), orderBy("submittedAt", "desc"));
+        const snap = await getDocs(q);
+        const docs = snap.docs.map((d) => ({
+          id: d.id,
+          ...(d.data() as Omit<QuestionnaireDoc, "id">),
         }));
         setRows(docs);
-        setEnvErrors([...json.errors]);
       } catch (e) {
         setError(e instanceof Error ? e.message : String(e));
       } finally {
@@ -312,18 +285,6 @@ export default function QuestionnairesAdminPage() {
           Error: {error}
         </p>
       )}
-      {envErrors.length > 0 && (
-        <div className="mt-4 rounded-md border border-amber-500/50 bg-amber-500/10 p-3 text-xs">
-          <p className="font-medium text-amber-200">Some environments unavailable</p>
-          <ul className="mt-1 space-y-0.5 text-amber-100/80">
-            {envErrors.map((e) => (
-              <li key={e.env}>
-                <code className="font-mono">{e.env}</code>: {e.reason}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
       {!loading && error === null && rows.length === 0 && (
         <p className="mt-8" data-testid="questionnaires-empty">
           No submissions yet. When prospects submit <code>/questionnaire</code>, their responses land here.
@@ -334,7 +295,6 @@ export default function QuestionnairesAdminPage() {
         <table className="mt-8 w-full border-collapse text-sm" data-testid="questionnaires-table">
           <thead>
             <tr className="border-b text-left">
-              <th className="py-2 pr-4">Env</th>
               <th className="py-2 pr-4">Submission</th>
               <th className="py-2 pr-4">Submitted by</th>
               <th className="py-2 pr-4">Service family</th>
@@ -351,21 +311,11 @@ export default function QuestionnairesAdminPage() {
               const firmName = row.submitted_by?.firm_name;
               return (
                 <tr
-                  key={`${row.env}-${row.id}`}
+                  key={row.id}
                   id={`row-${row.id}`}
                   className="border-b align-top scroll-mt-24"
                   data-testid={`questionnaire-row-${row.id}`}
                 >
-                  <td className="py-2 pr-4">
-                    <span
-                      className={`inline-block rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase ${
-                        row.env === "prod" ? "bg-emerald-500/20 text-emerald-300" : "bg-amber-500/20 text-amber-300"
-                      }`}
-                      title={row.projectId}
-                    >
-                      {row.env}
-                    </span>
-                  </td>
                   <td className="py-2 pr-4 font-mono text-xs">{row.id.slice(0, 8)}…</td>
                   <td className="py-2 pr-4 text-xs">
                     {email || firmName ? (

@@ -10,19 +10,10 @@
  */
 
 import { NextResponse } from "next/server";
-import admin from "firebase-admin";
+
+import { getFirestoreFor } from "@/lib/admin/server/firestore-clients";
 
 export const dynamic = "force-dynamic";
-
-function getAdminApp(): admin.app.App {
-  if (admin.apps.length > 0) {
-    const existing = admin.apps[0];
-    if (existing) return existing;
-  }
-  return admin.initializeApp({
-    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  });
-}
 
 function isoFromTimestamp(value: unknown): string | null {
   if (!value) return null;
@@ -46,8 +37,9 @@ export async function GET(request: Request) {
   }
 
   try {
-    const app = getAdminApp();
-    const db = admin.firestore(app);
+    // Demo sessions live on UAT regardless of which env serves the
+    // request (issue-link writes to UAT; verify must read from there).
+    const db = getFirestoreFor("uat");
     const snap = await db.collection("demo_sessions").where("magicToken", "==", token).limit(1).get();
     if (snap.empty) {
       return NextResponse.json({ ok: false, state: "not-found" });

@@ -1,11 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getFirebaseAuth } from "@/lib/auth/firebase-config";
+import { collection, getDocs, orderBy, query } from "firebase/firestore";
+import { firebaseDb } from "@/lib/admin/firebase";
 import { formatFileSize, type UploadedFileRef } from "@/lib/strategy-evaluation/upload";
 import { SubmissionsNav } from "@/components/admin/submissions-nav";
-
-type SubmissionEnv = "uat" | "prod";
 
 const PATH_LABELS: Record<string, string> = {
   A: "Path A: DART Full",
@@ -22,8 +21,6 @@ const ENTITY_LABELS: Record<string, string> = {
 
 interface EvalDoc {
   readonly id: string;
-  readonly env: SubmissionEnv;
-  readonly projectId: string;
   readonly strategyName?: string;
   readonly leadResearcher?: string;
   readonly email?: string;
@@ -385,48 +382,28 @@ export default function StrategyEvaluationsAdminPage() {
   const [rows, setRows] = useState<EvalDoc[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [envErrors, setEnvErrors] = useState<{ env: SubmissionEnv; reason: string }[]>([]);
   const [selected, setSelected] = useState<EvalDoc | null>(null);
 
   useEffect(() => {
     const run = async () => {
       try {
-        // Cross-environment fetch via the server-side Admin SDK route. Reads
-        // both `odum-staging` (UAT) and `central-element-323112` (prod)
-        // Firestores using the shared compute SA, merges, returns rows
-        // tagged with their source env.
-        const auth = getFirebaseAuth();
-        const headers: Record<string, string> = {};
-        try {
-          const token = auth?.currentUser ? await auth.currentUser.getIdToken() : null;
-          if (token) headers.Authorization = `Bearer ${token}`;
-        } catch {
-          /* mock mode — non-fatal */
+        // Single-env read: each env's admin sees only its own Firestore
+        // (UAT admin -> odum-staging, prod admin -> central-element-323112).
+        // Demo-session seeding is the only flow that crosses environments
+        // and it goes through /api/demo-session/issue-link which knows to
+        // write the demo_session record to UAT regardless of caller env.
+        if (firebaseDb === null) {
+          setError("Firebase not configured (mock mode)");
+          return;
         }
-        const res = await fetch("/api/admin/submissions?collection=strategy_evaluations", { headers });
-        if (!res.ok) {
-          throw new Error(`API ${res.status}`);
-        }
-        const json = (await res.json()) as {
-          ok: boolean;
-          rows: ReadonlyArray<{
-            id: string;
-            env: SubmissionEnv;
-            projectId: string;
-            submittedAt: string | null;
-            data: Record<string, unknown>;
-          }>;
-          errors: ReadonlyArray<{ env: SubmissionEnv; reason: string }>;
-        };
+        const q = query(collection(firebaseDb, "strategy_evaluations"), orderBy("submittedAt", "desc"));
+        const snap = await getDocs(q);
         setRows(
-          json.rows.map((r) => ({
-            id: r.id,
-            env: r.env,
-            projectId: r.projectId,
-            ...(r.data as Omit<EvalDoc, "id" | "env" | "projectId">),
+          snap.docs.map((d) => ({
+            id: d.id,
+            ...(d.data() as Omit<EvalDoc, "id">),
           })),
         );
-        setEnvErrors([...json.errors]);
       } catch (e) {
         setError(e instanceof Error ? e.message : String(e));
       } finally {
@@ -449,18 +426,6 @@ export default function StrategyEvaluationsAdminPage() {
 
       {loading && <p className="mt-8 text-muted-foreground">Loading submissions…</p>}
       {error !== null && <p className="mt-8 text-red-700">Error: {error}</p>}
-      {envErrors.length > 0 && (
-        <div className="mt-4 rounded-md border border-amber-500/50 bg-amber-500/10 p-3 text-xs">
-          <p className="font-medium text-amber-200">Some environments unavailable</p>
-          <ul className="mt-1 space-y-0.5 text-amber-100/80">
-            {envErrors.map((e) => (
-              <li key={e.env}>
-                <code className="font-mono">{e.env}</code>: {e.reason}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
       {!loading && error === null && rows.length === 0 && (
         <p className="mt-8 text-muted-foreground">
           No submissions yet. When researchers submit <code>/strategy-evaluation</code>, their evaluation packs appear
@@ -472,7 +437,6 @@ export default function StrategyEvaluationsAdminPage() {
         <table className="mt-8 w-full border-collapse text-sm">
           <thead>
             <tr className="border-b text-left text-xs text-muted-foreground">
-              <th className="py-2 pr-4 font-medium">Env</th>
               <th className="py-2 pr-4 font-medium">Strategy</th>
               <th className="py-2 pr-4 font-medium">Researcher</th>
               <th className="py-2 pr-4 font-medium">Email</th>
@@ -486,21 +450,11 @@ export default function StrategyEvaluationsAdminPage() {
           <tbody>
             {rows.map((row) => (
               <tr
-                key={`${row.env}-${row.id}`}
+                key={row.id}
                 id={`row-${row.id}`}
                 className="border-b align-top hover:bg-muted/40 cursor-pointer scroll-mt-24"
                 onClick={() => setSelected(row)}
               >
-                <td className="py-2 pr-4">
-                  <span
-                    className={`inline-block rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase ${
-                      row.env === "prod" ? "bg-emerald-500/20 text-emerald-300" : "bg-amber-500/20 text-amber-300"
-                    }`}
-                    title={row.projectId}
-                  >
-                    {row.env}
-                  </span>
-                </td>
                 <td className="py-2 pr-4 font-medium max-w-[180px] truncate">
                   {row.strategyName || <span className="text-muted-foreground italic">Unnamed</span>}
                 </td>

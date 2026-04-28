@@ -24,8 +24,16 @@ import admin from "firebase-admin";
 import { sendEmail, getSenderFor, escapeHtml, type SendResult } from "@/lib/email/resend";
 import { routeResponseFromSend } from "@/lib/email/route-helpers";
 import { callout, fallbackLink, heading, paragraph, primaryButton, wrapBrandedEmail } from "@/lib/email/templates";
+import { getFirestoreFor } from "@/lib/admin/server/firestore-clients";
 
 export const dynamic = "force-dynamic";
+
+// Demo sessions always live on UAT (`odum-staging`) regardless of which
+// admin (UAT or prod) issues them, because demo sessions resolve at
+// uat.odum-research.com/demo-session?token=... and the verify route on
+// UAT reads UAT Firestore. Writing the demo_session record to prod
+// Firestore would orphan the magic link.
+const DEMO_SESSION_HOST_BASE = "https://uat.odum-research.com";
 
 const INTERNAL_ADDRESS = "info@odum-research.com";
 
@@ -59,25 +67,12 @@ interface IssueLinkPayload {
   send_email?: boolean;
 }
 
-function getAdminApp(): admin.app.App {
-  if (admin.apps.length > 0) {
-    const existing = admin.apps[0];
-    if (existing) return existing;
-  }
-  return admin.initializeApp({
-    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  });
-}
-
-function getSiteUrl(request: Request): string {
-  const env = process.env.NEXT_PUBLIC_SITE_URL;
-  if (env) return env.replace(/\/$/, "");
-  try {
-    const url = new URL(request.url);
-    return `${url.protocol}//${url.host}`;
-  } catch {
-    return "https://odum-research.com";
-  }
+// Demo-session magic links always resolve on UAT, so the issued URL
+// hard-codes uat.odum-research.com regardless of which admin host
+// originated the request. The verifying /demo-session page on UAT reads
+// UAT Firestore via the matching named Admin SDK app.
+function getDemoSessionLinkBase(): string {
+  return DEMO_SESSION_HOST_BASE;
 }
 
 export async function POST(request: Request) {
@@ -114,8 +109,10 @@ export async function POST(request: Request) {
 
   let sessionId: string;
   try {
-    const app = getAdminApp();
-    const db = admin.firestore(app);
+    // Always write to UAT Firestore — demos run on uat.odum-research.com
+    // and the verify route reads UAT, so the demo_sessions record must
+    // live there for the magic link to resolve.
+    const db = getFirestoreFor("uat");
     const ref = db.collection("demo_sessions").doc();
     await ref.set({
       prospect_email: email,
@@ -136,7 +133,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: "Persistence failed" }, { status: 500 });
   }
 
-  const baseUrl = getSiteUrl(request);
+  const baseUrl = getDemoSessionLinkBase();
   const link = `${baseUrl}/demo-session?token=${magicToken}`;
 
   // Email send (optional). When admin opts out, we skip the Resend round-
