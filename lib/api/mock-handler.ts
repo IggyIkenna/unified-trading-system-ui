@@ -6458,6 +6458,139 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     }));
     return json({ asset: "BTC", series });
   }
+  if (route.startsWith("/api/market-data/market-probability-curve")) {
+    const now = Date.now();
+    const days = 30;
+    return json({
+      market_id: "default",
+      market_title: "US presidential election — popular vote winner",
+      outcomes: [
+        {
+          outcome: "Candidate A",
+          series: Array.from({ length: days }, (_, i) => ({
+            t: now - (days - i - 1) * 24 * 60 * 60 * 1000,
+            implied_prob: 0.45 + Math.sin(i / 5) * 0.1 + (Math.random() - 0.5) * 0.04,
+          })),
+        },
+        {
+          outcome: "Candidate B",
+          series: Array.from({ length: days }, (_, i) => ({
+            t: now - (days - i - 1) * 24 * 60 * 60 * 1000,
+            implied_prob: 0.5 - Math.sin(i / 5) * 0.08 + (Math.random() - 0.5) * 0.04,
+          })),
+        },
+      ],
+    });
+  }
+  if (route.startsWith("/api/market-data/outcome-order-book")) {
+    const mkBids = (mid: number) =>
+      Array.from({ length: 12 }, (_, i) => ({ price: mid - (i + 1) * 0.01, size: 1000 + Math.random() * 8000 }));
+    const mkAsks = (mid: number) =>
+      Array.from({ length: 12 }, (_, i) => ({ price: mid + (i + 1) * 0.01, size: 1000 + Math.random() * 8000 }));
+    return json({
+      market_id: "default",
+      market_title: "US presidential election — popular vote winner",
+      outcomes: [
+        { outcome: "Candidate A", bids: mkBids(0.48), asks: mkAsks(0.48) },
+        { outcome: "Candidate B", bids: mkBids(0.52), asks: mkAsks(0.52) },
+      ],
+    });
+  }
+  if (route.startsWith("/api/market-data/outcome-volume")) {
+    const now = Date.now();
+    const days = 14;
+    return json({
+      market_id: "default",
+      market_title: "US presidential election — popular vote winner",
+      buckets: Array.from({ length: days }, (_, i) => ({
+        t: now - (days - i - 1) * 24 * 60 * 60 * 1000,
+        yes_volume: 200_000 + Math.random() * 1_500_000,
+        no_volume: 180_000 + Math.random() * 1_400_000,
+      })),
+    });
+  }
+  if (route.startsWith("/api/market-data/trending-markets") || route.startsWith("/api/market-data/closing-soon")) {
+    const closingSoon = route.includes("closing-soon");
+    const titles: Array<[string, string, string]> = [
+      ["Will Bitcoin hit $100K in 2026?", "Crypto", "Polymarket"],
+      ["US presidential election — popular vote winner", "Politics", "Polymarket"],
+      ["Will Fed cut rates at next FOMC?", "Macro", "Kalshi"],
+      ["Will SpaceX Starship reach orbit by 2026 Q3?", "Science", "Polymarket"],
+      ["Premier League — Arsenal top 4?", "Sports", "Polymarket"],
+      ["Will OpenAI release GPT-6 in 2026?", "Pop Culture", "Manifold"],
+      ["BTC ETF inflow > $5B in next 7 days?", "Crypto", "Polymarket"],
+      ["Will EU pass MiCA II by end of 2026?", "Politics", "Polymarket"],
+      ["S&P 500 close > 6000 by year-end?", "Macro", "Kalshi"],
+      ["NBA Finals MVP — Tatum?", "Sports", "Polymarket"],
+      ["Trump indictment count by Q4?", "Politics", "Polymarket"],
+      ["Will Tesla deliver 2.5M cars in 2026?", "Pop Culture", "Manifold"],
+    ];
+    const items = titles.map(([title, category, venue], i) => {
+      const vol7d = 30_000 + Math.random() * 800_000;
+      const vol24h = vol7d * (0.5 + Math.random() * 3);
+      return {
+        market_id: `mkt-${i}`,
+        title,
+        category,
+        venue,
+        volume_24h_usd: Math.round(vol24h),
+        volume_7d_avg_usd: Math.round(vol7d),
+        volume_change_pct: (vol24h - vol7d) / vol7d,
+        hours_to_resolution: closingSoon ? Math.floor(1 + Math.random() * 168) : 24 + Math.random() * 24 * 60,
+        current_implied_prob: 0.1 + Math.random() * 0.85,
+        sparkline: Array.from({ length: 14 }, () => vol24h * (0.4 + Math.random())),
+      };
+    });
+    if (closingSoon) {
+      items.sort((a, b) => (a.hours_to_resolution ?? Infinity) - (b.hours_to_resolution ?? Infinity));
+    } else {
+      items.sort((a, b) => b.volume_change_pct - a.volume_change_pct);
+    }
+    return json({ items });
+  }
+  if (route.startsWith("/api/market-data/topic-browser")) {
+    const topics: Array<[string, string, string]> = [
+      ["politics", "Politics", "Elections, legislation, geopolitics."],
+      ["crypto", "Crypto", "Token prices, ETF flows, protocol milestones."],
+      ["macro", "Macro", "Fed, rates, FX, equities."],
+      ["sports", "Sports", "NFL, NBA, Premier League, F1."],
+      ["science", "Science", "Climate, space, biotech."],
+      ["pop-culture", "Pop Culture", "Tech, awards, entertainment."],
+    ];
+    return json({
+      topics: topics.map(([slug, label, description]) => ({
+        slug,
+        label,
+        description,
+        market_count: Math.floor(20 + Math.random() * 200),
+        volume_24h_usd: Math.round(500_000 + Math.random() * 50_000_000),
+      })),
+    });
+  }
+  if (route.startsWith("/api/market-data/resolution-ledger")) {
+    const titles = [
+      "Will BTC reach $80K by 2026 Q1?",
+      "Will US CPI < 3% in March?",
+      "Premier League — Arsenal top 4 (2025/26)?",
+      "Apple stock > $250 by end of Q1 2026?",
+      "Will OpenAI raise > $40B in 2026 Q1?",
+      "EU MiCA technical standards finalised by March?",
+      "Will Tether release attestation in Q1?",
+      "S&P 500 close > 6000 in March?",
+    ];
+    const venues = ["Polymarket", "Kalshi", "Manifold"];
+    const now = Date.now();
+    const items = titles.map((title, i) => ({
+      market_id: `resolved-${i}`,
+      title,
+      venue: venues[i % venues.length] ?? "Polymarket",
+      resolved_at: now - i * 24 * 60 * 60 * 1000,
+      final_outcome: Math.random() > 0.5 ? "Yes" : "No",
+      final_implied_prob: Math.random(),
+      payout_usd: Math.round(50_000 + Math.random() * 500_000),
+    }));
+    return json({ items });
+  }
   if (route.startsWith("/api/market-data/")) return json({ data: [], total: 0 });
 
   return null;
