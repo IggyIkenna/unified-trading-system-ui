@@ -22,6 +22,17 @@ These docs deliberately **avoid any reference to the current platform**. They de
 
 ---
 
+## Cross-Archetype Trackers
+
+Concise, link-driven indexes that synthesize across all 15 archetypes — useful when scoping a feature or evaluating coverage of the platform.
+
+| Doc                                | What it covers                                                                                                     |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| [common-tools.md](common-tools.md) | The shared platform surfaces every (or nearly every) archetype needs. ~30 surfaces. **The platform foundation.**   |
+| [unique-tools.md](unique-tools.md) | Per-archetype specialized surfaces that don't generalize across the floor. **What each archetype needs uniquely.** |
+
+---
+
 ## Crypto Desk
 
 | Persona           | Role                                                                                    | Doc                                                                                  |
