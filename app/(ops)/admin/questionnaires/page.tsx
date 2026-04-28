@@ -305,7 +305,12 @@ export default function QuestionnairesAdminPage() {
               const email = row.submitted_by?.email;
               const firmName = row.submitted_by?.firm_name;
               return (
-                <tr key={row.id} className="border-b align-top" data-testid={`questionnaire-row-${row.id}`}>
+                <tr
+                  key={row.id}
+                  id={`row-${row.id}`}
+                  className="border-b align-top scroll-mt-24"
+                  data-testid={`questionnaire-row-${row.id}`}
+                >
                   <td className="py-2 pr-4 font-mono text-xs">{row.id.slice(0, 8)}…</td>
                   <td className="py-2 pr-4 text-xs">
                     {email || firmName ? (

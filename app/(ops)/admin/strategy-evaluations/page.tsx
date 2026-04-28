@@ -446,7 +446,8 @@ export default function StrategyEvaluationsAdminPage() {
             {rows.map((row) => (
               <tr
                 key={row.id}
-                className="border-b align-top hover:bg-muted/40 cursor-pointer"
+                id={`row-${row.id}`}
+                className="border-b align-top hover:bg-muted/40 cursor-pointer scroll-mt-24"
                 onClick={() => setSelected(row)}
               >
                 <td className="py-2 pr-4 font-medium max-w-[180px] truncate">

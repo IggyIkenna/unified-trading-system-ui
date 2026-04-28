@@ -226,6 +226,22 @@ export default function SeedDemoPage() {
     }
   }
 
+  // Magic-link URLs into the prospect's own surfaces so the operator can
+  // walk through what the prospect sees end-to-end. Only available when the
+  // submission carries a magicToken (every strategy_evaluations submit
+  // mints one; light /questionnaire submits don't).
+  const magicToken =
+    submission && typeof submission.summary["magicToken"] === "string"
+      ? (submission.summary["magicToken"] as string)
+      : null;
+  const prospectStatusUrl = magicToken ? `/strategy-evaluation/status?token=${magicToken}` : null;
+  const adminRowHref =
+    submission?.source === "strategy_evaluations"
+      ? `/admin/strategy-evaluations#row-${submission.id}`
+      : submission?.source === "questionnaires"
+        ? `/admin/questionnaires#row-${submission.id}`
+        : null;
+
   return (
     <main className="mx-auto max-w-3xl px-6 py-8" data-testid="seed-demo-page">
       <h1 className="text-2xl font-semibold">Seed demo session</h1>
@@ -238,6 +254,12 @@ export default function SeedDemoPage() {
         </Link>{" "}
         with the submission pre-filled.
       </p>
+      <div className="mt-3 rounded-md border border-sky-500/40 bg-sky-500/5 p-3 text-xs text-sky-100/90">
+        <strong className="font-medium">Starting point, not a script.</strong> The pre-fill below is derived from the
+        prospect&rsquo;s answers; review the full submission, walk through what they see at their magic-link surface,
+        then tailor the demo content (curated catalogue, walkthrough agenda, supporting docs) after the link is issued.
+        The demo session is just the access vehicle.
+      </div>
 
       {resolveLoading && submissionIdParam ? (
         <p className="mt-6 text-sm text-muted-foreground">
@@ -254,8 +276,30 @@ export default function SeedDemoPage() {
 
       {submission ? (
         <div className="mt-6 rounded-md border border-border bg-card/30 p-4 text-sm">
-          <p className="font-medium">Submission resolved</p>
-          <dl className="mt-2 grid grid-cols-[140px_1fr] gap-x-4 gap-y-1 text-xs">
+          <div className="flex items-start justify-between gap-3">
+            <p className="font-medium">Submission resolved</p>
+            <div className="flex flex-wrap gap-2 text-xs">
+              {prospectStatusUrl ? (
+                <Link
+                  href={prospectStatusUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-md border border-border/60 px-2 py-1 text-blue-400 underline-offset-2 hover:underline"
+                >
+                  Open prospect&rsquo;s magic-link view ↗
+                </Link>
+              ) : null}
+              {adminRowHref ? (
+                <Link
+                  href={adminRowHref}
+                  className="rounded-md border border-border/60 px-2 py-1 text-blue-400 underline-offset-2 hover:underline"
+                >
+                  Open in admin {submission.source === "strategy_evaluations" ? "evaluations" : "questionnaires"} →
+                </Link>
+              ) : null}
+            </div>
+          </div>
+          <dl className="mt-3 grid grid-cols-[140px_1fr] gap-x-4 gap-y-1 text-xs">
             <dt className="text-muted-foreground">Source collection</dt>
             <dd>
               <code>{submission.source}</code>
@@ -287,6 +331,40 @@ export default function SeedDemoPage() {
               </>
             ) : null}
           </dl>
+
+          {/* Full submission as collapsible answers — operator reads these
+              to tailor the demo. Hide bulky / opaque fields (token,
+              timestamps already shown, raw upload refs already linked
+              in the admin view). */}
+          <details className="mt-4 rounded-md border border-border/60 bg-background/30 p-3 text-xs">
+            <summary className="cursor-pointer select-none text-muted-foreground hover:text-foreground">
+              Show all answers ({Object.keys(submission.summary).length} fields)
+            </summary>
+            <dl className="mt-3 grid grid-cols-[180px_1fr] gap-x-4 gap-y-1 break-all">
+              {Object.entries(submission.summary)
+                .filter(([k]) => !["magicToken", "submittedAt", "submitted_by", "_id"].includes(k))
+                .sort(([a], [b]) => a.localeCompare(b))
+                .map(([key, value]) => {
+                  const display = (() => {
+                    if (value === null || value === undefined) return "(empty)";
+                    if (typeof value === "boolean") return value ? "yes" : "no";
+                    if (typeof value === "string" || typeof value === "number") return String(value);
+                    if (Array.isArray(value)) {
+                      if (value.length === 0) return "(empty)";
+                      return value.map((v) => (typeof v === "object" ? JSON.stringify(v) : String(v))).join(", ");
+                    }
+                    if (typeof value === "object") return JSON.stringify(value);
+                    return String(value);
+                  })();
+                  return (
+                    <React.Fragment key={key}>
+                      <dt className="text-muted-foreground font-mono text-[11px]">{key}</dt>
+                      <dd className="whitespace-pre-wrap">{display}</dd>
+                    </React.Fragment>
+                  );
+                })}
+            </dl>
+          </details>
         </div>
       ) : null}
 
