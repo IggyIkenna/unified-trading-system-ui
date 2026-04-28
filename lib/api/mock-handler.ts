@@ -6567,6 +6567,99 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       })),
     });
   }
+  if (route.startsWith("/api/market-data/asset-group-screener")) {
+    const url = new URL(route, "http://localhost");
+    const ag = (url.searchParams.get("asset_group") ?? "cefi").toLowerCase();
+    type Row = {
+      id: string;
+      name: string;
+      subname?: string;
+      primary: number;
+      change: number;
+      sparkline: number[];
+      source?: string;
+      extra: Record<string, string | number>;
+    };
+    const mkRow = (
+      id: string,
+      name: string,
+      subname: string | undefined,
+      primary: number,
+      change: number,
+      source: string | undefined,
+      extra: Record<string, string | number> = {},
+    ): Row => ({
+      id,
+      name,
+      subname,
+      primary,
+      change,
+      sparkline: Array.from({ length: 14 }, () => primary * (0.85 + Math.random() * 0.3)),
+      source,
+      extra,
+    });
+    let items: Row[] = [];
+    if (ag === "sports") {
+      items = [
+        mkRow("nfl-1", "Chiefs vs Bills", "Sun 8pm", 2.3, 0.12, "Pinnacle", { sharpPct: "62%", valueScore: "8.4" }),
+        mkRow("nba-1", "Celtics vs Heat", "Mon 7pm", 1.8, 0.05, "Betfair", { sharpPct: "55%", valueScore: "6.2" }),
+        mkRow("epl-1", "Arsenal vs Chelsea", "Sat 12pm", 2.1, -0.08, "Matchbook", {
+          sharpPct: "48%",
+          valueScore: "5.1",
+        }),
+        mkRow("ncaa-1", "Duke vs UNC", "Sat 6pm", 1.95, 0.18, "OddsAPI", { sharpPct: "70%", valueScore: "9.0" }),
+      ];
+    } else if (ag === "prediction") {
+      items = [
+        mkRow("p-1", "BTC > $100K in 2026", "Crypto", 4_200_000, 0.45, "Polymarket", {
+          impliedProb: "0.34",
+          timeToResolve: "240h",
+        }),
+        mkRow("p-2", "Fed cuts rates next FOMC", "Macro", 2_800_000, 0.32, "Kalshi", {
+          impliedProb: "0.62",
+          timeToResolve: "48h",
+        }),
+        mkRow("p-3", "GPT-6 in 2026", "Pop Culture", 1_200_000, 0.18, "Manifold", {
+          impliedProb: "0.21",
+          timeToResolve: "1800h",
+        }),
+      ];
+    } else if (ag === "cefi") {
+      items = [
+        mkRow("BTC", "BTC", "Bitcoin", 1_300_000_000_000, 0.04, undefined, {
+          dominance: "52%",
+          volume24h: 28_000_000_000,
+        }),
+        mkRow("ETH", "ETH", "Ethereum", 350_000_000_000, 0.02, undefined, {
+          dominance: "14%",
+          volume24h: 15_000_000_000,
+        }),
+        mkRow("SOL", "SOL", "Solana", 80_000_000_000, 0.08, undefined, {
+          dominance: "3.2%",
+          volume24h: 4_500_000_000,
+        }),
+      ];
+    } else if (ag === "defi") {
+      items = [
+        mkRow("aave-eth-usdc", "AAVE — USDC supply", "Lending", 4_800_000_000, 0.03, "Ethereum", {
+          apy: "4.2%",
+          volume24h: 320_000_000,
+        }),
+        mkRow("uni-eth", "Uniswap V3", "DEX", 4_300_000_000, -0.02, "Ethereum", { apy: "—", volume24h: 1_800_000_000 }),
+        mkRow("lido-eth", "Lido stETH", "Liquid Staking", 25_000_000_000, 0.01, "Ethereum", {
+          apy: "3.4%",
+          volume24h: 80_000_000,
+        }),
+      ];
+    } else if (ag === "tradfi") {
+      items = [
+        mkRow("spy", "SPY", "S&P 500 ETF", 5840.5, 0.01, "OPRA", { yld: "1.3%" }),
+        mkRow("qqq", "QQQ", "Nasdaq 100 ETF", 510.2, 0.02, "OPRA", { yld: "0.6%" }),
+        mkRow("iwm", "IWM", "Russell 2000 ETF", 235.8, -0.005, "OPRA", { yld: "1.1%" }),
+      ];
+    }
+    return json({ items });
+  }
   if (route.startsWith("/api/market-data/rates-curve")) {
     const series: Array<[number, string]> = [
       [30, "DGS1MO"],

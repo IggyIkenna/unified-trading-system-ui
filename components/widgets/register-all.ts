@@ -22,3 +22,4 @@ import "./strategies/register";
 import "./terminal/register";
 import "./tradfi/register";
 import "./trades/register";
+import "./_screeners/register";
