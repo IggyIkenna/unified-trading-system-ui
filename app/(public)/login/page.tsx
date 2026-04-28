@@ -13,6 +13,22 @@ import { isDemoPersonaEmail } from "@/lib/auth/personas";
 import { isMockDataMode } from "@/lib/runtime/data-mode";
 import Link from "next/link";
 
+/**
+ * Emails that land on /investor-relations after login when the entitlement
+ * check (investor-board / investor-archive) doesn't catch them — used as a
+ * belt-and-suspenders fallback when the authz backend is slow or returns
+ * an empty entitlements set. Module-scope so the Set isn't recreated on
+ * every render. See `defaultLanding()` in LoginPage below.
+ */
+const IR_EMAILS: ReadonlySet<string> = new Set([
+  // Canonical IR distribution aliases (com + co.uk).
+  "investors@odum-research.com",
+  "investors@odum-research.co.uk",
+  // Seeded singular personas (legacy demo accounts).
+  "investor@odum-research.co.uk",
+  "advisor@odum-research.co.uk",
+]);
+
 export default function LoginPage() {
   const router = useRouter();
   const { user, loading, loginByEmail, loginError, hasEntitlement, isAdmin, isInternal } = useAuth();
@@ -25,13 +41,16 @@ export default function LoginPage() {
 
   /**
    * Post-login default landing. Investor / board users go straight to the IR hub —
-   * the advisor email (board-website-update) assumes this. Everyone else lands on /dashboard.
-   * An explicit `?redirect=` query param always wins.
+   * the advisor email (board-website-update) assumes this. Per-prospect demo
+   * personas (Desmond, Patrick, etc.) and admin / internal accounts land on
+   * /dashboard. An explicit `?redirect=` query param always wins.
    *
    * Detection is belt-and-suspenders: (a) the `investor-board` / `investor-archive`
-   * entitlements when the user-management-api has returned them, (b) a hardcoded email
-   * fallback for the canonical advisor account so the redirect also works when the
-   * authz backend is slow or momentarily unreachable.
+   * entitlements when the user-management-api has returned them, (b) a hardcoded
+   * email fallback (IR_EMAILS, module-scope) covering both the canonical IR
+   * distribution aliases (`investors@odum-research.com` / `.co.uk`) and the
+   * seeded singular personas (`investor@`, `advisor@`) so the redirect also
+   * works when the authz backend is slow or momentarily unreachable.
    *
    * Admin / internal users land on /dashboard regardless of entitlements. Their
    * wildcard `["*"]` entitlement set would otherwise make `hasEntitlement(...)`
@@ -45,7 +64,7 @@ export default function LoginPage() {
     if (hasEntitlement("investor-board") || hasEntitlement("investor-archive")) {
       return "/investor-relations";
     }
-    if (user?.email === "investor@odum-research.co.uk" || user?.email === "advisor@odum-research.co.uk") {
+    if (user?.email && IR_EMAILS.has(user.email.toLowerCase())) {
       return "/investor-relations";
     }
     return "/dashboard";
