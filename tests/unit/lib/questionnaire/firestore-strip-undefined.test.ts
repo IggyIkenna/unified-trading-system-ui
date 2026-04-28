@@ -86,7 +86,8 @@ describe("submitQuestionnaire — Firestore payload sanitisation", () => {
     const result = await submitQuestionnaire(RESPONSE, ENVELOPE_WITH_ID);
     expect(result.success).toBe(true);
     expect(addDocMock).toHaveBeenCalledTimes(1);
-    const [, payload] = addDocMock.mock.calls[0]!;
+    const callArgs = addDocMock.mock.calls[0] as unknown as [unknown, unknown];
+    const payload = callArgs[1];
     expect(hasUndefinedDeep(payload), `payload contained undefined: ${JSON.stringify(payload)}`).toBe(false);
   });
 
@@ -94,7 +95,8 @@ describe("submitQuestionnaire — Firestore payload sanitisation", () => {
     const { submitQuestionnaire } = await import("@/lib/questionnaire/submit");
     const result = await submitQuestionnaire(RESPONSE, ENVELOPE_WITHOUT_ID);
     expect(result.success).toBe(true);
-    const [, payload] = addDocMock.mock.calls[0]!;
+    const callArgs = addDocMock.mock.calls[0] as unknown as [unknown, unknown];
+    const payload = callArgs[1];
     expect(hasUndefinedDeep(payload)).toBe(false);
   });
 
@@ -102,15 +104,17 @@ describe("submitQuestionnaire — Firestore payload sanitisation", () => {
     const { submitQuestionnaire } = await import("@/lib/questionnaire/submit");
     const result = await submitQuestionnaire(RESPONSE, null);
     expect(result.success).toBe(true);
-    const [, payload] = addDocMock.mock.calls[0]!;
+    const callArgs = addDocMock.mock.calls[0] as unknown as [unknown, unknown];
+    const payload = callArgs[1];
     expect(hasUndefinedDeep(payload)).toBe(false);
   });
 
   it("strips submissionId from submitted_by — Firestore doc id supersedes any prior value", async () => {
     const { submitQuestionnaire } = await import("@/lib/questionnaire/submit");
     await submitQuestionnaire(RESPONSE, ENVELOPE_WITH_ID);
-    const [, payload] = addDocMock.mock.calls[0]!;
-    const submittedBy = (payload as { submitted_by?: { submissionId?: string } }).submitted_by;
+    const callArgs = addDocMock.mock.calls[0] as unknown as [unknown, unknown];
+    const payload = callArgs[1];
+    const submittedBy = (payload as { submitted_by?: { submissionId?: string } } | undefined)?.submitted_by;
     expect(submittedBy).toBeDefined();
     expect(submittedBy).not.toHaveProperty("submissionId");
     expect(submittedBy?.submissionId).toBeUndefined();

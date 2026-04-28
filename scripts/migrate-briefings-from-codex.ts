@@ -36,13 +36,12 @@ import type { BriefingHub, BriefingPillar, BriefingPillarSlug } from "../lib/bri
  * slugs here are kept as plain strings so the file typechecks against the
  * current narrow union without losing the historical migration record.
  */
-const HUB_DISPLAY_ORDER: readonly string[] = [
-  "platform",
+// Aligned with the 3-pillar canonical refactor (b531beb2). The legacy
+// 6-pillar slug set has been retired — see content/briefings/_hub.yaml.
+const HUB_DISPLAY_ORDER: readonly BriefingPillarSlug[] = [
   "investment-management",
-  "dart-full",
-  "dart-signals-in",
-  "signals-out",
-  "regulatory",
+  "dart-trading-infrastructure",
+  "regulated-operating-models",
 ];
 
 /**
@@ -140,7 +139,7 @@ async function main(): Promise<void> {
     }
   }
 
-  const hub: BriefingHub = { ...HUB_FRAMING, displayOrder: HUB_DISPLAY_ORDER as readonly BriefingPillarSlug[] };
+  const hub: BriefingHub = { ...HUB_FRAMING, displayOrder: HUB_DISPLAY_ORDER };
   const hubYaml = hubToYaml(hub);
   const hubPath = path.join(CONTENT_DIR, "_hub.yaml");
   const hubExisting = fs.existsSync(hubPath) ? fs.readFileSync(hubPath, "utf8") : "";
