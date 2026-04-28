@@ -33,6 +33,7 @@ import {
   Database,
   DollarSign,
   GitFork,
+  Landmark,
   Layers,
   LayoutDashboard,
   Lightbulb,
@@ -545,6 +546,20 @@ export const TRADING_TABS: ServiceTab[] = [
     group: "Predictions",
     familyGroup: "Predictions",
     requiredEntitlement: { domain: "trading-predictions", tier: "basic" } as TradingEntitlement,
+  },
+  // ── TradFi family (P4 of DART terminal plan) ──────────────────────────────
+  // Net-new asset_group surface for the cross-asset-group widening — rates,
+  // ETF flows, vol surface, sector heatmap. Gated on `trading-common`
+  // (shared with CeFi) until a dedicated `trading-tradfi` domain is added.
+  {
+    label: "TradFi",
+    href: "/services/trading/tradfi",
+    icon: Landmark,
+    requiredEntitlement: { domain: "trading-common", tier: "basic" } as TradingEntitlement,
+    group: "TradFi",
+    familyGroup: "TradFi",
+    familyIcon: "Landmark",
+    exact: true,
   },
 ];
 

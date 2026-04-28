@@ -6567,6 +6567,70 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       })),
     });
   }
+  if (route.startsWith("/api/market-data/rates-curve")) {
+    const series: Array<[number, string]> = [
+      [30, "DGS1MO"],
+      [90, "DGS3MO"],
+      [180, "DGS6MO"],
+      [365, "DGS1"],
+      [730, "DGS2"],
+      [1825, "DGS5"],
+      [3650, "DGS10"],
+      [7300, "DGS20"],
+      [10950, "DGS30"],
+    ];
+    const points = series.map(([days, id]) => ({
+      maturity_days: days,
+      yield_pct: 4.5 + 0.001 * Math.log(days) - 0.0001 * days + (Math.random() - 0.5) * 0.05,
+      series_id: id,
+    }));
+    return json({ asof: new Date().toISOString().slice(0, 10), points });
+  }
+  if (route.startsWith("/api/market-data/vol-surface")) {
+    return json({
+      underlying: "SPY",
+      rows: Array.from({ length: 9 }, (_, i) => ({
+        strike: 500 + i * 10,
+        iv_30d: 0.18 + Math.random() * 0.04,
+        iv_60d: 0.19 + Math.random() * 0.04,
+        iv_90d: 0.2 + Math.random() * 0.04,
+        iv_180d: 0.21 + Math.random() * 0.04,
+      })),
+    });
+  }
+  if (route.startsWith("/api/market-data/etf-flows")) {
+    const url = new URL(route, "http://localhost");
+    const ticker = url.searchParams.get("ticker") ?? "SPY";
+    const now = Date.now();
+    const buckets = Array.from({ length: 30 }, (_, i) => ({
+      t: now - (29 - i) * 24 * 60 * 60 * 1000,
+      inflow_usd: 100_000_000 + Math.random() * 800_000_000,
+      outflow_usd: 80_000_000 + Math.random() * 600_000_000,
+    }));
+    return json({ ticker, buckets });
+  }
+  if (route.startsWith("/api/market-data/sector-heatmap")) {
+    const sectors = [
+      "Tech",
+      "Financials",
+      "Energy",
+      "Healthcare",
+      "Consumer",
+      "Industrials",
+      "Materials",
+      "Real Estate",
+      "Utilities",
+    ];
+    const buckets = ["1D", "1W", "1M", "3M", "YTD", "1Y"];
+    const cells: Record<string, Record<string, number>> = {};
+    for (const s of sectors) {
+      cells[s] = {};
+      for (const b of buckets) {
+        cells[s][b] = (Math.random() - 0.4) * 0.15;
+      }
+    }
+    return json({ sectors, buckets, cells });
+  }
   if (route.startsWith("/api/market-data/resolution-ledger")) {
     const titles = [
       "Will BTC reach $80K by 2026 Q1?",

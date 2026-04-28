@@ -20,4 +20,5 @@ import "./risk/register";
 import "./sports/register";
 import "./strategies/register";
 import "./terminal/register";
+import "./tradfi/register";
 import "./trades/register";
