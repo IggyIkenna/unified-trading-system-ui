@@ -390,23 +390,24 @@ function useServiceQuickStat(
   filtered: { dart: string | null; reports: string | null },
 ): string | undefined {
   return React.useMemo(() => {
-    // Signals-In personas see a signal-centric stat on the DART tile, not the
-    // generic P&L. Post 2026-04-21 collapse — DART tile swallows Research /
-    // Promote / Observe / Strategy Catalogue surfaces, so the quick-stat
-    // headline depends on the persona's primary DART sub-route.
-    if (key === "dart" && personaId === "prospect-signals-only") {
+    // 2026-04-28 tile split: legacy "dart" is split into "dart-terminal" +
+    // "dart-research". Quick stats live on the Terminal tile (live trading)
+    // by default; Research tile shows a research-flavoured stat.
+    // Signals-In personas see a signal-centric stat on the Terminal tile.
+    if (key === "dart-terminal" && personaId === "prospect-signals-only") {
       return isLive ? "2 active signals · 14 today" : "Signals replay ready";
     }
-    if (key === "dart" && personaId === "client-data-only") {
+    if (key === "dart-terminal" && personaId === "client-data-only") {
       return "2,400+ instruments · Strategy catalogue";
     }
-    // Filter-aware slices come from useFilteredDashboardQuickStats (real API
-    // when deployed, deterministic mock otherwise). When the filter is
-    // unset, the hook returns nulls and we fall back to the default copy.
-    if (key === "dart" && filtered.dart) return filtered.dart;
+    // Filter-aware slices come from useFilteredDashboardQuickStats. The hook
+    // still returns a `dart` channel today (mock + real API both pre-split);
+    // route it to dart-terminal which is the live-trading surface.
+    if (key === "dart-terminal" && filtered.dart) return filtered.dart;
     if (key === "reports" && filtered.reports) return filtered.reports;
     const stats: Record<string, string> = {
-      dart: isLive ? "$142K P&L · 47 positions · 3 alerts" : "$139K batch P&L · 38 backtests",
+      "dart-terminal": isLive ? "$142K P&L · 47 positions · 3 alerts" : "$139K batch P&L · 38 backtests",
+      "dart-research": "12 strategies in backtest · 4 candidates · 2 promoted",
       "odum-signals": "12 counterparties · 284 emissions today",
       reports: "12 reports this month",
       "investor-relations": "Next board: May 15",
