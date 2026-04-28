@@ -6221,6 +6221,106 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       history,
     });
   }
+  if (route.startsWith("/api/market-data/tvl-by-chain")) {
+    const chains = ["Ethereum", "Tron", "Solana", "BSC", "Arbitrum", "Base", "Optimism", "Polygon", "Avalanche", "Sui"];
+    const items = chains.map((chain, i) => {
+      const tvl = (300_000_000_000 - i * 25_000_000_000) * (0.7 + Math.random() * 0.5);
+      return {
+        chain,
+        tvl_usd: Math.round(tvl),
+        change_24h: (Math.random() - 0.4) * 0.06,
+        change_7d: (Math.random() - 0.45) * 0.18,
+        sparkline_7d: Array.from({ length: 28 }, () => tvl * (0.95 + Math.random() * 0.1)),
+      };
+    });
+    return json({ items });
+  }
+  if (route.startsWith("/api/market-data/tvl-by-protocol")) {
+    const protocols: Array<[string, string, string]> = [
+      ["Lido", "Ethereum", "Liquid Staking"],
+      ["AAVE", "Ethereum", "Lending"],
+      ["EigenLayer", "Ethereum", "Restaking"],
+      ["Maker", "Ethereum", "CDP"],
+      ["JustLend", "Tron", "Lending"],
+      ["Uniswap", "Ethereum", "DEX"],
+      ["Pendle", "Ethereum", "Yield"],
+      ["Curve", "Ethereum", "DEX"],
+      ["Morpho", "Ethereum", "Lending"],
+      ["GMX", "Arbitrum", "Perps"],
+    ];
+    const items = protocols.map(([protocol, chain, category], i) => {
+      const tvl = (50_000_000_000 - i * 4_000_000_000) * (0.7 + Math.random() * 0.5);
+      return {
+        protocol,
+        chain,
+        category,
+        tvl_usd: Math.round(tvl),
+        change_24h: (Math.random() - 0.4) * 0.08,
+        change_7d: (Math.random() - 0.45) * 0.2,
+        sparkline_7d: Array.from({ length: 28 }, () => tvl * (0.93 + Math.random() * 0.14)),
+      };
+    });
+    return json({ items });
+  }
+  if (route.startsWith("/api/market-data/dex-volume-ranking")) {
+    const dexes: Array<[string, string]> = [
+      ["Uniswap V3", "Ethereum"],
+      ["PancakeSwap", "BSC"],
+      ["Aerodrome", "Base"],
+      ["Curve", "Ethereum"],
+      ["Raydium", "Solana"],
+      ["Orca", "Solana"],
+      ["Uniswap V2", "Ethereum"],
+      ["Balancer", "Ethereum"],
+      ["dYdX", "Cosmos"],
+      ["Hyperliquid", "Hyperliquid"],
+    ];
+    const items = dexes.map(([protocol, chain], i) => {
+      const vol = (5_000_000_000 - i * 350_000_000) * (0.6 + Math.random() * 0.7);
+      return {
+        protocol,
+        chain,
+        volume_24h_usd: Math.round(vol),
+        change_24h: (Math.random() - 0.5) * 0.4,
+        sparkline_24h: Array.from({ length: 24 }, () => (vol / 24) * (0.7 + Math.random() * 0.6)),
+      };
+    });
+    return json({ items });
+  }
+  if (route.startsWith("/api/market-data/yield-farm-ranking")) {
+    const pools: Array<[string, string, string, number]> = [
+      ["AAVE", "Ethereum", "USDC supply", 4.2],
+      ["AAVE", "Ethereum", "USDT supply", 4.1],
+      ["AAVE", "Arbitrum", "USDC supply", 3.8],
+      ["Pendle", "Ethereum", "stETH PT-20Mar25", 12.4],
+      ["Morpho", "Ethereum", "WETH supply", 2.9],
+      ["Curve", "Ethereum", "3pool LP", 3.5],
+      ["Convex", "Ethereum", "stETH", 5.6],
+      ["GMX", "Arbitrum", "GLP", 9.8],
+      ["Lido", "Ethereum", "stETH", 3.4],
+      ["Marinade", "Solana", "mSOL", 7.1],
+    ];
+    const items = pools.map(([protocol, chain, pool, apy], i) => ({
+      protocol,
+      chain,
+      pool,
+      apy,
+      tvl_usd: Math.round((1_000_000_000 - i * 80_000_000) * (0.6 + Math.random() * 0.8)),
+      risk_score: 1 + Math.random() * 4,
+    }));
+    return json({ items });
+  }
+  if (route.startsWith("/api/market-data/stablecoin-supply")) {
+    const url = new URL(route, "http://localhost");
+    const symbol = url.searchParams.get("symbol") ?? "USDT";
+    const now = Date.now();
+    const buckets = Array.from({ length: 30 }, (_, i) => ({
+      t: now - (29 - i) * 24 * 60 * 60 * 1000,
+      mint_usd: 50_000_000 + Math.random() * 250_000_000,
+      burn_usd: 30_000_000 + Math.random() * 200_000_000,
+    }));
+    return json({ symbol, buckets });
+  }
   if (route.startsWith("/api/market-data/basis-curve")) {
     const venues = ["Binance", "OKX", "Bybit", "Deribit"];
     const expiriesDays = [7, 14, 30, 60, 90, 180, 365];

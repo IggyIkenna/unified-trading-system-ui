@@ -33,7 +33,12 @@ import { DeFiTransferWidget } from "./defi-transfer-widget";
 import { DeFiWalletSummaryWidget } from "./defi-wallet-summary-widget";
 import { DeFiWaterfallWeightsWidget } from "./defi-waterfall-weights-widget";
 import { DeFiYieldChartWidget } from "./defi-yield-chart-widget";
+import { DexVolumeRankingWidget } from "./dex-volume-ranking-widget";
 import { EnhancedBasisWidget } from "./enhanced-basis-widget";
+import { StablecoinSupplyWidget } from "./stablecoin-supply-widget";
+import { TvlByChainWidget } from "./tvl-by-chain-widget";
+import { TvlByProtocolWidget } from "./tvl-by-protocol-widget";
+import { YieldFarmRankingWidget } from "./yield-farm-ranking-widget";
 
 registerPresets("defi", [
   {
@@ -554,4 +559,111 @@ registerWidget({
   availableOn: ["defi", "strategies"],
   singleton: true,
   component: EnhancedBasisWidget,
+});
+
+// ─── DefiLlama-style DeFi metrics (P2 of DART terminal plan) ───────────────
+// Per the no-orphans-all-in-DART constraint, all 5 widgets register on the
+// `defi` tab and appear in the new "DeFi Metrics" preset below.
+
+registerPresets("defi", [
+  {
+    id: "defi-defillama-metrics",
+    name: "DeFi Metrics",
+    tab: "defi",
+    isPreset: true,
+    layouts: [
+      { widgetId: "defi-tvl-by-chain", instanceId: "defi-tvl-by-chain-1", x: 0, y: 0, w: 12, h: 8 },
+      { widgetId: "defi-tvl-by-protocol", instanceId: "defi-tvl-by-protocol-1", x: 12, y: 0, w: 12, h: 8 },
+      { widgetId: "defi-dex-volume-ranking", instanceId: "defi-dex-volume-ranking-1", x: 0, y: 8, w: 12, h: 8 },
+      { widgetId: "defi-yield-farm-ranking", instanceId: "defi-yield-farm-ranking-1", x: 12, y: 8, w: 12, h: 8 },
+      { widgetId: "defi-stablecoin-supply", instanceId: "defi-stablecoin-supply-1", x: 0, y: 16, w: 24, h: 6 },
+    ],
+    createdAt: "2026-04-28T00:00:00Z",
+    updatedAt: "2026-04-28T00:00:00Z",
+  },
+]);
+
+registerWidget({
+  id: "defi-tvl-by-chain",
+  label: "TVL by chain",
+  description: "DefiLlama-style TVL ranking by chain — total value locked with sparkline + 24h/7d %change.",
+  icon: Layers,
+  minW: 6,
+  minH: 6,
+  defaultW: 12,
+  defaultH: 8,
+  requiredEntitlements: [{ domain: "trading-defi", tier: "basic" }],
+  assetGroup: "DEFI",
+  catalogGroup: "DeFi",
+  availableOn: ["defi", "overview", "markets"],
+  singleton: false,
+  component: TvlByChainWidget,
+});
+
+registerWidget({
+  id: "defi-tvl-by-protocol",
+  label: "TVL by protocol",
+  description: "DefiLlama-style TVL ranking by protocol with chain + category as venue tag.",
+  icon: Landmark,
+  minW: 6,
+  minH: 6,
+  defaultW: 12,
+  defaultH: 8,
+  requiredEntitlements: [{ domain: "trading-defi", tier: "basic" }],
+  assetGroup: "DEFI",
+  catalogGroup: "DeFi",
+  availableOn: ["defi", "overview", "markets"],
+  singleton: false,
+  component: TvlByProtocolWidget,
+});
+
+registerWidget({
+  id: "defi-dex-volume-ranking",
+  label: "DEX volume — 24h",
+  description: "DefiLlama / DEXScreener-style 24h DEX volume ranking with sparkline.",
+  icon: BarChart3,
+  minW: 6,
+  minH: 6,
+  defaultW: 12,
+  defaultH: 8,
+  requiredEntitlements: [{ domain: "trading-defi", tier: "basic" }],
+  assetGroup: "DEFI",
+  catalogGroup: "DeFi",
+  availableOn: ["defi", "overview", "markets"],
+  singleton: false,
+  component: DexVolumeRankingWidget,
+});
+
+registerWidget({
+  id: "defi-yield-farm-ranking",
+  label: "Yield farms",
+  description: "DefiLlama-style yield ranking — APY, TVL, and risk score per pool. PARTIAL: Aave-only initially.",
+  icon: Coins,
+  minW: 6,
+  minH: 6,
+  defaultW: 12,
+  defaultH: 8,
+  requiredEntitlements: [{ domain: "trading-defi", tier: "basic" }],
+  assetGroup: "DEFI",
+  catalogGroup: "DeFi",
+  availableOn: ["defi", "overview", "markets"],
+  singleton: false,
+  component: YieldFarmRankingWidget,
+});
+
+registerWidget({
+  id: "defi-stablecoin-supply",
+  label: "Stablecoin supply",
+  description: "Mint/burn flow chart per stablecoin with cumulative net overlay.",
+  icon: DollarSign,
+  minW: 12,
+  minH: 4,
+  defaultW: 24,
+  defaultH: 6,
+  requiredEntitlements: [{ domain: "trading-defi", tier: "basic" }],
+  assetGroup: "DEFI",
+  catalogGroup: "DeFi",
+  availableOn: ["defi", "overview", "markets"],
+  singleton: false,
+  component: StablecoinSupplyWidget,
 });
