@@ -15,16 +15,22 @@ pnpm install
 
 ## Develop
 
-Local dev runs against the **Firebase Emulator Suite** (Auth + Firestore + Storage on localhost). This is the SSOT — same code path as staging and prod, only the project ID + emulator hosts change. See [codex/14-playbooks/authentication/firebase-local.md](../unified-trading-pm/codex/14-playbooks/authentication/firebase-local.md).
+Local dev runs as **Tier 0 = Firebase Emulator Suite + in-browser API fixtures**. The two layers are orthogonal: Firebase SDK calls (Auth, Firestore, Storage) hit a local emulator pool seeded with the demo personas, and gateway-bound fetches (market data, positions, orders, P&L, reports) resolve from in-repo fixtures via `lib/api/mock-handler.ts`. Same Firebase code path as staging and prod (only project ID + emulator hosts change); widgets render without a Python service fleet running. See [codex/14-playbooks/authentication/firebase-local.md](../unified-trading-pm/codex/14-playbooks/authentication/firebase-local.md).
 
 ```bash
-bash scripts/dev-tiers.sh --tier 0      # UI + Firebase emulators
-npm run emulators:seed                  # one-off: seed the 25 demo personas
+bash scripts/dev-tiers.sh --tier 0      # boots emulators + Next.js + auto-seeds personas
 ```
 
-Dev server starts on `http://localhost:3000`. Emulator UI on `http://localhost:4000` (browse the Auth pool / Firestore docs).
+Dev server on `http://localhost:3000`. Emulator UI on `http://localhost:4000` (browse the Auth pool / Firestore docs).
 
-`pnpm dev` directly is for build-smoke / mock-only flows — it does not start the emulator suite or set the env vars the SDK needs to point at localhost.
+The first boot writes the demo personas via the auto-seeder; subsequent boots restore from `.local-dev-cache/emulator-state/`. To re-seed manually, run `npm run emulators:seed`.
+
+Two opt-out flags (rare):
+
+- `--no-mock-api` — Firebase emulator only; widget fetches go nowhere (auth-flow testing).
+- `--no-firebase-local` — point the dev server at a real Firebase project (requires `NEXT_PUBLIC_FIREBASE_*` in `.env.local`). For reproducing staging-only bugs.
+
+`pnpm dev` directly is the bare Next.js dev server — useful for build-smoke / Storybook-style component work, not for end-to-end funnel flows. It does not boot the emulator suite or set the env vars the Firebase SDK needs.
 
 ## Test
 
@@ -54,10 +60,10 @@ NEXT_PUBLIC_MOCK_API=true pnpm build
 
 ## Data Mode
 
-The UI runs in one of two modes, toggled by a single environment variable:
+The UI's API gateway-bound calls run in one of two modes, toggled by `NEXT_PUBLIC_MOCK_API`:
 
-- `NEXT_PUBLIC_MOCK_API=true` — all API calls served from in-repo fixtures; deterministic, offline. **Used by CI smoke gates, `pnpm build` smoke, static-E2E, and static demo deployments only.** Do not enable for interactive local dev — it bypasses Firebase entirely and conflicts with the firebase-emulator SSOT.
-- `NEXT_PUBLIC_MOCK_API=false` (default for local dev + staging + prod) — live backend via `NEXT_PUBLIC_API_BASE_URL`, with auth and Firestore via Firebase (emulator locally, real GCP for staging / prod).
+- `NEXT_PUBLIC_MOCK_API=true` — all API gateway calls (market data, positions, orders, P&L, reports, etc.) served from in-repo fixtures via `lib/api/mock-handler.ts`. Deterministic, offline, no Python services needed. **This is the Tier 0 default for local dev**, and is also used by CI smoke gates, `pnpm build` smoke, and static-E2E. The flag is orthogonal to Firebase: SDK paths (auth signin, Firestore reads/writes, Storage uploads) bypass mock-handler regardless and route through whatever Firebase config is active (emulator locally, real GCP for staging / prod).
+- `NEXT_PUBLIC_MOCK_API=false` — live backend via `NEXT_PUBLIC_API_BASE_URL` (Tier 1+ topologies where the API gateways are running, or staging / prod images pointing at deployed Cloud Run).
 
 Fixtures, helper contracts, and fallback rules are documented in [`docs/core/DATA_MODE_IDEOLOGY.md`](docs/core/DATA_MODE_IDEOLOGY.md). Auth-provider wiring is in [`docs/FIREBASE_ENVIRONMENTS.md`](docs/FIREBASE_ENVIRONMENTS.md).
 

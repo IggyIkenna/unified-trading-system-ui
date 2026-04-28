@@ -22,20 +22,22 @@ any project is reproducible against all of them; the only difference is data.
 
 ```bash
 cd unified-trading-system-ui
-bash scripts/dev-tiers.sh --tier 0     # UI + emulators (default)
-npm run emulators:seed                 # populate 23 demo personas (one-off)
+bash scripts/dev-tiers.sh --tier 0     # boots emulators + Next.js + auto-seeds personas
 ```
 
-Auto-saves state to `.local-dev-cache/emulator-state/` so subsequent boots persist users / docs / files.
+Tier 0 layers two things: the **Firebase Emulator Suite** (Auth :9099, Firestore :8080, Storage :9199, UI :4000) for SDK calls, and **`NEXT_PUBLIC_MOCK_API=true`** so API gateway-bound fetches resolve from in-repo fixtures via `lib/api/mock-handler.ts`. Sign-in works against the local emulator pool while widgets render without a Python service fleet running. The two layers are orthogonal: Firebase SDK paths bypass mock-handler, and mock-handler doesn't intercept Firebase. Auto-saves state to `.local-dev-cache/emulator-state/` so subsequent boots persist users / docs / files. The first boot writes the demo personas via the auto-seeder; re-seed manually with `npm run emulators:seed`.
+
 Full guide: [codex/14-playbooks/authentication/firebase-local.md](../../unified-trading-pm/codex/14-playbooks/authentication/firebase-local.md).
 
-## Three deviation switches (when local should diverge from staging)
+## Three deviation switches (when local should diverge from the integrated default)
 
-| Switch                       | Effect                                                         | When                                                                  |
-| ---------------------------- | -------------------------------------------------------------- | --------------------------------------------------------------------- |
-| `--no-firebase-local`        | Local server talks to a real Firebase project                  | Reproducing a staging-only bug                                        |
-| `NEXT_PUBLIC_MOCK_API=true`  | UI uses client-side mock responses, no Firebase at all         | CI smoke / `pnpm build` / static-E2E only — never local dev with auth |
-| `npm run emulators:seed:dev` | Inject extra personas only useful locally (edit dev.mjs first) | Edge cases, scale tests, weird claim shapes                           |
+| Switch                       | Effect                                                                               | When                                                  |
+| ---------------------------- | ------------------------------------------------------------------------------------ | ----------------------------------------------------- |
+| `--no-firebase-local`        | Local server talks to a real Firebase project                                        | Reproducing a staging-only bug                        |
+| `--no-mock-api`              | Firebase emulator only; widget fetches go nowhere                                    | Auth-flow testing where you want no mock interception |
+| `npm run emulators:seed:dev` | Inject extra personas only useful locally (edit `seed-firebase-users.dev.mjs` first) | Edge cases, scale tests, unusual claim shapes         |
+
+Pre-2026-04-28 the firebase-local handoff bypassed the mock-API flag and produced blank widgets ("Failed to load market data"). Now `NEXT_PUBLIC_MOCK_API=true` is part of the Tier 0 default; the row is no longer a "never combine with auth" warning.
 
 ## Hydrate from staging snapshot
 
