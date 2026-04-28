@@ -29,8 +29,14 @@ import type { BriefingHub, BriefingPillar, BriefingPillarSlug } from "../lib/bri
 /**
  * Display order matches `app/(public)/briefings/page.tsx`. The hub file
  * carries this so the UI reads it from YAML rather than hardcoding.
+ *
+ * Note: this is a one-shot migration script written against the legacy
+ * 6-pillar vocabulary (pre-G1.12). Current canonical vocabulary is 3
+ * pillars (see `BriefingPillarSlug` in lib/briefings/types.ts). The legacy
+ * slugs here are kept as plain strings so the file typechecks against the
+ * current narrow union without losing the historical migration record.
  */
-const HUB_DISPLAY_ORDER: readonly BriefingPillarSlug[] = [
+const HUB_DISPLAY_ORDER: readonly string[] = [
   "platform",
   "investment-management",
   "dart-full",
@@ -134,7 +140,7 @@ async function main(): Promise<void> {
     }
   }
 
-  const hub: BriefingHub = { ...HUB_FRAMING, displayOrder: HUB_DISPLAY_ORDER };
+  const hub: BriefingHub = { ...HUB_FRAMING, displayOrder: HUB_DISPLAY_ORDER as readonly BriefingPillarSlug[] };
   const hubYaml = hubToYaml(hub);
   const hubPath = path.join(CONTENT_DIR, "_hub.yaml");
   const hubExisting = fs.existsSync(hubPath) ? fs.readFileSync(hubPath, "utf8") : "";

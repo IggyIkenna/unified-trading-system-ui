@@ -32,7 +32,8 @@ import type { BriefingPillarSlug } from "../lib/briefings/types";
 
 interface CodexMapping {
   readonly codexFile: string;
-  readonly yamlSlugs: readonly BriefingPillarSlug[];
+  /** Legacy YAML slugs — see CODEX_MAPPING comment below. */
+  readonly yamlSlugs: readonly string[];
 }
 
 /**
@@ -43,7 +44,13 @@ interface CodexMapping {
  * does NOT yet have a dedicated codex file (tracked as a G3.5 follow-up);
  * parity accepts that and skips codex lookup for it.
  */
-const CODEX_MAPPING: readonly CodexMapping[] = [
+// Note: this validator was authored against the legacy 6-pillar vocabulary
+// (platform, dart-full, dart-signals-in, signals-out, regulatory,
+// investment-management). The narrow `BriefingPillarSlug` union is now 3
+// pillars; see lib/briefings/types.ts. Legacy slugs are kept as plain
+// strings inside CODEX_MAPPING so the validator still compiles against the
+// current narrow union without losing the historical mapping intent.
+const CODEX_MAPPING: ReadonlyArray<{ codexFile: string; yamlSlugs: readonly string[] }> = [
   { codexFile: "im-decision-journey.md", yamlSlugs: ["investment-management"] },
   { codexFile: "regulatory-umbrella-briefing.md", yamlSlugs: ["regulatory"] },
   {
@@ -52,7 +59,7 @@ const CODEX_MAPPING: readonly CodexMapping[] = [
   },
 ];
 
-const YAML_ONLY_SLUGS: readonly BriefingPillarSlug[] = ["signals-out"];
+const YAML_ONLY_SLUGS: readonly string[] = ["signals-out"];
 
 const REPO_ROOT = path.resolve(__dirname, "..");
 const WORKSPACE_ROOT = path.resolve(REPO_ROOT, "..");
@@ -109,7 +116,7 @@ function main(): void {
       continue;
     }
     for (const slug of mapping.yamlSlugs) {
-      if (!presentSlugs.has(slug)) {
+      if (!(presentSlugs as Set<string>).has(slug)) {
         errors.push(
           `codex-parity: codex '${mapping.codexFile}' maps to YAML pillar '${slug}' but YAML file is missing`,
         );

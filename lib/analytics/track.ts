@@ -33,6 +33,7 @@ export type TrackedEventName =
   | "engagement_route_card_click"
   | "start_review_begin_questionnaire_click"
   | "start_review_book_call_click"
+  | "start_review_skip_to_book_click"
   | "briefings_unlock_success"
   | "briefings_book_fit_call_click"
   | "strategy_review_link_opened"

@@ -241,7 +241,7 @@ function ContactPageContent() {
       // artefact has landed and ops will pick it up. "failed" keeps the form
       // visible with a red banner so the visitor can retry or use the
       // mailto fallback below.
-      if (outcome.status !== "failed") {
+      if (outcome.status === "queued") {
         setSubmitted(true);
         trackEvent("contact_track_selected", { track: "form-submit", inquiry: formData.inquiry || "unspecified" });
       }
@@ -384,10 +384,7 @@ function ContactPageContent() {
                       Thank you for reaching out. We will respond to your enquiry within two business days.
                     </p>
                     <div className="mt-4">
-                      <EmailStatusBanner
-                        outcome={emailOutcome}
-                        sentMessage="Your message has been emailed to the team."
-                      />
+                      <EmailStatusBanner outcome={emailOutcome} />
                     </div>
                     <Button
                       variant="outline"

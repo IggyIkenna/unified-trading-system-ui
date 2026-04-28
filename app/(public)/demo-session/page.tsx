@@ -31,7 +31,6 @@ interface DemoSessionDoc {
 }
 
 type LoadResult =
-  | { state: "missing-token" }
   | { state: "not-found" }
   | { state: "revoked" }
   | { state: "expired" }
