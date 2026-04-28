@@ -15,7 +15,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { type QuestionnaireEnvelope, type QuestionnaireResponse } from "@/lib/questionnaire/types";
 
-const addDocMock = vi.fn(async () => ({ id: "fake-doc-id" }));
+// Typed signature: addDoc(collectionRef, payload) — declaring the parameter
+// shape so vi.fn().mock.calls[0] is inferred as `[unknown, unknown]` rather
+// than `[]`, letting the destructuring `[_, payload]` access work in tests.
+const addDocMock = vi.fn(async (_collectionRef: unknown, _data: unknown) => ({ id: "fake-doc-id" }));
 const collectionMock = vi.fn((_db: unknown, name: string) => ({ name }));
 const serverTimestampMock = vi.fn(() => "<<server-timestamp>>");
 

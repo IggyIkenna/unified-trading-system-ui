@@ -153,8 +153,11 @@ function buildResponse(state: FormState): QuestionnaireResponse {
     leverage_preference: state.leverage_preference,
   };
 
+  // Wire-format key is `categories` (UAC + GCS path-segment SSOT — see
+  // CLAUDE.md asset-group-vocabulary exception). FormState uses the new
+  // `assetGroups` naming internally; map back to wire shape on submit.
   const base: QuestionnaireResponse = {
-    assetGroups: [...state.assetGroups],
+    categories: [...state.assetGroups],
     instrument_types: [...state.instrument_types],
     venue_scope,
     strategy_style: [...state.strategy_style],
@@ -260,7 +263,10 @@ export function QuestionnaireForm({ returnPath, compact = false }: Questionnaire
   }, [searchParams]);
 
   useEffect(() => {
-    if (urlServiceFamily && state.service_family === "") {
+    // FormState initialises service_family to "DART"; only override with the
+    // URL-derived family when the user hasn't explicitly chosen something
+    // different yet (i.e. still at the init default).
+    if (urlServiceFamily && state.service_family === "DART") {
       setState((s) => ({ ...s, service_family: urlServiceFamily }));
     }
     // Only run when the URL-derived family changes; we deliberately don't
@@ -348,7 +354,7 @@ export function QuestionnaireForm({ returnPath, compact = false }: Questionnaire
       try {
         const sharpeVal = parseFloat(state.target_sharpe_min_str);
         const seed = seedFiltersFromQuestionnaire({
-          categories: [...state.categories],
+          categories: [...state.assetGroups],
           instrument_types: [...state.instrument_types],
           market_neutral: state.market_neutral,
           risk_profile: state.risk_profile,

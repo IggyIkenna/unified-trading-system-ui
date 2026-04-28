@@ -22,6 +22,7 @@ import { collection, doc, getDocs, orderBy, query, serverTimestamp, setDoc } fro
 import { firebaseDb } from "@/lib/admin/firebase";
 import { getFirebaseAuth } from "@/lib/auth/firebase-config";
 import { getPersonaById, PERSONAS } from "@/lib/auth/personas";
+import type { AuthPersona } from "@/lib/config/auth";
 import { SubmissionsNav } from "@/components/admin/submissions-nav";
 import { RESOLVED_PERSONA_TO_AUTH_ID, resolvePersonaFromQuestionnaire } from "@/lib/questionnaire/resolve-persona";
 import type { QuestionnaireResponse } from "@/lib/questionnaire/types";
@@ -77,7 +78,7 @@ function resolveGrant(d: QuestionnaireDoc): {
   resolvedId: string;
   authId: string;
   label: string;
-  entitlements: readonly (string | { domain: string; tier: string })[];
+  entitlements: AuthPersona["entitlements"];
 } | null {
   try {
     const resolved = resolvePersonaFromQuestionnaire(toResolverInput(d));

@@ -34,6 +34,7 @@ import {
   type StrategyCatalogueFilter,
 } from "@/lib/architecture-v2/catalogue-filter";
 import { loadStrategyCatalogue } from "@/lib/architecture-v2/lifecycle";
+import { VENUE_ASSET_GROUPS_V2, type VenueAssetGroupV2 } from "@/lib/architecture-v2";
 import { useAuth } from "@/hooks/use-auth";
 
 type CatalogueTab = "reality" | "explore";
@@ -90,12 +91,16 @@ export default function StrategyCataloguePage() {
     if (filter !== EMPTY_CATALOGUE_FILTER) return;
     const seed = readPersistedSeed();
     if (!seed) return;
+    // Only the venue asset_group axis maps cleanly onto the canonical
+    // StrategyCatalogueFilter today. Other questionnaire seed axes
+    // (instrumentTypes, marketNeutral, riskProfile, leveragePreference) are
+    // informational and don't yet have a corresponding filter axis — they
+    // are intentionally dropped here until the filter shape is widened.
+    const seedAssetGroupsTyped = seed.assetGroups
+      .map((g) => g.toUpperCase())
+      .filter((g): g is VenueAssetGroupV2 => VENUE_ASSET_GROUPS_V2.includes(g as VenueAssetGroupV2));
     const seeded: StrategyCatalogueFilter = {
-      ...(seed.assetGroups.length > 0 ? { assetGroups: seed.assetGroups } : {}),
-      ...(seed.instrumentTypes.length > 0 ? { instrumentTypes: seed.instrumentTypes } : {}),
-      ...(seed.marketNeutral ? { marketNeutral: seed.marketNeutral } : {}),
-      ...(seed.riskProfile ? { riskProfile: seed.riskProfile } : {}),
-      ...(seed.leveragePreference ? { leveragePreference: seed.leveragePreference } : {}),
+      ...(seedAssetGroupsTyped.length > 0 ? { venueAssetGroups: seedAssetGroupsTyped } : {}),
     };
     const hasAny = Object.keys(seeded).some((k) => seeded[k as keyof StrategyCatalogueFilter] !== undefined);
     if (hasAny) {
