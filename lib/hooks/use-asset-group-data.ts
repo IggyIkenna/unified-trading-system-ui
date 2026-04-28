@@ -59,7 +59,13 @@ export type MarketDataViewType =
   | "etf-flows"
   | "sector-heatmap"
   // Cross-asset-group screeners (P5)
-  | "asset-group-screener";
+  | "asset-group-screener"
+  // Deribit-style options analytics (P6 — UI scaffolds; backend Greeks/IV
+  // computation lands in features-derivatives-service before these go live)
+  | "iv-smile"
+  | "iv-term-structure"
+  | "max-pain"
+  | "put-call-ratio";
 
 export interface UseAssetGroupDataOptions<TParams extends Record<string, string | number> = Record<string, never>> {
   /**
