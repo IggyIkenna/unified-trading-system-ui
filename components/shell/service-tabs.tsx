@@ -661,8 +661,29 @@ export const ADMIN_TABS: ServiceTab[] = [
 // Alias — user management IS the admin section
 export const USER_MGMT_TABS = ADMIN_TABS;
 
-// ── Legacy aliases (for backward compatibility during transition) ─────────────
+// 2026-04-28 tile split SSOT: codex/14-playbooks/dart/dart-terminal-vs-research.md.
+// RESEARCH_TABS lives under the new DART Research dashboard tile (DART-Full +
+// admin only; padlocked-visible "locked" for Signals-In). Mirrors BUILD_TABS
+// today — preserved as a separate export so subsequent commits can lifecycle-
+// group it (Develop / Train / Validate / Allocate / Promote) without churning
+// research-page imports of BUILD_TABS.
 export const RESEARCH_TABS = BUILD_TABS;
+
+// 2026-04-28: TERMINAL_TABS is the chip set for the new DART Terminal tile
+// (Signals-In + DART-Full + admin visible). Live trading surfaces only —
+// Terminal, Observe, Strategy Catalogue (read for Signals-In, manage for
+// DART-Full), Signal Intake. Sub-routes track the SERVICE_REGISTRY
+// dart-terminal entry in lib/config/services.ts.
+export const TERMINAL_TABS: ServiceTab[] = [
+  { label: "Terminal", href: "/services/trading/terminal" },
+  { label: "Observe", href: "/services/observe/risk", matchPrefix: "/services/observe" },
+  {
+    label: "Strategy Catalogue",
+    href: "/services/strategy-catalogue",
+    matchPrefix: "/services/strategy-catalogue",
+  },
+  { label: "Signal Intake", href: "/services/signals/dashboard", matchPrefix: "/services/signals/dashboard" },
+];
 export const EXECUTE_TABS: ServiceTab[] = [
   { label: "Overview", href: "/services/execution/overview" },
   { label: "Algos", href: "/services/execution/algos" },
