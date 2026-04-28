@@ -7,11 +7,7 @@
  */
 import { NextRequest, NextResponse } from "next/server";
 
-import {
-  appSyncHistoryCollection,
-  applicationsCollection,
-  writeAuditEntry,
-} from "@/lib/admin/server/collections";
+import { appSyncHistoryCollection, applicationsCollection, writeAuditEntry } from "@/lib/admin/server/collections";
 import { verifyCaller } from "@/lib/admin/server/auth-context";
 
 export const runtime = "nodejs";
@@ -29,7 +25,7 @@ export async function POST(req: NextRequest) {
     apps_created: 0,
     apps_updated: 0,
     triggered_by: caller?.uid ?? "system",
-    note: "Native portal sync stub — no external registry wired yet (Phase 4).",
+    note: "Native portal sync stub: no external registry wired yet (Phase 4).",
   });
   await writeAuditEntry({ action: "apps.sync", run_id: ref.id, actor: caller?.uid ?? "system" });
   return NextResponse.json({

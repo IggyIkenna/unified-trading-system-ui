@@ -58,7 +58,7 @@ export async function POST(request: Request) {
         This link expires in 24 hours. If you didn't create an Odum account, you can safely ignore this email.
       </p>
       <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0">
-      <p style="color:#9ca3af;font-size:12px">Odum Capital Ltd — FCA authorised · FRN 975797</p>
+      <p style="color:#9ca3af;font-size:12px">Odum Capital Ltd: FCA authorised · FRN 975797</p>
     </div>
   `;
 

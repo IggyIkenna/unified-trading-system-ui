@@ -22,10 +22,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ uid: strin
   const { uid: rawId } = await ctx.params;
   const actor = await verifyCaller(req);
   if (!actor || !(await isPlatformAdmin(actor.uid))) {
-    return NextResponse.json(
-      { error: "Only platform admins can manage Microsoft 365 accounts." },
-      { status: 403 },
-    );
+    return NextResponse.json({ error: "Only platform admins can manage Microsoft 365 accounts." }, { status: 403 });
   }
 
   let payload: { action?: string } = {};
@@ -63,9 +60,9 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ uid: strin
       detail = String(err);
     }
   } else if (!graph) {
-    detail = "MS_GRAPH_* secrets not set — Firestore mirror only.";
+    detail = "MS_GRAPH_* secrets not set: Firestore mirror only.";
   } else if (!upn) {
-    detail = "User has no microsoft_upn — issue a work email first.";
+    detail = "User has no microsoft_upn: issue a work email first.";
   }
 
   const now = new Date().toISOString();

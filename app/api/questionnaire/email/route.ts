@@ -27,7 +27,7 @@ function getDeepDiveAccessCode(): string | null {
 }
 
 const SERVICE_FAMILY_LABELS: Record<string, string> = {
-  DART: "DART — Data Analytics, Research & Trading",
+  DART: "DART: Data Analytics, Research & Trading",
   RegUmbrella: "Regulatory Umbrella",
   combo: "DART + Regulatory Umbrella",
   Signals: "Odum Signals",
@@ -86,26 +86,26 @@ interface QuestionnaireEmailBody {
   supportedCurrencies?: string[];
 }
 
-function joinList(arr: readonly string[] | undefined, fallback = "—"): string {
+function joinList(arr: readonly string[] | undefined, fallback = "n/a"): string {
   if (!arr || arr.length === 0) return fallback;
   return arr.join(", ");
 }
 
 function venueScopeLabel(v: string | string[] | undefined): string {
-  if (!v) return "—";
+  if (!v) return "n/a";
   if (v === "all") return "All venues";
   if (Array.isArray(v)) return v.length > 0 ? v.join(", ") : "All venues";
   return v;
 }
 
 function referralLine(src?: string, notes?: string): string {
-  if (!src) return "—";
+  if (!src) return "n/a";
   const label = REFERRAL_LABELS[src] ?? src;
   return notes ? `${label} (${notes})` : label;
 }
 
 function locationLine(loc?: string, notes?: string): string {
-  if (!loc) return "—";
+  if (!loc) return "n/a";
   const label = FIRM_LOCATION_LABELS[loc] ?? loc;
   return notes ? `${label} (${notes})` : label;
 }
@@ -126,8 +126,8 @@ export async function POST(request: Request) {
   // Reg-Umbrella-only rows render only when the prospect picked that path.
   const rows: [string, string][] = [
     ["Service family", serviceName],
-    ["Firm", body.firmName || "—"],
-    ["Email", body.email || "—"],
+    ["Firm", body.firmName || "n/a"],
+    ["Email", body.email || "n/a"],
     ["Firm location", locationLine(body.firmLocation, body.firmLocationNotes)],
     ["Heard about us", referralLine(body.referralSource, body.referralSourceNotes)],
     ["Categories", joinList(body.categories)],
@@ -135,24 +135,24 @@ export async function POST(request: Request) {
     ["Venue scope", venueScopeLabel(body.venueScope)],
     ["Strategy styles", joinList(body.strategyStyle)],
     ["Fund structure", joinList(body.fundStructure)],
-    ["Market exposure", body.marketNeutral || "—"],
+    ["Market exposure", body.marketNeutral || "n/a"],
     ["Share class preference", joinList(body.shareClassPreferences)],
-    ["Risk profile", body.riskProfile || "—"],
-    ["Target Sharpe (min)", body.targetSharpeMin || "—"],
-    ["Leverage preference", body.leveragePreference || "—"],
+    ["Risk profile", body.riskProfile || "n/a"],
+    ["Target Sharpe (min)", body.targetSharpeMin || "n/a"],
+    ["Leverage preference", body.leveragePreference || "n/a"],
   ];
   if (isRegUmbrella) {
     rows.push(
-      ["Licence region", body.licenceRegion || "—"],
-      ["Targets — 3 months", body.targets3mo || "—"],
-      ["Targets — 1 year", body.targets1yr || "—"],
-      ["Targets — 2 years", body.targets2yr || "—"],
-      ["Own MLRO?", body.ownMlro || "—"],
-      ["Entity jurisdiction", body.entityJurisdiction || "—"],
+      ["Licence region", body.licenceRegion || "n/a"],
+      ["Targets: 3 months", body.targets3mo || "n/a"],
+      ["Targets: 1 year", body.targets1yr || "n/a"],
+      ["Targets: 2 years", body.targets2yr || "n/a"],
+      ["Own MLRO?", body.ownMlro || "n/a"],
+      ["Entity jurisdiction", body.entityJurisdiction || "n/a"],
       ["Supported currencies", joinList(body.supportedCurrencies)],
     );
   }
-  rows.push(["Submission ID", body.submissionId || "—"]);
+  rows.push(["Submission ID", body.submissionId || "n/a"]);
 
   const tableRows = rows
     .map(
@@ -186,7 +186,7 @@ export async function POST(request: Request) {
       <p style="color:#6b7280;margin-top:0">
         ${escapeHtml(serviceName)}${
           body.firmName ? ` (${escapeHtml(body.firmName)})` : ""
-        } — your submission is in. Here's what happens next.
+        }: your submission is in. Here's what happens next.
       </p>
       ${accessCodeBlock}
       <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:6px;padding:14px 16px;margin:20px 0;font-size:14px">
@@ -198,9 +198,9 @@ export async function POST(request: Request) {
       <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;padding:14px 16px;margin:20px 0;font-size:14px;color:#374151">
         <p style="margin:0;font-weight:600;color:#111">What happens after the call</p>
         <ol style="margin:8px 0 0 18px;padding:0;color:#374151;line-height:1.6">
-          <li>Strategy Evaluation pack — a deeper questionnaire about your specific strategies + risk model.</li>
-          <li>Curated Sandbox demo — your stack, your strategies, mocked data, end-to-end on uat.odum-research.com.</li>
-          <li>Production onboarding — sign engagement docs, then live access.</li>
+          <li>Strategy Evaluation pack: a deeper questionnaire about your specific strategies + risk model.</li>
+          <li>Curated Sandbox demo: your stack, your strategies, mocked data, end-to-end on uat.odum-research.com.</li>
+          <li>Production onboarding: sign engagement docs, then live access.</li>
         </ol>
       </div>
       <details style="margin:20px 0;color:#6b7280;font-size:13px">
@@ -214,7 +214,7 @@ export async function POST(request: Request) {
         <a href="mailto:info@odum-research.com" style="color:#111">info@odum-research.com</a>.
       </p>
       <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0">
-      <p style="color:#9ca3af;font-size:12px">Odum Capital Ltd — FCA authorised · FRN 975797</p>
+      <p style="color:#9ca3af;font-size:12px">Odum Capital Ltd: FCA authorised · FRN 975797</p>
     </div>
   `;
 
@@ -227,7 +227,7 @@ export async function POST(request: Request) {
     to,
     bcc,
     replyTo: body.email ? INTERNAL_ADDRESS : undefined,
-    subject: `Your questionnaire responses — ${displayName} (${serviceName})`,
+    subject: `Your questionnaire responses: ${displayName} (${serviceName})`,
     html,
   });
   if (!result.ok) {

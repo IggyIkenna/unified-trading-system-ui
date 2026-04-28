@@ -17,7 +17,7 @@ function getMailDomain(): string {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "";
   if (siteUrl.includes("www.odum-research.com")) return "mail.odum-research.com";
   if (siteUrl.includes("uat.odum-research.com") || siteUrl.includes("odum-research.co.uk")) {
-    return "mail.odum-research.com"; // uat shares prod sender — staging subdomain DNS not set up
+    return "mail.odum-research.com"; // uat shares prod sender: staging subdomain DNS not set up
   }
   return "resend.dev";
 }

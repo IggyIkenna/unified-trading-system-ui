@@ -247,7 +247,7 @@ export async function POST(req: NextRequest) {
       from: getSenderFor("hello"),
       to: email,
       replyTo: INTERNAL_ADDRESS,
-      subject: "Your Strategy Review is ready — Odum",
+      subject: "Your Strategy Review is ready: Odum",
       html,
     });
   } catch (err) {

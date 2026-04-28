@@ -27,10 +27,10 @@ function getAdminApp(): admin.app.App {
 }
 
 const PATH_LABELS: Record<string, string> = {
-  A: "Path A — DART Full / incubation and rebuild",
-  B: "Path B — DART Signals-In / client signals, Odum execution",
-  C: "Path C — Regulatory Umbrella / FCA coverage and oversight",
-  D: "Path D — Odum Signals / Odum signals, client execution elsewhere",
+  A: "Path A: DART Full / incubation and rebuild",
+  B: "Path B: DART Signals-In / client signals, Odum execution",
+  C: "Path C: Regulatory Umbrella / FCA coverage and oversight",
+  D: "Path D: Odum Signals / Odum signals, client execution elsewhere",
 };
 
 function getSiteUrl(request: Request): string {
@@ -53,7 +53,7 @@ export async function POST(request: Request) {
   const strategyName = typeof body.strategyName === "string" ? body.strategyName : "Unnamed Strategy";
   const leadResearcher = typeof body.leadResearcher === "string" ? body.leadResearcher : undefined;
   const commercialPath = typeof body.commercialPath === "string" ? body.commercialPath : undefined;
-  const pathLabel = PATH_LABELS[commercialPath ?? ""] ?? commercialPath ?? "—";
+  const pathLabel = PATH_LABELS[commercialPath ?? ""] ?? commercialPath ?? "-";
 
   // Generate a magic token: doubles as email-verification proof and
   // a stable handle for the status page (`/strategy-evaluation/status?token=...`).
@@ -159,7 +159,7 @@ export async function POST(request: Request) {
       <div style="font-family:sans-serif;max-width:560px;margin:0 auto;color:#111">
         <h2 style="margin-bottom:4px">${isRefile ? "Your updated strategy evaluation has been received" : "Your strategy evaluation has been received"}</h2>
         <hr style="border:none;border-top:1px solid #e5e7eb;margin:16px 0">
-        <p>Thank you${leadResearcher ? `, ${escapeHtml(leadResearcher)}` : ""} — we've received ${isRefile ? "your updated evaluation" : "your evaluation"} of <strong>${escapeHtml(strategyName)}</strong>.${isRefile ? " The new version is filed alongside your original — we'll work from the latest." : ""}</p>
+        <p>Thank you${leadResearcher ? `, ${escapeHtml(leadResearcher)}` : ""}: we've received ${isRefile ? "your updated evaluation" : "your evaluation"} of <strong>${escapeHtml(strategyName)}</strong>.${isRefile ? " The new version is filed alongside your original: we'll work from the latest." : ""}</p>
         <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;padding:16px;margin:16px 0">
           <p style="margin:0 0 6px"><strong>Strategy:</strong> ${escapeHtml(strategyName)}</p>
           <p style="margin:0"><strong>Commercial path:</strong> ${escapeHtml(pathLabel)}</p>
@@ -189,7 +189,7 @@ export async function POST(request: Request) {
           <p style="margin:6px 0 0;color:#166534">
             We&rsquo;ll set you up in our sandbox at
             <a href="https://uat.odum-research.com" style="color:#15803d;font-weight:600">uat.odum-research.com</a>
-            — a curated demo environment configured to your asset class and strategy
+           : a curated demo environment configured to your asset class and strategy
             so you can see the platform end-to-end before any commitment.
           </p>
         </div>
@@ -198,7 +198,7 @@ export async function POST(request: Request) {
           <a href="mailto:info@odum-research.com" style="color:#111">info@odum-research.com</a>.
         </p>
         <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0">
-        <p style="color:#9ca3af;font-size:12px">Odum Capital Ltd — FCA authorised · FRN 975797</p>
+        <p style="color:#9ca3af;font-size:12px">Odum Capital Ltd: FCA authorised · FRN 975797</p>
       </div>
     `;
 
@@ -208,8 +208,8 @@ export async function POST(request: Request) {
         to: email,
         replyTo: INTERNAL_ADDRESS,
         subject: isRefile
-          ? `Your updated strategy evaluation has been received — Odum`
-          : `Your strategy evaluation has been received — Odum`,
+          ? `Your updated strategy evaluation has been received: Odum`
+          : `Your strategy evaluation has been received: Odum`,
         html: ackHtml,
       }),
     );
@@ -222,19 +222,19 @@ export async function POST(request: Request) {
     ? referralSourceNotes
       ? `${referralSource} (${referralSourceNotes})`
       : referralSource
-    : "—";
+    : "-";
   const metrics = [
     ["Strategy", strategyName],
-    ["Lead researcher", leadResearcher || "—"],
-    ["Email", email || "—"],
+    ["Lead researcher", leadResearcher || "n/a"],
+    ["Email", email || "n/a"],
     ["Commercial path", pathLabel],
     ["Heard about us", referralLine],
-    ["Asset groups", Array.isArray(body.assetGroups) ? (body.assetGroups as string[]).join(", ") : "—"],
-    ["Strategy family", typeof body.strategyFamily === "string" ? body.strategyFamily : "—"],
-    ["Sharpe ratio", typeof body.sharpeRatio === "string" ? body.sharpeRatio : "—"],
-    ["Max drawdown", typeof body.maxDrawdown === "string" ? body.maxDrawdown : "—"],
-    ["Submission ID", submissionId || "—"],
-    ["Refile of", parentSubmissionId || "—"],
+    ["Asset groups", Array.isArray(body.assetGroups) ? (body.assetGroups as string[]).join(", ") : "-"],
+    ["Strategy family", typeof body.strategyFamily === "string" ? body.strategyFamily : "-"],
+    ["Sharpe ratio", typeof body.sharpeRatio === "string" ? body.sharpeRatio : "-"],
+    ["Max drawdown", typeof body.maxDrawdown === "string" ? body.maxDrawdown : "-"],
+    ["Submission ID", submissionId || "n/a"],
+    ["Refile of", parentSubmissionId || "n/a"],
   ]
     .map(
       ([k, v], i) =>
@@ -243,7 +243,7 @@ export async function POST(request: Request) {
     .join("");
 
   const internalHtml = `
-    <h2>New strategy evaluation — ${escapeHtml(strategyName)}</h2>
+    <h2>New strategy evaluation: ${escapeHtml(strategyName)}</h2>
     <table style="border-collapse:collapse;width:100%;font-family:sans-serif;font-size:14px">
       ${metrics}
     </table>
@@ -256,7 +256,7 @@ export async function POST(request: Request) {
       from: getSenderFor("hello"),
       to: INTERNAL_ADDRESS,
       replyTo: email,
-      subject: `New strategy evaluation — ${strategyName} (${pathLabel})`,
+      subject: `New strategy evaluation: ${strategyName} (${pathLabel})`,
       html: internalHtml,
     }),
   );
@@ -293,7 +293,7 @@ export async function POST(request: Request) {
       const fallbackHtml = `
         <h2>⚠️ Strategy evaluation persistence FAILED</h2>
         <p><strong>Strategy:</strong> ${escapeHtml(strategyName)}</p>
-        <p><strong>Submitter:</strong> ${escapeHtml(email ?? "—")}${leadResearcher ? ` (${escapeHtml(leadResearcher)})` : ""}</p>
+        <p><strong>Submitter:</strong> ${escapeHtml(email ?? "-")}${leadResearcher ? ` (${escapeHtml(leadResearcher)})` : ""}</p>
         <p><strong>Commercial path:</strong> ${escapeHtml(pathLabel)}</p>
         <p><strong>Error:</strong> <code>${escapeHtml(persistError ?? "unknown")}</code></p>
         <hr>
@@ -309,7 +309,7 @@ export async function POST(request: Request) {
         from: getSenderFor("hello"),
         to: INTERNAL_ADDRESS,
         replyTo: email,
-        subject: `⚠️ Strategy evaluation FAILED to persist — ${strategyName}`,
+        subject: `⚠️ Strategy evaluation FAILED to persist: ${strategyName}`,
         html: fallbackHtml,
       });
     } catch (err) {

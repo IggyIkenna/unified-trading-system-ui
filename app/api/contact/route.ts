@@ -42,8 +42,8 @@ export async function POST(request: Request) {
     <table style="border-collapse:collapse;width:100%;font-family:sans-serif;font-size:14px">
       <tr><td style="padding:6px 12px;font-weight:bold;width:120px">Name</td><td style="padding:6px 12px">${escapeHtml(name)}</td></tr>
       <tr style="background:#f9f9f9"><td style="padding:6px 12px;font-weight:bold">Email</td><td style="padding:6px 12px"><a href="mailto:${escapeHtml(email)}">${escapeHtml(email)}</a></td></tr>
-      <tr><td style="padding:6px 12px;font-weight:bold">Company</td><td style="padding:6px 12px">${company ? escapeHtml(company) : "—"}</td></tr>
-      <tr style="background:#f9f9f9"><td style="padding:6px 12px;font-weight:bold">Inquiry</td><td style="padding:6px 12px">${inquiry ? escapeHtml(inquiry) : "—"}</td></tr>
+      <tr><td style="padding:6px 12px;font-weight:bold">Company</td><td style="padding:6px 12px">${company ? escapeHtml(company) : "-"}</td></tr>
+      <tr style="background:#f9f9f9"><td style="padding:6px 12px;font-weight:bold">Inquiry</td><td style="padding:6px 12px">${inquiry ? escapeHtml(inquiry) : "-"}</td></tr>
       <tr><td style="padding:6px 12px;font-weight:bold;vertical-align:top">Message</td><td style="padding:6px 12px;white-space:pre-wrap">${escapeHtml(message)}</td></tr>
     </table>
     <hr style="margin-top:24px">
@@ -55,7 +55,7 @@ export async function POST(request: Request) {
     to: TO_ADDRESS,
     bcc: [BCC_ADDRESS],
     replyTo: email,
-    subject: `[odum-research.com] ${inquiry ?? "Contact form"} — ${name}`,
+    subject: `[odum-research.com] ${inquiry ?? "Contact form"}: ${name}`,
     html,
   });
 

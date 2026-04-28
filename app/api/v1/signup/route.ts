@@ -22,11 +22,7 @@ import { NextRequest, NextResponse } from "next/server";
 import type { UserRecord } from "firebase-admin/auth";
 
 import { getAdminAuth } from "@/lib/firebase-admin";
-import {
-  onboardingRequestsCollection,
-  usersCollection,
-  writeAuditEntry,
-} from "@/lib/admin/server/collections";
+import { onboardingRequestsCollection, usersCollection, writeAuditEntry } from "@/lib/admin/server/collections";
 import { getDefaultServicesForUser, notifyAdminsForEvent } from "@/lib/admin/server/service-defaults";
 import { sendEmail, getSenderFor } from "@/lib/email/resend";
 
@@ -83,7 +79,11 @@ export async function POST(req: NextRequest) {
   } catch (err: unknown) {
     const code = (err as { code?: string })?.code ?? "";
     const msg = String(err);
-    if (code === "auth/email-already-exists" || msg.includes("email-already-exists") || msg.includes("already in use")) {
+    if (
+      code === "auth/email-already-exists" ||
+      msg.includes("email-already-exists") ||
+      msg.includes("already in use")
+    ) {
       try {
         firebaseUser = await auth.getUserByEmail(email);
         isExistingUser = true;
@@ -187,7 +187,7 @@ export async function POST(req: NextRequest) {
       await sendEmail({
         to: email,
         from: getSenderFor("auth"),
-        subject: "Verify your email — Odum Research",
+        subject: "Verify your email: Odum Research",
         html: `<p>Hi ${name},</p><p>Please verify your email by clicking the link below:</p><p><a href="${link}">${link}</a></p><p>This link expires in 1 hour.</p>`,
       });
       emailVerificationPending = true;
@@ -200,7 +200,7 @@ export async function POST(req: NextRequest) {
   try {
     await sendEmail({
       to: email,
-      subject: "Application received — under review",
+      subject: "Application received: under review",
       html: `<p>Hi ${name},</p><p>Thank you for your application. Our team is reviewing your submission and you will receive an email once a decision has been made.</p><p>Your application reference: <strong>${reqId}</strong></p>`,
     });
   } catch {

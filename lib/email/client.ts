@@ -40,7 +40,7 @@ export async function dispatchEmail(
     const message =
       typeof body.message === "string" && body.message.length > 0
         ? body.message
-        : "Thanks — your message has been sent. We'll be in touch within 24 hours.";
+        : "Thanks: your message has been sent. We'll be in touch within 24 hours.";
     return {
       status: "queued",
       message,

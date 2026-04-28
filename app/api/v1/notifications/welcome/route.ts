@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
     const result = await sendEmail({
       to: email,
       from: getSenderFor("auth"),
-      subject: "Welcome to Odum Research — set your password",
+      subject: "Welcome to Odum Research: set your password",
       html: `<p>Welcome aboard.</p><p>Click the link below to set your password and sign in:</p><p><a href="${resetLink}">${resetLink}</a></p>`,
     });
     sentOk = result.ok && result.sent;

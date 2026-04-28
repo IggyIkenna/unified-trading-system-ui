@@ -34,7 +34,7 @@ export async function DELETE(req: NextRequest, ctx: { params: Promise<{ id: stri
       detail = String(err);
     }
   } else if (!octokit) {
-    detail = "GITHUB_TOKEN not set — Firestore record deleted but collaborator NOT removed from GitHub.";
+    detail = "GITHUB_TOKEN not set: Firestore record deleted but collaborator NOT removed from GitHub.";
   }
 
   await ref.delete();

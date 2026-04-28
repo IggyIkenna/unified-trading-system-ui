@@ -39,7 +39,9 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ uid: strin
   } catch {
     /* body optional */
   }
-  const localPart = String(payload.local_part ?? "").trim().toLowerCase();
+  const localPart = String(payload.local_part ?? "")
+    .trim()
+    .toLowerCase();
   if (localPart && !/^[a-z0-9._-]+$/.test(localPart)) {
     return NextResponse.json(
       { error: "local_part may only contain lowercase letters, numbers, dot, underscore, and hyphen." },
@@ -93,7 +95,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ uid: strin
       detail = String(err);
     }
   } else {
-    detail = "MS_GRAPH_* secrets not set — Firestore mirror only.";
+    detail = "MS_GRAPH_* secrets not set: Firestore mirror only.";
   }
 
   const now = new Date().toISOString();

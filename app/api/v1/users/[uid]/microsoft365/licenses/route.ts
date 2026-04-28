@@ -22,10 +22,7 @@ interface LicenseDetail {
 export async function GET(req: NextRequest, ctx: { params: Promise<{ uid: string }> }) {
   const actor = await verifyCaller(req);
   if (!actor || !(await isPlatformAdmin(actor.uid))) {
-    return NextResponse.json(
-      { error: "Only platform admins can manage Microsoft 365 licenses." },
-      { status: 403 },
-    );
+    return NextResponse.json({ error: "Only platform admins can manage Microsoft 365 licenses." }, { status: 403 });
   }
   const { uid: rawId } = await ctx.params;
   const id = await resolveUserUid(rawId);
@@ -36,7 +33,7 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ uid: string
     return NextResponse.json({
       ok: true,
       licenses: [],
-      message: "User has no microsoft_upn set — issue a work email first.",
+      message: "User has no microsoft_upn set: issue a work email first.",
     });
   }
   const graph = getGraphClient();

@@ -82,7 +82,7 @@ export async function POST(request: Request) {
         If you have questions, reply to this email or contact us at
         <a href="mailto:info@odum-research.com" style="color:#111">info@odum-research.com</a>.
       </p>
-      <p style="color:#9ca3af;font-size:12px">Odum Capital Ltd — FCA authorised · FRN 975797</p>
+      <p style="color:#9ca3af;font-size:12px">Odum Capital Ltd: FCA authorised · FRN 975797</p>
     </div>
   `;
 
@@ -90,7 +90,7 @@ export async function POST(request: Request) {
     from: getSenderFor("auth"),
     to: email,
     bcc: [BCC_ADDRESS],
-    subject: `Your Odum account is confirmed — ${serviceName}`,
+    subject: `Your Odum account is confirmed: ${serviceName}`,
     html: emailHtml,
   });
 

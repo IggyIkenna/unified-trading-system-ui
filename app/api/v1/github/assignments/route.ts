@@ -6,10 +6,7 @@
  */
 import { NextRequest, NextResponse } from "next/server";
 
-import {
-  githubAssignmentsCollection,
-  writeAuditEntry,
-} from "@/lib/admin/server/collections";
+import { githubAssignmentsCollection, writeAuditEntry } from "@/lib/admin/server/collections";
 import { verifyCaller } from "@/lib/admin/server/auth-context";
 import { getGitHubClient, roleToGhPermission } from "@/lib/admin/server/integrations/github-client";
 
@@ -69,7 +66,7 @@ export async function POST(req: NextRequest) {
       detail = String(err);
     }
   } else {
-    detail = "GITHUB_TOKEN not set — assignment recorded but not applied.";
+    detail = "GITHUB_TOKEN not set: assignment recorded but not applied.";
   }
   const ref = await githubAssignmentsCollection().add({
     firebase_uid: payload.firebase_uid,

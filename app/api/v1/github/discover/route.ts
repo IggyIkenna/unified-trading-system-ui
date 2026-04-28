@@ -20,7 +20,7 @@ export async function POST(req: Request) {
       discovered: 0,
       updated: 0,
       total_in_store: snap.size,
-      note: "GITHUB_TOKEN not set — discovery skipped. Set the secret to enable real walk.",
+      note: "GITHUB_TOKEN not set: discovery skipped. Set the secret to enable real walk.",
     });
   }
   const org = getGitHubOrg();

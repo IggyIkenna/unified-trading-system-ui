@@ -23,10 +23,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ uid: strin
   const { uid: rawId, operation } = await ctx.params;
   const actor = await verifyCaller(req);
   if (!actor || !(await isPlatformAdmin(actor.uid))) {
-    return NextResponse.json(
-      { error: "Only platform admins can manage Microsoft 365 licenses." },
-      { status: 403 },
-    );
+    return NextResponse.json({ error: "Only platform admins can manage Microsoft 365 licenses." }, { status: 403 });
   }
   const op = operation.toLowerCase();
   if (!(ALLOWED_OPS as readonly string[]).includes(op)) {
@@ -75,9 +72,9 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ uid: strin
       detail = String(err);
     }
   } else if (!graph) {
-    detail = "MS_GRAPH_* secrets not set — Firestore mirror only.";
+    detail = "MS_GRAPH_* secrets not set: Firestore mirror only.";
   } else if (!upn) {
-    detail = "User has no microsoft_upn — issue a work email first.";
+    detail = "User has no microsoft_upn: issue a work email first.";
   }
 
   const now = new Date().toISOString();
@@ -85,7 +82,10 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ uid: strin
     {
       services: {
         ...((profile.services as Record<string, string>) ?? {}),
-        microsoft365: graph_outcome === "applied" ? "provisioned" : (profile.services as Record<string, string> | undefined)?.microsoft365,
+        microsoft365:
+          graph_outcome === "applied"
+            ? "provisioned"
+            : (profile.services as Record<string, string> | undefined)?.microsoft365,
       },
       service_messages: {
         ...((profile.service_messages as Record<string, string>) ?? {}),

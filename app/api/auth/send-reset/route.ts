@@ -55,10 +55,10 @@ export async function POST(request: Request) {
         </a>
       </p>
       <p style="color:#6b7280;font-size:13px">
-        This link expires in 1 hour. If you didn't request a password reset, you can safely ignore this email — your password has not changed.
+        This link expires in 1 hour. If you didn't request a password reset, you can safely ignore this email: your password has not changed.
       </p>
       <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0">
-      <p style="color:#9ca3af;font-size:12px">Odum Capital Ltd — FCA authorised · FRN 975797</p>
+      <p style="color:#9ca3af;font-size:12px">Odum Capital Ltd: FCA authorised · FRN 975797</p>
     </div>
   `;
 

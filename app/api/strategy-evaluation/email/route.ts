@@ -11,9 +11,9 @@ import { sendEmail, getSenderFor, escapeHtml } from "@/lib/email/resend";
 const INTERNAL_ADDRESS = "info@odum-research.com";
 
 const PATH_LABELS: Record<string, string> = {
-  A: "Path A — DART Full / incubation and rebuild",
-  B: "Path B — DART Signals-In",
-  C: "Path C — Regulatory Umbrella / read-only",
+  A: "Path A: DART Full / incubation and rebuild",
+  B: "Path B: DART Signals-In",
+  C: "Path C: Regulatory Umbrella / read-only",
 };
 
 export async function POST(request: Request) {
@@ -42,7 +42,7 @@ export async function POST(request: Request) {
       <div style="font-family:sans-serif;max-width:560px;margin:0 auto;color:#111">
         <h2 style="margin-bottom:4px">Strategy Evaluation Pack received</h2>
         <hr style="border:none;border-top:1px solid #e5e7eb;margin:16px 0">
-        <p>Thank you${leadResearcher ? `, ${escapeHtml(leadResearcher)}` : ""} — we've received your evaluation pack${strategyName ? ` for <strong>${escapeHtml(strategyName)}</strong>` : ""}.</p>
+        <p>Thank you${leadResearcher ? `, ${escapeHtml(leadResearcher)}` : ""}: we've received your evaluation pack${strategyName ? ` for <strong>${escapeHtml(strategyName)}</strong>` : ""}.</p>
         <p>You've indicated <strong>${escapeHtml(pathLabel)}</strong> as your primary commercial interest.</p>
         <p>
           A member of our team will review your submission and be in touch to discuss
@@ -53,7 +53,7 @@ export async function POST(request: Request) {
           Questions in the meantime? Reply to this email or reach us at
           <a href="mailto:info@odum-research.com" style="color:#111">info@odum-research.com</a>.
         </p>
-        <p style="color:#9ca3af;font-size:12px">Odum Capital Ltd — FCA authorised · FRN 975797</p>
+        <p style="color:#9ca3af;font-size:12px">Odum Capital Ltd: FCA authorised · FRN 975797</p>
       </div>
     `;
 
@@ -62,18 +62,18 @@ export async function POST(request: Request) {
         from: getSenderFor("hello"),
         to: email,
         replyTo: INTERNAL_ADDRESS,
-        subject: `Strategy Evaluation Pack received${strategyName ? ` — ${strategyName}` : ""} — Odum`,
+        subject: `Strategy Evaluation Pack received${strategyName ? `: ${strategyName}` : ""}: Odum`,
         html: ackHtml,
       }),
     );
   }
 
   const rows = [
-    ["Strategy", strategyName || "—"],
-    ["Lead researcher", leadResearcher || "—"],
-    ["Email", email || "—"],
+    ["Strategy", strategyName || "n/a"],
+    ["Lead researcher", leadResearcher || "n/a"],
+    ["Email", email || "n/a"],
     ["Commercial path", pathLabel],
-    ["Submission ID", submissionId || "—"],
+    ["Submission ID", submissionId || "n/a"],
   ]
     .map(
       ([k, v], i) =>
@@ -86,7 +86,7 @@ export async function POST(request: Request) {
       from: getSenderFor("hello"),
       to: INTERNAL_ADDRESS,
       replyTo: email,
-      subject: `Strategy Evaluation — ${displayName}${strategyName ? ` / ${strategyName}` : ""} (${commercialPath ?? "?"})`,
+      subject: `Strategy Evaluation: ${displayName}${strategyName ? ` / ${strategyName}` : ""} (${commercialPath ?? "?"})`,
       html: `
         <h2>New strategy evaluation submission</h2>
         <table style="border-collapse:collapse;width:100%;font-family:sans-serif;font-size:14px">

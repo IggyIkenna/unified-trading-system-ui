@@ -14,9 +14,9 @@ import { sendEmail, getSenderFor, escapeHtml } from "@/lib/email/resend";
 const INTERNAL_ADDRESS = "info@odum-research.com";
 
 const PATH_LABELS: Record<string, string> = {
-  A: "Path A — DART Full / incubation and rebuild",
-  B: "Path B — DART Signals-In / client signals, Odum execution",
-  C: "Path C — Regulatory Umbrella / read-only API integration",
+  A: "Path A: DART Full / incubation and rebuild",
+  B: "Path B: DART Signals-In / client signals, Odum execution",
+  C: "Path C: Regulatory Umbrella / read-only API integration",
 };
 
 export async function POST(request: Request) {
@@ -29,12 +29,10 @@ export async function POST(request: Request) {
   }
 
   const email = typeof body.email === "string" ? body.email : undefined;
-  const strategyName =
-    typeof body.strategyName === "string" ? body.strategyName : "Unnamed Strategy";
-  const leadResearcher =
-    typeof body.leadResearcher === "string" ? body.leadResearcher : undefined;
+  const strategyName = typeof body.strategyName === "string" ? body.strategyName : "Unnamed Strategy";
+  const leadResearcher = typeof body.leadResearcher === "string" ? body.leadResearcher : undefined;
   const commercialPath = typeof body.commercialPath === "string" ? body.commercialPath : undefined;
-  const pathLabel = PATH_LABELS[commercialPath ?? ""] ?? commercialPath ?? "—";
+  const pathLabel = PATH_LABELS[commercialPath ?? ""] ?? commercialPath ?? "-";
 
   // Persist to Firestore
   let submissionId: string | undefined;
@@ -63,7 +61,7 @@ export async function POST(request: Request) {
       <div style="font-family:sans-serif;max-width:560px;margin:0 auto;color:#111">
         <h2 style="margin-bottom:4px">Your strategy evaluation has been received</h2>
         <hr style="border:none;border-top:1px solid #e5e7eb;margin:16px 0">
-        <p>Thank you${leadResearcher ? `, ${escapeHtml(leadResearcher)}` : ""} — we've received your evaluation of <strong>${escapeHtml(strategyName)}</strong>.</p>
+        <p>Thank you${leadResearcher ? `, ${escapeHtml(leadResearcher)}` : ""}: we've received your evaluation of <strong>${escapeHtml(strategyName)}</strong>.</p>
         <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;padding:16px;margin:16px 0">
           <p style="margin:0 0 6px"><strong>Strategy:</strong> ${escapeHtml(strategyName)}</p>
           <p style="margin:0"><strong>Commercial path:</strong> ${escapeHtml(pathLabel)}</p>
@@ -78,7 +76,7 @@ export async function POST(request: Request) {
           <a href="mailto:info@odum-research.com" style="color:#111">info@odum-research.com</a>.
         </p>
         <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0">
-        <p style="color:#9ca3af;font-size:12px">Odum Capital Ltd — FCA authorised · FRN 975797</p>
+        <p style="color:#9ca3af;font-size:12px">Odum Capital Ltd: FCA authorised · FRN 975797</p>
       </div>
     `;
 
@@ -87,7 +85,7 @@ export async function POST(request: Request) {
         from: getSenderFor("hello"),
         to: email,
         replyTo: INTERNAL_ADDRESS,
-        subject: `Your strategy evaluation has been received — Odum`,
+        subject: `Your strategy evaluation has been received: Odum`,
         html: ackHtml,
       }),
     );
@@ -96,14 +94,14 @@ export async function POST(request: Request) {
   // Internal notification
   const metrics = [
     ["Strategy", strategyName],
-    ["Lead researcher", leadResearcher || "—"],
-    ["Email", email || "—"],
+    ["Lead researcher", leadResearcher || "n/a"],
+    ["Email", email || "n/a"],
     ["Commercial path", pathLabel],
-    ["Asset groups", Array.isArray(body.assetGroups) ? (body.assetGroups as string[]).join(", ") : "—"],
-    ["Strategy family", typeof body.strategyFamily === "string" ? body.strategyFamily : "—"],
-    ["Sharpe ratio", typeof body.sharpeRatio === "string" ? body.sharpeRatio : "—"],
-    ["Max drawdown", typeof body.maxDrawdown === "string" ? body.maxDrawdown : "—"],
-    ["Submission ID", submissionId || "—"],
+    ["Asset groups", Array.isArray(body.assetGroups) ? (body.assetGroups as string[]).join(", ") : "-"],
+    ["Strategy family", typeof body.strategyFamily === "string" ? body.strategyFamily : "-"],
+    ["Sharpe ratio", typeof body.sharpeRatio === "string" ? body.sharpeRatio : "-"],
+    ["Max drawdown", typeof body.maxDrawdown === "string" ? body.maxDrawdown : "-"],
+    ["Submission ID", submissionId || "n/a"],
   ]
     .map(
       ([k, v], i) =>
@@ -112,7 +110,7 @@ export async function POST(request: Request) {
     .join("");
 
   const internalHtml = `
-    <h2>New strategy evaluation — ${escapeHtml(strategyName)}</h2>
+    <h2>New strategy evaluation: ${escapeHtml(strategyName)}</h2>
     <table style="border-collapse:collapse;width:100%;font-family:sans-serif;font-size:14px">
       ${metrics}
     </table>
@@ -125,7 +123,7 @@ export async function POST(request: Request) {
       from: getSenderFor("hello"),
       to: INTERNAL_ADDRESS,
       replyTo: email,
-      subject: `New strategy evaluation — ${strategyName} (${pathLabel})`,
+      subject: `New strategy evaluation: ${strategyName} (${pathLabel})`,
       html: internalHtml,
     }),
   );

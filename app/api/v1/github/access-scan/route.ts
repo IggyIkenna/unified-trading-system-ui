@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
       github_handle: handle,
       scanned_at: new Date().toISOString(),
       repos: [],
-      note: "GITHUB_TOKEN not set — scan skipped.",
+      note: "GITHUB_TOKEN not set: scan skipped.",
     });
   }
 

@@ -20,10 +20,10 @@ import { sendEmail, getSenderFor, escapeHtml } from "@/lib/email/resend";
 const INTERNAL_ADDRESS = "info@odum-research.com";
 
 const PATH_LABELS: Record<string, string> = {
-  A: "Path A — DART Full",
-  B: "Path B — DART Signals-In",
-  C: "Path C — Regulatory Umbrella",
-  D: "Path D — Odum Signals",
+  A: "Path A: DART Full",
+  B: "Path B: DART Signals-In",
+  C: "Path C: Regulatory Umbrella",
+  D: "Path D: Odum Signals",
 };
 
 function getAdminApp(): admin.app.App {
@@ -103,14 +103,14 @@ export async function POST(request: Request) {
             <a href="${resumeUrl}" style="color:#111;word-break:break-all">${resumeUrl}</a>
           </p>
           <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0">
-          <p style="color:#9ca3af;font-size:12px">Odum Capital Ltd — FCA authorised · FRN 975797</p>
+          <p style="color:#9ca3af;font-size:12px">Odum Capital Ltd: FCA authorised · FRN 975797</p>
         </div>
       `;
       await sendEmail({
         from: getSenderFor("hello"),
         to: email,
         replyTo: INTERNAL_ADDRESS,
-        subject: "Resume your strategy evaluation — Odum",
+        subject: "Resume your strategy evaluation: Odum",
         html: draftHtml,
       });
       return NextResponse.json({ ok: true });
@@ -149,7 +149,7 @@ export async function POST(request: Request) {
           From there you can download your uploaded documents and edit / refile if anything needs to change.
         </p>
         <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0">
-        <p style="color:#9ca3af;font-size:12px">Odum Capital Ltd — FCA authorised · FRN 975797</p>
+        <p style="color:#9ca3af;font-size:12px">Odum Capital Ltd: FCA authorised · FRN 975797</p>
       </div>
     `;
 
@@ -157,7 +157,7 @@ export async function POST(request: Request) {
       from: getSenderFor("hello"),
       to: email,
       replyTo: INTERNAL_ADDRESS,
-      subject: "Your strategy evaluation access link — Odum",
+      subject: "Your strategy evaluation access link: Odum",
       html,
     });
 
