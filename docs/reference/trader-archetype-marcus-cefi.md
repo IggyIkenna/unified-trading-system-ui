@@ -474,3 +474,211 @@ When evaluating any crypto trading terminal (including our own), walk through Ma
 - Are the cross-cutting principles upheld?
 
 Gaps are not necessarily defects — they may be deliberate scope decisions — but they should be **known** gaps, not **accidental** ones.
+
+---
+
+# Automated Mode
+
+This appendix describes Marcus's terminal and daily workflow once his daily edge is encoded into models and rules running at scale — what he does, what he sees, and what stays human. It extends the universal automated-trading platform (see [automation-foundation.md](automation-foundation.md)) with crypto-CeFi-specific surfaces and decisions.
+
+Marcus is the cleanest case in the heavily-automatable tier: his edge (basis, funding, microstructure, cross-venue lead-lag, momentum / mean-reversion on liquid pairs) translates directly into rules and models. With automation, his coverage scales from 3–5 instruments hand-watched to 200+ instruments × 5–8 venues × multiple horizons running continuously.
+
+## What Marcus's Edge Becomes
+
+His manual edge encoded as automated strategy classes:
+
+- **Basis arb** — long spot + short perp atomic (or short spot + long perp), capturing the basis premium with auto-flatten near funding settlement. Hundreds of instances across instruments × venues.
+- **Funding harvest** — short the perp during sustained funding-extreme regimes (z-score thresholded), with auto-flatten before regime flip. Dozens of instances per asset class.
+- **Cross-venue lead-lag** — when Coinbase / OKX prints first on Asian-led or US-spot-ETF-led flow, fade the laggard on Binance with tight stops. Microstructure-fast.
+- **Liquidation-cluster fade / chase** — strategies that trade _into_ known liquidation clusters with appropriate sizing (cascade-ride) or _fade_ exhaustion after a cascade prints.
+- **OI-divergence trades** — quadrant-based: price up + OI up = ride; price up + OI down = fade short cover; etc. Mechanical.
+- **Cross-instrument basis** — perp-vs-dated-future calendar arb, especially around expiry rolls.
+- **Volatility-of-funding mean-reversion** — when funding vol spikes, mean-revert; when funding vol compresses, momentum.
+- **Whale-tape signal strategies** — large-print follow-through or fade based on aggregator-classified flow.
+- **Cross-asset correlation strategies** — BTC-ETH-SOL relative value when correlation regimes shift.
+
+His edge **scales to thousands of strategy instances** because each combination of (instrument × venue × horizon × parameter profile) is its own instance. Marcus is no longer running 3 trades at a time; he is running 300 strategies, each running thousands of micro-decisions per day.
+
+## What Stays Marcus
+
+The platform automates the _execution_ and _signal-generation_ of his edge. What stays him:
+
+- **Venue-policy interpretation.** When Binance announces a leverage-rule change, a perp delisting, a funding-formula change — the platform notices the announcement; Marcus interprets the implication for the funding-harvest fleet and adjusts.
+- **Regime-shift recognition.** When the structural assumption underlying a strategy class breaks (e.g., a venue closes Asia-only access; a major stablecoin starts to wobble; an exchange custodian fails) — Marcus's first move is faster than the model's drift detector.
+- **New strategy invention.** "I noticed funding behavior changes around mid-month perp settlements; let me model it." Idea origination is human.
+- **High-conviction directional override.** When Marcus has a strong macro view (BTC ETF flows, Fed-day, China policy event), he can manually layer a directional trade _on top of_ the systematic book — with explicit override tagging.
+- **Counterparty risk decisions.** Adding a new venue, sizing exposure to a venue under stress, evaluating new wrapped-asset issuers — all human.
+- **Catastrophe response.** When an exchange has a security incident, when a stablecoin starts depegging, when a mass liquidation cascade is unfolding — Marcus's first 60 seconds of judgment beat any pre-coded response.
+
+## Marcus's Automated-Mode Terminal
+
+The universal supervisor console (see [automation-foundation.md](automation-foundation.md#the-supervisor-console--the-traders-daily-ui)) plus crypto-CeFi-specific extensions.
+
+### Surfaces inherited from the foundation
+
+All 10 universal surfaces (data layer, feature library, research workspace, model registry, experiment tracker, strategy composition, promotion gates, capital allocation, fleet supervision, decay tracking). See [automation-foundation.md](automation-foundation.md) for the full descriptions.
+
+### Crypto-CeFi specific extensions
+
+#### Multi-venue strategy fleet view
+
+The fleet dashboard (see [#9 Live Fleet Supervision Console](automation-foundation.md#9-the-live-fleet-supervision-console)) for Marcus is grouped first by **strategy class** (basis arb / funding harvest / cross-venue lead-lag / liquidation-zone / etc.), then by **venue cluster**, then by **instrument**. With ~300 strategies live, the dashboard's design choice to default to amber+red filtering is critical — green fleet stays peripheral.
+
+**Marcus-specific columns:** funding rate at last action, basis at last action, last cross-venue divergence value, liquidation-cluster proximity for any open positions.
+
+#### Crypto-data-layer additions
+
+The data layer (see [#1 The Data Layer](automation-foundation.md#1-the-data-layer)) for Marcus emphasizes:
+
+- **Tick-level orderbook archives** across Binance, Bybit, OKX, Coinbase, Hyperliquid, Deribit (Tardis / Kaiko / native venue archives). Petabyte-scale. The cost / freshness / coverage matrix is the trader's licensing decision.
+- **Funding-rate archives** with venue-native delivery times and historical formula changes preserved.
+- **Liquidation event archives** with size, side, venue, instrument, time-since-prior — the raw substrate for liquidation-cluster modeling.
+- **OI archives** with per-venue, per-instrument, per-horizon snapshots.
+- **On-chain ETF flow data** (BlackRock / Fidelity / Bitwise / Grayscale daily creates / redeems) — drives a meaningful Marcus signal that didn't exist 18 months ago.
+- **Stablecoin flow data** (USDT / USDC mint / burn / exchange in-flow / out-flow) — the dry-powder indicator.
+- **Whale-wallet trackers** with on-chain entity attribution.
+- **Social sentiment** (curated Twitter/X lists, Telegram syndicate signal feeds) — supplementary, not primary.
+
+#### Crypto-feature-library additions
+
+The feature library (see [#2 The Feature Library](automation-foundation.md#2-the-feature-library)) carries Marcus-specific features. Examples:
+
+- **Funding extremity z-score** at multiple windows (8h / 24h / 7d), per instrument, per venue.
+- **Basis term structure curvature** — short-end vs. mid-end vs. far-end basis dynamics.
+- **OI-vs-price quadrant flag** (the four-state diagnostic from Marcus's manual surface, encoded as a feature).
+- **Liquidation-cluster proximity** — distance to nearest cluster of size > X, weighted by total cluster size.
+- **CVD divergence z-score** across venues.
+- **Cross-venue lead-lag spread** (Coinbase vs. Binance, OKX vs. Binance) at multiple lag windows.
+- **Funding-volatility regime indicator.**
+- **Basis-vs-perpetual-funding spread** — informs funding-vs-basis arb structure.
+
+These features are reusable across strategy classes (e.g., funding extremity z-score is consumed by basis arb, funding harvest, and momentum strategies alike) — exemplifying the library's reuse value.
+
+#### Strategy templates (Marcus's starting kit)
+
+Pre-built compositions in the strategy composition layer:
+
+- **Basis arb template** — long spot + short perp atomic, with leg-level slippage tolerance, auto-flatten window before funding, parameterized by funding-z threshold and basis threshold.
+- **Funding harvest template** — short perp during funding-extreme, hedge optional via spot or via cross-venue perp (Bybit vs. Binance funding spread).
+- **Liquidation-cluster fade template** — sit ahead of a known cluster, take short or long bias depending on price approach direction.
+- **Cross-venue lead-lag template** — fade the laggard at predefined latency thresholds.
+- **Momentum / mean-reversion templates** parameterized for different volatility and funding regimes.
+
+Marcus customizes from these. Many of his live strategies are instances of one template with parameter profiles tuned per asset class.
+
+#### Latency-tier requirements
+
+Marcus's strategies span multiple latency tiers (see [automation-foundation.md cross-cutting principles](automation-foundation.md#how-the-platform-binds-these-surfaces-together)):
+
+- **Microstructure-fast** (cross-venue lead-lag, cascade-trade) — sub-100ms decision-to-execution. Co-located or near-co-located execution. Native venue connection (no aggregator overhead).
+- **Tactical** (basis arb, funding harvest) — second-level latency acceptable. Aggregator routing fine.
+- **Strategic** (cross-asset rotation, regime-conditional sizing) — minute-level latency.
+
+The platform must respect each tier; the latency panel (see [#18 Latency Panel](common-tools.md#18-latency--connectivity--infra-panel)) shows per-strategy-class latency budgets and current realized latency.
+
+#### Multi-venue capital + balance management
+
+Beyond the universal capital allocation engine, Marcus's automated mode requires **per-venue balance management**:
+
+- **Auto-rebalance across venues** — when capital concentrates on one venue (funding harvest pulled USDT into Binance; cross-venue lead-lag needs USDT on Bybit), the platform auto-bridges (or queues a bridge-with-policy gate for sign-off).
+- **Margin segregation** — cross-margin vs. isolated-margin accounts per strategy class.
+- **Sub-account routing** — strategies that share an underlying but have different risk profiles get separate sub-accounts where the venue supports it.
+
+#### On-chain crossover (lighter than Julius's)
+
+Marcus is primarily CeFi but the modern crypto trader interacts with on-chain occasionally:
+
+- **ETF flow data** (on-chain ETF creation/redemption events).
+- **Whale wallet alerts** (large on-chain transfers to / from exchange).
+- **Stablecoin flow data** (on-chain).
+
+These integrate as data sources but Marcus does not run on-chain execution strategies (that's Julius's territory). His automated mode reads on-chain data; it does not write.
+
+## Marcus's Automated-Mode Daily Rhythm
+
+Crypto is a 24/7 market. Marcus's "day" is bounded by his shift; the strategies run continuously. Overnight supervision is split across regions or handled by the automated supervisor.
+
+### Pre-market (typically London-NY overlap, 60–90 min)
+
+- **Fleet review:** ~300 strategies in the dashboard, ~270 green, ~25 amber, ~5 red. Drill into red:
+  - "BTC-funding-harvest-binance-15m" — drift on funding-formula change announced overnight. Pause; queue retraining.
+  - "ETH-cross-venue-leadlag-okx-binance" — slippage spike during Asia session. Diagnose: was venue latency degraded, or is the lead-lag relationship genuinely shifting?
+- **Overnight attribution:** Asia session contributed +$X to funding-harvest fleet, –$Y to cross-venue lead-lag (correlation cluster question — are they capturing different alpha or are they correlated and I'm doubled-up on noise?).
+- **Capital drift:** allocation has drifted overnight; nightly proposal is ready. Approve, or modify because of regime shift recognition.
+- **Macro / regime read:** ETF flows from yesterday US session, today's macro calendar (FOMC week? CPI day?), any overnight headlines (China policy, regulator move).
+- **Promotion-gate triage:** two pilots are at day 30 and ready for full-live promotion. Review gate evidence, sign off or send back.
+- **Research-priority setting:** what to investigate today.
+
+### In-market (continuous, anomaly-driven)
+
+- **Default state:** in the research workspace. Notebooks open. Working on:
+  - A new feature: "does on-chain ETF flow predict next-day BTC perp basis?"
+  - Retraining a funding-harvest model whose feature distribution shifted.
+  - Ablation study on the cross-venue lead-lag feature set — which features are actually pulling weight?
+  - A new strategy template idea — "basis arb during stablecoin depeg events."
+- **Background:** supervisor console in another monitor; default green.
+- **Alert response:** typical day has 5–15 alerts. Most are info; 1–3 require action.
+  - Alert: "BTC 1h realized vol just spiked to 3σ." → Cap aggressive funding-harvest strategies; confirm hedge-with-perp strategies are on auto-hedge.
+  - Alert: "Bybit funding-rate feed lag > 10s." → Pause Bybit-dependent strategies until feed recovers.
+  - Alert: "USDC depeg > 50bps." → Pause all USDC-funded strategies; switch capital to USDT-funded; alert the desk and David.
+- **Liquid-event override:** ETF approval announcement, FOMC day, China policy headline, exchange security incident. Switch to event mode:
+  - Pause sensitive strategies.
+  - Manual directional override possible (with explicit override tagging).
+  - Restore default mode when event stabilizes.
+- **Mid-day:** glance at allocation engine, decide on intraday rebalance or defer to nightly.
+- **Cross-trader coordination:** brief desk chat with Julius on cross-domain basis (CeFi-vs-DeFi funding); Sasha on vol structures around the next event.
+
+### Post-market (60–90 min)
+
+- **End-of-day attribution:** today's P/L by strategy class, by venue, by underlying, by regime. Outliers flagged.
+- **Decay check:** which strategies' rolling Sharpe is concerning? Queue retrain jobs overnight for any that need it.
+- **Capital allocation:** nightly proposal review. Approve or escalate.
+- **Promotion-gate triage for tomorrow:** strategies advancing through the lifecycle.
+- **Research priority for overnight:** queue 5–10 backtests / training runs on research compute.
+- **Hand-off:** depending on shift coverage, hand off to Asia-session supervisor or rely on automated supervision overnight. Confirm fleet is in expected state.
+
+### Cadence variations
+
+- **Crypto-event-heavy weeks** (FOMC week, CPI day, ETF flow announcements, exchange security incidents) — supervision-heavy; less research time.
+- **Quiet weeks** — research-dominated; the strategies run themselves and Marcus invests in alpha-generation.
+
+## Differences from the Manual Mode
+
+| Dimension            | Manual Marcus                | Automated Marcus                                                   |
+| -------------------- | ---------------------------- | ------------------------------------------------------------------ |
+| Coverage             | 3–5 instruments hand-watched | 200+ instruments × 5–8 venues × multiple horizons                  |
+| Trades per day       | 5–30 high-conviction         | Thousands across the fleet                                         |
+| Phase 1 (Decide)     | Reading a chart              | Choosing alpha to research; managing portfolio of strategies       |
+| Phase 2 (Enter)      | Click ticket                 | Promote strategy through lifecycle gates                           |
+| Phase 3 (Hold)       | Watching positions           | Anomaly-driven supervision of fleet                                |
+| Phase 4 (Learn)      | Journaling lessons           | Decay tracking, retraining, attribution-driven research priorities |
+| Time on charts       | 80%                          | 10% (mostly diagnostic, not generative)                            |
+| Time on research     | 5–10%                        | 60–70%                                                             |
+| Time on supervision  | 10–15%                       | 15–20%                                                             |
+| Time on intervention | (continuous)                 | 5–10%                                                              |
+| Latency criticality  | Visible per venue            | Per-strategy-class latency tiers, with budget enforcement          |
+| Risk units           | $-notional + greeks          | Same + per-strategy DV01-equivalent + correlation cluster          |
+| Edge metric          | P/L, Sharpe                  | P/L, Sharpe, decay rate, capacity utilization, marginal Sharpe     |
+| Cognitive load       | Foveal-on-position           | Peripheral-on-fleet; foveal-on-research-or-anomaly                 |
+
+The fundamental change: **Marcus stops being the worker and becomes the principal investor in his own quant fund.**
+
+## How Marcus Coordinates with Quinn and David
+
+- **Quinn** — Quinn's fleet runs cross-archetype factor / stat-arb strategies that may overlap with Marcus's. They coordinate to avoid double-up; correlation matrices visible to both. Quinn's promotion gates and Marcus's run on the same lifecycle infrastructure; David sees both fleets aggregated.
+- **David** — David sees Marcus's automated cousin as a fleet of 300+ strategies with a defined risk budget. David's surfaces (firm-wide risk, capital allocation, cross-trader correlation, behavioral monitoring) include the automated fleets. Material allocation changes route to David. Catastrophe kill switches are firm-level (multi-key); Marcus has fleet-level kill but firm-wide kill is David + CIO + risk officer.
+- **Julius** — adjacent desk; cross-domain strategies (CeFi-DeFi basis, funding-vs-borrow) may have legs with both. Coordination is operational: who owns which leg, how attribution is split.
+
+## How to Use This Appendix
+
+When evaluating Marcus's automated terminal (against our own platform), walk through:
+
+- **Data layer:** are all the crypto-CeFi data sources (tick-level OB, funding archives, liquidation events, OI, ETF flows, stables) cataloged with quality / lineage / cost / freshness?
+- **Feature library:** are the Marcus-specific features (funding-z, basis curvature, OI-quadrant, liquidation proximity, CVD-divergence, lead-lag spread) first-class with drift monitoring?
+- **Research workspace:** can Marcus go from idea to validated strategy in hours, with templates, real backtest engine, walk-forward, and reproducibility?
+- **Strategy templates:** are basis-arb / funding-harvest / cross-venue-leadlag / cluster-fade compositions provided as starting kits?
+- **Strategy fleet view:** can he supervise 300+ strategies anomaly-driven, grouped by class / venue / instrument, with crypto-specific columns?
+- **Latency tiering:** are microstructure-fast strategies running at sub-100ms with co-located execution, while tactical strategies tolerate second-level?
+- **Per-venue balance management:** is auto-rebalance across venues a first-class operational tool?
+- **What stays human:** does the platform make Marcus's judgment calls (venue-policy interpretation, regime-shift recognition, override) higher-leverage rather than getting in the way?
+- **Daily rhythm:** can Marcus actually spend 60–70% of his time on research while the fleet runs supervised in the periphery?
