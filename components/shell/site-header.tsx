@@ -364,7 +364,7 @@ export function SiteHeader() {
             </>
           ) : (
             <>
-              <Link href="/login" className="hidden text-sm text-muted-foreground hover:text-foreground xl:block">
+              <Link href="/login" className="hidden text-sm text-muted-foreground hover:text-foreground md:block">
                 Sign In
               </Link>
               {/*

@@ -4,11 +4,12 @@ import { useEffect, useState } from "react";
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { firebaseDb } from "@/lib/admin/firebase";
 import { formatFileSize, type UploadedFileRef } from "@/lib/strategy-evaluation/upload";
+import { SubmissionsNav } from "@/components/admin/submissions-nav";
 
 const PATH_LABELS: Record<string, string> = {
-  A: "Path A — DART Full",
-  B: "Path B — Signals-In",
-  C: "Path C — Reg Umbrella",
+  A: "Path A: DART Full",
+  B: "Path B: Signals-In",
+  C: "Path C: Reg Umbrella",
 };
 
 const ENTITY_LABELS: Record<string, string> = {
@@ -94,13 +95,7 @@ function DetailRow({ label, value }: { label: string; value: string | undefined 
   );
 }
 
-function DetailFile({
-  label,
-  file,
-}: {
-  label: string;
-  file: UploadedFileRef | null | undefined;
-}) {
+function DetailFile({ label, file }: { label: string; file: UploadedFileRef | null | undefined }) {
   if (!file) return null;
   return (
     <div className="py-1.5 grid grid-cols-[160px_1fr] gap-4 text-xs border-b border-border/40 last:border-0">
@@ -202,21 +197,12 @@ ${row.commercialPath === "C" ? `\n## Regulatory Umbrella — API Key Ownership\n
 
 function DetailPanel({ row, onClose }: { row: EvalDoc; onClose: () => void }) {
   const pathLabel = PATH_LABELS[row.commercialPath ?? ""] ?? row.commercialPath ?? "—";
-  const secondary = (row.commercialPathSecondary ?? [])
-    .map((v) => PATH_LABELS[v] ?? v)
-    .join(", ");
-  const tertiary = (row.commercialPathTertiary ?? [])
-    .map((v) => PATH_LABELS[v] ?? v)
-    .join(", ");
+  const secondary = (row.commercialPathSecondary ?? []).map((v) => PATH_LABELS[v] ?? v).join(", ");
+  const tertiary = (row.commercialPathTertiary ?? []).map((v) => PATH_LABELS[v] ?? v).join(", ");
 
   return (
     <div className="fixed inset-0 z-50 flex">
-      <button
-        type="button"
-        className="absolute inset-0 bg-black/40"
-        onClick={onClose}
-        aria-label="Close"
-      />
+      <button type="button" className="absolute inset-0 bg-black/40" onClick={onClose} aria-label="Close" />
       <aside className="relative ml-auto h-full w-full max-w-2xl overflow-y-auto bg-background shadow-xl p-6">
         <div className="flex items-start justify-between mb-4">
           <div>
@@ -240,7 +226,10 @@ function DetailPanel({ row, onClose }: { row: EvalDoc; onClose: () => void }) {
           <DetailRow label="Lead researcher" value={row.leadResearcher} />
           <DetailRow label="Email" value={row.email} />
           <DetailRow label="Phone / Telegram" value={row.phone} />
-          <DetailRow label="Capital structure" value={ENTITY_LABELS[row.entityStructure ?? ""] ?? row.entityStructure} />
+          <DetailRow
+            label="Capital structure"
+            value={ENTITY_LABELS[row.entityStructure ?? ""] ?? row.entityStructure}
+          />
           <DetailRow label="Fund jurisdiction" value={row.fundJurisdiction} />
           <DetailRow label="Track-record timing" value={row.trackRecordTiming} />
           <DetailRow label="Plans to raise" value={row.planToRaiseExternalCapital} />
@@ -258,9 +247,7 @@ function DetailPanel({ row, onClose }: { row: EvalDoc; onClose: () => void }) {
         </section>
 
         <section className="space-y-0 mb-6">
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">
-            Taxonomy
-          </h3>
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">Taxonomy</h3>
           <DetailRow label="Asset groups" value={(row.assetGroups ?? []).join(", ") || undefined} />
           <DetailRow label="Instrument types" value={(row.instrumentTypes ?? []).join(", ") || undefined} />
           <DetailRow label="Strategy family" value={row.strategyFamily} />
@@ -300,9 +287,7 @@ function DetailPanel({ row, onClose }: { row: EvalDoc; onClose: () => void }) {
             !row.assumptionsDoc &&
             !row.tearSheet &&
             !row.tradeLogCsv &&
-            !row.equityCurveCsv && (
-              <p className="text-xs text-muted-foreground italic">No files attached.</p>
-            )}
+            !row.equityCurveCsv && <p className="text-xs text-muted-foreground italic">No files attached.</p>}
         </section>
 
         <section className="space-y-0 mb-6">
@@ -325,9 +310,7 @@ function DetailPanel({ row, onClose }: { row: EvalDoc; onClose: () => void }) {
         </section>
 
         <section className="space-y-0 mb-6">
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">
-            Validation
-          </h3>
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">Validation</h3>
           <DetailBool label="Paper traded 7+ days" value={row.paperTradedAtLeast7Days} />
           <DetailBool label="Live traded 1+ week" value={row.liveTradedAtLeastOneWeek} />
           <DetailRow label="Deployment continuity" value={row.deploymentContinuity} />
@@ -408,10 +391,7 @@ export default function StrategyEvaluationsAdminPage() {
           setError("Firebase not configured (mock mode)");
           return;
         }
-        const q = query(
-          collection(firebaseDb, "strategy_evaluations"),
-          orderBy("submittedAt", "desc"),
-        );
+        const q = query(collection(firebaseDb, "strategy_evaluations"), orderBy("submittedAt", "desc"));
         const snap = await getDocs(q);
         setRows(
           snap.docs.map((d) => ({
@@ -430,19 +410,21 @@ export default function StrategyEvaluationsAdminPage() {
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-8">
-      <h1 className="text-2xl font-semibold">Strategy evaluations</h1>
+      <h1 className="text-2xl font-semibold">Prospect submissions</h1>
+      <SubmissionsNav active="strategy-evaluations" />
+      <h2 className="text-lg font-semibold">Strategy evaluation results</h2>
       <p className="mt-1 text-slate-500 text-sm">
-        Submissions from <code>/strategy-evaluation</code>. Click a row to see the full DDQ.
-        On prod, data lands in the Firestore <code>strategy_evaluations</code> collection and
-        an internal notification is sent to <code>info@odum-research.com</code>.
+        Submissions from <code>/strategy-evaluation</code>. Click a row to see the full DDQ. On prod, data lands in the
+        Firestore <code>strategy_evaluations</code> collection and an internal notification is sent to{" "}
+        <code>info@odum-research.com</code>.
       </p>
 
       {loading && <p className="mt-8 text-muted-foreground">Loading submissions…</p>}
       {error !== null && <p className="mt-8 text-red-700">Error: {error}</p>}
       {!loading && error === null && rows.length === 0 && (
         <p className="mt-8 text-muted-foreground">
-          No submissions yet. When researchers submit <code>/strategy-evaluation</code>, their
-          evaluation packs appear here.
+          No submissions yet. When researchers submit <code>/strategy-evaluation</code>, their evaluation packs appear
+          here.
         </p>
       )}
 

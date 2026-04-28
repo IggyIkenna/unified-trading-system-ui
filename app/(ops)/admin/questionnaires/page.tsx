@@ -22,10 +22,8 @@ import { collection, doc, getDocs, orderBy, query, serverTimestamp, setDoc } fro
 import { firebaseDb } from "@/lib/admin/firebase";
 import { getFirebaseAuth } from "@/lib/auth/firebase-config";
 import { getPersonaById, PERSONAS } from "@/lib/auth/personas";
-import {
-  RESOLVED_PERSONA_TO_AUTH_ID,
-  resolvePersonaFromQuestionnaire,
-} from "@/lib/questionnaire/resolve-persona";
+import { SubmissionsNav } from "@/components/admin/submissions-nav";
+import { RESOLVED_PERSONA_TO_AUTH_ID, resolvePersonaFromQuestionnaire } from "@/lib/questionnaire/resolve-persona";
 import type { QuestionnaireResponse } from "@/lib/questionnaire/types";
 
 interface QuestionnaireDoc {
@@ -66,7 +64,11 @@ function toResolverInput(d: QuestionnaireDoc): QuestionnaireResponse {
     venue_scope: d.venue_scope ?? "all",
     strategy_style: (d.strategy_style ?? []) as QuestionnaireResponse["strategy_style"],
     service_family: (d.service_family ?? "DART") as QuestionnaireResponse["service_family"],
-    fund_structure: (Array.isArray(d.fund_structure) ? d.fund_structure : d.fund_structure ? [d.fund_structure] : []) as QuestionnaireResponse["fund_structure"],
+    fund_structure: (Array.isArray(d.fund_structure)
+      ? d.fund_structure
+      : d.fund_structure
+        ? [d.fund_structure]
+        : []) as QuestionnaireResponse["fund_structure"],
   };
 }
 
@@ -101,11 +103,7 @@ function GrantButton({ row }: { row: QuestionnaireDoc }) {
   const grant = resolveGrant(row);
 
   if (!email || !grant) {
-    return (
-      <span className="text-[10px] text-muted-foreground italic">
-        {!email ? "No email" : "Unresolvable"}
-      </span>
-    );
+    return <span className="text-[10px] text-muted-foreground italic">{!email ? "No email" : "Unresolvable"}</span>;
   }
 
   const handleGrant = async () => {
@@ -165,11 +163,7 @@ function GrantButton({ row }: { row: QuestionnaireDoc }) {
   };
 
   if (status === "done") {
-    return (
-      <span className="text-[10px] text-emerald-600 font-medium">
-        ✓ Granted — {grant.resolvedId}
-      </span>
-    );
+    return <span className="text-[10px] text-emerald-600 font-medium">✓ Granted — {grant.resolvedId}</span>;
   }
   if (status === "error") {
     return (
@@ -205,10 +199,7 @@ export default function QuestionnairesAdminPage() {
           setError("Firebase not configured (mock mode)");
           return;
         }
-        const q = query(
-          collection(firebaseDb, "questionnaires"),
-          orderBy("submittedAt", "desc"),
-        );
+        const q = query(collection(firebaseDb, "questionnaires"), orderBy("submittedAt", "desc"));
         const snap = await getDocs(q);
         const docs = snap.docs.map((d) => ({
           id: d.id,
@@ -270,12 +261,13 @@ export default function QuestionnairesAdminPage() {
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-8" data-testid="questionnaires-admin-page">
-      <h1 className="text-2xl font-semibold">Prospect questionnaires</h1>
+      <h1 className="text-2xl font-semibold">Prospect submissions</h1>
+      <SubmissionsNav active="questionnaires" />
+      <h2 className="text-lg font-semibold">Light questionnaire results</h2>
       <p className="mt-1 text-slate-500">
-        Submissions from the public <code>/questionnaire</code> flow. Use{" "}
-        <strong>Grant</strong> to write entitlements to Firestore so the prospect can sign in
-        with the correct platform surface. The resolved persona is derived from their responses
-        using the same logic as the live restriction-profile engine.
+        Submissions from the public <code>/questionnaire</code> flow. Use <strong>Grant</strong> to write entitlements
+        to Firestore so the prospect can sign in with the correct platform surface. The resolved persona is derived from
+        their responses using the same logic as the live restriction-profile engine.
       </p>
 
       {loading && (
@@ -290,16 +282,12 @@ export default function QuestionnairesAdminPage() {
       )}
       {!loading && error === null && rows.length === 0 && (
         <p className="mt-8" data-testid="questionnaires-empty">
-          No submissions yet. When prospects submit <code>/questionnaire</code>, their responses land
-          here.
+          No submissions yet. When prospects submit <code>/questionnaire</code>, their responses land here.
         </p>
       )}
 
       {rows.length > 0 && (
-        <table
-          className="mt-8 w-full border-collapse text-sm"
-          data-testid="questionnaires-table"
-        >
+        <table className="mt-8 w-full border-collapse text-sm" data-testid="questionnaires-table">
           <thead>
             <tr className="border-b text-left">
               <th className="py-2 pr-4">Submission</th>
@@ -323,9 +311,7 @@ export default function QuestionnairesAdminPage() {
                     {email || firmName ? (
                       <span className="block">
                         <span className="font-medium">{email ?? "—"}</span>
-                        {firmName && (
-                          <span className="block text-muted-foreground">{firmName}</span>
-                        )}
+                        {firmName && <span className="block text-muted-foreground">{firmName}</span>}
                       </span>
                     ) : (
                       <span className="text-muted-foreground">—</span>
@@ -333,16 +319,10 @@ export default function QuestionnairesAdminPage() {
                   </td>
                   <td className="py-2 pr-4">{row.service_family ?? "—"}</td>
                   <td className="py-2 pr-4">{(row.categories ?? []).join(", ") || "—"}</td>
-                  <td className="py-2 pr-4">
-                    {(row.strategy_style ?? []).join(", ") || "—"}
-                  </td>
+                  <td className="py-2 pr-4">{(row.strategy_style ?? []).join(", ") || "—"}</td>
                   <td className="py-2 pr-4">{row.fund_structure ?? "—"}</td>
                   <td className="py-2 space-x-3">
-                    <a
-                      href={seedDemoUrl(row)}
-                      className="text-blue-600 underline"
-                      data-testid={`seed-demo-${row.id}`}
-                    >
+                    <a href={seedDemoUrl(row)} className="text-blue-600 underline" data-testid={`seed-demo-${row.id}`}>
                       Seed demo
                     </a>
                     <GrantButton row={row} />
