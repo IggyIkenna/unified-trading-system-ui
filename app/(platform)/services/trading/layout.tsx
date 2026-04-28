@@ -4,8 +4,9 @@ import { EntitlementGate, hasAnyEntitlement } from "@/components/platform/entitl
 import { LiveAsOfToggle } from "@/components/platform/live-asof-toggle";
 import { ErrorBoundary } from "@/components/shared/error-boundary";
 import { WidgetScroll } from "@/components/shared/widget-scroll";
-import { TRADING_TABS } from "@/components/shell/service-tabs";
+import { TRADING_TABS, type ServiceTab } from "@/components/shell/service-tabs";
 import { TradingVerticalNav } from "@/components/shell/trading-vertical-nav";
+import { type AssetGroup, instrumentTypesForUser } from "@/lib/architecture-v2/user-instrument-types";
 import { Card, CardContent } from "@/components/ui/card";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import "@/components/widgets/register-all";
@@ -36,7 +37,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 const SEVERITY_DOT: Record<NewsSeverity, string> = {
   breaking: "bg-rose-500",
@@ -276,11 +277,65 @@ function useWidgetTab(): string | null {
   return match?.[1] ?? null;
 }
 
+/**
+ * 2026-04-28 DART tile-split: per-asset_group nav-item gating.
+ *
+ * Map each TRADING_TABS asset-group-flavoured chip to the asset_group it
+ * surfaces. Items not in this map are instrument-agnostic (Markets, Book,
+ * Orders, Positions, etc.) and stay visible to anyone with `trading-common`.
+ * Items in this map auto-hide when the user's effective asset_group set
+ * (reality + FOMO teasers) doesn't include the listed asset_group(s). Admin
+ * bypass via the wildcard short-circuit in instrumentTypesForUser.
+ */
+const NAV_ASSET_GROUP_GATES: Record<string, readonly AssetGroup[]> = {
+  "/services/trading/defi": ["DEFI"],
+  "/services/trading/defi/bundles": ["DEFI"],
+  "/services/trading/defi/staking": ["DEFI"],
+  "/services/trading/sports": ["SPORTS"],
+  "/services/trading/options": ["CEFI", "TRADFI"],
+  "/services/trading/predictions": ["PREDICTION"],
+};
+
+function useFilteredTradingTabs(user: ReturnType<typeof useAuth>["user"], baseTabs: ServiceTab[]): ServiceTab[] {
+  const [allowedAssetGroups, setAllowedAssetGroups] = useState<Set<AssetGroup> | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    void instrumentTypesForUser(user ?? null, "fomo")
+      .then((derived) => {
+        if (cancelled) return;
+        setAllowedAssetGroups(derived.assetGroups);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        // Lookup failure — fall back to "show everything" rather than hide;
+        // the per-page PageEntitlementGate is the source-of-truth gate. The
+        // sidebar filter is a UX nicety, not a security boundary.
+        setAllowedAssetGroups(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
+
+  return useMemo(() => {
+    // While the async lookup is in-flight (allowedAssetGroups === null), or
+    // if it failed, render all tabs — per-page gates still enforce.
+    if (allowedAssetGroups === null) return baseTabs;
+    return baseTabs.filter((tab) => {
+      const required = NAV_ASSET_GROUP_GATES[tab.href];
+      if (!required) return true;
+      return required.some((g) => allowedAssetGroups.has(g));
+    });
+  }, [baseTabs, allowedAssetGroups]);
+}
+
 export default function TradingServiceLayout({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
   const { scope, setMode } = useGlobalScope();
   const [quickViewCollapsed, setQuickViewCollapsed] = useState(true);
   const widgetTab = useWidgetTab();
+  const filteredTabs = useFilteredTradingTabs(user, TRADING_TABS);
 
   // Sync workspace layouts with Firestore (no-op if Firebase not configured)
   useWorkspaceSync();
@@ -317,7 +372,7 @@ export default function TradingServiceLayout({ children }: { children: React.Rea
     <div className="flex flex-col h-full">
       {/* Main area: vertical nav + resizable content/quick-view */}
       <div className="flex flex-1 min-h-0 overflow-hidden">
-        <TradingVerticalNav tabs={TRADING_TABS} entitlements={user?.entitlements} bottomSlot={<LiveAsOfToggle />} />
+        <TradingVerticalNav tabs={filteredTabs} entitlements={user?.entitlements} bottomSlot={<LiveAsOfToggle />} />
 
         {quickViewCollapsed ? (
           <div className="flex-1 min-w-0">{mainContent}</div>
