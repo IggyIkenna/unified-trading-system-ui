@@ -54,7 +54,7 @@ const columns: ColumnDef<PredictionPosition, unknown>[] = [
               r.side === "yes" ? "border-emerald-500/40 text-emerald-400" : "border-red-500/40 text-red-400",
             )}
           >
-            {r.side.toUpperCase()} — {r.outcome}
+            {r.side.toUpperCase()}: {r.outcome}
           </Badge>
         </div>
       );
@@ -117,7 +117,7 @@ const columns: ColumnDef<PredictionPosition, unknown>[] = [
       return date ? (
         <div className="text-right font-mono text-micro">{date}</div>
       ) : (
-        <div className="text-right text-zinc-600">—</div>
+        <div className="text-right text-zinc-600">-</div>
       );
     },
   },

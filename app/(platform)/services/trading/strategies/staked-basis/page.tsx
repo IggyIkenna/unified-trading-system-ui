@@ -21,10 +21,10 @@ function StakedBasisPageContent() {
       <WidgetScroll viewportClassName="p-2">
         <div className="flex flex-col gap-4">
           <div className="rounded-lg border border-border bg-card/50 px-4 py-3 space-y-2">
-            <h1 className="text-sm font-semibold">Staked basis (weETH + perp) — UI verification</h1>
+            <h1 className="text-sm font-semibold">Staked basis (weETH + perp): UI verification</h1>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              No strategy-only widget: deploy using shared DeFi actions — SOR swap to LST, transfer margin, perp hedge
-              on Book, then confirm positions, risk, and trade history. Canonical strategy id:{" "}
+              No strategy-only widget: deploy using shared DeFi actions: SOR swap to LST, transfer margin, perp hedge on
+              Book, then confirm positions, risk, and trade history. Canonical strategy id:{" "}
               <span className="font-mono text-foreground">STAKED_BASIS</span>.
             </p>
             <div className="flex flex-wrap gap-2 pt-1">
@@ -62,7 +62,7 @@ function StakedBasisPageContent() {
             <div className="border-b border-border px-4 py-3 bg-card/80">
               <h2 className="text-sm font-semibold">2. Pledge &amp; borrow (Aave)</h2>
               <p className="text-xs text-muted-foreground mt-1">
-                Pledge the LST as collateral (LEND weETH) then BORROW USDC to fund the perp margin leg — per
+                Pledge the LST as collateral (LEND weETH) then BORROW USDC to fund the perp margin leg: per
                 architecture-v2 carry-staked-basis flow.
               </p>
             </div>
@@ -87,7 +87,7 @@ function StakedBasisPageContent() {
             <div className="border-b border-border px-4 py-3 bg-card/80">
               <h2 className="text-sm font-semibold">4. Short PERP (hedge leg)</h2>
               <p className="text-xs text-muted-foreground mt-1">
-                Short the underlying on Hyperliquid — funding rate &gt; LST borrow cost drives the net carry.
+                Short the underlying on Hyperliquid: funding rate &gt; LST borrow cost drives the net carry.
               </p>
             </div>
             <WidgetScroll className="flex-1 min-h-0" viewportClassName="p-1">

@@ -370,11 +370,11 @@ export function getProcessingContextStats(selections: FinderSelections): FinderC
     metrics: [
       {
         label: "overall",
-        value: stage?.completionPct != null ? formatNumber(stage.completionPct, 1) : "—",
+        value: stage?.completionPct != null ? formatNumber(stage.completionPct, 1) : "-",
       },
       {
         label: "shards complete",
-        value: stage?.completedShards?.toLocaleString() ?? "—",
+        value: stage?.completedShards?.toLocaleString() ?? "-",
       },
       { label: "failed", value: stage?.failedShards ?? 0 },
     ],

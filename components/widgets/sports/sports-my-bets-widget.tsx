@@ -40,7 +40,7 @@ const settledColumns: DataTableColumn<Bet>[] = [
   {
     key: "pnl",
     label: "P&L",
-    accessor: (r) => (r.pnl == null ? "—" : `${r.pnl > 0 ? "+" : ""}${fmtCurrency(r.pnl)}`),
+    accessor: (r) => (r.pnl == null ? "-" : `${r.pnl > 0 ? "+" : ""}${fmtCurrency(r.pnl)}`),
     align: "right",
   },
 ];
@@ -53,7 +53,7 @@ export function SportsMyBetsWidget(_props: WidgetComponentProps) {
     const settled = allBets.filter((b) => b.pnl != null);
     const totalPnl = settled.reduce((s, b) => s + (b.pnl ?? 0), 0);
     const wins = settled.filter((b) => (b.pnl ?? 0) > 0).length;
-    const winRate = settled.length > 0 ? formatNumber((wins / settled.length) * 100, 0) : "—";
+    const winRate = settled.length > 0 ? formatNumber((wins / settled.length) * 100, 0) : "-";
     const openExposure = allBets.filter((b) => b.status === "open").reduce((s, b) => s + b.stake, 0);
     const openCount = openSingles(allBets).length;
 
@@ -61,12 +61,12 @@ export function SportsMyBetsWidget(_props: WidgetComponentProps) {
       { label: "Total staked", value: fmtCurrency(totalStaked) },
       {
         label: "P&L (settled)",
-        value: totalPnl === 0 ? "—" : `${totalPnl > 0 ? "+" : ""}${fmtCurrency(totalPnl)}`,
+        value: totalPnl === 0 ? "-" : `${totalPnl > 0 ? "+" : ""}${fmtCurrency(totalPnl)}`,
         sentiment: totalPnl > 0 ? ("positive" as const) : totalPnl < 0 ? ("negative" as const) : ("neutral" as const),
       },
       {
         label: "Win rate",
-        value: winRate === "—" ? "—" : `${winRate}%`,
+        value: winRate === "-" ? "-" : `${winRate}%`,
       },
       { label: "Open bets", value: String(openCount) },
       { label: "Open exposure", value: fmtCurrency(openExposure) },
@@ -88,7 +88,7 @@ export function SportsMyBetsWidget(_props: WidgetComponentProps) {
   if (wsStatus === "error" || wsStatus === "disconnected") {
     return (
       <div className="flex h-full items-center justify-center p-4">
-        <p className="text-sm text-destructive">Bet data unavailable — connection error</p>
+        <p className="text-sm text-destructive">Bet data unavailable: connection error</p>
       </div>
     );
   }

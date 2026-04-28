@@ -211,7 +211,7 @@ export function NewFeatureDialog({
           </DialogTitle>
           <DialogDescription className="text-xs text-muted-foreground mt-0.5">
             Define a feature in the hierarchy: service, category, group, then identifiers, parameters, and compute
-            settings (mock — local session only).
+            settings (mock: local session only).
           </DialogDescription>
         </DialogHeader>
 

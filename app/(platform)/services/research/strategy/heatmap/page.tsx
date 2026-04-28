@@ -330,7 +330,7 @@ export default function StrategyHeatmapPage() {
                     <div className="w-4 h-3 bg-green-500 rounded-r" />
                   </div>
                   <span className="font-mono">
-                    {formatNumber(minValue, 2)} — {formatNumber(maxValue, 2)}
+                    {formatNumber(minValue, 2)}: {formatNumber(maxValue, 2)}
                   </span>
                 </div>
               </div>

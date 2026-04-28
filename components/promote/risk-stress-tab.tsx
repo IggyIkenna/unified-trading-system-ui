@@ -22,14 +22,9 @@ export function RiskStressTab({ strategy }: { strategy: CandidateStrategy }) {
   const risk = strategy.riskProfile;
   const m = strategy.metrics;
 
-  const stressPassed = risk.stressScenarios.filter(
-    (s) => s.status === "passed",
-  ).length;
+  const stressPassed = risk.stressScenarios.filter((s) => s.status === "passed").length;
   const stressTotal = risk.stressScenarios.length;
-  const maxStressImpact =
-    risk.stressScenarios.length > 0
-      ? Math.min(...risk.stressScenarios.map((s) => s.impact))
-      : 0;
+  const maxStressImpact = risk.stressScenarios.length > 0 ? Math.min(...risk.stressScenarios.map((s) => s.impact)) : 0;
 
   const row1Metrics: RiskMetricCard[] = [
     {
@@ -74,16 +69,12 @@ export function RiskStressTab({ strategy }: { strategy: CandidateStrategy }) {
           : risk.correlationToPortfolio <= 0.4
             ? "text-amber-400"
             : "text-rose-400",
-      hint:
-        risk.correlationToPortfolio <= 0.2
-          ? "Low — strong diversifier"
-          : "Moderate vs portfolio",
+      hint: risk.correlationToPortfolio <= 0.2 ? "Low: strong diversifier" : "Moderate vs portfolio",
     },
     {
       label: "Concentration",
       value: fmtPct(risk.concentrationRisk),
-      color:
-        risk.concentrationRisk <= 0.15 ? "text-emerald-400" : "text-amber-400",
+      color: risk.concentrationRisk <= 0.15 ? "text-emerald-400" : "text-amber-400",
       hint: "Max single-name exposure",
     },
     {
@@ -95,12 +86,7 @@ export function RiskStressTab({ strategy }: { strategy: CandidateStrategy }) {
     {
       label: "Stress pass",
       value: `${stressPassed}/${stressTotal}`,
-      color:
-        stressPassed === stressTotal
-          ? "text-emerald-400"
-          : stressPassed > 0
-            ? "text-amber-400"
-            : "text-rose-400",
+      color: stressPassed === stressTotal ? "text-emerald-400" : stressPassed > 0 ? "text-amber-400" : "text-rose-400",
       hint: "Scenarios within tolerance",
     },
     {
@@ -125,9 +111,7 @@ export function RiskStressTab({ strategy }: { strategy: CandidateStrategy }) {
   }[] = [
     {
       label: "Daily VaR within limit (≤ 3%)",
-      status: (Math.abs(m.dailyVaR) <= 0.03
-        ? "passed"
-        : "failed") as GateStatus,
+      status: (Math.abs(m.dailyVaR) <= 0.03 ? "passed" : "failed") as GateStatus,
       actual: fmtPct(m.dailyVaR),
       threshold: "≤ 3%",
     },
@@ -149,9 +133,7 @@ export function RiskStressTab({ strategy }: { strategy: CandidateStrategy }) {
     },
     {
       label: "Portfolio correlation acceptable",
-      status: (risk.correlationToPortfolio <= 0.4
-        ? "passed"
-        : "failed") as GateStatus,
+      status: (risk.correlationToPortfolio <= 0.4 ? "passed" : "failed") as GateStatus,
       actual: fmtNum(risk.correlationToPortfolio),
       threshold: "≤ 0.40",
     },
@@ -167,17 +149,12 @@ export function RiskStressTab({ strategy }: { strategy: CandidateStrategy }) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="font-semibold">
-            Risk & Stress Testing — {strategy.name}
-          </h3>
+          <h3 className="font-semibold">Risk & Stress Testing: {strategy.name}</h3>
           <p className="text-sm text-muted-foreground">
             Value-at-risk, tail risk, stress scenarios, and portfolio impact
           </p>
         </div>
-        <Badge
-          variant="outline"
-          className={statusBg(strategy.stages.risk_stress.status)}
-        >
+        <Badge variant="outline" className={statusBg(strategy.stages.risk_stress.status)}>
           {strategy.stages.risk_stress.status.replace("_", " ")}
         </Badge>
       </div>
@@ -212,13 +189,8 @@ export function RiskStressTab({ strategy }: { strategy: CandidateStrategy }) {
                 title={scenario.name}
                 trailing={
                   <>
-                    <span className="font-mono text-sm text-rose-400">
-                      {fmtPct(scenario.impact)}
-                    </span>
-                    <Badge
-                      variant="outline"
-                      className={cn("w-fit text-xs", statusBg(scenario.status))}
-                    >
+                    <span className="font-mono text-sm text-rose-400">{fmtPct(scenario.impact)}</span>
+                    <Badge variant="outline" className={cn("w-fit text-xs", statusBg(scenario.status))}>
                       {scenario.status}
                     </Badge>
                   </>

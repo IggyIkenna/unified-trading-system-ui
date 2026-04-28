@@ -66,7 +66,7 @@ function BetsSummary({ bets }: { bets: Bet[] }) {
   const settled = bets.filter((b) => b.pnl != null);
   const totalPnl = settled.reduce((s, b) => s + (b.pnl ?? 0), 0);
   const wins = settled.filter((b) => (b.pnl ?? 0) > 0).length;
-  const winRate = settled.length > 0 ? formatNumber((wins / settled.length) * 100, 0) : "—";
+  const winRate = settled.length > 0 ? formatNumber((wins / settled.length) * 100, 0) : "-";
   const openExposure = bets.filter((b) => b.status === "open").reduce((s, b) => s + b.stake, 0);
 
   return (
@@ -74,12 +74,12 @@ function BetsSummary({ bets }: { bets: Bet[] }) {
       <KpiTile label="Total Staked" value={fmtCurrency(totalStaked)} />
       <KpiTile
         label="P&L"
-        value={totalPnl === 0 ? "—" : `${totalPnl > 0 ? "+" : ""}${fmtCurrency(totalPnl)}`}
+        value={totalPnl === 0 ? "-" : `${totalPnl > 0 ? "+" : ""}${fmtCurrency(totalPnl)}`}
         valueClassName={totalPnl > 0 ? "text-[#4ade80]" : totalPnl < 0 ? "text-red-400" : "text-zinc-400"}
       />
       <KpiTile
         label="Win Rate"
-        value={winRate !== "—" ? `${winRate}%` : "—"}
+        value={winRate !== "-" ? `${winRate}%` : "-"}
         subtext={`${wins} of ${settled.length} settled`}
       />
       <KpiTile label="Open Exposure" value={fmtCurrency(openExposure)} />
@@ -187,7 +187,7 @@ function BetCard({ bet, showPnl = false, showCashOut = false }: BetCardProps) {
               onClick={() =>
                 toast({
                   title: "Cashed Out",
-                  description: `${bet.fixtureName} — ${fmtCurrency(bet.stake)} returned`,
+                  description: `${bet.fixtureName}: ${fmtCurrency(bet.stake)} returned`,
                   duration: 3000,
                 })
               }
@@ -348,7 +348,7 @@ function AccumulatorCard({ bet }: { bet: Bet }) {
               onClick={() =>
                 toast({
                   title: "Cashed Out",
-                  description: `Accumulator — ${fmtCurrency(bet.stake)} returned`,
+                  description: `Accumulator: ${fmtCurrency(bet.stake)} returned`,
                   duration: 3000,
                 })
               }

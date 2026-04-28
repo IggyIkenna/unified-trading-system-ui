@@ -174,31 +174,31 @@ export function DeFiTradeHistoryWidget() {
                     {row.venue}
                   </td>
                   <td className="px-1 py-1 text-right font-mono">
-                    {row.amount > 0 ? row.amount.toLocaleString(undefined, { maximumFractionDigits: 4 }) : "—"}
+                    {row.amount > 0 ? row.amount.toLocaleString(undefined, { maximumFractionDigits: 4 }) : "-"}
                   </td>
                   <td className="px-1 py-1 text-right font-mono">
                     {row.expected_output > 0
                       ? row.expected_output.toLocaleString(undefined, { maximumFractionDigits: 2 })
-                      : "—"}
+                      : "-"}
                   </td>
                   <td className="px-1 py-1 text-right font-mono">
                     {row.actual_output > 0
                       ? row.actual_output.toLocaleString(undefined, { maximumFractionDigits: 2 })
-                      : "—"}
+                      : "-"}
                   </td>
                   <td className={`px-1 py-1 text-right font-mono ${pnl.price_slippage_usd > 0 ? "text-red-600" : ""}`}>
-                    {pnl.price_slippage_usd !== 0 ? formatUsd(-pnl.price_slippage_usd) : "—"}
+                    {pnl.price_slippage_usd !== 0 ? formatUsd(-pnl.price_slippage_usd) : "-"}
                   </td>
                   <td className={`px-1 py-1 text-right font-mono ${pnl.gas_cost_usd > 0 ? "text-red-600" : ""}`}>
-                    {pnl.gas_cost_usd > 0 ? formatUsd(-pnl.gas_cost_usd) : "—"}
+                    {pnl.gas_cost_usd > 0 ? formatUsd(-pnl.gas_cost_usd) : "-"}
                   </td>
                   <td className={`px-1 py-1 text-right font-mono ${pnl.trading_fee_usd > 0 ? "text-red-600" : ""}`}>
-                    {pnl.trading_fee_usd > 0 ? formatUsd(-pnl.trading_fee_usd) : "—"}
+                    {pnl.trading_fee_usd > 0 ? formatUsd(-pnl.trading_fee_usd) : "-"}
                   </td>
                   <td
                     className={`px-1 py-1 text-right font-mono ${(row.alpha_pnl_usd ?? 0) >= 0 ? "text-blue-600" : "text-red-600"}`}
                   >
-                    {row.alpha_pnl_usd != null && row.alpha_pnl_usd !== 0 ? formatUsd(row.alpha_pnl_usd) : "—"}
+                    {row.alpha_pnl_usd != null && row.alpha_pnl_usd !== 0 ? formatUsd(row.alpha_pnl_usd) : "-"}
                   </td>
                   <td
                     className={`px-1 py-1 text-right font-mono font-medium ${pnl.net_pnl >= 0 ? "text-green-600" : "text-red-600"}`}

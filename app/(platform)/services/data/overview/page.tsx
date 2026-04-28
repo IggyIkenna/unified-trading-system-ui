@@ -78,7 +78,7 @@ function formatDuration(ms: number): string {
 }
 
 function etaLabel(job: JobInfo): string {
-  if (!job.estimatedCompletionAt) return "—";
+  if (!job.estimatedCompletionAt) return "-";
   const eta = new Date(job.estimatedCompletionAt);
   const now = new Date();
   const diffMs = eta.getTime() - now.getTime();
@@ -218,7 +218,7 @@ function ActiveJobRow({ job }: { job: JobInfo }) {
             <Progress value={job.progressPct} className="h-1.5 w-20" />
             <span className="text-xs font-mono text-muted-foreground w-8">{job.progressPct}%</span>
           </div>
-          {job.status === "running" && eta !== "—" && (
+          {job.status === "running" && eta !== "-" && (
             <div className="text-[10px] text-muted-foreground mt-0.5">ETA {eta}</div>
           )}
         </div>
@@ -243,7 +243,7 @@ export default function AcquireOverviewPage() {
         <PageHeader
           className="mb-8"
           title="Acquire"
-          description="Data pipeline — instruments → raw data → processed candles → events"
+          description="Data pipeline: instruments → raw data → processed candles → events"
         >
           <Button variant="outline" size="sm">
             <RefreshCw className="size-4 mr-2" />

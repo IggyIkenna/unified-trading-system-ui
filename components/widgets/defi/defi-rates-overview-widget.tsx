@@ -46,7 +46,7 @@ const columns: ColumnDef<DeFiRatesRow, unknown>[] = [
     enableSorting: true,
     cell: ({ row }) => {
       const v = row.getValue<number | undefined>("tvlUsd");
-      return <div className="text-right font-mono text-muted-foreground">{v == null ? "—" : formatTvl(v)}</div>;
+      return <div className="text-right font-mono text-muted-foreground">{v == null ? "-" : formatTvl(v)}</div>;
     },
   },
 ];

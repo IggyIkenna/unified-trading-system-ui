@@ -180,7 +180,7 @@ export function AccountsTransferWidget(_props: WidgetComponentProps) {
       type: isPaper ? "Deposit (Paper)" : "Deposit",
       from: "External",
       to: fromVenue,
-      asset: "—",
+      asset: "-",
       amount: 0,
       status: "Pending",
     });

@@ -102,14 +102,14 @@ const REPORT_TIME_LABELS: Record<NonNullable<CorporateAction["reportTime"]>, str
 // ---------------------------------------------------------------------------
 
 function fmtShortDate(iso: string | undefined): string {
-  if (!iso) return "—";
+  if (!iso) return "-";
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return iso;
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
 }
 
 function fmtMoneyCompact(n: number | null | undefined): string {
-  if (n === null || n === undefined) return "—";
+  if (n === null || n === undefined) return "-";
   const abs = Math.abs(n);
   if (abs >= 1e12) return `$${(n / 1e12).toFixed(2)}T`;
   if (abs >= 1e9) return `$${(n / 1e9).toFixed(2)}B`;
@@ -119,7 +119,7 @@ function fmtMoneyCompact(n: number | null | undefined): string {
 }
 
 function fmtIntCompact(n: number | null | undefined): string {
-  if (n === null || n === undefined) return "—";
+  if (n === null || n === undefined) return "-";
   const abs = Math.abs(n);
   if (abs >= 1e9) return `${(n / 1e9).toFixed(2)}B`;
   if (abs >= 1e6) return `${(n / 1e6).toFixed(2)}M`;
@@ -244,7 +244,7 @@ function MacroRow({ event }: { event: EconomicEvent }) {
                 {unit}
               </span>
             ) : (
-              <span className="text-muted-foreground/60">—</span>
+              <span className="text-muted-foreground/60">-</span>
             )
           }
         />
@@ -257,7 +257,7 @@ function MacroRow({ event }: { event: EconomicEvent }) {
                 {unit}
               </span>
             ) : (
-              <span className="text-muted-foreground/60">—</span>
+              <span className="text-muted-foreground/60">-</span>
             )
           }
         />
@@ -270,7 +270,7 @@ function MacroRow({ event }: { event: EconomicEvent }) {
                 {unit}
               </span>
             ) : (
-              <span className="text-muted-foreground/60">—</span>
+              <span className="text-muted-foreground/60">-</span>
             )
           }
         />
@@ -407,7 +407,7 @@ function CorporateDetail({ action }: { action: CorporateAction }) {
               released ? (
                 <span className={cn("font-semibold", sc)}>{action.actualEps!.toFixed(2)}</span>
               ) : (
-                <span className="text-muted-foreground/60">—</span>
+                <span className="text-muted-foreground/60">-</span>
               )
             }
           />
@@ -417,7 +417,7 @@ function CorporateDetail({ action }: { action: CorporateAction }) {
               action.estimatedEps !== null && action.estimatedEps !== undefined ? (
                 <span className="text-slate-400">{action.estimatedEps.toFixed(2)}</span>
               ) : (
-                <span className="text-muted-foreground/60">—</span>
+                <span className="text-muted-foreground/60">-</span>
               )
             }
           />
@@ -427,7 +427,7 @@ function CorporateDetail({ action }: { action: CorporateAction }) {
               action.actualRevenue !== null && action.actualRevenue !== undefined ? (
                 <span className={cn("font-semibold", sc)}>{fmtMoneyCompact(action.actualRevenue)}</span>
               ) : (
-                <span className="text-muted-foreground/60">—</span>
+                <span className="text-muted-foreground/60">-</span>
               )
             }
           />
@@ -462,7 +462,7 @@ function CorporateDetail({ action }: { action: CorporateAction }) {
                   {action.actionType === "reverse_split" ? `1:${action.ratio}` : `${action.ratio}:1`}
                 </span>
               ) : (
-                "—"
+                "-"
               )
             }
           />
@@ -491,12 +491,12 @@ function CorporateDetail({ action }: { action: CorporateAction }) {
           <Metric
             label="→"
             value={
-              <span className="text-cyan-400 font-semibold">{action.targetSymbol ?? action.newSymbol ?? "—"}</span>
+              <span className="text-cyan-400 font-semibold">{action.targetSymbol ?? action.newSymbol ?? "-"}</span>
             }
           />
           <Metric
             label="Ratio"
-            value={action.ratio !== undefined ? <span className="text-emerald-400">{action.ratio}:1</span> : "—"}
+            value={action.ratio !== undefined ? <span className="text-emerald-400">{action.ratio}:1</span> : "-"}
           />
           <Metric label="Rec" value={<span className="text-sky-300">{fmtShortDate(action.recordDate)}</span>} />
         </div>
@@ -719,7 +719,7 @@ export function CalendarEventFeed({ className, hideTitle = false }: { className?
           <CollapsibleTrigger className="flex items-center justify-between w-full hover:opacity-80">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
               <Calendar className="h-4 w-4 text-muted-foreground" />
-              Calendar Events — Today
+              Calendar Events: Today
             </CardTitle>
             {open ? (
               <ChevronDown className="h-4 w-4 text-muted-foreground" />

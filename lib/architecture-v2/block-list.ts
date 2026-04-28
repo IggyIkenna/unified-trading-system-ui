@@ -37,11 +37,8 @@ export const BLOCK_LIST: readonly BlockListEntry[] = [
       "MARKET_MAKING_CONTINUOUS",
       "VOL_TRADING_OPTIONS",
     ],
-    explanation: [
-      "Lyra and Dopex were archived 2026-03. No replacement DeFi options venue is currently declared.",
-    ],
-    remediation:
-      "Evaluate Aevo, Premia, or Hegic — or formally accept DeFi options as out-of-scope.",
+    explanation: ["Lyra and Dopex were archived 2026-03. No replacement DeFi options venue is currently declared."],
+    remediation: "Evaluate Aevo, Premia, or Hegic: or formally accept DeFi options as out-of-scope.",
     uacGapRefs: [6],
     affectedCells: [
       "(ML_DIRECTIONAL_CONTINUOUS, DeFi, option)",
@@ -55,9 +52,7 @@ export const BLOCK_LIST: readonly BlockListEntry[] = [
     id: "BL-2",
     summary: "No DeFi dated-future venue",
     archetypesAffected: ["ML_DIRECTIONAL_CONTINUOUS", "CARRY_BASIS_DATED"],
-    explanation: [
-      "Deribit is CeFi. No on-chain dated-future venue currently supported.",
-    ],
+    explanation: ["Deribit is CeFi. No on-chain dated-future venue currently supported."],
     remediation:
       "Track emerging on-chain dated-future venues (e.g., perps protocols adding expiry). Not currently a priority.",
     uacGapRefs: [],
@@ -70,11 +65,8 @@ export const BLOCK_LIST: readonly BlockListEntry[] = [
     id: "BL-3",
     summary: "CeFi lending out-of-scope",
     archetypesAffected: ["YIELD_ROTATION_LENDING"],
-    explanation: [
-      "Binance Earn / Bybit lending have withdrawal lockups + counterparty risk.",
-    ],
-    remediation:
-      "Decision: excluded from our product. Revisit only if a clearing model emerges.",
+    explanation: ["Binance Earn / Bybit lending have withdrawal lockups + counterparty risk."],
+    remediation: "Decision: excluded from our product. Revisit only if a clearing model emerges.",
     uacGapRefs: [],
     affectedCells: ["(YIELD_ROTATION_LENDING, CeFi, lending)"],
   },
@@ -82,16 +74,11 @@ export const BLOCK_LIST: readonly BlockListEntry[] = [
     id: "BL-4",
     summary: "CeFi directional options via rules (non-standard)",
     archetypesAffected: ["RULES_DIRECTIONAL_CONTINUOUS"],
-    explanation: [
-      "Directional options via rules is a degenerate case.",
-    ],
+    explanation: ["Directional options via rules is a degenerate case."],
     remediation:
       "Use VOL_TRADING_OPTIONS for vol-metric rules, or ML_DIRECTIONAL_CONTINUOUS with expression=`atm_call` for directional options.",
     uacGapRefs: [6],
-    affectedCells: [
-      "(RULES_DIRECTIONAL_CONTINUOUS, CeFi, option)",
-      "(RULES_DIRECTIONAL_CONTINUOUS, TradFi, option)",
-    ],
+    affectedCells: ["(RULES_DIRECTIONAL_CONTINUOUS, CeFi, option)", "(RULES_DIRECTIONAL_CONTINUOUS, TradFi, option)"],
   },
   {
     id: "BL-5",
@@ -120,21 +107,16 @@ export const BLOCK_LIST: readonly BlockListEntry[] = [
       "Unity child books quote internally; we cannot add our own bids/offers through Unity.",
     ],
     remediation:
-      "Permanent architectural constraint — quote on venues that expose a quoting API (Pinnacle, Betfair Exchange). Unity remains place-only.",
+      "Permanent architectural constraint: quote on venues that expose a quoting API (Pinnacle, Betfair Exchange). Unity remains place-only.",
     uacGapRefs: [],
-    affectedCells: [
-      "(MARKET_MAKING_EVENT_SETTLED, Sports & Prediction, event_settled) via Unity",
-    ],
+    affectedCells: ["(MARKET_MAKING_EVENT_SETTLED, Sports & Prediction, event_settled) via Unity"],
   },
   {
     id: "BL-7",
     summary: "DeFi perp MM not exposed as third-party role",
     archetypesAffected: ["MARKET_MAKING_CONTINUOUS"],
-    explanation: [
-      "Hyperliquid / GMX have protocol-level MM incentives; no third-party-MM role comparable to CLOB MM.",
-    ],
-    remediation:
-      "Not a product gap — protocol-level MM roles are inaccessible by design. Pursue CeFi perp MM instead.",
+    explanation: ["Hyperliquid / GMX have protocol-level MM incentives; no third-party-MM role comparable to CLOB MM."],
+    remediation: "Not a product gap: protocol-level MM roles are inaccessible by design. Pursue CeFi perp MM instead.",
     uacGapRefs: [],
     affectedCells: ["(MARKET_MAKING_CONTINUOUS, DeFi, perp)"],
   },
@@ -142,9 +124,7 @@ export const BLOCK_LIST: readonly BlockListEntry[] = [
     id: "BL-8",
     summary: "DeFi cross-sectional basket (multi-leg gas efficiency)",
     archetypesAffected: ["STAT_ARB_CROSS_SECTIONAL"],
-    explanation: [
-      "Atomic multi-token basket trade on DeFi is gas-prohibitive on EVM.",
-    ],
+    explanation: ["Atomic multi-token basket trade on DeFi is gas-prohibitive on EVM."],
     remediation:
       "Requires a specialised router (1inch Pathfinder style) not currently declared. Track EVM gas evolution + L2 adoption.",
     uacGapRefs: [7],
@@ -157,8 +137,7 @@ export const BLOCK_LIST: readonly BlockListEntry[] = [
     explanation: [
       "Multi-leg cross-sectional on CME futures basket requires batch-order capability not declared for CME adapter.",
     ],
-    remediation:
-      "Extend the CME adapter with `MultiLegOrderCapability` (UAC gap #7). Medium-effort adapter work.",
+    remediation: "Extend the CME adapter with `MultiLegOrderCapability` (UAC gap #7). Medium-effort adapter work.",
     uacGapRefs: [7],
     affectedCells: ["(STAT_ARB_CROSS_SECTIONAL, TradFi, dated_future)"],
   },
@@ -179,11 +158,9 @@ export const BLOCK_LIST: readonly BlockListEntry[] = [
       "Until it ships, dated-future strategies run on fixed-contract slot labels only (`-fixed-{contract}-`), and ops manually rotate to the next expiry. Workable for a handful of strategies; does not scale.",
     ],
     remediation:
-      "Phase 11 of the active finalization plan — RepresentativeFutureRegistry in UAC, representative-future-service scaffold, REPRESENTATIVE_FUTURE_CHANGED event, FUTURES_ROLL instruction, execution-service combo auto-creation, circuit breakers.",
+      "Phase 11 of the active finalization plan: RepresentativeFutureRegistry in UAC, representative-future-service scaffold, REPRESENTATIVE_FUTURE_CHANGED event, FUTURES_ROLL instruction, execution-service combo auto-creation, circuit breakers.",
     uacGapRefs: [11],
-    affectedCells: [
-      "(any -dated- slot, any category, dated_future) — functional but requires manual roll",
-    ],
+    affectedCells: ["(any -dated- slot, any category, dated_future): functional but requires manual roll"],
   },
 ] as const;
 

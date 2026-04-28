@@ -111,7 +111,7 @@ export function DashboardFilterStrip({ className }: DashboardFilterStripProps) {
             </Button>
           </>
         ) : (
-          <span className="text-[11px] text-muted-foreground">No filters — all strategies</span>
+          <span className="text-[11px] text-muted-foreground">No filters: all strategies</span>
         )}
       </div>
 

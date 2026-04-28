@@ -173,7 +173,7 @@ export default function ProcessingPage() {
           description={
             processingStage
               ? `${formatNumber(processingStage.completionPct, 1)}% overall · raw ticks → OHLCV candles`
-              : "Processed candle status — raw ticks converted to OHLCV timeframes"
+              : "Processed candle status: raw ticks converted to OHLCV timeframes"
           }
         >
           {processingStage && processingStage.failedShards > 0 && (

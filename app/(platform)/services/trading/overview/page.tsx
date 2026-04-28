@@ -151,11 +151,11 @@ function SituationalAwareness({
   } else if (warningStrategies > 0 && highAlerts > 0) {
     actionGuidance = `${warningStrategies} strateg${warningStrategies !== 1 ? "ies" : "y"} in warning state and ${highAlerts} high-severity alert${highAlerts !== 1 ? "s" : ""} to triage.`;
   } else if (warningStrategies > 0) {
-    actionGuidance = `${warningStrategies} strateg${warningStrategies !== 1 ? "ies" : "y"} in warning state — check for drift or execution issues.`;
+    actionGuidance = `${warningStrategies} strateg${warningStrategies !== 1 ? "ies" : "y"} in warning state: check for drift or execution issues.`;
   } else if (highAlerts > 0) {
     actionGuidance = `${highAlerts} high-severity alert${highAlerts !== 1 ? "s" : ""} pending triage.`;
   } else {
-    actionGuidance = "All systems nominal — no action required.";
+    actionGuidance = "All systems nominal: no action required.";
   }
 
   const borderColor = hasCritical
@@ -168,8 +168,8 @@ function SituationalAwareness({
     <div className={`flex items-start gap-3 px-3 py-2 border-b text-[11px] leading-relaxed ${borderColor}`}>
       <div className="flex-1 min-w-0">
         <span className="text-muted-foreground">
-          {isLive ? "Live" : "Batch"} — {liveStrategies} strategies running, {formatDollar(totalExposure)} gross
-          exposure ({formatNumber(riskUtil, 0)}% of NAV). P&L{" "}
+          {isLive ? "Live" : "Batch"}: {liveStrategies} strategies running, {formatDollar(totalExposure)} gross exposure
+          ({formatNumber(riskUtil, 0)}% of NAV). P&L{" "}
           <span className={totalPnl >= 0 ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]"}>
             {totalPnl >= 0 ? "+" : ""}
             {formatDollar(totalPnl)}

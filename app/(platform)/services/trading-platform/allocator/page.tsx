@@ -23,7 +23,7 @@ export const dynamic = "force-static";
 
 export const metadata: Metadata = {
   title: "Portfolio allocator · Trading Platform",
-  description: "Platform-side allocator surface — auto-apply on client-infra. Latest directives + history.",
+  description: "Platform-side allocator surface: auto-apply on client-infra. Latest directives + history.",
 };
 
 export default function TradingPlatformAllocatorPage(): React.ReactElement {
@@ -33,7 +33,7 @@ export default function TradingPlatformAllocatorPage(): React.ReactElement {
         <div className="space-y-2">
           <h1 className="text-page-title font-semibold tracking-tight">Portfolio allocator</h1>
           <p className="text-body text-muted-foreground max-w-2xl">
-            Trading platform side — auto-apply flow. Every allocator cadence emits an ``AllocationDirective`` that
+            Trading platform side: auto-apply flow. Every allocator cadence emits an ``AllocationDirective`` that
             commits directly on your infra. Review applied directives + weight diffs here; there&apos;s no approval
             queue because no human is in the loop.
           </p>

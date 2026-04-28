@@ -167,7 +167,7 @@ function ActiveJobs() {
                   <div className="flex items-start justify-between gap-2">
                     <div>
                       <p className="text-sm font-medium">
-                        {job.shard} — {job.category}
+                        {job.shard}: {job.category}
                       </p>
                       <p className="text-xs text-muted-foreground mt-0.5">{job.service_id}</p>
                     </div>
@@ -208,7 +208,7 @@ function ActiveJobs() {
                   <div className="flex items-start justify-between gap-2">
                     <div>
                       <p className="text-sm font-medium">
-                        {job.shard} — {job.category}
+                        {job.shard}: {job.category}
                       </p>
                       <p className="text-xs text-muted-foreground">
                         {job.service_id} · {job.date_range.start} → {job.date_range.end}
@@ -332,7 +332,7 @@ function HeatmapView() {
                       return (
                         <td key={d} className="p-0.5">
                           <div
-                            title={`${group} — ${d}: ${pct}%`}
+                            title={`${group}: ${d}: ${pct}%`}
                             className={cn("w-full h-6 rounded transition-colors", cellColor(pct))}
                           />
                         </td>
@@ -362,7 +362,7 @@ const historyColumns: ColumnDef<FeatureEtlJob>[] = [
     header: "Shard / Category",
     cell: ({ row }) => (
       <span className="text-xs">
-        {row.original.shard} — {row.original.category}
+        {row.original.shard}: {row.original.category}
       </span>
     ),
   },
@@ -399,7 +399,7 @@ const historyColumns: ColumnDef<FeatureEtlJob>[] = [
           ? formatDistanceToNow(new Date(row.original.completed_at), {
               addSuffix: true,
             })
-          : "—"}
+          : "-"}
       </span>
     ),
   },
@@ -436,7 +436,7 @@ export default function FeatureEtlPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <PageHeader
           title="Feature ETL"
-          description="Feature computation pipeline — track progress, manage jobs, and
+          description="Feature computation pipeline: track progress, manage jobs, and
             monitor completion."
         />
         <div className="flex w-full shrink-0 flex-col gap-2 sm:w-auto sm:max-w-md sm:items-end">

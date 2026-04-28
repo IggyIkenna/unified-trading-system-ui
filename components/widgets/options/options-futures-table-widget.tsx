@@ -44,7 +44,7 @@ export function OptionsFuturesTableWidget(_props: WidgetComponentProps) {
       {panelInstrument ? (
         <div className="border-t pt-2 shrink-0 max-h-[45%] overflow-auto">
           <p className="text-xs text-muted-foreground px-1 pb-1">
-            Trading {panelInstrument.name} — pick a different row to switch contracts.
+            Trading {panelInstrument.name}: pick a different row to switch contracts.
           </p>
           <TradePanel instrument={panelInstrument} />
         </div>

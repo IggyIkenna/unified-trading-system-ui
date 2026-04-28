@@ -1,12 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
@@ -18,10 +13,7 @@ const MOCK_SUMMARY = {
   orphan_event_count: 4,
   tts_record_count: 12,
   error_event_count: 7,
-  services_with_violations: [
-    "features-delta-one-service",
-    "market-tick-data-service",
-  ],
+  services_with_violations: ["features-delta-one-service", "market-tick-data-service"],
 };
 
 const MOCK_ORPHANS = [
@@ -37,7 +29,7 @@ const MOCK_ORPHANS = [
     service: "features-delta-one-service",
     event_type: "SHARD_COMPLETED",
     timestamp: "2026-03-10T07:22:05Z",
-    reason: "Parent BATCH_STARTED event missing — job terminated mid-run",
+    reason: "Parent BATCH_STARTED event missing: job terminated mid-run",
   },
   {
     event_id: "orp-003",
@@ -134,11 +126,9 @@ export default function EventAuditPage() {
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-base font-semibold text-[var(--color-text-primary)]">
-            Event Audit
-          </h1>
+          <h1 className="text-base font-semibold text-[var(--color-text-primary)]">Event Audit</h1>
           <p className="text-xs text-[var(--color-text-tertiary)] mt-0.5">
-            Orphan events, TTS records, and error audit — {MOCK_SUMMARY.date}
+            Orphan events, TTS records, and error audit: {MOCK_SUMMARY.date}
           </p>
         </div>
         <Button variant="outline" size="sm">
@@ -159,9 +149,7 @@ export default function EventAuditPage() {
             }`}
           >
             {tab.label}
-            {tab.count !== undefined && (
-              <span className="ml-1.5 text-xs opacity-70">{tab.count}</span>
-            )}
+            {tab.count !== undefined && <span className="ml-1.5 text-xs opacity-70">{tab.count}</span>}
           </button>
         ))}
       </div>
@@ -169,52 +157,35 @@ export default function EventAuditPage() {
       {activeTab === "summary" && (
         <div className="space-y-4">
           <div className="grid grid-cols-3 gap-4">
-            <Card
-              className="cursor-pointer"
-              onClick={() => setActiveTab("orphans")}
-            >
+            <Card className="cursor-pointer" onClick={() => setActiveTab("orphans")}>
               <CardContent className="pt-4">
                 <div className="text-2xl font-semibold font-mono text-[var(--color-warning)]">
                   {MOCK_SUMMARY.orphan_event_count}
                 </div>
-                <div className="text-xs text-[var(--color-text-secondary)] mt-1">
-                  Orphan Events
-                </div>
+                <div className="text-xs text-[var(--color-text-secondary)] mt-1">Orphan Events</div>
               </CardContent>
             </Card>
-            <Card
-              className="cursor-pointer"
-              onClick={() => setActiveTab("tts")}
-            >
+            <Card className="cursor-pointer" onClick={() => setActiveTab("tts")}>
               <CardContent className="pt-4">
                 <div className="text-2xl font-semibold font-mono text-[var(--color-text-primary)]">
                   {MOCK_SUMMARY.tts_record_count}
                 </div>
-                <div className="text-xs text-[var(--color-text-secondary)] mt-1">
-                  TTS Records
-                </div>
+                <div className="text-xs text-[var(--color-text-secondary)] mt-1">TTS Records</div>
               </CardContent>
             </Card>
-            <Card
-              className="cursor-pointer"
-              onClick={() => setActiveTab("errors")}
-            >
+            <Card className="cursor-pointer" onClick={() => setActiveTab("errors")}>
               <CardContent className="pt-4">
                 <div className="text-2xl font-semibold font-mono text-[var(--color-error)]">
                   {MOCK_SUMMARY.error_event_count}
                 </div>
-                <div className="text-xs text-[var(--color-text-secondary)] mt-1">
-                  Error Events
-                </div>
+                <div className="text-xs text-[var(--color-text-secondary)] mt-1">Error Events</div>
               </CardContent>
             </Card>
           </div>
           {MOCK_SUMMARY.services_with_violations.length > 0 && (
             <Card>
               <CardHeader>
-                <CardTitle className="text-sm">
-                  Services With Violations
-                </CardTitle>
+                <CardTitle className="text-sm">Services With Violations</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex flex-wrap gap-2">
@@ -248,15 +219,11 @@ export default function EventAuditPage() {
                     <td className="table-cell font-mono text-xs text-[var(--color-text-muted)]">
                       {new Date(o.timestamp).toLocaleTimeString()}
                     </td>
-                    <td className="table-cell font-mono text-xs">
-                      {o.service}
-                    </td>
+                    <td className="table-cell font-mono text-xs">{o.service}</td>
                     <td className="table-cell">
                       <Badge variant="warning">{o.event_type}</Badge>
                     </td>
-                    <td className="table-cell text-xs text-[var(--color-text-secondary)]">
-                      {o.reason}
-                    </td>
+                    <td className="table-cell text-xs text-[var(--color-text-secondary)]">{o.reason}</td>
                   </tr>
                 ))}
               </tbody>
@@ -284,17 +251,13 @@ export default function EventAuditPage() {
                     <td className="table-cell font-mono text-xs text-[var(--color-text-muted)]">
                       {new Date(t.timestamp).toLocaleString()}
                     </td>
-                    <td className="table-cell font-mono text-xs">
-                      {t.service}
-                    </td>
+                    <td className="table-cell font-mono text-xs">{t.service}</td>
                     <td className="table-cell text-xs">{t.event_type}</td>
                     <td className="table-cell">
                       <Badge variant="default">{t.tts_tag}</Badge>
                     </td>
                     <td className="table-cell">
-                      <Badge variant={t.resolved ? "success" : "warning"}>
-                        {t.resolved ? "resolved" : "open"}
-                      </Badge>
+                      <Badge variant={t.resolved ? "success" : "warning"}>{t.resolved ? "resolved" : "open"}</Badge>
                     </td>
                   </tr>
                 ))}
@@ -323,9 +286,7 @@ export default function EventAuditPage() {
                     <td className="table-cell font-mono text-xs text-[var(--color-text-muted)]">
                       {new Date(e.timestamp).toLocaleTimeString()}
                     </td>
-                    <td className="table-cell font-mono text-xs">
-                      {e.service}
-                    </td>
+                    <td className="table-cell font-mono text-xs">{e.service}</td>
                     <td className="table-cell text-xs">{e.event_type}</td>
                     <td className="table-cell">
                       <Badge variant="error">{e.error_code}</Badge>

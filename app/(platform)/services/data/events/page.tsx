@@ -79,14 +79,14 @@ function formatDate(dateStr: string): string {
 }
 
 function formatShortDate(dateStr: string | undefined): string {
-  if (!dateStr) return "—";
+  if (!dateStr) return "-";
   const d = new Date(dateStr);
   if (Number.isNaN(d.getTime())) return dateStr;
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
 }
 
 function formatMoneyCompact(n: number | null | undefined): string {
-  if (n === null || n === undefined) return "—";
+  if (n === null || n === undefined) return "-";
   const abs = Math.abs(n);
   if (abs >= 1e12) return `$${(n / 1e12).toFixed(2)}T`;
   if (abs >= 1e9) return `$${(n / 1e9).toFixed(2)}B`;
@@ -96,7 +96,7 @@ function formatMoneyCompact(n: number | null | undefined): string {
 }
 
 function formatIntCompact(n: number | null | undefined): string {
-  if (n === null || n === undefined) return "—";
+  if (n === null || n === undefined) return "-";
   const abs = Math.abs(n);
   if (abs >= 1e9) return `${(n / 1e9).toFixed(2)}B`;
   if (abs >= 1e6) return `${(n / 1e6).toFixed(2)}M`;
@@ -545,7 +545,7 @@ function CorporateActionDetail({ action }: { action: CorporateAction }) {
                   {action.currency ?? "$"} {action.amount.toFixed(4)}
                 </span>
               ) : (
-                "—"
+                "-"
               )
             }
           />
@@ -555,14 +555,14 @@ function CorporateActionDetail({ action }: { action: CorporateAction }) {
               action.yieldPct !== undefined ? (
                 <span className="text-emerald-400 font-semibold">{action.yieldPct.toFixed(2)}%</span>
               ) : (
-                "—"
+                "-"
               )
             }
           />
           <KVInline
             label="Freq"
             value={
-              action.frequency ? <span className="text-slate-300">{action.frequency.replace(/_/g, " ")}</span> : "—"
+              action.frequency ? <span className="text-slate-300">{action.frequency.replace(/_/g, " ")}</span> : "-"
             }
           />
           <KVInline
@@ -597,7 +597,7 @@ function CorporateActionDetail({ action }: { action: CorporateAction }) {
               released ? (
                 <span className={cn("font-semibold", surpriseColor)}>{action.actualEps!.toFixed(2)}</span>
               ) : (
-                <span className="text-muted-foreground/60">—</span>
+                <span className="text-muted-foreground/60">-</span>
               )
             }
           />
@@ -607,7 +607,7 @@ function CorporateActionDetail({ action }: { action: CorporateAction }) {
               action.estimatedEps !== null && action.estimatedEps !== undefined ? (
                 <span className="text-slate-400">{action.estimatedEps.toFixed(2)}</span>
               ) : (
-                "—"
+                "-"
               )
             }
           />
@@ -617,7 +617,7 @@ function CorporateActionDetail({ action }: { action: CorporateAction }) {
               action.actualRevenue !== null && action.actualRevenue !== undefined ? (
                 <span className={cn("font-semibold", surpriseColor)}>{formatMoneyCompact(action.actualRevenue)}</span>
               ) : (
-                <span className="text-muted-foreground/60">—</span>
+                <span className="text-muted-foreground/60">-</span>
               )
             }
           />
@@ -656,7 +656,7 @@ function CorporateActionDetail({ action }: { action: CorporateAction }) {
                   {action.actionType === "reverse_split" ? `1:${action.ratio}` : `${action.ratio}:1`}
                 </span>
               ) : (
-                "—"
+                "-"
               )
             }
           />
@@ -676,7 +676,7 @@ function CorporateActionDetail({ action }: { action: CorporateAction }) {
       return (
         <div className="mt-1.5 ml-[108px] flex items-center gap-x-5 gap-y-1 flex-wrap">
           <KVInline label="From" value={<span className="text-cyan-300 font-semibold">{action.symbol}</span>} />
-          <KVInline label="To" value={<span className="text-cyan-400 font-bold">{action.newSymbol ?? "—"}</span>} />
+          <KVInline label="To" value={<span className="text-cyan-400 font-bold">{action.newSymbol ?? "-"}</span>} />
           <KVInline
             label="Declared"
             value={<span className="text-slate-300">{formatShortDate(action.declarationDate)}</span>}
@@ -701,7 +701,7 @@ function CorporateActionDetail({ action }: { action: CorporateAction }) {
           />
           <KVInline
             label="Target"
-            value={<span className="text-cyan-400 font-bold">{action.targetSymbol ?? action.newSymbol ?? "—"}</span>}
+            value={<span className="text-cyan-400 font-bold">{action.targetSymbol ?? action.newSymbol ?? "-"}</span>}
           />
           <KVInline
             label="Ratio"
@@ -709,7 +709,7 @@ function CorporateActionDetail({ action }: { action: CorporateAction }) {
               action.ratio !== undefined ? (
                 <span className="text-emerald-400 font-semibold">{action.ratio}:1</span>
               ) : (
-                "—"
+                "-"
               )
             }
           />
@@ -728,7 +728,7 @@ function CorporateActionDetail({ action }: { action: CorporateAction }) {
             label="Effective"
             value={<span className="text-rose-400 font-semibold">{formatShortDate(action.effectiveDate)}</span>}
           />
-          <KVInline label="Reason" value={<span className="text-slate-300 italic">{action.reason ?? "—"}</span>} />
+          <KVInline label="Reason" value={<span className="text-slate-300 italic">{action.reason ?? "-"}</span>} />
         </div>
       );
 
@@ -909,7 +909,7 @@ function MarketStructureDetail({ event }: { event: MarketStructureEvent }) {
               event.blockHeight !== undefined ? (
                 <span className="text-yellow-400 font-semibold">{event.blockHeight.toLocaleString("en-US")}</span>
               ) : (
-                "—"
+                "-"
               )
             }
           />
@@ -934,7 +934,7 @@ function MarketStructureDetail({ event }: { event: MarketStructureEvent }) {
               )
             }
           />
-          <KVInline label="Reason" value={<span className="text-slate-300 italic">{event.haltReason ?? "—"}</span>} />
+          <KVInline label="Reason" value={<span className="text-slate-300 italic">{event.haltReason ?? "-"}</span>} />
           {event.resumedAt && (
             <KVInline
               label="Resumed"

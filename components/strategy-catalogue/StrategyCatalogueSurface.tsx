@@ -28,10 +28,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
 import { getArchetypePlanTier } from "@/lib/strategy-display";
-import {
-  resolveSlotAccess,
-  type StrategyAccess,
-} from "@/lib/entitlements/strategy-route";
+import { resolveSlotAccess, type StrategyAccess } from "@/lib/entitlements/strategy-route";
 import {
   EMPTY_CATALOGUE_FILTER,
   matchesFilter,
@@ -55,20 +52,10 @@ import {
 
 import { useLifecycleEditor } from "./use-lifecycle-editor";
 
-import {
-  FomoTearsheetCard,
-  type FomoInstanceSummary,
-} from "./FomoTearsheetCard";
-import {
-  RealityPositionCard,
-  type RealityInstanceSummary,
-} from "./RealityPositionCard";
+import { FomoTearsheetCard, type FomoInstanceSummary } from "./FomoTearsheetCard";
+import { RealityPositionCard, type RealityInstanceSummary } from "./RealityPositionCard";
 
-export type StrategyCatalogueViewMode =
-  | "admin-universe"
-  | "admin-editor"
-  | "client-reality"
-  | "client-fomo";
+export type StrategyCatalogueViewMode = "admin-universe" | "admin-editor" | "client-reality" | "client-fomo";
 
 export interface StrategyCatalogueSurfaceProps {
   readonly viewMode: StrategyCatalogueViewMode;
@@ -108,9 +95,7 @@ function synthesiseMaturity(id: string): StrategyMaturityPhase {
 }
 
 function synthesiseRouting(id: string): ProductRouting {
-  return (
-    PRODUCT_ROUTINGS[hashInstanceId(id) % PRODUCT_ROUTINGS.length] ?? "both"
-  );
+  return PRODUCT_ROUTINGS[hashInstanceId(id) % PRODUCT_ROUTINGS.length] ?? "both";
 }
 
 interface SyntheticPerformance {
@@ -162,9 +147,7 @@ export function StrategyCatalogueSurface({
     !entitlements.includes("*") &&
     !entitlements.includes("strategy-full");
 
-  const [localFilter, setLocalFilter] = useState<StrategyCatalogueFilter>(
-    filter ?? EMPTY_CATALOGUE_FILTER,
-  );
+  const [localFilter, setLocalFilter] = useState<StrategyCatalogueFilter>(filter ?? EMPTY_CATALOGUE_FILTER);
   const activeFilter = filter ?? localFilter;
 
   const handleFilterChange = (next: StrategyCatalogueFilter): void => {
@@ -213,10 +196,7 @@ export function StrategyCatalogueSurface({
     return filtered;
   }, [filtered, subscribedInstanceIds, viewMode]);
 
-  const subscribedSet = useMemo(
-    () => new Set(subscribedInstanceIds ?? []),
-    [subscribedInstanceIds],
-  );
+  const subscribedSet = useMemo(() => new Set(subscribedInstanceIds ?? []), [subscribedInstanceIds]);
 
   // Resolve access per-instance for client-fomo so each tearsheet renders the
   // right lock badge (terminal / reports-only / locked-visible).
@@ -248,15 +228,8 @@ export function StrategyCatalogueSurface({
         </header>
       ) : null}
 
-      <div
-        className="flex flex-wrap items-center gap-2"
-        data-testid="strategy-catalogue-filter-row"
-      >
-        <FamilyArchetypePicker
-          value={pickerValue}
-          onChange={handlePickerChange}
-          idPrefix={`catalogue-${viewMode}`}
-        />
+      <div className="flex flex-wrap items-center gap-2" data-testid="strategy-catalogue-filter-row">
+        <FamilyArchetypePicker value={pickerValue} onChange={handlePickerChange} idPrefix={`catalogue-${viewMode}`} />
         {viewMode === "admin-editor" ? (
           <Badge variant="outline" className="text-[10px]">
             Editor live · server validates forward-only + retire
@@ -265,48 +238,37 @@ export function StrategyCatalogueSurface({
       </div>
 
       {viewMode === "admin-universe" ? (
-        <AdminUniverseGrid
-          instances={visible}
-          onInstanceSelect={onInstanceSelect}
-        />
+        <AdminUniverseGrid instances={visible} onInstanceSelect={onInstanceSelect} />
       ) : null}
 
-      {viewMode === "admin-editor" ? (
-        <AdminEditorGrid
-          instances={visible}
-          onInstanceSelect={onInstanceSelect}
-        />
-      ) : null}
+      {viewMode === "admin-editor" ? <AdminEditorGrid instances={visible} onInstanceSelect={onInstanceSelect} /> : null}
 
-      {viewMode === "client-reality" ? (
-        <RealityGrid
-          instances={visible}
-          onInstanceSelect={onInstanceSelect}
-        />
-      ) : null}
+      {viewMode === "client-reality" ? <RealityGrid instances={visible} onInstanceSelect={onInstanceSelect} /> : null}
 
       {viewMode === "client-fomo" ? (
         <>
-          {isSignalsInMode ? (() => {
-            const fullOnlyCount = visible.filter((i) => getArchetypePlanTier(i.archetype) === "full-only").length;
-            const availableCount = visible.length - fullOnlyCount;
-            return fullOnlyCount > 0 ? (
-              <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-                <span>
-                  Viewing as <strong>Signals-In</strong> — {availableCount}/{visible.length} strategies available.
-                  {" "}{fullOnlyCount} more unlock with DART Full.
-                </span>
-                <div className="flex shrink-0 gap-2">
-                  <Link
-                    href="/contact?service=dart-full&action=upgrade"
-                    className="inline-flex items-center rounded-md bg-amber-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-amber-700 transition-colors"
-                  >
-                    Upgrade to DART Full
-                  </Link>
-                </div>
-              </div>
-            ) : null;
-          })() : null}
+          {isSignalsInMode
+            ? (() => {
+                const fullOnlyCount = visible.filter((i) => getArchetypePlanTier(i.archetype) === "full-only").length;
+                const availableCount = visible.length - fullOnlyCount;
+                return fullOnlyCount > 0 ? (
+                  <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                    <span>
+                      Viewing as <strong>Signals-In</strong>: {availableCount}/{visible.length} strategies available.{" "}
+                      {fullOnlyCount} more unlock with DART Full.
+                    </span>
+                    <div className="flex shrink-0 gap-2">
+                      <Link
+                        href="/contact?service=dart-full&action=upgrade"
+                        className="inline-flex items-center rounded-md bg-amber-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-amber-700 transition-colors"
+                      >
+                        Upgrade to DART Full
+                      </Link>
+                    </div>
+                  </div>
+                ) : null;
+              })()
+            : null}
           <FomoGrid
             instances={visible}
             accessByInstance={accessByInstance}
@@ -327,16 +289,10 @@ interface AdminUniverseGridProps {
   readonly onInstanceSelect?: (instanceId: string) => void;
 }
 
-function AdminUniverseGrid({
-  instances,
-  onInstanceSelect,
-}: AdminUniverseGridProps) {
+function AdminUniverseGrid({ instances, onInstanceSelect }: AdminUniverseGridProps) {
   return (
     <div className="overflow-x-auto rounded-md border">
-      <table
-        className="w-full text-left text-sm"
-        data-testid="admin-universe-grid"
-      >
+      <table className="w-full text-left text-sm" data-testid="admin-universe-grid">
         <thead className="bg-muted/40 text-[10px] uppercase text-muted-foreground">
           <tr>
             <th className="px-3 py-2">Instance</th>
@@ -344,16 +300,10 @@ function AdminUniverseGrid({
             <th className="px-3 py-2">Archetype</th>
             <th className="px-3 py-2">Venue set</th>
             <th className="px-3 py-2">Share class</th>
-            <th
-              className="px-3 py-2"
-              title="Synthesised until an admin seeds this instance via the lifecycle editor"
-            >
+            <th className="px-3 py-2" title="Synthesised until an admin seeds this instance via the lifecycle editor">
               Maturity
             </th>
-            <th
-              className="px-3 py-2"
-              title="Synthesised until an admin seeds this instance via the lifecycle editor"
-            >
+            <th className="px-3 py-2" title="Synthesised until an admin seeds this instance via the lifecycle editor">
               Routing
             </th>
             <th className="px-3 py-2">Actions</th>
@@ -377,19 +327,11 @@ function AdminUniverseGrid({
                 data-testid="admin-universe-row"
                 data-instance-id={instance.instanceId}
               >
-                <td className="px-3 py-2 font-mono text-[11px]">
-                  {instance.instanceId}
-                </td>
+                <td className="px-3 py-2 font-mono text-[11px]">{instance.instanceId}</td>
                 <td className="px-3 py-2">{instance.family}</td>
                 <td className="px-3 py-2">{instance.archetype}</td>
-                <td className="px-3 py-2">
-                  {venueSetLabel(instance.venueSetVariantId)}
-                </td>
-                <td className="px-3 py-2">
-                  {instance.shareClass
-                    ? SHARE_CLASS_LABEL[instance.shareClass]
-                    : "—"}
-                </td>
+                <td className="px-3 py-2">{venueSetLabel(instance.venueSetVariantId)}</td>
+                <td className="px-3 py-2">{instance.shareClass ? SHARE_CLASS_LABEL[instance.shareClass] : "-"}</td>
                 <td className="px-3 py-2">
                   <Badge variant="outline" className="font-mono text-[10px]">
                     {MATURITY_PHASE_LABEL[maturity]}
@@ -416,8 +358,8 @@ function AdminUniverseGrid({
         </tbody>
       </table>
       <p className="border-t border-border/60 bg-muted/20 px-3 py-2 text-[10px] text-muted-foreground">
-        {instances.length} instances · maturity + routing are synthesised per
-        instance-id until an admin seeds them via the lifecycle editor.
+        {instances.length} instances · maturity + routing are synthesised per instance-id until an admin seeds them via
+        the lifecycle editor.
       </p>
     </div>
   );
@@ -430,14 +372,10 @@ interface AdminEditorGridProps {
   readonly onInstanceSelect?: (instanceId: string) => void;
 }
 
-function AdminEditorGrid({
-  instances,
-  onInstanceSelect,
-}: AdminEditorGridProps) {
+function AdminEditorGrid({ instances, onInstanceSelect }: AdminEditorGridProps) {
   const editor = useLifecycleEditor({ enabled: true });
   const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [bulkMaturity, setBulkMaturity] =
-    useState<StrategyMaturityPhase | "">("");
+  const [bulkMaturity, setBulkMaturity] = useState<StrategyMaturityPhase | "">("");
   const [bulkRouting, setBulkRouting] = useState<ProductRouting | "">("");
   const [bulkBusy, setBulkBusy] = useState(false);
 
@@ -451,11 +389,7 @@ function AdminEditorGrid({
   };
 
   const toggleAll = (): void => {
-    setSelected((prev) =>
-      prev.size === instances.length
-        ? new Set()
-        : new Set(instances.map((i) => i.instanceId)),
-    );
+    setSelected((prev) => (prev.size === instances.length ? new Set() : new Set(instances.map((i) => i.instanceId))));
   };
 
   const applyBulk = async (): Promise<void> => {
@@ -481,35 +415,24 @@ function AdminEditorGrid({
           className="border-b border-rose-500/40 bg-rose-500/10 px-3 py-2 text-xs text-rose-600"
           data-testid="admin-editor-load-error"
         >
-          Failed to load server-side lifecycle state: {editor.loadError}. Edits
-          will still attempt a PATCH — server records may not reflect here until
-          reload.
+          Failed to load server-side lifecycle state: {editor.loadError}. Edits will still attempt a PATCH: server
+          records may not reflect here until reload.
         </div>
       ) : null}
       <div
         className="flex flex-wrap items-center gap-2 border-b border-border/60 bg-muted/20 px-3 py-2 text-[11px]"
         data-testid="admin-editor-bulk-bar"
       >
-        <span className="font-medium uppercase tracking-wide text-muted-foreground">
-          Bulk apply
-        </span>
-        <span className="text-muted-foreground">
-          {selected.size} selected
-        </span>
+        <span className="font-medium uppercase tracking-wide text-muted-foreground">Bulk apply</span>
+        <span className="text-muted-foreground">{selected.size} selected</span>
         <select
           className="rounded border border-border bg-background px-2 py-1 font-mono text-[10px] disabled:opacity-50"
           data-testid="admin-editor-bulk-maturity"
           value={bulkMaturity}
           disabled={bulkBusy || selected.size === 0}
-          onChange={(e) =>
-            setBulkMaturity(
-              e.target.value === ""
-                ? ""
-                : (e.target.value as StrategyMaturityPhase),
-            )
-          }
+          onChange={(e) => setBulkMaturity(e.target.value === "" ? "" : (e.target.value as StrategyMaturityPhase))}
         >
-          <option value="">— maturity —</option>
+          <option value="">: maturity:</option>
           {STRATEGY_MATURITY_PHASES.map((p) => (
             <option key={p} value={p}>
               {MATURITY_PHASE_LABEL[p]}
@@ -521,13 +444,9 @@ function AdminEditorGrid({
           data-testid="admin-editor-bulk-routing"
           value={bulkRouting}
           disabled={bulkBusy || selected.size === 0}
-          onChange={(e) =>
-            setBulkRouting(
-              e.target.value === "" ? "" : (e.target.value as ProductRouting),
-            )
-          }
+          onChange={(e) => setBulkRouting(e.target.value === "" ? "" : (e.target.value as ProductRouting))}
         >
-          <option value="">— routing —</option>
+          <option value="">: routing:</option>
           {PRODUCT_ROUTINGS.map((r) => (
             <option key={r} value={r}>
               {PRODUCT_ROUTING_LABEL[r]}
@@ -538,23 +457,14 @@ function AdminEditorGrid({
           type="button"
           className="rounded bg-primary px-2 py-1 text-[10px] text-primary-foreground disabled:opacity-50"
           data-testid="admin-editor-bulk-apply"
-          disabled={
-            bulkBusy ||
-            selected.size === 0 ||
-            (bulkMaturity === "" && bulkRouting === "")
-          }
+          disabled={bulkBusy || selected.size === 0 || (bulkMaturity === "" && bulkRouting === "")}
           onClick={() => void applyBulk()}
         >
           Apply to {selected.size}
         </button>
-        <span className="ml-auto text-[10px] text-muted-foreground">
-          Max 5 concurrent · 5-second undo per success
-        </span>
+        <span className="ml-auto text-[10px] text-muted-foreground">Max 5 concurrent · 5-second undo per success</span>
       </div>
-      <table
-        className="w-full text-left text-sm"
-        data-testid="admin-editor-grid"
-      >
+      <table className="w-full text-left text-sm" data-testid="admin-editor-grid">
         <thead className="bg-muted/40 text-[10px] uppercase text-muted-foreground">
           <tr>
             <th className="px-2 py-2">
@@ -562,9 +472,7 @@ function AdminEditorGrid({
                 type="checkbox"
                 data-testid="admin-editor-select-all"
                 aria-label="Select all instances"
-                checked={
-                  instances.length > 0 && selected.size === instances.length
-                }
+                checked={instances.length > 0 && selected.size === instances.length}
                 onChange={toggleAll}
               />
             </th>
@@ -589,11 +497,9 @@ function AdminEditorGrid({
           {instances.map((instance) => {
             const record = editor.getRecord(instance.instanceId);
             const currentMaturity: StrategyMaturityPhase =
-              (record?.maturity_phase as StrategyMaturityPhase | undefined) ??
-              synthesiseMaturity(instance.instanceId);
+              (record?.maturity_phase as StrategyMaturityPhase | undefined) ?? synthesiseMaturity(instance.instanceId);
             const currentRouting: ProductRouting =
-              (record?.product_routing as ProductRouting | undefined) ??
-              synthesiseRouting(instance.instanceId);
+              (record?.product_routing as ProductRouting | undefined) ?? synthesiseRouting(instance.instanceId);
             const seeded = record !== null;
             const targets = legalMaturityTargets(currentMaturity);
             return (
@@ -612,19 +518,11 @@ function AdminEditorGrid({
                     onChange={() => toggleSelection(instance.instanceId)}
                   />
                 </td>
-                <td className="px-3 py-2 font-mono text-[11px]">
-                  {instance.instanceId}
-                </td>
+                <td className="px-3 py-2 font-mono text-[11px]">{instance.instanceId}</td>
                 <td className="px-3 py-2">{instance.family}</td>
                 <td className="px-3 py-2">{instance.archetype}</td>
-                <td className="px-3 py-2">
-                  {venueSetLabel(instance.venueSetVariantId)}
-                </td>
-                <td className="px-3 py-2">
-                  {instance.shareClass
-                    ? SHARE_CLASS_LABEL[instance.shareClass]
-                    : "—"}
-                </td>
+                <td className="px-3 py-2">{venueSetLabel(instance.venueSetVariantId)}</td>
+                <td className="px-3 py-2">{instance.shareClass ? SHARE_CLASS_LABEL[instance.shareClass] : "-"}</td>
                 <td className="px-3 py-2">
                   <select
                     className="rounded border border-border bg-background px-2 py-1 font-mono text-[10px] disabled:opacity-50"
@@ -634,16 +532,14 @@ function AdminEditorGrid({
                     title={
                       seeded
                         ? "Pick a forward transition or retire"
-                        : "Server-side record absent — seed this instance before editing"
+                        : "Server-side record absent: seed this instance before editing"
                     }
                     onChange={(e) => {
                       const next = e.target.value as StrategyMaturityPhase;
                       void editor.setMaturity(instance.instanceId, next);
                     }}
                   >
-                    <option value={currentMaturity}>
-                      {MATURITY_PHASE_LABEL[currentMaturity]} (current)
-                    </option>
+                    <option value={currentMaturity}>{MATURITY_PHASE_LABEL[currentMaturity]} (current)</option>
                     {targets.map((t) => (
                       <option key={t} value={t}>
                         {MATURITY_PHASE_LABEL[t]}
@@ -686,9 +582,8 @@ function AdminEditorGrid({
         </tbody>
       </table>
       <p className="border-t border-border/60 bg-muted/20 px-3 py-2 text-[10px] text-muted-foreground">
-        {instances.length} instances · editable when the row has a server-side
-        lifecycle record. Transitions are forward-only + retire; the server
-        re-validates and rolls back on reject.
+        {instances.length} instances · editable when the row has a server-side lifecycle record. Transitions are
+        forward-only + retire; the server re-validates and rolls back on reject.
       </p>
     </div>
   );
@@ -706,19 +601,15 @@ function RealityGrid({ instances, onInstanceSelect }: RealityGridProps) {
     return (
       <Card>
         <CardContent className="p-6 text-sm text-muted-foreground">
-          You&apos;re not subscribed to any strategies yet. Switch to{" "}
-          <span className="font-semibold">Explore</span> to see what&apos;s
-          available.
+          You&apos;re not subscribed to any strategies yet. Switch to <span className="font-semibold">Explore</span> to
+          see what&apos;s available.
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <div
-      className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
-      data-testid="reality-grid"
-    >
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3" data-testid="reality-grid">
       {instances.map((instance) => {
         const perf = synthesisePerformance(instance.instanceId);
         const summary: RealityInstanceSummary = {
@@ -770,18 +661,15 @@ function FomoGrid({
     return (
       <Card>
         <CardContent className="p-6 text-sm text-muted-foreground">
-          No additional strategies routed to your tier right now. Contact your
-          sales desk if you&apos;d like earlier-access eligibility.
+          No additional strategies routed to your tier right now. Contact your sales desk if you&apos;d like
+          earlier-access eligibility.
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <div
-      className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
-      data-testid="fomo-grid"
-    >
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3" data-testid="fomo-grid">
       {instances.map((instance) => {
         const maturity = synthesiseMaturity(instance.instanceId);
         const routing = synthesiseRouting(instance.instanceId);
@@ -822,10 +710,4 @@ function FomoGrid({
 
 // Re-exports for consumers that want the synth helpers without re-importing
 // from internals. `allowsAllocationCta` is re-exposed for the Phase-5 tests.
-export {
-  LIFECYCLE_UNKNOWN,
-  STRATEGY_MATURITY_PHASES,
-  allowsAllocationCta,
-  synthesiseMaturity,
-  synthesiseRouting,
-};
+export { LIFECYCLE_UNKNOWN, STRATEGY_MATURITY_PHASES, allowsAllocationCta, synthesiseMaturity, synthesiseRouting };

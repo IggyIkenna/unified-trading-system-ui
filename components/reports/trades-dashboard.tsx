@@ -361,12 +361,12 @@ export function TradesDashboard() {
                         {t.realized_pnl !== 0 ? (
                           <PnLValue value={t.realized_pnl} size="sm" showSign />
                         ) : (
-                          <span className="text-muted-foreground">—</span>
+                          <span className="text-muted-foreground">-</span>
                         )}
                       </TableCell>
-                      <TableCell className="text-xs text-muted-foreground">{t.strategy_id ?? "—"}</TableCell>
-                      <TableCell className="text-xs text-muted-foreground">{t.client_name ?? "—"}</TableCell>
-                      <TableCell className="text-xs text-muted-foreground">{t.category ?? "—"}</TableCell>
+                      <TableCell className="text-xs text-muted-foreground">{t.strategy_id ?? "-"}</TableCell>
+                      <TableCell className="text-xs text-muted-foreground">{t.client_name ?? "-"}</TableCell>
+                      <TableCell className="text-xs text-muted-foreground">{t.category ?? "-"}</TableCell>
                     </TableRow>
                   ))}
                   {trades.length === 0 && (

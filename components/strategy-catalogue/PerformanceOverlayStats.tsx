@@ -118,12 +118,12 @@ function computeStats(series: PerformancePerViewSeries | undefined): ViewStats {
 }
 
 function fmt(value: number | null, suffix = "", digits = 2): string {
-  if (value === null || Number.isNaN(value)) return "—";
+  if (value === null || Number.isNaN(value)) return "-";
   return `${value.toFixed(digits)}${suffix}`;
 }
 
 function fmtCurrency(value: number | null): string {
-  if (value === null) return "—";
+  if (value === null) return "-";
   if (Math.abs(value) >= 1_000_000) return `$${(value / 1_000_000).toFixed(2)}M`;
   if (Math.abs(value) >= 1_000) return `$${(value / 1_000).toFixed(1)}k`;
   return `$${value.toFixed(0)}`;

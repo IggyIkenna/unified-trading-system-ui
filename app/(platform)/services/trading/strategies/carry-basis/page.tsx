@@ -27,7 +27,7 @@ function CarryBasisPageContent() {
             <div className="border-b border-border px-4 py-3 bg-card/80">
               <h2 className="text-sm font-semibold">Carry-Basis Swap (90% Capital)</h2>
               <p className="text-xs text-muted-foreground mt-1">
-                Swap 90% of total capital to ETH (funding rate arbitrage hedge) — CARRY_AND_YIELD.CARRY_BASIS_PERP
+                Swap 90% of total capital to ETH (funding rate arbitrage hedge): CARRY_AND_YIELD.CARRY_BASIS_PERP
                 archetype
               </p>
             </div>
@@ -42,7 +42,7 @@ function CarryBasisPageContent() {
             <div className="border-b border-border px-4 py-3 bg-card/80">
               <h2 className="text-sm font-semibold">Perp Short (Delta Hedge)</h2>
               <p className="text-xs text-muted-foreground mt-1">
-                Short PERP on Hyperliquid to hedge the spot long — captures funding-rate carry.
+                Short PERP on Hyperliquid to hedge the spot long: captures funding-rate carry.
               </p>
             </div>
             <WidgetScroll className="flex-1 min-h-0">

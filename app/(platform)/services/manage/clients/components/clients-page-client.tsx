@@ -91,10 +91,10 @@ export default function ClientsManagementPage() {
   // Sync API data into local state for mutation
   React.useEffect(() => {
     if (INITIAL_ORGS.length > 0 && orgs.length === 0) setOrgs(INITIAL_ORGS);
-  }, [INITIAL_ORGS.length]);
+  }, [INITIAL_ORGS, orgs.length]);
   React.useEffect(() => {
     if (INITIAL_SUBS.length > 0 && subscriptions.length === 0) setSubscriptions(INITIAL_SUBS);
-  }, [INITIAL_SUBS.length]);
+  }, [INITIAL_SUBS, subscriptions.length]);
   const addOrg = (org: Organization) => setOrgs((prev) => [...prev, org]);
   const updateOrg = (id: string, updates: Partial<Organization>) =>
     setOrgs((prev) => prev.map((o) => (o.id === id ? { ...o, ...updates } : o)));
@@ -431,7 +431,7 @@ export default function ClientsManagementPage() {
                     </Badge>
                   </div>
                   <CardDescription>
-                    {org.type === "internal" ? "Internal" : "Client"} — {org.memberCount} members
+                    {org.type === "internal" ? "Internal" : "Client"}: {org.memberCount} members
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
@@ -451,7 +451,7 @@ export default function ClientsManagementPage() {
                   </div>
                   {sub && (sub.aumUsd ?? 0) > 0 && (
                     <div className="text-xs text-muted-foreground">
-                      AUM: ${formatNumber((sub.aumUsd ?? 0) / 1_000_000, 1)}M — Mgmt: {sub.managementFeePct}% — Perf:{" "}
+                      AUM: ${formatNumber((sub.aumUsd ?? 0) / 1_000_000, 1)}M: Mgmt: {sub.managementFeePct}%: Perf:{" "}
                       {sub.performanceFeePct}%
                     </div>
                   )}
@@ -691,14 +691,14 @@ export default function ClientsManagementPage() {
                   <p className="font-medium">Client Details</p>
                   <div className="grid grid-cols-2 gap-1 text-muted-foreground">
                     <span>Name:</span>
-                    <span className="text-foreground">{onboardData.name || "—"}</span>
+                    <span className="text-foreground">{onboardData.name || "-"}</span>
                     <span>Type:</span>
                     <span className="text-foreground capitalize">{onboardData.type}</span>
                     <span>Tier:</span>
                     <span className="text-foreground capitalize">{onboardData.tier}</span>
                     <span>Contact:</span>
                     <span className="text-foreground">
-                      {onboardData.contactName || "—"} ({onboardData.contactEmail || "—"})
+                      {onboardData.contactName || "-"} ({onboardData.contactEmail || "-"})
                     </span>
                   </div>
                 </div>

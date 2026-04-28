@@ -129,7 +129,7 @@ const ml_directional_continuous: ArchetypeCoverage = {
       representativeVenueIds: ["uniswap_v3", "balancer"],
       signalVariants: ["price"],
       rollMode: "n/a",
-      notes: "Pricing-fidelity flag missing (UAC gap #8) — thin pools not tick-stream-reliable.",
+      notes: "Pricing-fidelity flag missing (UAC gap #8): thin pools not tick-stream-reliable.",
       blockListRefs: [],
       representativeSlotLabels: ["ML_DIRECTIONAL_CONTINUOUS@uniswap-ethereum-weth-usdc-5m-usdc-prod"],
     },
@@ -372,7 +372,7 @@ const rules_directional_continuous: ArchetypeCoverage = {
       representativeVenueIds: [],
       signalVariants: [],
       rollMode: "n/a",
-      notes: "Same BL-4 — directional options via rules is non-standard.",
+      notes: "Same BL-4: directional options via rules is non-standard.",
       blockListRefs: ["BL-4"],
       representativeSlotLabels: [],
     },
@@ -960,7 +960,7 @@ const market_making_event_settled: ArchetypeCoverage = {
       representativeVenueIds: ["betfair_direct"],
       signalVariants: ["odds", "spread_capture"],
       rollMode: "n/a",
-      notes: "Primary — lay-native.",
+      notes: "Primary: lay-native.",
       blockListRefs: [],
       representativeSlotLabels: [
         "MARKET_MAKING_EVENT_SETTLED@betfair-direct-epl-1x2-mm-gbp-prod",
@@ -1276,7 +1276,7 @@ const stat_arb_pairs_fixed: ArchetypeCoverage = {
       signalVariants: ["zscore_reversion"],
       rollMode: "n/a",
       notes:
-        "Pair pre-declaration config path fine; no batch-tested instances. Treasury ETFs (TLT/IEF/SHY) are spot equities on IBKR — bond is not a separate instrument_type (see codex tradfi-bond-instrument-type-decision.md).",
+        "Pair pre-declaration config path fine; no batch-tested instances. Treasury ETFs (TLT/IEF/SHY) are spot equities on IBKR: bond is not a separate instrument_type (see codex tradfi-bond-instrument-type-decision.md).",
       blockListRefs: [],
       representativeSlotLabels: [
         "STAT_ARB_PAIRS_FIXED@ibkr-goog-meta-daily-usd-prod",
@@ -1362,7 +1362,7 @@ const stat_arb_cross_sectional: ArchetypeCoverage = {
       representativeVenueIds: ["ibkr"],
       signalVariants: ["momentum_ranking"],
       rollMode: "n/a",
-      notes: "Batch-order capability not declared for IBKR; basket of 50–500 legs.",
+      notes: "Batch-order capability not declared for IBKR; basket of 50-500 legs.",
       blockListRefs: [],
       representativeSlotLabels: [
         "STAT_ARB_CROSS_SECTIONAL@ibkr-sp500-momentum-usd-prod",

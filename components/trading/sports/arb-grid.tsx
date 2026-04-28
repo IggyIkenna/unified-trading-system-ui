@@ -144,7 +144,7 @@ function ArbCellPopover({
             }}
           >
             <Zap className="size-3 mr-1.5" />
-            Place Arb — {formatPercent(arbPct, 2)} locked in
+            Place Arb: {formatPercent(arbPct, 2)} locked in
           </Button>
         </div>
       </PopoverContent>
@@ -179,7 +179,7 @@ function GridCell({ fixtureId, fixtureName, bookmaker, market, outcome, outcomes
 
   const entry = outcomesMap.get(outcome)?.get(bookmaker);
   if (!entry) {
-    return <span className="text-zinc-700 text-[10px]">—</span>;
+    return <span className="text-zinc-700 text-[10px]">-</span>;
   }
 
   // Best odds across unlocked bookmakers for this outcome
@@ -385,7 +385,7 @@ export function ArbGrid({ fixtures, selectedMarket, arbThreshold }: ArbGridProps
         </span>
         <span className="flex items-center gap-1.5">
           <span className="size-2 rounded-sm bg-[#4ade80]/20 border border-[#4ade80]/30 shrink-0" />
-          Arb opportunity — click for stake split
+          Arb opportunity: click for stake split
         </span>
         <span className="flex items-center gap-1.5">
           <Lock className="size-2.5" />

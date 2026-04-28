@@ -280,7 +280,7 @@ function FootballCard({
           {fixture.score && (
             <div className="text-center px-3">
               <p className="text-2xl font-black tabular-nums">
-                {fixture.score.home} — {fixture.score.away}
+                {fixture.score.home}: {fixture.score.away}
               </p>
               {fixture.score.ht && (
                 <p className="text-[10px] text-muted-foreground">

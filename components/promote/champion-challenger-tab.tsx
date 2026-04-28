@@ -1,30 +1,13 @@
 import { GitCompare, Target, TrendingUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { fmtNum, fmtPct, statusBg } from "./helpers";
 import { PromoteWorkflowActions } from "./promote-workflow-actions";
 import type { CandidateStrategy, StrategyMetrics } from "./types";
 
-function MetricRow({
-  label,
-  champ,
-  chall,
-  delta,
-}: {
-  label: string;
-  champ: string;
-  chall: string;
-  delta: string;
-}) {
+function MetricRow({ label, champ, chall, delta }: { label: string; champ: string; chall: string; delta: string }) {
   return (
     <TableRow className="text-xs">
       <TableCell className="font-medium">{label}</TableCell>
@@ -57,11 +40,7 @@ function fmtDeltaNum(a: number, b: number, digits = 2) {
   return `${s}${fmtNum(d, digits)}`;
 }
 
-export function ChampionChallengerTab({
-  strategy,
-}: {
-  strategy: CandidateStrategy;
-}) {
+export function ChampionChallengerTab({ strategy }: { strategy: CandidateStrategy }) {
   const m = strategy.metrics;
   const chall = metricsRows(m);
 
@@ -69,11 +48,7 @@ export function ChampionChallengerTab({
     const cm = strategy.champion.metrics;
     const ch = metricsRows(cm);
     const verdict =
-      m.sharpe > cm.sharpe + 0.05
-        ? "Challenger Wins"
-        : m.sharpe < cm.sharpe - 0.05
-          ? "Champion Wins"
-          : "Mixed Results";
+      m.sharpe > cm.sharpe + 0.05 ? "Challenger Wins" : m.sharpe < cm.sharpe - 0.05 ? "Champion Wins" : "Mixed Results";
 
     const champRegs = strategy.champion.regimePerformance;
     const challRegs = strategy.regimePerformance;
@@ -99,33 +74,20 @@ export function ChampionChallengerTab({
     }
 
     const sharpeDiff = m.sharpe - cm.sharpe;
-    const pseudoP = Math.max(
-      0.02,
-      Math.min(0.45, 0.5 - Math.abs(sharpeDiff) * 0.12),
-    );
+    const pseudoP = Math.max(0.02, Math.min(0.45, 0.5 - Math.abs(sharpeDiff) * 0.12));
 
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between gap-4 flex-wrap">
           <div>
-            <h3 className="font-semibold">
-              Champion vs Challenger — {strategy.name}
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              Side-by-side production model vs candidate
-            </p>
+            <h3 className="font-semibold">Champion vs Challenger: {strategy.name}</h3>
+            <p className="text-sm text-muted-foreground">Side-by-side production model vs candidate</p>
           </div>
           <Badge
             variant="outline"
             className={cn(
               "text-xs font-mono",
-              statusBg(
-                verdict.includes("Challenger")
-                  ? "passed"
-                  : verdict.includes("Champion")
-                    ? "failed"
-                    : "warning",
-              ),
+              statusBg(verdict.includes("Challenger") ? "passed" : verdict.includes("Champion") ? "failed" : "warning"),
             )}
           >
             {verdict}
@@ -145,8 +107,7 @@ export function ChampionChallengerTab({
                 <TableRow className="text-xs">
                   <TableHead>Metric</TableHead>
                   <TableHead>
-                    Champion ({strategy.champion.name} v
-                    {strategy.champion.version})
+                    Champion ({strategy.champion.name} v{strategy.champion.version})
                   </TableHead>
                   <TableHead>Challenger (candidate)</TableHead>
                   <TableHead>Δ (chall − champ)</TableHead>
@@ -177,12 +138,7 @@ export function ChampionChallengerTab({
                   chall={chall.dd}
                   delta={fmtPct(m.maxDrawdown - cm.maxDrawdown)}
                 />
-                <MetricRow
-                  label="Hit rate"
-                  champ={ch.hit}
-                  chall={chall.hit}
-                  delta={fmtPct(m.hitRate - cm.hitRate)}
-                />
+                <MetricRow label="Hit rate" champ={ch.hit} chall={chall.hit} delta={fmtPct(m.hitRate - cm.hitRate)} />
               </TableBody>
             </Table>
             <p className="text-xs text-muted-foreground mt-3 font-mono">
@@ -201,9 +157,8 @@ export function ChampionChallengerTab({
           </CardHeader>
           <CardContent className="text-xs text-muted-foreground space-y-1 font-mono">
             <p>
-              Bootstrap Sharpe difference (OOS windows): Δ ={" "}
-              {fmtNum(sharpeDiff, 3)} · illustrative p ≈ {fmtNum(pseudoP, 2)} —
-              not a substitute for production-grade DM / reality-check tests.
+              Bootstrap Sharpe difference (OOS windows): Δ = {fmtNum(sharpeDiff, 3)} · illustrative p ≈{" "}
+              {fmtNum(pseudoP, 2)}: not a substitute for production-grade DM / reality-check tests.
             </p>
           </CardContent>
         </Card>
@@ -230,15 +185,11 @@ export function ChampionChallengerTab({
                       <TableCell className="text-right font-mono text-muted-foreground">
                         {fmtNum(r.champSharpe)}
                       </TableCell>
-                      <TableCell className="text-right font-mono">
-                        {fmtNum(r.challSharpe)}
-                      </TableCell>
+                      <TableCell className="text-right font-mono">{fmtNum(r.challSharpe)}</TableCell>
                       <TableCell
                         className={cn(
                           "text-right font-mono",
-                          r.delta >= 0
-                            ? "text-emerald-400/90"
-                            : "text-rose-400/90",
+                          r.delta >= 0 ? "text-emerald-400/90" : "text-rose-400/90",
                         )}
                       >
                         {r.delta >= 0 ? "+" : ""}
@@ -259,8 +210,8 @@ export function ChampionChallengerTab({
               </CardTitle>
             </CardHeader>
             <CardContent className="text-xs text-muted-foreground">
-              No aligned champion/challenger regime series — add matching
-              regimePerformance on both sides for a head-to-head matrix.
+              No aligned champion/challenger regime series: add matching regimePerformance on both sides for a
+              head-to-head matrix.
             </CardContent>
           </Card>
         )}
@@ -279,17 +230,10 @@ export function ChampionChallengerTab({
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h3 className="font-semibold">
-            Champion vs Challenger — {strategy.name}
-          </h3>
-          <p className="text-sm text-muted-foreground">
-            No production champion — benchmark & portfolio fit
-          </p>
+          <h3 className="font-semibold">Champion vs Challenger: {strategy.name}</h3>
+          <p className="text-sm text-muted-foreground">No production champion: benchmark & portfolio fit</p>
         </div>
-        <Badge
-          variant="outline"
-          className="text-xs border-slate-500/40 text-slate-400"
-        >
+        <Badge variant="outline" className="text-xs border-slate-500/40 text-slate-400">
           No champion
         </Badge>
       </div>
@@ -316,15 +260,9 @@ export function ChampionChallengerTab({
               {BENCHMARKS.map((b) => (
                 <TableRow key={b.name} className="text-xs">
                   <TableCell>{b.name}</TableCell>
-                  <TableCell className="text-right font-mono">
-                    {b.sharpe}
-                  </TableCell>
-                  <TableCell className="text-right font-mono text-emerald-400/90">
-                    {b.ret}
-                  </TableCell>
-                  <TableCell className="text-right font-mono text-rose-400/90">
-                    {b.dd}
-                  </TableCell>
+                  <TableCell className="text-right font-mono">{b.sharpe}</TableCell>
+                  <TableCell className="text-right font-mono text-emerald-400/90">{b.ret}</TableCell>
+                  <TableCell className="text-right font-mono text-rose-400/90">{b.dd}</TableCell>
                   <TableCell className="text-right font-mono text-cyan-400">
                     ΔSharpe {fmtNum(m.sharpe - b.sharpe, 2)}
                   </TableCell>
@@ -342,18 +280,12 @@ export function ChampionChallengerTab({
         <CardContent className="text-xs space-y-2 text-muted-foreground">
           <p>
             Correlation to existing book{" "}
-            <span className="font-mono text-foreground">
-              {fmtNum(strategy.riskProfile.correlationToPortfolio)}
-            </span>{" "}
-            —{" "}
+            <span className="font-mono text-foreground">{fmtNum(strategy.riskProfile.correlationToPortfolio)}</span> :{" "}
             {strategy.riskProfile.correlationToPortfolio < 0.3
               ? "strong diversifier slot."
               : "overlap with existing factors; size conservatively."}
           </p>
-          <p>
-            Liquidity score {strategy.riskProfile.liquidityScore} supports
-            target ramp if execution gates clear.
-          </p>
+          <p>Liquidity score {strategy.riskProfile.liquidityScore} supports target ramp if execution gates clear.</p>
         </CardContent>
       </Card>
 

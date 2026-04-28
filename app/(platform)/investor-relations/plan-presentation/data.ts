@@ -96,7 +96,7 @@ export const slides = [
       },
     ],
     callout:
-      "The unlock at each stage is track record. Every month of live trading compounds the evidence — and with three engagement routes funding operations, we are not racing against a runway clock.",
+      "The unlock at each stage is track record. Every month of live trading compounds the evidence: and with three engagement routes funding operations, we are not racing against a runway clock.",
   },
 
   // ── Slide 4: When Each Strategy Becomes Available ─────────
@@ -419,7 +419,7 @@ export const slides = [
       {
         problem: "Needs bridge capital to get there?",
         solution:
-          "No. October 2026 flip to £372K cash. December 2026 £413K. The £3M raised in 2021 funded the infrastructure build. The $7.5M → $25M transition is funded by the three live engagement routes — no further external capital is being sought.",
+          "No. October 2026 flip to £372K cash. December 2026 £413K. The £3M raised in 2021 funded the infrastructure build. The $7.5M → $25M transition is funded by the three live engagement routes: no further external capital is being sought.",
       },
     ],
     conclusion:

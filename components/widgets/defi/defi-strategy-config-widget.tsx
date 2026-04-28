@@ -160,7 +160,7 @@ export function DeFiStrategyConfigWidget(_props: WidgetComponentProps) {
         className={`rounded-md border px-3 py-1.5 text-xs flex items-center gap-1.5 ${shareClass === "ETH" ? "border-blue-500/30 bg-blue-500/5 text-blue-400" : shareClass === "BTC" ? "border-amber-500/30 bg-amber-500/5 text-amber-400" : "border-emerald-500/30 bg-emerald-500/5 text-emerald-400"}`}
       >
         <span className="font-mono font-medium">{shareClass}</span>
-        <span className="text-muted-foreground">— {SHARE_CLASS_LABELS[shareClass]}</span>
+        <span className="text-muted-foreground">: {SHARE_CLASS_LABELS[shareClass]}</span>
         <span className="ml-auto text-muted-foreground text-micro">P&L denominated in {shareClass}</span>
       </div>
 

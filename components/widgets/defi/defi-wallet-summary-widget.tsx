@@ -59,7 +59,7 @@ function buildKeyRateRows(
     out.push({
       id: `kr-lend-${n++}`,
       protocol: p.name,
-      asset: bestSupply.asset || "—",
+      asset: bestSupply.asset || "-",
       supplyApy: bestSupply.apy,
       borrowApy: bestBorrow.apy,
     });
@@ -119,7 +119,7 @@ export function DeFiWalletSummaryWidget(_props: WidgetComponentProps) {
     () => [
       {
         label: "Connected",
-        value: connectedWallet ? truncateAddr(connectedWallet) : "—",
+        value: connectedWallet ? truncateAddr(connectedWallet) : "-",
         sentiment: "neutral",
       },
       {
@@ -302,7 +302,7 @@ export function DeFiWalletSummaryWidget(_props: WidgetComponentProps) {
                     <td className="py-1 font-mono text-muted-foreground">{row.asset}</td>
                     <td className="py-1 text-right font-mono tabular-nums">{formatNumber(row.supplyApy, 2)}%</td>
                     <td className="py-1 text-right font-mono tabular-nums">
-                      {row.borrowApy === null ? "—" : `${formatNumber(row.borrowApy, 2)}%`}
+                      {row.borrowApy === null ? "-" : `${formatNumber(row.borrowApy, 2)}%`}
                     </td>
                   </tr>
                 ))}

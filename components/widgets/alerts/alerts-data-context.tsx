@@ -176,7 +176,7 @@ export function AlertsDataProvider({ children }: { children: React.ReactNode }) 
       id: s.id,
       severity: s.severity as AlertSeverity,
       status: (s.acknowledged ? "acknowledged" : "active") as AlertStatus,
-      title: s.message.split(" — ")[0] || s.message,
+      title: s.message.split(": ")[0] || s.message,
       description: s.message,
       source: s.source,
       entity: s.strategyId,

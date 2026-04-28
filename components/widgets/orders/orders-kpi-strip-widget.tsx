@@ -16,22 +16,22 @@ export function OrdersKpiStripWidget(_props: WidgetComponentProps) {
   }
 
   const metrics: KpiMetric[] = [
-    { label: "Total Orders", value: isLoading ? "—" : summary.total, sentiment: "neutral" },
-    { label: "Open", value: isLoading ? "—" : summary.open, sentiment: "neutral" },
+    { label: "Total Orders", value: isLoading ? "-" : summary.total, sentiment: "neutral" },
+    { label: "Open", value: isLoading ? "-" : summary.open, sentiment: "neutral" },
     {
       label: "Partial",
-      value: isLoading ? "—" : summary.partial,
+      value: isLoading ? "-" : summary.partial,
       sentiment: summary.partial > 0 ? "negative" : "neutral",
     },
-    { label: "Filled", value: isLoading ? "—" : summary.filled, sentiment: "positive" },
+    { label: "Filled", value: isLoading ? "-" : summary.filled, sentiment: "positive" },
     {
       label: "Rejected",
-      value: isLoading ? "—" : summary.rejected,
+      value: isLoading ? "-" : summary.rejected,
       sentiment: summary.rejected > 0 ? "negative" : "neutral",
     },
     {
       label: "Failed",
-      value: isLoading ? "—" : summary.failed,
+      value: isLoading ? "-" : summary.failed,
       sentiment: summary.failed > 0 ? "negative" : "neutral",
     },
   ];

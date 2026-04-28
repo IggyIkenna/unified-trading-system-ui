@@ -40,7 +40,7 @@ export function ExecutionReadinessTab({ strategy }: { strategy: CandidateStrateg
     },
     {
       label: "Avg latency",
-      value: nConn > 0 ? `${fmtNum(avgLatencyMs, 1)} ms` : "—",
+      value: nConn > 0 ? `${fmtNum(avgLatencyMs, 1)} ms` : "-",
       color:
         nConn === 0
           ? "text-muted-foreground"
@@ -53,7 +53,7 @@ export function ExecutionReadinessTab({ strategy }: { strategy: CandidateStrateg
     },
     {
       label: "Avg fill",
-      value: nConn > 0 ? `${fmtNum(avgFillPct, 1)}%` : "—",
+      value: nConn > 0 ? `${fmtNum(avgFillPct, 1)}%` : "-",
       color:
         nConn === 0
           ? "text-muted-foreground"
@@ -83,14 +83,14 @@ export function ExecutionReadinessTab({ strategy }: { strategy: CandidateStrateg
     },
     {
       label: "Max latency",
-      value: nConn > 0 ? `${maxLatencyMs} ms` : "—",
+      value: nConn > 0 ? `${maxLatencyMs} ms` : "-",
       color:
         nConn === 0 ? "text-muted-foreground" : maxLatencyMs <= LATENCY_CAP_MS ? "text-emerald-400" : "text-rose-400",
       hint: "Worst connected venue",
     },
     {
       label: "Min fill",
-      value: nConn > 0 ? `${minFillPct}%` : "—",
+      value: nConn > 0 ? `${minFillPct}%` : "-",
       color:
         nConn === 0 ? "text-muted-foreground" : minFillPct >= FILL_FLOOR_PCT ? "text-emerald-400" : "text-rose-400",
       hint: "Weakest connected venue",
@@ -168,7 +168,7 @@ export function ExecutionReadinessTab({ strategy }: { strategy: CandidateStrateg
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="font-semibold">Execution Readiness — {strategy.name}</h3>
+          <h3 className="font-semibold">Execution Readiness: {strategy.name}</h3>
           <p className="text-sm text-muted-foreground">Venue connectivity, fill quality, capacity, and market impact</p>
         </div>
         <Badge variant="outline" className={statusBg(strategy.stages.execution_readiness.status)}>
@@ -253,7 +253,7 @@ export function ExecutionReadinessTab({ strategy }: { strategy: CandidateStrateg
                           {venue.latencyMs}ms
                         </span>
                       ) : (
-                        <span className="text-muted-foreground">—</span>
+                        <span className="text-muted-foreground">-</span>
                       )}
                     </TableCell>
                     <TableCell className="text-right font-mono">
@@ -271,7 +271,7 @@ export function ExecutionReadinessTab({ strategy }: { strategy: CandidateStrateg
                           {Math.abs(latencyHeadroom)}ms
                         </span>
                       ) : (
-                        <span className="text-muted-foreground">—</span>
+                        <span className="text-muted-foreground">-</span>
                       )}
                     </TableCell>
                     <TableCell className="text-right font-mono">
@@ -280,7 +280,7 @@ export function ExecutionReadinessTab({ strategy }: { strategy: CandidateStrateg
                           {venue.fillRate}%
                         </span>
                       ) : (
-                        <span className="text-muted-foreground">—</span>
+                        <span className="text-muted-foreground">-</span>
                       )}
                     </TableCell>
                     <TableCell className="text-right font-mono">
@@ -298,7 +298,7 @@ export function ExecutionReadinessTab({ strategy }: { strategy: CandidateStrateg
                           {fmtNum(Math.abs(fillCushion), 1)}%
                         </span>
                       ) : (
-                        <span className="text-muted-foreground">—</span>
+                        <span className="text-muted-foreground">-</span>
                       )}
                     </TableCell>
                     <TableCell className="text-center">

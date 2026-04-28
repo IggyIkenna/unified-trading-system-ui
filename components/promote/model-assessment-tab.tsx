@@ -9,11 +9,7 @@ import { RegimeAnalysisPanel } from "./regime-analysis-panel";
 import type { CandidateStrategy, GateCheck } from "./types";
 import { WalkForwardPanel } from "./walk-forward-panel";
 
-export function ModelAssessmentTab({
-  strategy,
-}: {
-  strategy: CandidateStrategy;
-}) {
+export function ModelAssessmentTab({ strategy }: { strategy: CandidateStrategy }) {
   const ml = strategy.mlMetrics;
   const m = strategy.metrics;
 
@@ -30,12 +26,7 @@ export function ModelAssessmentTab({
     {
       id: "oos",
       label: "Out-of-Sample Ratio",
-      status:
-        ml.oosPerformance >= 0.8
-          ? "passed"
-          : ml.oosPerformance >= 0.6
-            ? "warning"
-            : "failed",
+      status: ml.oosPerformance >= 0.8 ? "passed" : ml.oosPerformance >= 0.6 ? "warning" : "failed",
       mandatory: true,
       threshold: "≥ 0.80",
       actual: fmtNum(ml.oosPerformance),
@@ -62,8 +53,7 @@ export function ModelAssessmentTab({
     {
       id: "sharpe",
       label: "Sharpe Ratio (Backtest)",
-      status:
-        m.sharpe >= 1.5 ? "passed" : m.sharpe >= 1.0 ? "warning" : "failed",
+      status: m.sharpe >= 1.5 ? "passed" : m.sharpe >= 1.0 ? "warning" : "failed",
       mandatory: true,
       threshold: "≥ 1.50",
       actual: fmtNum(m.sharpe),
@@ -72,8 +62,7 @@ export function ModelAssessmentTab({
     {
       id: "sortino",
       label: "Sortino Ratio",
-      status:
-        m.sortino >= 2.0 ? "passed" : m.sortino >= 1.5 ? "warning" : "failed",
+      status: m.sortino >= 2.0 ? "passed" : m.sortino >= 1.5 ? "warning" : "failed",
       mandatory: true,
       threshold: "≥ 2.00",
       actual: fmtNum(m.sortino),
@@ -82,8 +71,7 @@ export function ModelAssessmentTab({
     {
       id: "calmar",
       label: "Calmar Ratio",
-      status:
-        m.calmar >= 3.0 ? "passed" : m.calmar >= 2.0 ? "warning" : "failed",
+      status: m.calmar >= 3.0 ? "passed" : m.calmar >= 2.0 ? "warning" : "failed",
       mandatory: true,
       threshold: "≥ 3.00",
       actual: fmtNum(m.calmar),
@@ -101,12 +89,7 @@ export function ModelAssessmentTab({
     {
       id: "profit-factor",
       label: "Profit Factor",
-      status:
-        m.profitFactor >= 2.0
-          ? "passed"
-          : m.profitFactor >= 1.5
-            ? "warning"
-            : "failed",
+      status: m.profitFactor >= 2.0 ? "passed" : m.profitFactor >= 1.5 ? "warning" : "failed",
       mandatory: true,
       threshold: "≥ 2.00",
       actual: fmtNum(m.profitFactor),
@@ -115,12 +98,7 @@ export function ModelAssessmentTab({
     {
       id: "max-dd",
       label: "Max Drawdown",
-      status:
-        Math.abs(m.maxDrawdown) <= 0.1
-          ? "passed"
-          : Math.abs(m.maxDrawdown) <= 0.15
-            ? "warning"
-            : "failed",
+      status: Math.abs(m.maxDrawdown) <= 0.1 ? "passed" : Math.abs(m.maxDrawdown) <= 0.15 ? "warning" : "failed",
       mandatory: true,
       threshold: "≤ 10%",
       actual: fmtPct(m.maxDrawdown),
@@ -128,31 +106,21 @@ export function ModelAssessmentTab({
     },
   ];
 
-  const groupedGates = modelGates.reduce<Record<string, GateCheck[]>>(
-    (acc, g) => {
-      const cat = g.category ?? "Other";
-      if (!acc[cat]) acc[cat] = [];
-      acc[cat].push(g);
-      return acc;
-    },
-    {},
-  );
+  const groupedGates = modelGates.reduce<Record<string, GateCheck[]>>((acc, g) => {
+    const cat = g.category ?? "Other";
+    if (!acc[cat]) acc[cat] = [];
+    acc[cat].push(g);
+    return acc;
+  }, {});
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="font-semibold">
-            Model & Signal Assessment — {strategy.name}
-          </h3>
-          <p className="text-sm text-muted-foreground">
-            ML model performance, signal quality, and backtest validation
-          </p>
+          <h3 className="font-semibold">Model & Signal Assessment: {strategy.name}</h3>
+          <p className="text-sm text-muted-foreground">ML model performance, signal quality, and backtest validation</p>
         </div>
-        <Badge
-          variant="outline"
-          className={statusBg(strategy.stages.model_assessment.status)}
-        >
+        <Badge variant="outline" className={statusBg(strategy.stages.model_assessment.status)}>
           {strategy.stages.model_assessment.status.replace("_", " ")}
         </Badge>
       </div>
@@ -162,10 +130,7 @@ export function ModelAssessmentTab({
           {
             label: "IC",
             value: fmtNum(ml.informationCoefficient, 3),
-            color:
-              ml.informationCoefficient >= 0.03
-                ? "text-emerald-400"
-                : "text-amber-400",
+            color: ml.informationCoefficient >= 0.03 ? "text-emerald-400" : "text-amber-400",
           },
           {
             label: "AUC",
@@ -175,8 +140,7 @@ export function ModelAssessmentTab({
           {
             label: "OOS Ratio",
             value: fmtNum(ml.oosPerformance),
-            color:
-              ml.oosPerformance >= 0.8 ? "text-emerald-400" : "text-amber-400",
+            color: ml.oosPerformance >= 0.8 ? "text-emerald-400" : "text-amber-400",
           },
           {
             label: "F1",
@@ -229,12 +193,45 @@ export function ModelAssessmentTab({
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
-              <MetricCard tone="grid" density="compact" label="Fixtures" primary={`${strategy.sportsMetrics.totalFixtures}`} />
-              <MetricCard tone="grid" density="compact" label="Actioned" primary={`${strategy.sportsMetrics.fixturesActioned}`} />
-              <MetricCard tone="grid" density="compact" label="Avg CLV" primary={`${strategy.sportsMetrics.avgClvBps} bps`} primaryClassName="text-emerald-400" />
-              <MetricCard tone="grid" density="compact" label="CLV Hit" primary={fmtPct(strategy.sportsMetrics.clvHitRate)} primaryClassName="text-emerald-400" />
-              <MetricCard tone="grid" density="compact" label="ROI" primary={`${strategy.sportsMetrics.roiPct}%`} primaryClassName="text-emerald-400" />
-              <MetricCard tone="grid" density="compact" label="Avg Stake" primary={`£${strategy.sportsMetrics.avgStakeGbp}`} />
+              <MetricCard
+                tone="grid"
+                density="compact"
+                label="Fixtures"
+                primary={`${strategy.sportsMetrics.totalFixtures}`}
+              />
+              <MetricCard
+                tone="grid"
+                density="compact"
+                label="Actioned"
+                primary={`${strategy.sportsMetrics.fixturesActioned}`}
+              />
+              <MetricCard
+                tone="grid"
+                density="compact"
+                label="Avg CLV"
+                primary={`${strategy.sportsMetrics.avgClvBps} bps`}
+                primaryClassName="text-emerald-400"
+              />
+              <MetricCard
+                tone="grid"
+                density="compact"
+                label="CLV Hit"
+                primary={fmtPct(strategy.sportsMetrics.clvHitRate)}
+                primaryClassName="text-emerald-400"
+              />
+              <MetricCard
+                tone="grid"
+                density="compact"
+                label="ROI"
+                primary={`${strategy.sportsMetrics.roiPct}%`}
+                primaryClassName="text-emerald-400"
+              />
+              <MetricCard
+                tone="grid"
+                density="compact"
+                label="Avg Stake"
+                primary={`£${strategy.sportsMetrics.avgStakeGbp}`}
+              />
             </div>
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -242,11 +239,18 @@ export function ModelAssessmentTab({
                 <h4 className="text-xs font-semibold text-muted-foreground mb-2">League Breakdown</h4>
                 <div className="space-y-1">
                   {strategy.sportsMetrics.leagueBreakdown.map((l) => (
-                    <div key={l.league} className="flex items-center justify-between text-xs px-2 py-1 rounded bg-muted/50">
+                    <div
+                      key={l.league}
+                      className="flex items-center justify-between text-xs px-2 py-1 rounded bg-muted/50"
+                    >
                       <span className="font-medium">{l.league}</span>
                       <div className="flex gap-3">
                         <span className="text-muted-foreground">{l.fixtures} fix</span>
-                        <span className={l.roi >= 5 ? "text-emerald-400" : l.roi >= 0 ? "text-amber-400" : "text-rose-400"}>{l.roi}% ROI</span>
+                        <span
+                          className={l.roi >= 5 ? "text-emerald-400" : l.roi >= 0 ? "text-amber-400" : "text-rose-400"}
+                        >
+                          {l.roi}% ROI
+                        </span>
                         <span className="text-muted-foreground">{l.clvBps} bps</span>
                       </div>
                     </div>
@@ -257,11 +261,20 @@ export function ModelAssessmentTab({
                 <h4 className="text-xs font-semibold text-muted-foreground mb-2">Market Breakdown</h4>
                 <div className="space-y-1">
                   {strategy.sportsMetrics.marketBreakdown.map((mk) => (
-                    <div key={mk.market} className="flex items-center justify-between text-xs px-2 py-1 rounded bg-muted/50">
+                    <div
+                      key={mk.market}
+                      className="flex items-center justify-between text-xs px-2 py-1 rounded bg-muted/50"
+                    >
                       <span className="font-medium">{mk.market}</span>
                       <div className="flex gap-3">
                         <span className="text-muted-foreground">{mk.bets} bets</span>
-                        <span className={mk.roi >= 5 ? "text-emerald-400" : mk.roi >= 0 ? "text-amber-400" : "text-rose-400"}>{mk.roi}% ROI</span>
+                        <span
+                          className={
+                            mk.roi >= 5 ? "text-emerald-400" : mk.roi >= 0 ? "text-amber-400" : "text-rose-400"
+                          }
+                        >
+                          {mk.roi}% ROI
+                        </span>
                         <span className="text-muted-foreground">{fmtPct(mk.hitRate)} hit</span>
                       </div>
                     </div>

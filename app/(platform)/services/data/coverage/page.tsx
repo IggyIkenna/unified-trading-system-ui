@@ -164,7 +164,7 @@ export default function CoveragePage() {
       <div className="flex items-center justify-between">
         <PageHeader
           title="Coverage"
-          description="Cross-stage completeness — Instruments → Raw → Processing →
+          description="Cross-stage completeness: Instruments → Raw → Processing →
               Features"
         />
         <div className="flex items-center gap-2">

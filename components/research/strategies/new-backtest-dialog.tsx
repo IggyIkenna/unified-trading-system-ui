@@ -225,7 +225,7 @@ export function NewBacktestDialog({
                 onCheckedChange={(c) => setSaveAsTemplate(c === true)}
               />
               <label htmlFor="save-as-template" className="text-sm text-muted-foreground cursor-pointer">
-                Save as template (demo — local only until API exists)
+                Save as template (demo: local only until API exists)
               </label>
             </div>
           </div>

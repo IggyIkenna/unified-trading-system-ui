@@ -7,42 +7,19 @@ import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
   createRedemption,
   listRedemptions,
   type AllocatorRedemption,
   type RedemptionStatus,
 } from "@/lib/api/fund-administration";
-import {
-  MOCK_DEFAULT_FUND_ID,
-  MOCK_DEFAULT_SHARE_CLASS,
-} from "@/lib/mocks/fund-administration";
+import { MOCK_DEFAULT_FUND_ID, MOCK_DEFAULT_SHARE_CLASS } from "@/lib/mocks/fund-administration";
 
 const STATUS_FILTER_OPTIONS: Array<RedemptionStatus | "ALL"> = [
   "ALL",
@@ -129,7 +106,7 @@ export default function RedemptionsPage() {
     <main className="flex-1 p-6 space-y-6" data-testid="im-funds-redemptions-page">
       <PageHeader
         title="Redemptions"
-        description="Investor capital outflows — grace-period scheduled before NAV strike."
+        description="Investor capital outflows: grace-period scheduled before NAV strike."
       >
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
@@ -150,10 +127,7 @@ export default function RedemptionsPage() {
 
       <div className="flex items-center gap-3">
         <Label className="text-xs text-muted-foreground">Status</Label>
-        <Select
-          value={statusFilter}
-          onValueChange={(v) => setStatusFilter(v as RedemptionStatus | "ALL")}
-        >
+        <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as RedemptionStatus | "ALL")}>
           <SelectTrigger className="w-[160px] h-8 text-xs" data-testid="im-funds-red-status-filter">
             <SelectValue />
           </SelectTrigger>
@@ -210,7 +184,7 @@ export default function RedemptionsPage() {
                     <TableCell>{statusBadge(red.status)}</TableCell>
                     <TableCell className="text-right text-sm font-mono">{red.grace_period_days}</TableCell>
                     <TableCell className="text-xs font-mono text-muted-foreground">
-                      {red.settlement_timestamp ?? "—"}
+                      {red.settlement_timestamp ?? "-"}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -259,8 +233,7 @@ function NewRedemptionDialog({ onClose, onCreated }: DialogProps) {
         share_class: form.share_class.trim(),
         units_to_redeem: form.units_to_redeem.trim(),
         destination: form.destination.trim(),
-        grace_period_days:
-          form.grace_period_days.trim() === "" ? null : Number(form.grace_period_days),
+        grace_period_days: form.grace_period_days.trim() === "" ? null : Number(form.grace_period_days),
       });
       onCreated();
     } catch (err) {
@@ -277,7 +250,9 @@ function NewRedemptionDialog({ onClose, onCreated }: DialogProps) {
       </DialogHeader>
       <form onSubmit={onSubmit} className="space-y-3">
         <div className="space-y-1">
-          <Label htmlFor="red-id" className="text-xs">Redemption ID</Label>
+          <Label htmlFor="red-id" className="text-xs">
+            Redemption ID
+          </Label>
           <Input
             id="red-id"
             data-testid="im-funds-red-field-redemption_id"
@@ -290,7 +265,9 @@ function NewRedemptionDialog({ onClose, onCreated }: DialogProps) {
           ) : null}
         </div>
         <div className="space-y-1">
-          <Label htmlFor="red-allocator" className="text-xs">Allocator / client ID</Label>
+          <Label htmlFor="red-allocator" className="text-xs">
+            Allocator / client ID
+          </Label>
           <Input
             id="red-allocator"
             data-testid="im-funds-red-field-allocator_id"
@@ -303,7 +280,9 @@ function NewRedemptionDialog({ onClose, onCreated }: DialogProps) {
           ) : null}
         </div>
         <div className="space-y-1">
-          <Label htmlFor="red-share-class" className="text-xs">Share class</Label>
+          <Label htmlFor="red-share-class" className="text-xs">
+            Share class
+          </Label>
           <Input
             id="red-share-class"
             data-testid="im-funds-red-field-share_class"
@@ -312,7 +291,9 @@ function NewRedemptionDialog({ onClose, onCreated }: DialogProps) {
           />
         </div>
         <div className="space-y-1">
-          <Label htmlFor="red-units" className="text-xs">Units to redeem</Label>
+          <Label htmlFor="red-units" className="text-xs">
+            Units to redeem
+          </Label>
           <Input
             id="red-units"
             inputMode="decimal"
@@ -326,7 +307,9 @@ function NewRedemptionDialog({ onClose, onCreated }: DialogProps) {
           ) : null}
         </div>
         <div className="space-y-1">
-          <Label htmlFor="red-destination" className="text-xs">Destination (IBAN / wire ref / on-chain addr)</Label>
+          <Label htmlFor="red-destination" className="text-xs">
+            Destination (IBAN / wire ref / on-chain addr)
+          </Label>
           <Input
             id="red-destination"
             data-testid="im-funds-red-field-destination"
@@ -339,7 +322,9 @@ function NewRedemptionDialog({ onClose, onCreated }: DialogProps) {
           ) : null}
         </div>
         <div className="space-y-1">
-          <Label htmlFor="red-grace" className="text-xs">Grace period (days, default 5)</Label>
+          <Label htmlFor="red-grace" className="text-xs">
+            Grace period (days, default 5)
+          </Label>
           <Input
             id="red-grace"
             inputMode="numeric"
@@ -352,17 +337,15 @@ function NewRedemptionDialog({ onClose, onCreated }: DialogProps) {
           ) : null}
         </div>
         {submitError ? (
-          <p className="text-sm text-[var(--pnl-negative)]" data-testid="im-funds-red-submit-error">{submitError}</p>
+          <p className="text-sm text-[var(--pnl-negative)]" data-testid="im-funds-red-submit-error">
+            {submitError}
+          </p>
         ) : null}
         <DialogFooter>
           <Button type="button" variant="ghost" onClick={onClose} disabled={submitting}>
             Cancel
           </Button>
-          <Button
-            type="submit"
-            data-testid="im-funds-red-submit"
-            disabled={!validation.ok || submitting}
-          >
+          <Button type="submit" data-testid="im-funds-red-submit" disabled={!validation.ok || submitting}>
             {submitting ? "Creating…" : "Create"}
           </Button>
         </DialogFooter>

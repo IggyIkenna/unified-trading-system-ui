@@ -14,16 +14,8 @@ import { ArrowRight } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import {
-  MATURITY_PHASE_LABEL,
-  SHARE_CLASS_LABEL,
-  type StrategyMaturityPhase,
-} from "@/lib/architecture-v2/lifecycle";
-import type {
-  ShareClass,
-  StrategyArchetype,
-  StrategyFamily,
-} from "@/lib/architecture-v2";
+import { MATURITY_PHASE_LABEL, SHARE_CLASS_LABEL, type StrategyMaturityPhase } from "@/lib/architecture-v2/lifecycle";
+import type { ShareClass, StrategyArchetype, StrategyFamily } from "@/lib/architecture-v2";
 import { formatArchetype, formatFamily } from "@/lib/strategy-display";
 
 import { PerformanceOverlay } from "./PerformanceOverlay";
@@ -50,7 +42,7 @@ export interface RealityPositionCardProps {
 }
 
 function formatCurrency(value: number | null): string {
-  if (value === null) return "—";
+  if (value === null) return "-";
   const sign = value < 0 ? "-" : "";
   const abs = Math.abs(value);
   if (abs >= 1_000_000) return `${sign}$${(abs / 1_000_000).toFixed(1)}M`;
@@ -58,23 +50,12 @@ function formatCurrency(value: number | null): string {
   return `${sign}$${abs.toFixed(0)}`;
 }
 
-export function RealityPositionCard({
-  instance,
-  performanceOverride,
-}: RealityPositionCardProps) {
+export function RealityPositionCard({ instance, performanceOverride }: RealityPositionCardProps) {
   const pnlTone =
-    instance.livePnl === null
-      ? "text-muted-foreground"
-      : instance.livePnl >= 0
-        ? "text-emerald-500"
-        : "text-rose-500";
+    instance.livePnl === null ? "text-muted-foreground" : instance.livePnl >= 0 ? "text-emerald-500" : "text-rose-500";
 
   return (
-    <Card
-      data-testid="reality-position-card"
-      data-instance-id={instance.instanceId}
-      className="gap-4 py-4"
-    >
+    <Card data-testid="reality-position-card" data-instance-id={instance.instanceId} className="gap-4 py-4">
       <CardHeader className="gap-2">
         <div className="flex items-start justify-between gap-2">
           <div className="flex flex-col gap-0.5">
@@ -106,25 +87,17 @@ export function RealityPositionCard({
         <dl className="grid grid-cols-2 gap-2 text-xs">
           <div>
             <dt className="text-muted-foreground">Live P&amp;L</dt>
-            <dd className={`font-mono ${pnlTone}`}>
-              {formatCurrency(instance.livePnl)}
-            </dd>
+            <dd className={`font-mono ${pnlTone}`}>{formatCurrency(instance.livePnl)}</dd>
           </div>
           <div>
             <dt className="text-muted-foreground">Allocation</dt>
-            <dd className="font-mono">
-              {formatCurrency(instance.liveAllocation)}
-            </dd>
+            <dd className="font-mono">{formatCurrency(instance.liveAllocation)}</dd>
           </div>
         </dl>
         {instance.venuesActive.length > 0 ? (
           <div className="flex flex-wrap gap-1">
             {instance.venuesActive.map((venue) => (
-              <Badge
-                key={venue}
-                variant="outline"
-                className="font-mono text-[10px]"
-              >
+              <Badge key={venue} variant="outline" className="font-mono text-[10px]">
                 {venue}
               </Badge>
             ))}

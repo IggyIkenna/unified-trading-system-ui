@@ -99,7 +99,13 @@ export default function MLOverviewPage() {
     error: pipelineError,
     refetch: refetchPipeline,
   } = useMLPipelineStatus();
-  const { data: runsData, isLoading: runsLoading, isError: runsIsError, error: runsError, refetch: refetchRuns } = useUnifiedTrainingRuns();
+  const {
+    data: runsData,
+    isLoading: runsLoading,
+    isError: runsIsError,
+    error: runsError,
+    refetch: refetchRuns,
+  } = useUnifiedTrainingRuns();
   const { data: queueData, isLoading: queueLoading } = useTrainingQueue();
   const { data: alertsData } = useMLAlerts();
   const { data: familiesData, isLoading: famLoading } = useModelFamilies();
@@ -146,7 +152,14 @@ export default function MLOverviewPage() {
           : new Error("Request failed");
     return (
       <div className="min-h-screen bg-background p-6">
-        <ApiError error={err} title="Could not load ML overview" onRetry={() => { void refetchPipeline(); void refetchRuns(); }} />
+        <ApiError
+          error={err}
+          title="Could not load ML overview"
+          onRetry={() => {
+            void refetchPipeline();
+            void refetchRuns();
+          }}
+        />
       </div>
     );
   }
@@ -154,9 +167,15 @@ export default function MLOverviewPage() {
   const mlTabs = (
     <Tabs value={mlTab} onValueChange={setMlTab} className="w-full">
       <TabsList className="h-8">
-        <TabsTrigger value="overview" className="text-xs">Overview</TabsTrigger>
-        <TabsTrigger value="training" className="text-xs">Training</TabsTrigger>
-        <TabsTrigger value="registry" className="text-xs">Registry</TabsTrigger>
+        <TabsTrigger value="overview" className="text-xs">
+          Overview
+        </TabsTrigger>
+        <TabsTrigger value="training" className="text-xs">
+          Training
+        </TabsTrigger>
+        <TabsTrigger value="registry" className="text-xs">
+          Registry
+        </TabsTrigger>
       </TabsList>
     </Tabs>
   );
@@ -322,7 +341,7 @@ export default function MLOverviewPage() {
                           )}
                           {run.status === "failed" && <span className="text-[11px] text-red-400 font-mono">OOM</span>}
                           {run.status === "queued" && (
-                            <span className="text-[11px] text-amber-400">Queue #{queue?.jobs_waiting ?? "—"}</span>
+                            <span className="text-[11px] text-amber-400">Queue #{queue?.jobs_waiting ?? "-"}</span>
                           )}
                         </div>
                       </div>
@@ -432,7 +451,9 @@ export default function MLOverviewPage() {
               <Card className="border-border/50">
                 <CardHeader className="pb-2">
                   <CardTitle className="flex items-center gap-2 text-sm">
-                    <Radio className={`size-4 ${predictionConnected ? "text-emerald-400 animate-pulse" : "text-zinc-500"}`} />
+                    <Radio
+                      className={`size-4 ${predictionConnected ? "text-emerald-400 animate-pulse" : "text-zinc-500"}`}
+                    />
                     Live Predictions
                     {predictionConnected && (
                       <span className="ml-auto text-[9px] font-normal text-emerald-400">CONNECTED</span>
@@ -449,10 +470,7 @@ export default function MLOverviewPage() {
                     </p>
                   ) : (
                     predictionEvents.slice(0, 8).map((evt) => (
-                      <div
-                        key={evt.prediction_id}
-                        className="rounded-md border border-border/50 p-2 space-y-1"
-                      >
+                      <div key={evt.prediction_id} className="rounded-md border border-border/50 p-2 space-y-1">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-1.5 min-w-0">
                             <Badge

@@ -195,7 +195,7 @@ export default function UsersManagementPage() {
       {isAdmin() && (
         <div className="bg-primary/5 border-b border-primary/10 px-6 py-2 flex items-center gap-2 text-sm">
           <Shield className="size-4 text-primary" />
-          <span>Admin — full provisioning management available</span>
+          <span>Admin: full provisioning management available</span>
           <Link
             href="/admin/users"
             className="ml-auto flex items-center gap-1 text-primary hover:underline text-xs font-medium"
@@ -211,7 +211,7 @@ export default function UsersManagementPage() {
               title="User Management"
               description={
                 isAdmin()
-                  ? "Read-only directory — use the Admin Console for full management."
+                  ? "Read-only directory: use the Admin Console for full management."
                   : "Manage users, roles, and access across all organizations"
               }
             />

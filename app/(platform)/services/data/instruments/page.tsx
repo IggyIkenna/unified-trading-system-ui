@@ -97,16 +97,16 @@ function InstrumentDetail({ selections }: { selections: FinderSelections }) {
         <div className="grid grid-cols-2 gap-3 text-xs">
           <div>
             <p className="text-muted-foreground">Total instruments</p>
-            <p className="font-mono font-bold text-foreground">{counts?.total.toLocaleString() ?? "—"}</p>
+            <p className="font-mono font-bold text-foreground">{counts?.total.toLocaleString() ?? "-"}</p>
           </div>
           <div>
             <p className="text-muted-foreground">Active</p>
-            <p className="font-mono font-bold text-emerald-400">{counts?.active.toLocaleString() ?? "—"}</p>
+            <p className="font-mono font-bold text-emerald-400">{counts?.active.toLocaleString() ?? "-"}</p>
           </div>
           <div>
             <p className="text-muted-foreground">Delisted</p>
             <p className="font-mono text-muted-foreground">
-              {counts ? (counts.total - counts.active).toLocaleString() : "—"}
+              {counts ? (counts.total - counts.active).toLocaleString() : "-"}
             </p>
           </div>
           <div>

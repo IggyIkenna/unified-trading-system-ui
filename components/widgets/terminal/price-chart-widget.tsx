@@ -192,7 +192,7 @@ export function PriceChartWidget(_props: WidgetComponentProps) {
                   data-testid="synthetic-data-badge"
                   title="These bars are locally generated, not real market data. Switch off mock mode to see real GCS-backed candles."
                 >
-                  Mock data — synthetic
+                  Mock data: synthetic
                 </div>
                 {/* Diagonal watermark behind candles — visible when looking at the chart at all. */}
                 <div

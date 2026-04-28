@@ -153,7 +153,7 @@ export function ScenarioTab({
         <div>
           <h3 className="text-sm font-semibold flex items-center gap-2">
             <Zap className="size-4 text-amber-400" />
-            Scenario Analysis — {label}
+            Scenario Analysis: {label}
           </h3>
           <p className="text-[11px] text-muted-foreground mt-0.5">
             Deribit-style P&amp;L and Greeks across spot × vol shock grid. Notional: {formatUsd(notional, 0)}.

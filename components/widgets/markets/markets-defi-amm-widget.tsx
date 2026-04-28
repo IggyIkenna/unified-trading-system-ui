@@ -34,7 +34,7 @@ export function MarketsDefiAmmWidget(_props: WidgetComponentProps) {
                 <div>
                   <p className="text-xs font-medium">DeFi market structure</p>
                   <p className="text-micro text-muted-foreground mt-0.5">
-                    AMM pricing — swap and LP activity below, not a classic limit order book.
+                    AMM pricing: swap and LP activity below, not a classic limit order book.
                   </p>
                 </div>
               </div>
@@ -45,7 +45,7 @@ export function MarketsDefiAmmWidget(_props: WidgetComponentProps) {
       footer={
         !isNotDefi ? (
           <p className="text-micro text-muted-foreground px-2 pb-2">
-            Mock DeFi activity — replace with `useLiveBook` / venue feeds when wired.
+            Mock DeFi activity: replace with `useLiveBook` / venue feeds when wired.
           </p>
         ) : undefined
       }

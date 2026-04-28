@@ -146,7 +146,7 @@ export function TradePanel({ instrument }: { instrument: SelectedInstrument | nu
           <div className="space-y-1.5">
             <label className="text-xs text-muted-foreground">Implied Volatility</label>
             <div className="p-2 rounded-md border bg-muted/30 font-mono text-sm">
-              {instrument.iv != null ? formatPercent(instrument.iv, 1) : "—"}
+              {instrument.iv != null ? formatPercent(instrument.iv, 1) : "-"}
             </div>
           </div>
           <div className="p-3 rounded-lg border bg-muted/30">
@@ -158,7 +158,7 @@ export function TradePanel({ instrument }: { instrument: SelectedInstrument | nu
                     <div>
                       <p className="text-[10px] text-muted-foreground">&Delta;</p>
                       <p className="font-mono text-xs font-medium">
-                        {instrument.delta != null ? formatNumber(instrument.delta, 3) : "—"}
+                        {instrument.delta != null ? formatNumber(instrument.delta, 3) : "-"}
                       </p>
                     </div>
                   </TooltipTrigger>
@@ -173,7 +173,7 @@ export function TradePanel({ instrument }: { instrument: SelectedInstrument | nu
                     <div>
                       <p className="text-[10px] text-muted-foreground">&Gamma;</p>
                       <p className="font-mono text-xs font-medium">
-                        {instrument.gamma != null ? formatNumber(instrument.gamma, 4) : "—"}
+                        {instrument.gamma != null ? formatNumber(instrument.gamma, 4) : "-"}
                       </p>
                     </div>
                   </TooltipTrigger>
@@ -188,7 +188,7 @@ export function TradePanel({ instrument }: { instrument: SelectedInstrument | nu
                     <div>
                       <p className="text-[10px] text-muted-foreground">&Theta;</p>
                       <p className="font-mono text-xs font-medium">
-                        {instrument.theta != null ? formatNumber(instrument.theta, 1) : "—"}
+                        {instrument.theta != null ? formatNumber(instrument.theta, 1) : "-"}
                       </p>
                     </div>
                   </TooltipTrigger>
@@ -203,7 +203,7 @@ export function TradePanel({ instrument }: { instrument: SelectedInstrument | nu
                     <div>
                       <p className="text-[10px] text-muted-foreground">&nu;</p>
                       <p className="font-mono text-xs font-medium">
-                        {instrument.vega != null ? formatNumber(instrument.vega, 3) : "—"}
+                        {instrument.vega != null ? formatNumber(instrument.vega, 3) : "-"}
                       </p>
                     </div>
                   </TooltipTrigger>

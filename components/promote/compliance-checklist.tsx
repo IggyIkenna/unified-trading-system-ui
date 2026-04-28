@@ -24,7 +24,7 @@ export function ComplianceChecklist({ strategy }: { strategy: CandidateStrategy 
       <CardHeader className="pb-2">
         <CardTitle className="text-sm flex items-center gap-2">
           <FileCheck className="size-4 text-amber-400" />
-          SR 11-7 — documentation checklist
+          SR 11-7: documentation checklist
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -35,7 +35,7 @@ export function ComplianceChecklist({ strategy }: { strategy: CandidateStrategy 
           </div>
           <div className="rounded-lg border border-border/60 p-3 space-y-1">
             <p className="text-muted-foreground">Risk materiality score</p>
-            <p className="font-mono text-lg">{comp.riskMaterialityScore ?? "—"}</p>
+            <p className="font-mono text-lg">{comp.riskMaterialityScore ?? "-"}</p>
           </div>
           <div className="rounded-lg border border-border/60 p-3 space-y-1">
             <p className="text-muted-foreground">Model tier</p>

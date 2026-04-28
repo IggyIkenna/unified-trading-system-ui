@@ -406,11 +406,11 @@ export function getRawDataContextStats(selections: FinderSelections): FinderCont
     metrics: [
       {
         label: "overall completion",
-        value: rawStage?.completionPct != null ? formatNumber(rawStage.completionPct, 1) : "—",
+        value: rawStage?.completionPct != null ? formatNumber(rawStage.completionPct, 1) : "-",
       },
       {
         label: "shards complete",
-        value: rawStage?.completedShards?.toLocaleString() ?? "—",
+        value: rawStage?.completedShards?.toLocaleString() ?? "-",
       },
       { label: "failed", value: rawStage?.failedShards ?? 0 },
     ],

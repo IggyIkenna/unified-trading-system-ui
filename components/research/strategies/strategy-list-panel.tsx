@@ -69,7 +69,7 @@ export function BacktestListItem({
             {kind === "ml" ? "ML" : "Rule"}
           </Badge>
           <span className="text-[10px] px-1 rounded bg-muted/30 font-mono">{bt.shard}</span>
-          <span>{bt.instrument ?? "—"}</span>
+          <span>{bt.instrument ?? "-"}</span>
           <span>·</span>
           <span>{bt.venue}</span>
         </div>
@@ -168,7 +168,7 @@ export function SignalListView({ signals }: { signals: StrategySignal[] }) {
                     s.pnl_usd != null && s.pnl_usd >= 0 ? "text-emerald-400" : "text-red-400",
                   )}
                 >
-                  {s.pnl_usd != null ? `${s.pnl_usd >= 0 ? "+" : ""}$${formatNumber(s.pnl_usd, 0)}` : "—"}
+                  {s.pnl_usd != null ? `${s.pnl_usd >= 0 ? "+" : ""}$${formatNumber(s.pnl_usd, 0)}` : "-"}
                 </td>
                 <td
                   className={cn(
@@ -179,12 +179,12 @@ export function SignalListView({ signals }: { signals: StrategySignal[] }) {
                   {cumulativeByIndex[i] >= 0 ? "+" : ""}${formatNumber(cumulativeByIndex[i], 0)}
                 </td>
                 <td className="py-1.5 px-2 text-right font-mono tabular-nums text-emerald-400/70">
-                  {s.mfe_pct != null ? `+${s.mfe_pct}%` : "—"}
+                  {s.mfe_pct != null ? `+${s.mfe_pct}%` : "-"}
                 </td>
                 <td className="py-1.5 px-2 text-right font-mono tabular-nums text-red-400/70">
-                  {s.mae_pct != null ? `${s.mae_pct}%` : "—"}
+                  {s.mae_pct != null ? `${s.mae_pct}%` : "-"}
                 </td>
-                <td className="py-1.5 px-2 capitalize text-muted-foreground">{s.regime_at_signal ?? "—"}</td>
+                <td className="py-1.5 px-2 capitalize text-muted-foreground">{s.regime_at_signal ?? "-"}</td>
                 <td className="py-1.5">
                   {s.outcome === "win" ? (
                     <Badge variant="outline" className="text-[10px] h-4 border-emerald-400/30 text-emerald-400">
@@ -195,7 +195,7 @@ export function SignalListView({ signals }: { signals: StrategySignal[] }) {
                       Loss
                     </Badge>
                   ) : (
-                    <span className="text-muted-foreground">—</span>
+                    <span className="text-muted-foreground">-</span>
                   )}
                 </td>
               </tr>

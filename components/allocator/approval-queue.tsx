@@ -93,7 +93,7 @@ export function ApprovalQueue(): React.ReactElement {
           <div>
             <h3 className="text-lg font-semibold">Allocation approval queue</h3>
             <p className="text-xs text-muted-foreground">
-              {pendingCount} directive{pendingCount === 1 ? "" : "s"} awaiting human approval — click Apply to commit.
+              {pendingCount} directive{pendingCount === 1 ? "" : "s"} awaiting human approval: click Apply to commit.
             </p>
           </div>
           <div className="flex items-center gap-2">

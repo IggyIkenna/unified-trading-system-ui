@@ -28,20 +28,12 @@
 import { StatusDot } from "@/components/shared/status-badge";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import type { ServiceDefinition } from "@/lib/config/services";
 import { mock01 } from "@/lib/mocks/generators/deterministic";
 import { PLATFORM_LIFECYCLE_CONFIG, type PlatformLifecycleStage } from "@/lib/taxonomy";
 import { cn } from "@/lib/utils";
-import {
-  padlockTooltipCopy,
-  type TileLockState,
-} from "@/lib/visibility/tile-lock-state";
+import { padlockTooltipCopy, type TileLockState } from "@/lib/visibility/tile-lock-state";
 import {
   Activity,
   AlertTriangle,
@@ -161,8 +153,7 @@ export function ServiceTile({
 
   const Icon = ICON_MAP[service.icon] ?? Database;
   const stageConfig =
-    PLATFORM_LIFECYCLE_CONFIG[service.lifecycleStage as PlatformLifecycleStage] ??
-    PLATFORM_LIFECYCLE_CONFIG.acquire;
+    PLATFORM_LIFECYCLE_CONFIG[service.lifecycleStage as PlatformLifecycleStage] ?? PLATFORM_LIFECYCLE_CONFIG.acquire;
 
   if (lockState === "padlocked-visible") {
     const tooltip = padlockTooltipCopy();
@@ -175,7 +166,7 @@ export function ServiceTile({
               data-testid={testId}
               data-lock-state={lockState}
               aria-disabled="true"
-              aria-label={`${service.label} — locked — request access`}
+              aria-label={`${service.label}: locked: request access`}
               tabIndex={0}
               role="button"
               onKeyDown={(e) => {
@@ -186,30 +177,18 @@ export function ServiceTile({
                   e.preventDefault();
                 }
               }}
-              className={cn(
-                "border-border/40 bg-gradient-to-br from-background to-muted/20",
-                "cursor-not-allowed",
-              )}
+              className={cn("border-border/40 bg-gradient-to-br from-background to-muted/20", "cursor-not-allowed")}
               style={{ pointerEvents: "auto" }}
             >
-              <CardContent
-                className="p-4 flex gap-3"
-                style={{ pointerEvents: "none" }}
-              >
+              <CardContent className="p-4 flex gap-3" style={{ pointerEvents: "none" }}>
                 <div className="flex-shrink-0 mt-0.5">
                   <div className="size-8 rounded-lg bg-muted/50 flex items-center justify-center">
-                    <Lock
-                      className="size-3.5 text-muted-foreground/60"
-                      aria-hidden
-                      data-testid={`${testId}-padlock`}
-                    />
+                    <Lock className="size-3.5 text-muted-foreground/60" aria-hidden data-testid={`${testId}-padlock`} />
                   </div>
                 </div>
                 <div className="space-y-1.5 min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-muted-foreground">
-                      {service.label}
-                    </span>
+                    <span className="text-sm font-medium text-muted-foreground">{service.label}</span>
                     <Badge
                       className="text-[8px] px-1.5 py-0 bg-gradient-to-r from-amber-500/10 to-amber-500/5 text-amber-400 border-amber-500/20"
                       data-testid={`${testId}-request-access-badge`}
@@ -224,11 +203,7 @@ export function ServiceTile({
               </CardContent>
             </Card>
           </TooltipTrigger>
-          <TooltipContent
-            side="top"
-            className="text-xs"
-            data-testid={`${testId}-tooltip`}
-          >
+          <TooltipContent side="top" className="text-xs" data-testid={`${testId}-tooltip`}>
             {tooltip}
           </TooltipContent>
         </Tooltip>
@@ -246,10 +221,7 @@ export function ServiceTile({
     <Card
       data-testid={testId}
       data-lock-state={lockState}
-      className={cn(
-        "group hover:border-white/20 transition-colors h-full",
-        degraded && "border-amber-500/20",
-      )}
+      className={cn("group hover:border-white/20 transition-colors h-full", degraded && "border-amber-500/20")}
     >
       <Link href={service.href} className="block" data-testid={`${testId}-primary`}>
         <CardContent className="p-4 flex gap-3">
@@ -258,17 +230,8 @@ export function ServiceTile({
           </div>
           <div className="space-y-1 min-w-0 flex-1">
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium group-hover:text-white transition-colors">
-                {service.label}
-              </span>
-              <span
-                className={cn(
-                  "text-[8px] uppercase tracking-wider",
-                  stageConfig.color,
-                )}
-              >
-                {stageConfig.label}
-              </span>
+              <span className="text-sm font-medium group-hover:text-white transition-colors">{service.label}</span>
+              <span className={cn("text-[8px] uppercase tracking-wider", stageConfig.color)}>{stageConfig.label}</span>
               <TooltipProvider delayDuration={0}>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -280,9 +243,7 @@ export function ServiceTile({
                     </span>
                   </TooltipTrigger>
                   <TooltipContent side="top" className="text-xs">
-                    {degraded
-                      ? "Degraded performance"
-                      : "All systems operational"}
+                    {degraded ? "Degraded performance" : "All systems operational"}
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -290,27 +251,18 @@ export function ServiceTile({
             {degraded ? (
               <p className="text-[11px] text-amber-400/80 leading-relaxed flex items-center gap-1">
                 <AlertTriangle className="size-3 shrink-0" />
-                Degraded — elevated latency
+                Degraded: elevated latency
               </p>
             ) : (
-              <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-2">
-                {service.description}
-              </p>
+              <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-2">{service.description}</p>
             )}
-            {quickStat && (
-              <p className="text-[10px] font-mono text-muted-foreground/80 mt-0.5">
-                {quickStat}
-              </p>
-            )}
+            {quickStat && <p className="text-[10px] font-mono text-muted-foreground/80 mt-0.5">{quickStat}</p>}
           </div>
           <ChevronRight className="size-3.5 text-muted-foreground/20 group-hover:text-muted-foreground flex-shrink-0 mt-1 transition-colors" />
         </CardContent>
       </Link>
       {hasChips && (
-        <div
-          className="px-4 pb-3 pt-0 flex flex-wrap gap-1.5"
-          data-testid={`${testId}-subroutes`}
-        >
+        <div className="px-4 pb-3 pt-0 flex flex-wrap gap-1.5" data-testid={`${testId}-subroutes`}>
           {shownChips.map((chip) => (
             <SubRouteChip key={chip.key} chip={chip} stageColor={stageConfig.color} />
           ))}
@@ -329,13 +281,7 @@ export function ServiceTile({
   );
 }
 
-function SubRouteChip({
-  chip,
-  stageColor,
-}: {
-  chip: ServiceTileSubRouteChip;
-  stageColor: string;
-}) {
+function SubRouteChip({ chip, stageColor }: { chip: ServiceTileSubRouteChip; stageColor: string }) {
   const ChipIcon = ICON_MAP[chip.icon] ?? ChevronRight;
   if (chip.locked) {
     return (

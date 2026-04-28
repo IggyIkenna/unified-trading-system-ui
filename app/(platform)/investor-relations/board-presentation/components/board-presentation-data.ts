@@ -98,13 +98,13 @@ export const slides = [
       },
       {
         problem:
-          "On most platforms, backtest-to-live is a rewrite. Strategies that look good in research die on contact with production — or pass clean-history replay but fail the moment market structure breaks.",
+          "On most platforms, backtest-to-live is a rewrite. Strategies that look good in research die on contact with production: or pass clean-history replay but fail the moment market structure breaks.",
         solution:
-          "One code path from simulation to live — promotion is a config change, not a rewrite. Simulation injects synthetic stress: execution delays, order failures, gap moves, data outages, forced liquidations. Risk is tested against adversarial conditions, not just favourable history.",
+          "One code path from simulation to live: promotion is a config change, not a rewrite. Simulation injects synthetic stress: execution delays, order failures, gap moves, data outages, forced liquidations. Risk is tested against adversarial conditions, not just favourable history.",
       },
       {
         problem:
-          "Regulatory infrastructure is expensive, slow, and bolted on. An 18–24 month FCA cycle for anyone who wants to operate.",
+          "Regulatory infrastructure is expensive, slow, and bolted on. An 18-24 month FCA cycle for anyone who wants to operate.",
         solution:
           "FCA 975797 since January 2023. Same platform now hosts clients under our permissions where appropriate, with onboarding timing assessed case by case.",
       },
@@ -115,7 +115,7 @@ export const slides = [
       "Platform is already commercial \u2014 first paying DART Trading Infrastructure and Regulated Operating Models clients live",
     ],
     conclusion:
-      "Odum is what we could not find in 2021 — built properly, with the architectural discipline of a top-tier firm applied to the full cross-domain spread.",
+      "Odum is what we could not find in 2021: built properly, with the architectural discipline of a top-tier firm applied to the full cross-domain spread.",
   },
 
   // ── Slide 3: Four Commercial Paths, One System ────────────
@@ -163,7 +163,7 @@ export const slides = [
       {
         competitor: "Bloomberg / Refinitiv",
         users: "TradFi only",
-        gap: "$24K–$30K/user/year. Deep TradFi data and terminal \u2014 but no crypto spot depth, no DeFi on-chain, no sports, no prediction. Data only. No research, no execution, no managed money.",
+        gap: "$24K-$30K/user/year. Deep TradFi data and terminal \u2014 but no crypto spot depth, no DeFi on-chain, no sports, no prediction. Data only. No research, no execution, no managed money.",
         color: "cyan",
       },
       {
@@ -173,9 +173,9 @@ export const slides = [
         color: "violet",
       },
       {
-        competitor: "Deltix (EPAM) — QuantOffice + CryptoCortex",
+        competitor: "Deltix (EPAM): QuantOffice + CryptoCortex",
         users: "Institutional quant + sell-side",
-        gap: "~$100K–$500K/yr enterprise licence. Serious research-to-execution stack across TradFi + crypto (TimeBase, QuantOffice, TradeHub, CryptoCortex). 15 years of product, strong institutional quant tooling. Separate research and execution environments, not one code path from backtest to live. No DeFi programmability, no sports, no prediction. Licensed software, not a regulated operating layer that hosts clients under an FCA permission.",
+        gap: "~$100K-$500K/yr enterprise licence. Serious research-to-execution stack across TradFi + crypto (TimeBase, QuantOffice, TradeHub, CryptoCortex). 15 years of product, strong institutional quant tooling. Separate research and execution environments, not one code path from backtest to live. No DeFi programmability, no sports, no prediction. Licensed software, not a regulated operating layer that hosts clients under an FCA permission.",
         color: "emerald",
       },
       {
@@ -187,7 +187,7 @@ export const slides = [
       {
         competitor: "Hummingbot / 3Commas / Cryptohopper",
         users: "Crypto retail / prosumer",
-        gap: "Free–$99/mo retail. Open-source market-making bots and strategy templates. Crypto-only. No TradFi, no DeFi programmability, no research pipeline, no compliance, no reporting fit for institutional capital.",
+        gap: "Free-$99/mo retail. Open-source market-making bots and strategy templates. Crypto-only. No TradFi, no DeFi programmability, no research pipeline, no compliance, no reporting fit for institutional capital.",
         color: "amber",
       },
       {
@@ -199,7 +199,7 @@ export const slides = [
       {
         competitor: "FlexTrade / Eze / Aladdin",
         users: "TradFi institutional OMS/EMS",
-        gap: "~$100K–$500K/yr enterprise OMS/EMS. Venue connectivity for equities / futures / FX. No crypto, no DeFi, no sports, no prediction. No built-in research environment, no managed-capital layer.",
+        gap: "~$100K-$500K/yr enterprise OMS/EMS. Venue connectivity for equities / futures / FX. No crypto, no DeFi, no sports, no prediction. No built-in research environment, no managed-capital layer.",
         color: "cyan",
       },
       {
@@ -211,7 +211,7 @@ export const slides = [
       {
         competitor: "Tardis / Kaiko / Amberdata",
         users: "Crypto data providers",
-        gap: "$500–$5K+/mo data feeds. High-quality crypto tick and L2 data. Data only. No TradFi parity, no DeFi protocol coverage, no sports, no prediction. Does not touch execution, research, or compliance.",
+        gap: "$500-$5K+/mo data feeds. High-quality crypto tick and L2 data. Data only. No TradFi parity, no DeFi protocol coverage, no sports, no prediction. Does not touch execution, research, or compliance.",
         color: "amber",
       },
       {
@@ -243,7 +243,7 @@ export const slides = [
         problem:
           "Specialisation. TradFi vendors built in the 1990s for equities and futures \u2014 crypto/DeFi/sports would require a ground-up rebuild, which they will not do.",
         solution:
-          "Odum started in 2021 doing high-frequency trading — and learned first-hand why iterating fast enough was impossible without a unified foundation. Since 2024 we have been building the cross-domain ontology on that experience. Every schema is canonical across five asset classes.",
+          "Odum started in 2021 doing high-frequency trading: and learned first-hand why iterating fast enough was impossible without a unified foundation. Since 2024 we have been building the cross-domain ontology on that experience. Every schema is canonical across five asset classes.",
       },
       {
         problem:
@@ -261,7 +261,7 @@ export const slides = [
         problem:
           "Cross-domain thinking + institutional discipline + operator credibility is a rare combinatory skill set. The combination is what makes the problem interesting.",
         solution:
-          "Odum exists precisely because the combination is rare. The platform is the artefact of over four years of compounding decisions — trying it the old way first, strategy-first, and then building the unified stack on the back of having traded most asset classes across our collective history.",
+          "Odum exists precisely because the combination is rare. The platform is the artefact of over four years of compounding decisions: trying it the old way first, strategy-first, and then building the unified stack on the back of having traded most asset classes across our collective history.",
       },
     ],
     differentiators: [
@@ -411,23 +411,23 @@ export const slides = [
     families: [
       {
         name: "Stable Yield (DeFi)",
-        returns: "3–12%",
+        returns: "3-12%",
         drawdown: "<1%",
-        capacity: "$50M–$100M+",
+        capacity: "$50M-$100M+",
         character: "Aave lending, stablecoin yield, multi-chain",
         risk: "low",
       },
       {
         name: "Relative Value",
-        returns: "10–30%",
+        returns: "10-30%",
         drawdown: "5%",
-        capacity: "$5M–$20M",
+        capacity: "$5M-$20M",
         character: "Basis trades, funding capture, cross-venue",
         risk: "low",
       },
       {
         name: "Leveraged Yield (DeFi)",
-        returns: "20–50%",
+        returns: "20-50%",
         drawdown: "15%",
         capacity: "$5M / pool",
         character: "Recursive staking, liquidity provision",
@@ -436,15 +436,15 @@ export const slides = [
       {
         name: "Crypto Long/Short",
         returns: "30%+",
-        drawdown: "5–10%",
+        drawdown: "5-10%",
         capacity: "$2M / pair",
         character: "ML long/short, mean reversion, arb",
         risk: "medium",
       },
       {
         name: "TradFi Quant",
-        returns: "12–18%",
-        drawdown: "8–10%",
+        returns: "12-18%",
+        drawdown: "8-10%",
         capacity: "$5M / name",
         character: "ML directional, options, volatility",
         risk: "medium",
@@ -453,7 +453,7 @@ export const slides = [
         name: "Sports",
         returns: "50%+",
         drawdown: "20%",
-        capacity: "$100K–$1M",
+        capacity: "$100K-$1M",
         character: "ML prediction, cross-bookmaker arbitrage",
         risk: "high",
       },
@@ -478,7 +478,7 @@ export const slides = [
       },
       {
         text: "Platform live \u2014 first paying DART client",
-        detail: "Elysium DeFi: $125K signed, growing to $250K+ annual. Three strategies at 5–20% yield.",
+        detail: "Elysium DeFi: $125K signed, growing to $250K+ annual. Three strategies at 5-20% yield.",
       },
       {
         text: "First Regulated Operating Models client onboarded",
@@ -506,7 +506,7 @@ export const slides = [
       },
       {
         text: "India Options (Oct 2026)",
-        detail: "$100K onboarding + $5–10M IM allocation (NSE delta trading).",
+        detail: "$100K onboarding + $5-10M IM allocation (NSE delta trading).",
       },
     ],
     launchReady: [
@@ -642,7 +642,7 @@ export const slides = [
       {
         date: "Oct",
         value: "£372k",
-        detail: "India Options $100k onboarding. £92k single-month step-up. $5–10M IM to follow.",
+        detail: "India Options $100k onboarding. £92k single-month step-up. $5-10M IM to follow.",
       },
       {
         date: "Nov",
@@ -657,7 +657,7 @@ export const slides = [
       },
     ],
     callout:
-      "October 2026 is the key inflection: India Options onboarding delivers a £92k single-month step-up. Target for end-2027: 4–6 DART Odum-provided-signal counterparties and $25M+ AUM.",
+      "October 2026 is the key inflection: India Options onboarding delivers a £92k single-month step-up. Target for end-2027: 4-6 DART Odum-provided-signal counterparties and $25M+ AUM.",
   },
 
   // ══════════════════════════════════════════════════════════════

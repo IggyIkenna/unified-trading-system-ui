@@ -96,7 +96,7 @@ export function ArbTab({ fixtures, arbThreshold: arbThresholdProp, onArbThreshol
         <ResizablePanel defaultSize={65} minSize={40} className="flex flex-col min-h-0">
           <div className="px-3 py-1.5 border-b border-zinc-800 bg-zinc-900/30">
             <span className="text-[9px] font-black uppercase tracking-widest text-zinc-500">
-              Odds Grid — {selectedMarket}
+              Odds Grid: {selectedMarket}
             </span>
           </div>
           <div className="flex-1 overflow-auto">

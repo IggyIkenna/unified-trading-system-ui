@@ -59,15 +59,15 @@ const GROUP_ICONS: Record<string, React.ReactNode> = {
 
 const TIER_DESCRIPTIONS: Record<DetectedTier, { label: string; description: string }> = {
   0: {
-    label: "Tier 0 — UI Only",
+    label: "Tier 0: UI Only",
     description: "No API gateway detected. UI running with in-browser mock store.",
   },
   1: {
-    label: "Tier 1 — UI + API Gateways",
+    label: "Tier 1: UI + API Gateways",
     description: "API gateway serving mock data via MockStateStore. No downstream service fleet.",
   },
   2: {
-    label: "Tier 2 — Full Fleet",
+    label: "Tier 2: Full Fleet",
     description: "API gateway + downstream services. Full engine parity with production topology.",
   },
 };
@@ -91,7 +91,7 @@ function getStartupHint(checkName: string, detectedTier: DetectedTier): string {
       return `Start all gateways: ${tierCmd}\nOr standalone: cd client-reporting-api && CLOUD_MOCK_MODE=true CLOUD_PROVIDER=local .venv/bin/python -m uvicorn client_reporting_api.api.main:app --port 8014`;
     default:
       if (checkName.startsWith("GET /")) {
-        return "This endpoint is served by unified-trading-api. If the API gateway is running, this domain may not be seeded — try POST /admin/reset.";
+        return "This endpoint is served by unified-trading-api. If the API gateway is running, this domain may not be seeded: try POST /admin/reset.";
       }
       return `Start with: ${tierCmd}`;
   }
@@ -644,16 +644,16 @@ export default function HealthPage() {
           <p className="font-medium mb-2 text-foreground">Local Tiers (dev machine)</p>
           <div className="space-y-1.5">
             <p>
-              <code className="bg-muted px-1.5 py-0.5 rounded text-[10px]">bash scripts/dev-tiers.sh --tier 0</code> —
+              <code className="bg-muted px-1.5 py-0.5 rounded text-[10px]">bash scripts/dev-tiers.sh --tier 0</code>:
               UI-only. In-browser mock. No Python.
             </p>
             <p>
-              <code className="bg-muted px-1.5 py-0.5 rounded text-[10px]">bash scripts/dev-tiers.sh --tier 1</code> —
-              UI + API gateways. MockStateStore. Demo-ready.
+              <code className="bg-muted px-1.5 py-0.5 rounded text-[10px]">bash scripts/dev-tiers.sh --tier 1</code>: UI
+              + API gateways. MockStateStore. Demo-ready.
             </p>
             <p>
-              <code className="bg-muted px-1.5 py-0.5 rounded text-[10px]">bash scripts/dev-tiers.sh --tier 2</code> —
-              UI + APIs + all service processes. Full engine parity.
+              <code className="bg-muted px-1.5 py-0.5 rounded text-[10px]">bash scripts/dev-tiers.sh --tier 2</code>: UI
+              + APIs + all service processes. Full engine parity.
             </p>
           </div>
         </div>
@@ -661,8 +661,8 @@ export default function HealthPage() {
           <p className="font-medium mb-2 text-foreground">Cloud Tiers (deployment-driven)</p>
           <div className="space-y-1.5">
             <p>
-              <strong>T3</strong> — UI in cloud, API local. <strong>T4</strong> — UI + API in cloud. <strong>T5</strong>{" "}
-              — Full cloud (mock). <strong>T6</strong> — Full cloud (real).
+              <strong>T3</strong>: UI in cloud, API local. <strong>T4</strong>: UI + API in cloud. <strong>T5</strong> :
+              Full cloud (mock). <strong>T6</strong>: Full cloud (real).
             </p>
             <p>
               Cloud tiers driven by Deployment UI or{" "}
@@ -674,11 +674,11 @@ export default function HealthPage() {
           <p className="font-medium mb-1 text-foreground">Other commands</p>
           <div className="space-y-1.5">
             <p>
-              <code className="bg-muted px-1.5 py-0.5 rounded text-[10px]">bash scripts/dev-tiers.sh --stop</code> —
-              Stop all processes.
+              <code className="bg-muted px-1.5 py-0.5 rounded text-[10px]">bash scripts/dev-tiers.sh --stop</code>: Stop
+              all processes.
             </p>
             <p>
-              <code className="bg-muted px-1.5 py-0.5 rounded text-[10px]">bash scripts/dev-tiers.sh --status</code> —
+              <code className="bg-muted px-1.5 py-0.5 rounded text-[10px]">bash scripts/dev-tiers.sh --status</code>:
               Show running processes and ports.
             </p>
             <p>

@@ -15,9 +15,9 @@ export const slides = [
   {
     id: 1,
     type: "cover",
-    title: "DART Trading Infrastructure — Without The Build",
+    title: "DART Trading Infrastructure: Without The Build",
     subtitle:
-      "DART: the same operating system we use for our own capital, available to you. One engagement route with a signal-capability spectrum: client-provided signals (you keep IP upstream), Odum-provided signals, or hybrid. Materially faster to start than the 18–24 months of a build-it-yourself cycle, where appropriate and subject to scope review.",
+      "DART: the same operating system we use for our own capital, available to you. One engagement route with a signal-capability spectrum: client-provided signals (you keep IP upstream), Odum-provided signals, or hybrid. Materially faster to start than the 18-24 months of a build-it-yourself cycle, where appropriate and subject to scope review.",
     tagline: "DART Trading Infrastructure Deck",
     stats: [
       { value: "5", label: "Asset Classes" },
@@ -47,7 +47,7 @@ export const slides = [
         solution: "One normalised schema across 80+ venues. Adding a venue benefits every strategy automatically.",
       },
       {
-        problem: "Compliance and reporting are bolted on at the end, costing 6–12 months of rework to pass audit.",
+        problem: "Compliance and reporting are bolted on at the end, costing 6-12 months of rework to pass audit.",
         solution: "Compliance is a first-class layer: the same one we built for our own FCA-authorised operations.",
       },
       {
@@ -90,9 +90,9 @@ export const slides = [
         color: "violet",
       },
       {
-        competitor: "Deltix (EPAM) — QuantOffice + CryptoCortex",
+        competitor: "Deltix (EPAM): QuantOffice + CryptoCortex",
         users: "Institutional quant + sell-side",
-        gap: "Serious research-to-execution stack (TimeBase, QuantOffice, TradeHub, CryptoCortex) across TradFi + crypto. 15 years of product. Separate research and execution environments — not one code path from backtest to live. No DeFi programmability, no sports, no prediction. Licensed software, not a regulated operating layer.",
+        gap: "Serious research-to-execution stack (TimeBase, QuantOffice, TradeHub, CryptoCortex) across TradFi + crypto. 15 years of product. Separate research and execution environments: not one code path from backtest to live. No DeFi programmability, no sports, no prediction. Licensed software, not a regulated operating layer.",
         color: "emerald",
       },
       {
@@ -460,7 +460,7 @@ export const slides = [
     inProgress: [
       { text: "Expanding strategy coverage", detail: "ML, options, sports strategies coming through." },
       {
-        text: "DART Trading Infrastructure — Odum-provided signal counterparties",
+        text: "DART Trading Infrastructure: Odum-provided signal counterparties",
         detail: "Two contracted, live Sept 2026 at ~$5K/mo combined. (Legal/contract label: Odum Signals.)",
       },
       { text: "Additional regulatory clients", detail: "Three in active conversation, scope fit on the 4-axis model." },

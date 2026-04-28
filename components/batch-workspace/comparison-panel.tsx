@@ -13,13 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import {
-  ArrowUp,
-  ArrowDown,
-  Minus,
-  ShoppingBasket,
-  X,
-} from "lucide-react";
+import { ArrowUp, ArrowDown, Minus, ShoppingBasket, X } from "lucide-react";
 import { formatNumber } from "@/lib/utils/formatters";
 
 export interface ComparisonEntity {
@@ -61,10 +55,7 @@ function formatMetric(value: number, format?: MetricDefinition["format"]): strin
   }
 }
 
-function getBestIndex(
-  values: (number | undefined)[],
-  higherIsBetter: boolean,
-): number {
+function getBestIndex(values: (number | undefined)[], higherIsBetter: boolean): number {
   let bestIdx = -1;
   let bestVal = higherIsBetter ? -Infinity : Infinity;
   for (let i = 0; i < values.length; i++) {
@@ -90,17 +81,13 @@ export function ComparisonPanel({
     return (
       <Card className={className}>
         <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-          <p className="text-sm text-muted-foreground">
-            Select 2 or more items to compare.
-          </p>
+          <p className="text-sm text-muted-foreground">Select 2 or more items to compare.</p>
         </CardContent>
       </Card>
     );
   }
 
-  const groups = Array.from(
-    new Set(metricDefinitions.map((m) => m.group || "General")),
-  );
+  const groups = Array.from(new Set(metricDefinitions.map((m) => m.group || "General")));
 
   return (
     <Card className={className}>
@@ -123,9 +110,7 @@ export function ComparisonPanel({
                 {entities.map((entity) => (
                   <th key={entity.id} className="px-4 py-2 text-center min-w-[140px]">
                     <div className="space-y-1">
-                      <div className="font-mono font-medium truncate max-w-[140px]">
-                        {entity.name}
-                      </div>
+                      <div className="font-mono font-medium truncate max-w-[140px]">{entity.name}</div>
                       <Badge variant="outline" className="text-[9px] font-mono">
                         v{entity.version}
                       </Badge>
@@ -158,9 +143,7 @@ export function ComparisonPanel({
             </thead>
             <tbody>
               {groups.map((group) => {
-                const groupMetrics = metricDefinitions.filter(
-                  (m) => (m.group || "General") === group,
-                );
+                const groupMetrics = metricDefinitions.filter((m) => (m.group || "General") === group);
                 return (
                   <React.Fragment key={group}>
                     {groups.length > 1 && (
@@ -175,9 +158,7 @@ export function ComparisonPanel({
                     )}
                     {groupMetrics.map((metric) => {
                       const values = entities.map((e) => e.metrics[metric.key]);
-                      const bestIdx = highlightBest
-                        ? getBestIndex(values, metric.higherIsBetter ?? true)
-                        : -1;
+                      const bestIdx = highlightBest ? getBestIndex(values, metric.higherIsBetter ?? true) : -1;
 
                       return (
                         <tr key={metric.key} className="border-b border-border/50 hover:bg-muted/20">
@@ -192,7 +173,7 @@ export function ComparisonPanel({
                                 highlightBest && i === bestIdx && "text-[var(--status-live)] font-semibold",
                               )}
                             >
-                              {value !== undefined ? formatMetric(value, metric.format) : "—"}
+                              {value !== undefined ? formatMetric(value, metric.format) : "-"}
                             </td>
                           ))}
                         </tr>

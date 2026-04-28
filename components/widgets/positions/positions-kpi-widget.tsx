@@ -13,34 +13,34 @@ export function PositionsKpiWidget(_props: WidgetComponentProps) {
     () => [
       {
         label: "Positions",
-        value: isLoading ? "—" : String(summary.totalPositions),
+        value: isLoading ? "-" : String(summary.totalPositions),
         sentiment: "neutral",
       },
       {
         label: "Total Notional",
-        value: isLoading ? "—" : `$${formatCurrency(summary.totalNotional)}`,
+        value: isLoading ? "-" : `$${formatCurrency(summary.totalNotional)}`,
         sentiment: "neutral",
       },
       {
         label: "Unrealized P&L",
         value: isLoading
-          ? "—"
+          ? "-"
           : `${summary.unrealizedPnL >= 0 ? "+" : ""}$${formatCurrency(Math.abs(summary.unrealizedPnL))}`,
         sentiment: summary.unrealizedPnL >= 0 ? "positive" : "negative",
       },
       {
         label: "Total Margin",
-        value: isLoading ? "—" : `$${formatCurrency(summary.totalMargin)}`,
+        value: isLoading ? "-" : `$${formatCurrency(summary.totalMargin)}`,
         sentiment: "neutral",
       },
       {
         label: "Long Exposure",
-        value: isLoading ? "—" : `$${formatCurrency(summary.longExposure)}`,
+        value: isLoading ? "-" : `$${formatCurrency(summary.longExposure)}`,
         sentiment: "neutral",
       },
       {
         label: "Short Exposure",
-        value: isLoading ? "—" : `$${formatCurrency(summary.shortExposure)}`,
+        value: isLoading ? "-" : `$${formatCurrency(summary.shortExposure)}`,
         sentiment: "neutral",
       },
     ],

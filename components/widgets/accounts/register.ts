@@ -146,7 +146,7 @@ registerWidget({
 registerWidget({
   id: "saft-portfolio",
   label: "SAFT & Token Warrants",
-  description: "Simple Agreement for Future Tokens — portfolio, vesting timeline, and treasury tracking (demo data).",
+  description: "Simple Agreement for Future Tokens: portfolio, vesting timeline, and treasury tracking (demo data).",
   icon: FileText,
   minW: 12,
   minH: 8,

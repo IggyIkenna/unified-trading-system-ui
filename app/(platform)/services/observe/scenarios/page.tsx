@@ -175,7 +175,7 @@ const HISTORICAL_PRESETS: HistoricalPreset[] = [
     ethChange: -55,
     ratesChange: -150,
     volChange: 80,
-    description: "Global pandemic panic — BTC dropped from $9K to $4K in 48 hours, DeFi TVL collapsed 40%",
+    description: "Global pandemic panic: BTC dropped from $9K to $4K in 48 hours, DeFi TVL collapsed 40%",
   },
   {
     id: "ftx",
@@ -185,7 +185,7 @@ const HISTORICAL_PRESETS: HistoricalPreset[] = [
     ethChange: -30,
     ratesChange: 0,
     volChange: 45,
-    description: "Exchange contagion — SOL crashed 60%, lending protocols froze withdrawals",
+    description: "Exchange contagion: SOL crashed 60%, lending protocols froze withdrawals",
   },
   {
     id: "luna",
@@ -195,7 +195,7 @@ const HISTORICAL_PRESETS: HistoricalPreset[] = [
     ethChange: -35,
     ratesChange: 50,
     volChange: 60,
-    description: "Algorithmic stablecoin failure — $40B wiped, cascading DeFi liquidations",
+    description: "Algorithmic stablecoin failure: $40B wiped, cascading DeFi liquidations",
   },
   {
     id: "svb",
@@ -205,7 +205,7 @@ const HISTORICAL_PRESETS: HistoricalPreset[] = [
     ethChange: -12,
     ratesChange: -75,
     volChange: 25,
-    description: "Banking crisis — USDC briefly depegged to $0.87, flight to BTC",
+    description: "Banking crisis: USDC briefly depegged to $0.87, flight to BTC",
   },
   {
     id: "china",
@@ -580,7 +580,7 @@ function HistoricalReplay() {
       {/* Position table */}
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-sm font-medium">Position Impact — {preset.name}</CardTitle>
+          <CardTitle className="text-sm font-medium">Position Impact: {preset.name}</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>

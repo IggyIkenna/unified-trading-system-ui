@@ -51,7 +51,7 @@ export function MonteCarloPanel({ strategy }: { strategy: CandidateStrategy }) {
           variant="bordered"
           tone="grid"
           density="compact"
-          label={<span className="text-xs uppercase text-muted-foreground">95% CI — monthly return (parametric)</span>}
+          label={<span className="text-xs uppercase text-muted-foreground">95% CI: monthly return (parametric)</span>}
           body={
             <p className="font-mono">
               <span className="text-emerald-400">{fmtPct(ciLow)}</span>
@@ -77,7 +77,7 @@ export function MonteCarloPanel({ strategy }: { strategy: CandidateStrategy }) {
           contentClassName="!px-3 !py-3 !text-left font-mono"
         />
         <p className="text-xs text-muted-foreground leading-relaxed">
-          Estimates derived from parametric VaR assumptions (daily VaR / CVaR) — not a full path simulation.
+          Estimates derived from parametric VaR assumptions (daily VaR / CVaR): not a full path simulation.
         </p>
       </CardContent>
     </Card>

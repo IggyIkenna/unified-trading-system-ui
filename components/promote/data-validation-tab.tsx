@@ -7,22 +7,13 @@ import { statusBg } from "./helpers";
 import { PromoteWorkflowActions } from "./promote-workflow-actions";
 import type { CandidateStrategy, GateCheck } from "./types";
 
-export function DataValidationTab({
-  strategy,
-}: {
-  strategy: CandidateStrategy;
-}) {
+export function DataValidationTab({ strategy }: { strategy: CandidateStrategy }) {
   const dq = strategy.dataQuality;
   const gates: GateCheck[] = [
     {
       id: "coverage",
       label: "Data Coverage Score",
-      status:
-        dq.coverageScore >= 97
-          ? "passed"
-          : dq.coverageScore >= 90
-            ? "warning"
-            : "failed",
+      status: dq.coverageScore >= 97 ? "passed" : dq.coverageScore >= 90 ? "warning" : "failed",
       mandatory: true,
       threshold: "≥ 97%",
       actual: `${dq.coverageScore}%`,
@@ -30,12 +21,7 @@ export function DataValidationTab({
     {
       id: "freshness",
       label: "Feed Freshness",
-      status:
-        dq.freshnessMinutes <= 2
-          ? "passed"
-          : dq.freshnessMinutes <= 5
-            ? "warning"
-            : "failed",
+      status: dq.freshnessMinutes <= 2 ? "passed" : dq.freshnessMinutes <= 5 ? "warning" : "failed",
       mandatory: true,
       threshold: "≤ 2 min",
       actual: `${dq.freshnessMinutes} min`,
@@ -43,8 +29,7 @@ export function DataValidationTab({
     {
       id: "gaps",
       label: "Data Gaps (total)",
-      status:
-        dq.gapCount <= 5 ? "passed" : dq.gapCount <= 15 ? "warning" : "failed",
+      status: dq.gapCount <= 5 ? "passed" : dq.gapCount <= 15 ? "warning" : "failed",
       mandatory: true,
       threshold: "≤ 5",
       actual: `${dq.gapCount}`,
@@ -52,12 +37,7 @@ export function DataValidationTab({
     {
       id: "integrity",
       label: "Integrity / Checksum Score",
-      status:
-        dq.integrityScore >= 99
-          ? "passed"
-          : dq.integrityScore >= 95
-            ? "warning"
-            : "failed",
+      status: dq.integrityScore >= 99 ? "passed" : dq.integrityScore >= 95 ? "warning" : "failed",
       mandatory: true,
       threshold: "≥ 99%",
       actual: `${dq.integrityScore}%`,
@@ -100,14 +80,10 @@ export function DataValidationTab({
           {
             id: "survivorship",
             label: "Survivorship / delisted handling",
-            status: dq.survivorshipIncludesDelisted
-              ? ("passed" as const)
-              : ("warning" as const),
+            status: dq.survivorshipIncludesDelisted ? ("passed" as const) : ("warning" as const),
             mandatory: true,
             threshold: "Policy-aligned",
-            actual: dq.survivorshipIncludesDelisted
-              ? "Delisted included per policy"
-              : "Cash-only survivors",
+            actual: dq.survivorshipIncludesDelisted ? "Delisted included per policy" : "Cash-only survivors",
           },
         ]
       : []),
@@ -133,16 +109,12 @@ export function DataValidationTab({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="font-semibold">Data Validation — {strategy.name}</h3>
+          <h3 className="font-semibold">Data Validation: {strategy.name}</h3>
           <p className="text-sm text-muted-foreground">
-            Verifying data quality, coverage, and integrity before model
-            assessment
+            Verifying data quality, coverage, and integrity before model assessment
           </p>
         </div>
-        <Badge
-          variant="outline"
-          className={statusBg(strategy.stages.data_validation.status)}
-        >
+        <Badge variant="outline" className={statusBg(strategy.stages.data_validation.status)}>
           {strategy.stages.data_validation.status.replace("_", " ")}
         </Badge>
       </div>
@@ -153,22 +125,10 @@ export function DataValidationTab({
           density="default"
           label="Coverage"
           primary={`${dq.coverageScore}%`}
-          primaryClassName={
-            dq.coverageScore >= 97 ? "text-emerald-400" : "text-amber-400"
-          }
+          primaryClassName={dq.coverageScore >= 97 ? "text-emerald-400" : "text-amber-400"}
         />
-        <MetricCard
-          tone="data"
-          density="default"
-          label="Freshness"
-          primary={`${dq.freshnessMinutes}m`}
-        />
-        <MetricCard
-          tone="data"
-          density="default"
-          label="Instruments"
-          primary={dq.instruments}
-        />
+        <MetricCard tone="data" density="default" label="Freshness" primary={`${dq.freshnessMinutes}m`} />
+        <MetricCard tone="data" density="default" label="Instruments" primary={dq.instruments} />
         <MetricCard
           tone="data"
           density="default"
@@ -233,18 +193,14 @@ export function DataValidationTab({
               Feature store
             </Badge>
             <ArrowRight className="size-3 text-muted-foreground" />
-            <Badge
-              variant="outline"
-              className="text-xs border-cyan-500/40 text-cyan-400"
-            >
+            <Badge variant="outline" className="text-xs border-cyan-500/40 text-cyan-400">
               Model input
             </Badge>
           </div>
           <p className="text-muted-foreground leading-relaxed">
-            Provenance: primary vendor feeds with contract IDs, ETL run
-            timestamps, and schema hash logged per batch. Cross-venue
-            consistency checks flag &gt;3σ deviations; survivorship includes
-            delisted instruments where policy requires.
+            Provenance: primary vendor feeds with contract IDs, ETL run timestamps, and schema hash logged per batch.
+            Cross-venue consistency checks flag &gt;3σ deviations; survivorship includes delisted instruments where
+            policy requires.
           </p>
         </CardContent>
       </Card>

@@ -62,7 +62,7 @@ function getDirectionBadge(direction: Signal["direction"]) {
 }
 
 function formatTimestamp(iso: string): string {
-  if (iso === "—") return "—";
+  if (iso === "-") return "-";
   const d = new Date(iso);
   return d.toLocaleTimeString([], {
     hour: "2-digit",
@@ -167,7 +167,7 @@ export default function SignalsPage() {
                         <TableCell className="text-sm text-muted-foreground">{s.strategy}</TableCell>
                         <TableCell className="text-center">{getDirectionBadge(s.direction)}</TableCell>
                         <TableCell className="text-right font-mono text-sm">
-                          {s.strength > 0 ? formatNumber(s.strength, 2) : "—"}
+                          {s.strength > 0 ? formatNumber(s.strength, 2) : "-"}
                         </TableCell>
                         <TableCell className="text-right font-mono text-sm">{formatTimestamp(s.last_fired)}</TableCell>
                         <TableCell className="text-right font-mono text-sm">{s.fire_count_24h}</TableCell>

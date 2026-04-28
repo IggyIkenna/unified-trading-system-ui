@@ -386,7 +386,7 @@ function UpcomingPanel({
                   </div>
                   <div className="text-[11px] font-medium leading-tight line-clamp-2">{ev.label}</div>
                   <div className="text-[9px] text-muted-foreground font-mono tabular-nums">
-                    {ev.time ?? "—"} · {ev.country}
+                    {ev.time ?? "-"} · {ev.country}
                     {ev.period && ` · ${ev.period}`}
                   </div>
                 </div>
@@ -488,8 +488,8 @@ function MonthGrid({
                 isToday && !isSelected && "ring-1 ring-foreground/50",
                 isSelected && "ring-2 ring-primary ring-offset-1 ring-offset-background z-20 scale-[1.03]",
               )}
-              title={bucket ? `${key} — ${bucket.events.length} event${bucket.events.length === 1 ? "" : "s"}` : key}
-              aria-label={`${key}${bucket ? ` — ${bucket.events.length} events` : ""}`}
+              title={bucket ? `${key}: ${bucket.events.length} event${bucket.events.length === 1 ? "" : "s"}` : key}
+              aria-label={`${key}${bucket ? `: ${bucket.events.length} events` : ""}`}
             >
               <div className="flex items-start justify-between gap-1 leading-none">
                 <span
@@ -620,7 +620,7 @@ function DayDetail({ dayKey, bucket }: { dayKey: string; bucket: DayBucket }) {
                   </Badge>
                   <span className="text-xs font-medium truncate">{ev.label}</span>
                 </div>
-                <span className="text-[10px] font-mono text-muted-foreground flex-shrink-0">{ev.time ?? "—"}</span>
+                <span className="text-[10px] font-mono text-muted-foreground flex-shrink-0">{ev.time ?? "-"}</span>
               </div>
               <div className="grid grid-cols-3 gap-2 text-[11px]">
                 <Metric label="Forecast" value={ev.forecast} unit={ev.unit} />
@@ -676,7 +676,7 @@ function Metric({
       <div className="text-[9px] uppercase tracking-wide text-muted-foreground/70">{label}</div>
       <div className={cn("font-mono tabular-nums", emphasis ? "text-sm font-semibold" : "text-xs", tone)}>
         {value === null || value === undefined ? (
-          <span className="text-muted-foreground/50">—</span>
+          <span className="text-muted-foreground/50">-</span>
         ) : (
           <>
             {value}

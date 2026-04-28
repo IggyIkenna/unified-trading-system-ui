@@ -236,7 +236,7 @@ export function DeFiLendingWidget(_props: WidgetComponentProps) {
                 )}
                 data-testid="after-hf"
               >
-                {amountNum > 0 ? formatNumber(newHf, 2) : "—"}
+                {amountNum > 0 ? formatNumber(newHf, 2) : "-"}
               </p>
             </div>
           </div>

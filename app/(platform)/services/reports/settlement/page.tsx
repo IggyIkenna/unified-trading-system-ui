@@ -25,7 +25,7 @@ import { AlertTriangle, ArrowDownCircle, CheckCircle2, Clock, FileText, Receipt,
 import * as React from "react";
 
 function formatVenue(venue: string): string {
-  if (!venue) return "—";
+  if (!venue) return "-";
   return venue.charAt(0).toUpperCase() + venue.slice(1).toLowerCase();
 }
 
@@ -61,7 +61,7 @@ function normalizeSettlementRow(row: unknown): Settlement {
 
   const venueRaw = typeof r.venue === "string" ? r.venue : "";
   const instrument =
-    typeof r.instrument === "string" ? r.instrument : typeof r.currency === "string" ? `${r.currency} settlement` : "—";
+    typeof r.instrument === "string" ? r.instrument : typeof r.currency === "string" ? `${r.currency} settlement` : "-";
 
   const side: Side = r.side === "sell" || r.side === "buy" ? r.side : "buy";
 
@@ -469,8 +469,9 @@ export default function SettlementPage() {
               >
                 <div className="flex items-center gap-4">
                   <Receipt
-                    className={`size-5 ${invoice.status === "paid" ? "text-[var(--status-live)]" : "text-[var(--status-warning)]"
-                      }`}
+                    className={`size-5 ${
+                      invoice.status === "paid" ? "text-[var(--status-live)]" : "text-[var(--status-warning)]"
+                    }`}
                   />
                   <div>
                     <p className="font-medium font-mono text-sm">{invoice.id}</p>

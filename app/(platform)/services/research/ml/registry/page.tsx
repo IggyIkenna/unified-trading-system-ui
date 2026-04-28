@@ -217,7 +217,7 @@ export default function RegistryPage() {
     () => ((versionsData as { data?: ModelVersion[] })?.data ?? []) as ModelVersion[],
     [versionsData],
   );
-  const MODEL_FAMILIES: Array<any> = (familiesData as any)?.data ?? [];
+  const MODEL_FAMILIES: Array<any> = React.useMemo(() => (familiesData as any)?.data ?? [], [familiesData]);
   const CHAMPION_CHALLENGER_PAIRS: Array<any> = (deploymentsData as any)?.championChallengerPairs ?? [];
 
   const isLoading = verLoading || famLoading || depLoading;
@@ -394,7 +394,7 @@ export default function RegistryPage() {
         {versions.length > 0 && (
           <div className="px-4 py-3 rounded-lg border border-border/30 bg-muted/5">
             <p className="text-xs text-muted-foreground leading-relaxed">
-              <span className="font-medium text-foreground/80">Registry Status</span> —{" "}
+              <span className="font-medium text-foreground/80">Registry Status</span>:{" "}
               <span className="font-mono">{versions.length}</span> registered versions across{" "}
               <span className="font-mono">{MODEL_FAMILIES.length}</span> families.{" "}
               <span className="font-mono text-emerald-400">{versions.filter((v) => v.status === "live").length}</span>{" "}
@@ -776,7 +776,7 @@ export default function RegistryPage() {
                 <div className="flex items-center justify-between py-1">
                   <span className="text-xs text-muted-foreground">Registered</span>
                   <span className="text-xs font-mono">
-                    {detailVersion.registeredAt ? new Date(detailVersion.registeredAt).toLocaleDateString() : "—"}
+                    {detailVersion.registeredAt ? new Date(detailVersion.registeredAt).toLocaleDateString() : "-"}
                   </span>
                 </div>
                 <div className="flex items-center justify-between py-1">

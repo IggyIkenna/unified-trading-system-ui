@@ -283,7 +283,7 @@ function ResultsView({
                           t.pnl === null ? "text-muted-foreground" : t.pnl > 0 ? "text-emerald-400" : "text-red-400",
                         )}
                       >
-                        {t.pnl === null ? "—" : formatPnl(t.pnl, "USD", 0)}
+                        {t.pnl === null ? "-" : formatPnl(t.pnl, "USD", 0)}
                       </TableCell>
                       <TableCell
                         className={cn(
@@ -386,11 +386,11 @@ function ResultsView({
                       <Cell
                         key={i}
                         fill={
-                          entry.label === "0–1 bps"
+                          entry.label === "0-1 bps"
                             ? "#10b981"
-                            : entry.label === "1–3 bps"
+                            : entry.label === "1-3 bps"
                               ? "#22d3ee"
-                              : entry.label === "3–5 bps"
+                              : entry.label === "3-5 bps"
                                 ? "#f59e0b"
                                 : "#ef4444"
                         }

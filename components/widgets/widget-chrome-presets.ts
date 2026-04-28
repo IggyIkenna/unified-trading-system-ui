@@ -28,28 +28,28 @@ export const PRESETS = {
   // ═══════════════════════════════════════════════════════════════════
 
   A: {
-    name: "A — Baseline",
+    name: "A: Baseline",
     description: "Current production. No shadow, faint border, 2px gap.",
     container: "rounded-lg border border-border bg-card",
     header: "border-b border-border bg-card/80",
     margin: [2, 2],
   },
   B: {
-    name: "B — Shadow sm",
+    name: "B: Shadow sm",
     description: "Baseline + shadow-sm.",
     container: "rounded-lg border border-border bg-card shadow-sm",
     header: "border-b border-border bg-card/80",
     margin: [2, 2],
   },
   C: {
-    name: "C — Shadow md",
+    name: "C: Shadow md",
     description: "Baseline + shadow-md. Stronger depth.",
     container: "rounded-lg border border-border bg-card shadow-md",
     header: "border-b border-border bg-card/80",
     margin: [2, 2],
   },
   D: {
-    name: "D — Shadow lg",
+    name: "D: Shadow lg",
     description: "Baseline + shadow-lg. Heavy lift effect.",
     container: "rounded-lg border border-border bg-card shadow-lg",
     header: "border-b border-border bg-card/80",
@@ -61,28 +61,28 @@ export const PRESETS = {
   // ═══════════════════════════════════════════════════════════════════
 
   E: {
-    name: "E — Border muted-fg/15",
+    name: "E: Border muted-fg/15",
     description: "Subtle stronger border using muted-foreground at 15%.",
     container: "rounded-lg border border-muted-foreground/15 bg-card",
     header: "border-b border-muted-foreground/10 bg-card/80",
     margin: [2, 2],
   },
   F: {
-    name: "F — Border muted-fg/25",
+    name: "F: Border muted-fg/25",
     description: "Medium stronger border using muted-foreground at 25%.",
     container: "rounded-lg border border-muted-foreground/25 bg-card",
     header: "border-b border-muted-foreground/20 bg-card/80",
     margin: [2, 2],
   },
   G: {
-    name: "G — Border muted-fg/35",
+    name: "G: Border muted-fg/35",
     description: "Prominent border. Very clear edges.",
     container: "rounded-lg border border-muted-foreground/35 bg-card",
     header: "border-b border-muted-foreground/25 bg-card/80",
     margin: [2, 2],
   },
   H: {
-    name: "H — Double ring",
+    name: "H: Double ring",
     description: "Default border + ring-1 outline. Two-layer edge.",
     container: "rounded-lg border border-border ring-1 ring-muted-foreground/10 bg-card",
     header: "border-b border-border bg-card/80",
@@ -94,21 +94,21 @@ export const PRESETS = {
   // ═══════════════════════════════════════════════════════════════════
 
   I: {
-    name: "I — Gap 4px",
+    name: "I: Gap 4px",
     description: "Baseline border + 4px gap.",
     container: "rounded-lg border border-border bg-card",
     header: "border-b border-border bg-card/80",
     margin: [4, 4],
   },
   J: {
-    name: "J — Gap 6px",
+    name: "J: Gap 6px",
     description: "Baseline border + 6px gap. Noticeable whitespace.",
     container: "rounded-lg border border-border bg-card",
     header: "border-b border-border bg-card/80",
     margin: [6, 6],
   },
   K: {
-    name: "K — Gap 8px",
+    name: "K: Gap 8px",
     description: "Baseline border + 8px gap. Wide breathing room.",
     container: "rounded-lg border border-border bg-card",
     header: "border-b border-border bg-card/80",
@@ -120,21 +120,21 @@ export const PRESETS = {
   // ═══════════════════════════════════════════════════════════════════
 
   L: {
-    name: "L — Header muted/30",
+    name: "L: Header muted/30",
     description: "Light header tint. Subtle anchor.",
     container: "rounded-lg border border-border bg-card",
     header: "border-b border-border bg-muted/30",
     margin: [2, 2],
   },
   M: {
-    name: "M — Header muted/50",
+    name: "M: Header muted/50",
     description: "Medium header tint. Clear widget start.",
     container: "rounded-lg border border-border bg-card",
     header: "border-b border-border bg-muted/50",
     margin: [2, 2],
   },
   N: {
-    name: "N — Header muted/70",
+    name: "N: Header muted/70",
     description: "Strong header tint. Header clearly distinct from body.",
     container: "rounded-lg border border-border bg-card",
     header: "border-b border-border bg-muted/70",
@@ -146,42 +146,42 @@ export const PRESETS = {
   // ═══════════════════════════════════════════════════════════════════
 
   O: {
-    name: "O — Shadow + Bold border",
+    name: "O: Shadow + Bold border",
     description: "shadow-sm + muted-fg/20 border. Depth + edges.",
     container: "rounded-lg border border-muted-foreground/20 bg-card shadow-sm",
     header: "border-b border-muted-foreground/15 bg-card/80",
     margin: [2, 2],
   },
   P: {
-    name: "P — Shadow + Gap",
+    name: "P: Shadow + Gap",
     description: "shadow-sm + 6px gap. Depth + whitespace.",
     container: "rounded-lg border border-border bg-card shadow-sm",
     header: "border-b border-border bg-card/80",
     margin: [6, 6],
   },
   Q: {
-    name: "Q — Shadow + Tinted header + Gap",
+    name: "Q: Shadow + Tinted header + Gap",
     description: "shadow-sm + muted/40 header + 4px gap. Balanced combo.",
     container: "rounded-lg border border-border bg-card shadow-sm",
     header: "border-b border-border bg-muted/40",
     margin: [4, 4],
   },
   R: {
-    name: "R — Bold border + Tinted header + Gap",
+    name: "R: Bold border + Tinted header + Gap",
     description: "muted-fg/20 border + muted/40 header + 4px gap. No shadow.",
     container: "rounded-lg border border-muted-foreground/30 bg-card",
     header: "border-b border-muted-foreground/65 bg-muted/100",
     margin: [4, 4],
   },
   S: {
-    name: "S — Full card (shadow-md)",
+    name: "S: Full card (shadow-md)",
     description: "Strong border + shadow-md + tinted header + 4px gap. Max separation.",
     container: "rounded-lg border border-muted-foreground/15 bg-card shadow-md",
     header: "border-b border-muted-foreground/10 bg-muted/30",
     margin: [4, 4],
   },
   T: {
-    name: "T — Full card (shadow-lg)",
+    name: "T: Full card (shadow-lg)",
     description: "Strong border + shadow-lg + tinted header + 6px gap. Heaviest.",
     container: "rounded-lg border border-muted-foreground/20 bg-card shadow-lg",
     header: "border-b border-muted-foreground/15 bg-muted/40",

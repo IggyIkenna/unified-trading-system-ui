@@ -15,15 +15,12 @@ export function PaperTradingTab({ strategy }: { strategy: CandidateStrategy }) {
     return (
       <div className="space-y-6">
         <div>
-          <h3 className="font-semibold">Paper Trading — {strategy.name}</h3>
-          <p className="text-sm text-muted-foreground">
-            Shadow book not scheduled for this candidate
-          </p>
+          <h3 className="font-semibold">Paper Trading: {strategy.name}</h3>
+          <p className="text-sm text-muted-foreground">Shadow book not scheduled for this candidate</p>
         </div>
         <div className="rounded-lg border border-slate-500/30 bg-slate-500/5 p-8 text-center text-sm text-muted-foreground">
           <TestTube className="size-8 mx-auto mb-2 opacity-40 text-slate-400" />
-          No paper trading run — stage will unlock when shadow period is
-          scheduled.
+          No paper trading run: stage will unlock when shadow period is scheduled.
         </div>
         <PromoteWorkflowActions
           strategyId={strategy.id}
@@ -35,22 +32,15 @@ export function PaperTradingTab({ strategy }: { strategy: CandidateStrategy }) {
     );
   }
 
-  const progress = Math.min(
-    100,
-    (pt.daysCompleted / Math.max(pt.daysRequired, 1)) * 100,
-  );
+  const progress = Math.min(100, (pt.daysCompleted / Math.max(pt.daysRequired, 1)) * 100);
   const divOk = pt.divergenceRatio >= 0.7;
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h3 className="font-semibold text-cyan-400/90">
-            Paper Trading — {strategy.name}
-          </h3>
-          <p className="text-sm text-muted-foreground">
-            Shadow mode · simulated fills · live data
-          </p>
+          <h3 className="font-semibold text-cyan-400/90">Paper Trading: {strategy.name}</h3>
+          <p className="text-sm text-muted-foreground">Shadow mode · simulated fills · live data</p>
         </div>
         <Badge
           variant="outline"
@@ -61,11 +51,7 @@ export function PaperTradingTab({ strategy }: { strategy: CandidateStrategy }) {
             pt.status === "failed" && statusBg("failed"),
           )}
         >
-          {pt.status === "running"
-            ? "Running"
-            : pt.status === "completed"
-              ? "Completed"
-              : "Failed"}
+          {pt.status === "running" ? "Running" : pt.status === "completed" ? "Completed" : "Failed"}
         </Badge>
       </div>
 
@@ -109,8 +95,7 @@ export function PaperTradingTab({ strategy }: { strategy: CandidateStrategy }) {
         <CardContent className="space-y-2">
           <Progress value={progress} className="h-2" />
           <p className="text-xs font-mono text-muted-foreground">
-            {pt.daysCompleted} / {pt.daysRequired} sessions · started{" "}
-            {pt.startDate}
+            {pt.daysCompleted} / {pt.daysRequired} sessions · started {pt.startDate}
             {pt.endDate ? ` · ended ${pt.endDate}` : ""}
           </p>
         </CardContent>
@@ -141,9 +126,7 @@ export function PaperTradingTab({ strategy }: { strategy: CandidateStrategy }) {
               <span className="text-cyan-400">{pt.latencyImpactBps} bps</span>
             </div>
             {pt.queuePositionSummary ? (
-              <p className="text-xs text-muted-foreground pt-1 border-t border-border/40">
-                {pt.queuePositionSummary}
-              </p>
+              <p className="text-xs text-muted-foreground pt-1 border-t border-border/40">{pt.queuePositionSummary}</p>
             ) : null}
           </CardContent>
         </Card>
@@ -158,40 +141,22 @@ export function PaperTradingTab({ strategy }: { strategy: CandidateStrategy }) {
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Errors</span>
-              <span
-                className={
-                  pt.errorCount === 0 ? "text-emerald-400" : "text-amber-400"
-                }
-              >
-                {pt.errorCount}
-              </span>
+              <span className={pt.errorCount === 0 ? "text-emerald-400" : "text-amber-400"}>{pt.errorCount}</span>
             </div>
             {pt.feedInterruptions !== undefined ? (
               <div className="flex justify-between">
-                <span className="text-muted-foreground">
-                  Feed interruptions
-                </span>
+                <span className="text-muted-foreground">Feed interruptions</span>
                 <span>{pt.feedInterruptions}</span>
               </div>
             ) : null}
             {pt.recoveryTimeMinutes !== undefined ? (
               <div className="flex justify-between">
-                <span className="text-muted-foreground">
-                  Recovery (median min)
-                </span>
+                <span className="text-muted-foreground">Recovery (median min)</span>
                 <span>{pt.recoveryTimeMinutes}</span>
               </div>
             ) : null}
-            <Badge
-              variant="outline"
-              className={cn(
-                "text-xs mt-2",
-                divOk ? statusBg("passed") : statusBg("warning"),
-              )}
-            >
-              {divOk
-                ? "Divergence within tolerance"
-                : "Excessive divergence — investigate"}
+            <Badge variant="outline" className={cn("text-xs mt-2", divOk ? statusBg("passed") : statusBg("warning"))}>
+              {divOk ? "Divergence within tolerance" : "Excessive divergence: investigate"}
             </Badge>
           </CardContent>
         </Card>
@@ -202,9 +167,7 @@ export function PaperTradingTab({ strategy }: { strategy: CandidateStrategy }) {
         pt.hitRateDivergencePct !== undefined) && (
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm">
-              Backtest vs paper (path divergence)
-            </CardTitle>
+            <CardTitle className="text-sm">Backtest vs paper (path divergence)</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-3 text-xs font-mono sm:grid-cols-3">
             {pt.returnDivergencePct !== undefined ? (
@@ -244,34 +207,24 @@ export function PaperTradingTab({ strategy }: { strategy: CandidateStrategy }) {
       {pt.dailyPnlUsd && pt.dailyPnlUsd.length > 0 ? (
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm">
-              Daily shadow P&amp;L (USD)
-            </CardTitle>
+            <CardTitle className="text-sm">Daily shadow P&amp;L (USD)</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-end gap-0.5 h-24">
               {pt.dailyPnlUsd.map((v, i) => {
-                const maxAbs = Math.max(
-                  ...pt.dailyPnlUsd!.map((x) => Math.abs(x)),
-                  1,
-                );
+                const maxAbs = Math.max(...pt.dailyPnlUsd!.map((x) => Math.abs(x)), 1);
                 const h = Math.min(100, (Math.abs(v) / maxAbs) * 100);
                 return (
                   <div
                     key={i}
-                    className={cn(
-                      "flex-1 min-w-0 rounded-t",
-                      v >= 0 ? "bg-emerald-500/60" : "bg-rose-500/60",
-                    )}
+                    className={cn("flex-1 min-w-0 rounded-t", v >= 0 ? "bg-emerald-500/60" : "bg-rose-500/60")}
                     style={{ height: `${h}%` }}
                     title={`Day ${i + 1}: ${fmtUsd(v)}`}
                   />
                 );
               })}
             </div>
-            <p className="text-xs text-muted-foreground mt-2 font-mono">
-              {pt.dailyPnlUsd.length} sessions shown
-            </p>
+            <p className="text-xs text-muted-foreground mt-2 font-mono">{pt.dailyPnlUsd.length} sessions shown</p>
           </CardContent>
         </Card>
       ) : null}

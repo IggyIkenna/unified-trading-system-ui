@@ -30,7 +30,7 @@ export function SportsCLVWidget(_props: WidgetComponentProps) {
       <div className="flex items-center gap-2">
         <span className="text-xs font-black uppercase tracking-widest text-muted-foreground">CLV Performance</span>
         <span className="ml-auto text-xs text-muted-foreground/70">
-          {records[0]?.periodStart} — {records[0]?.periodEnd}
+          {records[0]?.periodStart}: {records[0]?.periodEnd}
         </span>
       </div>
 

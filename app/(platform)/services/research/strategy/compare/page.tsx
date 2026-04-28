@@ -454,7 +454,7 @@ export default function StrategyComparePage() {
                 <div className="font-medium text-xs text-muted-foreground">Metric</div>
                 {configs.map((cfg, i) => (
                   <div key={i} className="text-right text-xs font-medium">
-                    {cfg?.name || "—"}
+                    {cfg?.name || "-"}
                   </div>
                 ))}
 
@@ -465,7 +465,7 @@ export default function StrategyComparePage() {
                     {m ? (
                       <CompareValue value={m.sharpe} baseValue={baseMetrics?.sharpe} isBase={i === baseIndex} />
                     ) : (
-                      <span className="text-muted-foreground">—</span>
+                      <span className="text-muted-foreground">-</span>
                     )}
                   </div>
                 ))}
@@ -482,7 +482,7 @@ export default function StrategyComparePage() {
                         isBase={i === baseIndex}
                       />
                     ) : (
-                      <span className="text-muted-foreground">—</span>
+                      <span className="text-muted-foreground">-</span>
                     )}
                   </div>
                 ))}
@@ -500,7 +500,7 @@ export default function StrategyComparePage() {
                         isBase={i === baseIndex}
                       />
                     ) : (
-                      <span className="text-muted-foreground">—</span>
+                      <span className="text-muted-foreground">-</span>
                     )}
                   </div>
                 ))}
@@ -512,7 +512,7 @@ export default function StrategyComparePage() {
                     {m ? (
                       <CompareValue value={m.sortino} baseValue={baseMetrics?.sortino} isBase={i === baseIndex} />
                     ) : (
-                      <span className="text-muted-foreground">—</span>
+                      <span className="text-muted-foreground">-</span>
                     )}
                   </div>
                 ))}
@@ -529,7 +529,7 @@ export default function StrategyComparePage() {
                         isBase={i === baseIndex}
                       />
                     ) : (
-                      <span className="text-muted-foreground">—</span>
+                      <span className="text-muted-foreground">-</span>
                     )}
                   </div>
                 ))}
@@ -546,7 +546,7 @@ export default function StrategyComparePage() {
                         isBase={i === baseIndex}
                       />
                     ) : (
-                      <span className="text-muted-foreground">—</span>
+                      <span className="text-muted-foreground">-</span>
                     )}
                   </div>
                 ))}
@@ -564,7 +564,7 @@ export default function StrategyComparePage() {
                         isBase={i === baseIndex}
                       />
                     ) : (
-                      <span className="text-muted-foreground">—</span>
+                      <span className="text-muted-foreground">-</span>
                     )}
                   </div>
                 ))}
@@ -589,7 +589,7 @@ export default function StrategyComparePage() {
                   <div>Parameter</div>
                   {configs.map((cfg, i) => (
                     <div key={i} className="text-right">
-                      {cfg?.name || "—"}
+                      {cfg?.name || "-"}
                     </div>
                   ))}
                 </div>
@@ -599,7 +599,7 @@ export default function StrategyComparePage() {
                   <ParamDiffRow
                     key={param}
                     param={param}
-                    values={configs.map((cfg) => cfg?.parameters?.[param] ?? "—")}
+                    values={configs.map((cfg) => cfg?.parameters?.[param] ?? "-")}
                     baseIndex={baseIndex}
                   />
                 ))}

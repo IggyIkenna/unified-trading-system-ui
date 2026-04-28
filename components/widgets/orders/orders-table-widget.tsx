@@ -139,7 +139,7 @@ function buildColumns(
         const mark = row.getValue<number>("mark_price");
         return (
           <div className="text-right font-mono text-muted-foreground">
-            {mark ? `$${mark.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "—"}
+            {mark ? `$${mark.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "-"}
           </div>
         );
       },
@@ -182,7 +182,7 @@ function buildColumns(
       enableSorting: true,
       cell: ({ row }) => (
         <span className="text-xs text-muted-foreground truncate max-w-24 block">
-          {row.getValue<string>("strategy_name") || "—"}
+          {row.getValue<string>("strategy_name") || "-"}
         </span>
       ),
     },
@@ -282,7 +282,7 @@ function buildColumns(
       enableHiding: false,
       cell: ({ row }) => {
         const status = row.original.status;
-        if (!isActionable(status)) return <div className="text-center text-xs text-muted-foreground">—</div>;
+        if (!isActionable(status)) return <div className="text-center text-xs text-muted-foreground">-</div>;
         return (
           <div className="flex items-center justify-center gap-1">
             <Button

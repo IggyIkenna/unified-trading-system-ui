@@ -114,7 +114,7 @@ registerWidget({
   id: "cefi-strategy-config",
   label: "CeFi / TradFi Strategy Config",
   description:
-    "Configure CeFi, TradFi, Options, and Prediction strategies — momentum, mean-rev, ML, stat-arb, cross-exchange, market-making, commodity regime, event macro.",
+    "Configure CeFi, TradFi, Options, and Prediction strategies: momentum, mean-rev, ML, stat-arb, cross-exchange, market-making, commodity regime, event macro.",
   icon: Settings,
   minW: 6,
   minH: 7,
@@ -198,7 +198,7 @@ registerWidget({
   id: "strategy-family-browser",
   label: "Strategy Family Browser",
   description:
-    "Browse all 65+ strategy types across DeFi, CeFi, TradFi, and Sports — grouped by family with configurable parameters.",
+    "Browse all 65+ strategy types across DeFi, CeFi, TradFi, and Sports: grouped by family with configurable parameters.",
   icon: BookOpen,
   minW: 12,
   minH: 5,

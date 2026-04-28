@@ -109,7 +109,7 @@ export function DeFiStakingWidget(_props: WidgetComponentProps) {
         <div className="flex items-center justify-between text-xs">
           <span className="text-muted-foreground">Annual yield (mock)</span>
           <span className="font-mono text-emerald-400" data-testid="expected-yield">
-            {amountNum > 0 ? `${formatNumber(annualYield, 4)} ${selected.asset}` : "—"}
+            {amountNum > 0 ? `${formatNumber(annualYield, 4)} ${selected.asset}` : "-"}
           </span>
         </div>
         <div className="flex items-center justify-between text-xs">

@@ -189,9 +189,9 @@ export function RiskKpiStripWidget(_props: WidgetComponentProps) {
   }
 
   const baseMetrics: KpiMetric[] = [
-    { label: "Firm P&L", value: "—", sentiment: "neutral" },
-    { label: "Net Exposure", value: "—", sentiment: "neutral" },
-    { label: "Margin Used", value: "—", sentiment: "neutral" },
+    { label: "Firm P&L", value: "-", sentiment: "neutral" },
+    { label: "Net Exposure", value: "-", sentiment: "neutral" },
+    { label: "Margin Used", value: "-", sentiment: "neutral" },
     {
       label: `VaR 95%${regimeMultiplier !== 1 ? ` (×${formatNumber(regimeMultiplier, 1)})` : ""}`,
       value: formatCurrency(-totalVar95),

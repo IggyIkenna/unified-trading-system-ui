@@ -7,29 +7,12 @@ import { RotateCcw, ShieldAlert, ShieldCheck } from "lucide-react";
 import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useAuth } from "@/hooks/use-auth";
-import {
-  COUNTERPARTY_SLOT_VOCABULARY,
-  CounterpartyStoreProvider,
-  useCounterpartyStore,
-} from "@/lib/signal-broadcast";
+import { COUNTERPARTY_SLOT_VOCABULARY, CounterpartyStoreProvider, useCounterpartyStore } from "@/lib/signal-broadcast";
 import type { CounterpartyRecord } from "@/lib/signal-broadcast";
 import { MOCK_SIGNAL_EMISSIONS } from "@/lib/signal-broadcast";
 
@@ -57,7 +40,7 @@ function formatPercent(value: number): string {
 }
 
 function formatTs(iso: string | null): string {
-  if (!iso) return "—";
+  if (!iso) return "-";
   try {
     return new Date(iso).toUTCString().replace(" GMT", "Z");
   } catch {
@@ -67,16 +50,11 @@ function formatTs(iso: string | null): string {
 
 function DeliveryRollup({ counterparty }: { counterparty: CounterpartyRecord }) {
   const emissionsForCp = useMemo(() => {
-    return MOCK_SIGNAL_EMISSIONS.filter(
-      (e) => e.counterparty_id === counterparty.id,
-    );
+    return MOCK_SIGNAL_EMISSIONS.filter((e) => e.counterparty_id === counterparty.id);
   }, [counterparty.id]);
 
   const rollup = useMemo(() => {
-    const out = { delivered: 0, retrying: 0, failed: 0, pending: 0 } as Record<
-      string,
-      number
-    >;
+    const out = { delivered: 0, retrying: 0, failed: 0, pending: 0 } as Record<string, number>;
     for (const e of emissionsForCp) {
       out[e.delivery_status] = (out[e.delivery_status] ?? 0) + 1;
     }
@@ -85,52 +63,27 @@ function DeliveryRollup({ counterparty }: { counterparty: CounterpartyRecord }) 
 
   return (
     <div className="grid grid-cols-2 gap-3 text-xs md:grid-cols-4">
-      <div
-        className="rounded border bg-muted/20 p-2"
-        data-testid="admin-counterparties-rollup-delivered"
-      >
-        <div className="text-[0.65rem] uppercase text-muted-foreground">
-          Delivered
-        </div>
+      <div className="rounded border bg-muted/20 p-2" data-testid="admin-counterparties-rollup-delivered">
+        <div className="text-[0.65rem] uppercase text-muted-foreground">Delivered</div>
         <div className="font-mono text-lg">{rollup.delivered ?? 0}</div>
       </div>
-      <div
-        className="rounded border bg-muted/20 p-2"
-        data-testid="admin-counterparties-rollup-retrying"
-      >
-        <div className="text-[0.65rem] uppercase text-muted-foreground">
-          Retrying
-        </div>
+      <div className="rounded border bg-muted/20 p-2" data-testid="admin-counterparties-rollup-retrying">
+        <div className="text-[0.65rem] uppercase text-muted-foreground">Retrying</div>
         <div className="font-mono text-lg">{rollup.retrying ?? 0}</div>
       </div>
-      <div
-        className="rounded border bg-muted/20 p-2"
-        data-testid="admin-counterparties-rollup-failed"
-      >
-        <div className="text-[0.65rem] uppercase text-muted-foreground">
-          Failed
-        </div>
+      <div className="rounded border bg-muted/20 p-2" data-testid="admin-counterparties-rollup-failed">
+        <div className="text-[0.65rem] uppercase text-muted-foreground">Failed</div>
         <div className="font-mono text-lg">{rollup.failed ?? 0}</div>
       </div>
       <div className="rounded border bg-muted/20 p-2">
-        <div className="text-[0.65rem] uppercase text-muted-foreground">
-          Last delivery
-        </div>
-        <div className="font-mono text-xs">
-          {formatTs(counterparty.last_delivery_at)}
-        </div>
+        <div className="text-[0.65rem] uppercase text-muted-foreground">Last delivery</div>
+        <div className="font-mono text-xs">{formatTs(counterparty.last_delivery_at)}</div>
       </div>
     </div>
   );
 }
 
-function DetailPanel({
-  counterparty,
-  actorId,
-}: {
-  counterparty: CounterpartyRecord;
-  actorId: string;
-}) {
+function DetailPanel({ counterparty, actorId }: { counterparty: CounterpartyRecord; actorId: string }) {
   const store = useCounterpartyStore();
   const [reason, setReason] = useState<string>("");
 
@@ -155,10 +108,7 @@ function DetailPanel({
   };
 
   return (
-    <Card
-      className="border-l-4 border-primary/60"
-      data-testid={`admin-counterparties-detail-${counterparty.id}`}
-    >
+    <Card className="border-l-4 border-primary/60" data-testid={`admin-counterparties-detail-${counterparty.id}`}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base">
           {counterparty.active ? (
@@ -182,21 +132,15 @@ function DetailPanel({
           </div>
           <div>
             <div className="text-muted-foreground">Success rate</div>
-            <div className="mt-1 font-mono">
-              {formatPercent(counterparty.delivery_health.success_rate)}
-            </div>
+            <div className="mt-1 font-mono">{formatPercent(counterparty.delivery_health.success_rate)}</div>
           </div>
           <div>
             <div className="text-muted-foreground">Retries / 24h</div>
-            <div className="mt-1 font-mono">
-              {counterparty.delivery_health.retries_24h}
-            </div>
+            <div className="mt-1 font-mono">{counterparty.delivery_health.retries_24h}</div>
           </div>
           <div>
             <div className="text-muted-foreground">Avg latency</div>
-            <div className="mt-1 font-mono">
-              {counterparty.delivery_health.avg_latency_ms}ms
-            </div>
+            <div className="mt-1 font-mono">{counterparty.delivery_health.avg_latency_ms}ms</div>
           </div>
         </div>
 
@@ -212,9 +156,8 @@ function DetailPanel({
             placeholder="contract signed / incident mitigation / entitlement refresh"
           />
           <p className="text-[0.65rem] text-muted-foreground">
-            Required for audit trail — every toggle emits a synthetic
-            COUNTERPARTY_ENTITLEMENT_CHANGED or COUNTERPARTY_ACTIVE_CHANGED
-            event.
+            Required for audit trail: every toggle emits a synthetic COUNTERPARTY_ENTITLEMENT_CHANGED or
+            COUNTERPARTY_ACTIVE_CHANGED event.
           </p>
         </div>
 
@@ -252,9 +195,7 @@ function DetailPanel({
         <div className="flex items-center justify-between rounded border bg-muted/10 p-3">
           <div>
             <div className="text-sm font-medium">Active status</div>
-            <p className="text-xs text-muted-foreground">
-              Inactive counterparties receive zero emissions.
-            </p>
+            <p className="text-xs text-muted-foreground">Inactive counterparties receive zero emissions.</p>
           </div>
           <Button
             variant={counterparty.active ? "destructive" : "default"}
@@ -274,16 +215,11 @@ function DetailPanel({
 function AdminCounterpartiesInner() {
   const store = useCounterpartyStore();
   const { user } = useAuth();
-  const [selectedId, setSelectedId] = useState<string | null>(
-    store.counterparties[0]?.id ?? null,
-  );
-  const [actorId, setActorId] = useState<string>(
-    user?.email ?? DEFAULT_ACTOR_ID,
-  );
+  const [selectedId, setSelectedId] = useState<string | null>(store.counterparties[0]?.id ?? null);
+  const [actorId, setActorId] = useState<string>(user?.email ?? DEFAULT_ACTOR_ID);
 
   const selected = selectedId ? store.getById(selectedId) : undefined;
-  const isAdmin =
-    user?.role === "admin" || user?.role === "internal" || user == null;
+  const isAdmin = user?.role === "admin" || user?.role === "internal" || user == null;
 
   if (!isAdmin) {
     return (
@@ -291,18 +227,12 @@ function AdminCounterpartiesInner() {
         <Card>
           <CardHeader>
             <CardTitle className="text-base">Admin only</CardTitle>
-            <CardDescription>
-              Signal counterparty management is restricted to Odum ops.
-            </CardDescription>
+            <CardDescription>Signal counterparty management is restricted to Odum ops.</CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">
-              Log in with an admin or internal-trader persona to access this
-              surface. Counterparty users are routed to{" "}
-              <Link
-                href="/services/signals/dashboard"
-                className="underline underline-offset-2"
-              >
+              Log in with an admin or internal-trader persona to access this surface. Counterparty users are routed to{" "}
+              <Link href="/services/signals/dashboard" className="underline underline-offset-2">
                 /services/signals/dashboard
               </Link>{" "}
               instead.
@@ -323,12 +253,7 @@ function AdminCounterpartiesInner() {
           <Badge variant="outline" className="font-mono text-xs">
             actor: {actorId}
           </Badge>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => store.reset()}
-            data-testid="admin-counterparties-reset"
-          >
+          <Button variant="outline" size="sm" onClick={() => store.reset()} data-testid="admin-counterparties-reset">
             <RotateCcw className="mr-1 size-3" aria-hidden />
             Reset mock state
           </Button>
@@ -336,20 +261,14 @@ function AdminCounterpartiesInner() {
 
         <div className="space-y-1">
           <Label htmlFor="actor-id">Actor id</Label>
-          <Input
-            id="actor-id"
-            value={actorId}
-            onChange={(e) => setActorId(e.target.value)}
-            className="max-w-xs"
-          />
+          <Input id="actor-id" value={actorId} onChange={(e) => setActorId(e.target.value)} className="max-w-xs" />
         </div>
 
         <Card>
           <CardHeader>
             <CardTitle className="text-base">Counterparty list</CardTitle>
             <CardDescription>
-              {store.counterparties.length} registered · click a row to open the
-              detail panel
+              {store.counterparties.length} registered · click a row to open the detail panel
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -374,37 +293,24 @@ function AdminCounterpartiesInner() {
                       key={cp.id}
                       data-testid={`admin-counterparties-row-${cp.id}`}
                       data-selected={isSelected}
-                      className={
-                        isSelected ? "bg-muted/40 cursor-pointer" : "cursor-pointer"
-                      }
+                      className={isSelected ? "bg-muted/40 cursor-pointer" : "cursor-pointer"}
                       onClick={() => setSelectedId(cp.id)}
                     >
-                      <TableCell className="font-mono text-xs">
-                        {cp.id}
-                      </TableCell>
+                      <TableCell className="font-mono text-xs">{cp.id}</TableCell>
                       <TableCell>{cp.name}</TableCell>
-                      <TableCell className="max-w-[14rem] truncate font-mono text-[0.65rem]">
-                        {cp.endpoint}
-                      </TableCell>
+                      <TableCell className="max-w-[14rem] truncate font-mono text-[0.65rem]">{cp.endpoint}</TableCell>
                       <TableCell>
                         <Badge variant="outline" className="font-mono text-[0.6rem]">
                           {cp.schema_depth}
                         </Badge>
                       </TableCell>
-                      <TableCell className="font-mono text-xs">
-                        {cp.allowed_slots.length}
-                      </TableCell>
+                      <TableCell className="font-mono text-xs">{cp.allowed_slots.length}</TableCell>
                       <TableCell>
-                        <Badge
-                          variant={cp.active ? "default" : "secondary"}
-                          className="text-[0.65rem]"
-                        >
+                        <Badge variant={cp.active ? "default" : "secondary"} className="text-[0.65rem]">
                           {cp.active ? "active" : "inactive"}
                         </Badge>
                       </TableCell>
-                      <TableCell className="font-mono text-[0.65rem]">
-                        {formatTs(cp.last_delivery_at)}
-                      </TableCell>
+                      <TableCell className="font-mono text-[0.65rem]">{formatTs(cp.last_delivery_at)}</TableCell>
                       <TableCell className="font-mono text-xs">
                         {formatPercent(cp.delivery_health.success_rate)}
                       </TableCell>
@@ -416,29 +322,23 @@ function AdminCounterpartiesInner() {
           </CardContent>
         </Card>
 
-        {selected ? (
-          <DetailPanel counterparty={selected} actorId={actorId} />
-        ) : null}
+        {selected ? <DetailPanel counterparty={selected} actorId={actorId} /> : null}
 
         <Card>
           <CardHeader>
             <CardTitle className="text-sm">Audit trail (this session)</CardTitle>
             <CardDescription>
-              Synthetic UTL events emitted by mutations on the counterparty
-              store. In prod these land in BigQuery via `log_event`.
+              Synthetic UTL events emitted by mutations on the counterparty store. In prod these land in BigQuery via
+              `log_event`.
             </CardDescription>
           </CardHeader>
           <CardContent>
             {store.events.length === 0 ? (
               <div className="text-xs italic text-muted-foreground">
-                No events yet. Toggle an entitlement or flip active status
-                above to populate the audit list.
+                No events yet. Toggle an entitlement or flip active status above to populate the audit list.
               </div>
             ) : (
-              <ol
-                className="space-y-2 text-xs"
-                data-testid="admin-counterparties-audit-list"
-              >
+              <ol className="space-y-2 text-xs" data-testid="admin-counterparties-audit-list">
                 {store.events.map((event, idx) => (
                   <li
                     key={idx}
@@ -449,9 +349,7 @@ function AdminCounterpartiesInner() {
                       <Badge variant="secondary" className="font-mono text-[0.6rem]">
                         {event.eventName}
                       </Badge>
-                      <span className="text-muted-foreground">
-                        {event.timestampUtc}
-                      </span>
+                      <span className="text-muted-foreground">{event.timestampUtc}</span>
                     </div>
                     <pre className="mt-1 overflow-x-auto rounded bg-muted/50 p-2 font-mono text-[0.6rem]">
                       {JSON.stringify(event.details, null, 2)}
@@ -465,10 +363,7 @@ function AdminCounterpartiesInner() {
 
         <div className="text-xs text-muted-foreground">
           Counterparty-scoped observability lives at{" "}
-          <Link
-            href="/services/signals/dashboard"
-            className="underline underline-offset-2"
-          >
+          <Link href="/services/signals/dashboard" className="underline underline-offset-2">
             /services/signals/dashboard
           </Link>
           .

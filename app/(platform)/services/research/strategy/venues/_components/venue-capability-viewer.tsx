@@ -21,11 +21,11 @@ function formatCommission(c: VenueCapabilityView["commission"]): string {
 function formatLtvRange(per_asset: VenueCapabilityView["collateral_rules"]["per_asset_ltv"]): string {
   const ltvs = Object.values(per_asset).map((r) => r.max_ltv_pct);
   if (ltvs.length === 0) {
-    return "—";
+    return "-";
   }
   const min = Math.min(...ltvs);
   const max = Math.max(...ltvs);
-  return min === max ? `${min}%` : `${min}–${max}%`;
+  return min === max ? `${min}%` : `${min}-${max}%`;
 }
 
 export function VenueCapabilityViewer() {
@@ -35,7 +35,7 @@ export function VenueCapabilityViewer() {
         <div className="space-y-2">
           <h1 className="text-page-title font-semibold tracking-tight">Venue capabilities</h1>
           <p className="text-body text-muted-foreground max-w-2xl">
-            View of <code>VenueCapabilityV2</code> from UAC — LTV / haircut per asset, margin mode, max leverage,
+            View of <code>VenueCapabilityV2</code> from UAC: LTV / haircut per asset, margin mode, max leverage,
             commission structure. Execution-service consults this registry before routing every instruction.
           </p>
         </div>

@@ -251,7 +251,7 @@ export default function TrainingPage() {
                   id="run-name"
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
-                  placeholder="e.g. BTC direction — ablation B"
+                  placeholder="e.g. BTC direction: ablation B"
                 />
               </div>
               <div className="space-y-1.5">
@@ -323,7 +323,7 @@ export default function TrainingPage() {
                       <SelectItem value="">Default (all groups)</SelectItem>
                       {gridConfigs.map((gc) => (
                         <SelectItem key={gc.name} value={gc.name}>
-                          {gc.name} — {gc.asset_group} ({gc.feature_groups.length} groups
+                          {gc.name}: {gc.asset_group} ({gc.feature_groups.length} groups
                           {gc.exclude_features.length > 0 ? `, -${gc.exclude_features.length} excl` : ""})
                         </SelectItem>
                       ))}

@@ -164,7 +164,7 @@ registerWidget({
 registerWidget({
   id: "sports-clv",
   label: "CLV Performance",
-  description: "Closing line value tracking — hit rate, mean CLV, P&L by market and bookmaker.",
+  description: "Closing line value tracking: hit rate, mean CLV, P&L by market and bookmaker.",
   icon: BarChart3,
   minW: 8,
   minH: 3,
@@ -180,7 +180,7 @@ registerWidget({
 registerWidget({
   id: "sports-predictions",
   label: "Model Predictions",
-  description: "ML model predictions for upcoming fixtures — 1X2, xG, BTTS, O/U probabilities.",
+  description: "ML model predictions for upcoming fixtures: 1X2, xG, BTTS, O/U probabilities.",
   icon: Target,
   minW: 8,
   minH: 5,

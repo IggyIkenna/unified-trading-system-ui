@@ -25,11 +25,7 @@ import {
   type ProductRouting,
   type StrategyMaturityPhase,
 } from "@/lib/architecture-v2/lifecycle";
-import type {
-  ShareClass,
-  StrategyArchetype,
-  StrategyFamily,
-} from "@/lib/architecture-v2";
+import type { ShareClass, StrategyArchetype, StrategyFamily } from "@/lib/architecture-v2";
 import type { StrategyAccess } from "@/lib/entitlements/strategy-route";
 import { formatArchetype, formatFamily, getArchetypePlanTier } from "@/lib/strategy-display";
 
@@ -67,7 +63,7 @@ export interface FomoTearsheetCardProps {
 }
 
 function formatStat(value: number | null, suffix: string, digits = 2): string {
-  if (value === null) return "—";
+  if (value === null) return "-";
   return `${value.toFixed(digits)}${suffix}`;
 }
 
@@ -110,9 +106,7 @@ export function FomoTearsheetCard({
                 Subscribed
               </Badge>
             ) : isTerminalAccess ? (
-              <Badge className="border-emerald-200 bg-emerald-50 text-[10px] text-emerald-700">
-                Available
-              </Badge>
+              <Badge className="border-emerald-200 bg-emerald-50 text-[10px] text-emerald-700">Available</Badge>
             ) : isReportsOnly ? (
               <Badge className="gap-0.5 border-amber-200 bg-amber-50 text-[10px] text-amber-700">
                 <FileText className="size-2.5" aria-hidden />
@@ -159,9 +153,7 @@ export function FomoTearsheetCard({
           </div>
           <div>
             <dt className="text-muted-foreground">MDD</dt>
-            <dd className="font-mono">
-              {formatStat(instance.maxDrawdownPct, "%")}
-            </dd>
+            <dd className="font-mono">{formatStat(instance.maxDrawdownPct, "%")}</dd>
           </div>
           <div>
             <dt className="text-muted-foreground">CAGR</dt>
@@ -192,19 +184,14 @@ export function FomoTearsheetCard({
             </Button>
           )}
           <Button size="sm" variant="outline" asChild>
-            <Link
-              href={`/services/reports/strategy/${instance.instanceId}`}
-              data-testid="fomo-view-returns-cta"
-            >
+            <Link href={`/services/reports/strategy/${instance.instanceId}`} data-testid="fomo-view-returns-cta">
               View returns
               <ArrowRight className="ml-1 size-3" aria-hidden />
             </Link>
           </Button>
         </div>
         {!ctaEnabled && !isLockedVisible && !isSubscribed ? (
-          <p className="text-[10px] text-muted-foreground">
-            Allocation opens at paper-stable maturity or later.
-          </p>
+          <p className="text-[10px] text-muted-foreground">Allocation opens at paper-stable maturity or later.</p>
         ) : null}
       </CardContent>
     </Card>

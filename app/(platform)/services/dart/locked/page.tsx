@@ -8,7 +8,7 @@ import { Lock } from "lucide-react";
 
 const SECTION_COPY: Record<string, { title: string; bullets: string[] }> = {
   research: {
-    title: "Research & ML — DART Full only",
+    title: "Research & ML: DART Full only",
     bullets: [
       "Backtest strategies against historical data",
       "Train and tune ML signal generators",
@@ -17,7 +17,7 @@ const SECTION_COPY: Record<string, { title: string; bullets: string[] }> = {
     ],
   },
   promote: {
-    title: "Promote to Live — DART Full only",
+    title: "Promote to Live: DART Full only",
     bullets: [
       "Promote a paper-tested strategy to the live execution mesh",
       "Set allocation limits and risk parameters",
@@ -28,7 +28,7 @@ const SECTION_COPY: Record<string, { title: string; bullets: string[] }> = {
 };
 
 const DEFAULT_COPY = {
-  title: "DART Full — upgrade required",
+  title: "DART Full: upgrade required",
   bullets: [
     "Full access to Research, ML training and strategy customisation",
     "Promote to live workflow and allocation controls",

@@ -21,7 +21,7 @@ export default function TradingPage() {
   return (
     <div className="h-full bg-background flex flex-col">
       {/*
-        Phase 11 reposition — terminal is analytics + reconciliation first.
+        Phase 11 reposition: terminal is analytics + reconciliation first.
         Manual execution is emergency-only. See codex:
         unified-trading-pm/codex/09-strategy/architecture-v2/dart-tab-structure.md § 5.
       */}
@@ -32,7 +32,7 @@ export default function TradingPage() {
         <ShieldAlert className="size-4 shrink-0 mt-0.5 text-amber-400" aria-hidden />
         <span>
           <strong className="text-amber-100">Analytics + Reconciliation surface.</strong> Manual trading is for
-          emergency use only — routine execution runs through strategy schedulers. The Family / Archetype picker below
+          emergency use only: routine execution runs through strategy schedulers. The Family / Archetype picker below
           scopes all views. Manual-order actions are audit-logged.
         </span>
       </div>

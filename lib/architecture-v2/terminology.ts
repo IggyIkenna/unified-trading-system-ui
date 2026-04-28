@@ -34,7 +34,7 @@ export const TERMS = {
   // Access states
   ACCESS_TERMINAL_AND_REPORTS: "Available for terminal & reports",
   ACCESS_REPORTS_ONLY: "Reports only",
-  ACCESS_LOCKED_VISIBLE: "Locked — upgrade to access",
+  ACCESS_LOCKED_VISIBLE: "Locked: upgrade to access",
   ACCESS_HIDDEN: "Not available",
 
   // Tenor buckets

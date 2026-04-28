@@ -90,7 +90,7 @@ registerWidget({
 registerWidget({
   id: "pnl-factor-drilldown",
   label: "Factor Breakdown",
-  description: "Factor summary table — click any factor for per-strategy attribution and mini time series.",
+  description: "Factor summary table: click any factor for per-strategy attribution and mini time series.",
   icon: Activity,
   minW: 8,
   minH: 3,

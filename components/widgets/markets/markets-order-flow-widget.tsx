@@ -89,7 +89,7 @@ const columns: ColumnDef<OrderFlowEntry, unknown>[] = [
     enableSorting: false,
     cell: ({ row }) => {
       const aggressor = row.getValue<string | null>("aggressor");
-      if (!aggressor) return <span>—</span>;
+      if (!aggressor) return <span>-</span>;
       return (
         <span
           className={`text-micro ${aggressor === "buyer" ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]"}`}

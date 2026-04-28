@@ -75,7 +75,7 @@ export function RiskMarginWidget(_props: WidgetComponentProps) {
           </CollapsibleSection>
         )}
 
-        <CollapsibleSection title="SPAN Margin — IBKR" defaultOpen={true}>
+        <CollapsibleSection title="SPAN Margin: IBKR" defaultOpen={true}>
           <div className="space-y-1.5 text-caption pt-1">
             <div className="flex justify-between">
               <span className="text-muted-foreground">Initial Margin</span>

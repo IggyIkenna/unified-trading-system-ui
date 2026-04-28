@@ -101,7 +101,7 @@ const mockAlerts: Alert[] = [
     id: "1",
     severity: "critical",
     title: "Kill switch armed",
-    description: "BTC Basis v3 — inventory skew exceeds threshold",
+    description: "BTC Basis v3: inventory skew exceeds threshold",
     timestamp: new Date(Date.now() - 120000),
     source: "risk-monitor",
   },
@@ -117,7 +117,7 @@ const mockAlerts: Alert[] = [
     id: "3",
     severity: "medium",
     title: "Recon break detected",
-    description: "Elysium SMA position mismatch — $12k delta",
+    description: "Elysium SMA position mismatch: $12k delta",
     timestamp: new Date(Date.now() - 600000),
     source: "recon-service",
   },
@@ -129,8 +129,8 @@ const mockPnLComponents: PnLComponent[] = [
   { name: "Staking", pnl: 145000, exposure: "LTV .72" },
   { name: "Delta", pnl: 61000, exposure: "$2.4m" },
   { name: "Greeks", pnl: -8000, exposure: "Δ:-0.98" },
-  { name: "Slippage", pnl: -61000, exposure: "—" },
-  { name: "Fees", pnl: -44000, exposure: "—" },
+  { name: "Slippage", pnl: -61000, exposure: "-" },
+  { name: "Fees", pnl: -44000, exposure: "-" },
   { name: "Recon", pnl: -18000, exposure: "4 brks" },
 ];
 

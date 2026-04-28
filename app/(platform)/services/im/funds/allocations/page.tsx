@@ -9,14 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useIsOpsUser } from "@/lib/auth/ops-user";
 import {
   listAllocations,
@@ -68,10 +61,7 @@ export default function AllocationsPage() {
     refresh();
   }, [refresh]);
 
-  const targetSum = React.useMemo(
-    () => (rows === null ? 0 : sumDecimal(rows.map((r) => r.target_amount_usd))),
-    [rows],
-  );
+  const targetSum = React.useMemo(() => (rows === null ? 0 : sumDecimal(rows.map((r) => r.target_amount_usd))), [rows]);
   const executedSum = React.useMemo(
     () => (rows === null ? 0 : sumDecimal(rows.map((r) => r.executed_amount_usd))),
     [rows],
@@ -125,8 +115,8 @@ export default function AllocationsPage() {
       {!isOps ? (
         <Card>
           <CardContent className="pt-4 text-xs text-muted-foreground" data-testid="im-funds-alloc-ops-gate">
-            Rebalance action is restricted to ops users. Sign in with the `admin` or `internal` persona in mock
-            mode to enable it.
+            Rebalance action is restricted to ops users. Sign in with the `admin` or `internal` persona in mock mode to
+            enable it.
           </CardContent>
         </Card>
       ) : null}
@@ -137,9 +127,7 @@ export default function AllocationsPage() {
             <CardTitle className="text-sm">Treasury health</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
-            <div className="text-xs text-muted-foreground">
-              Executed / target = {reservePct.toFixed(1)}%
-            </div>
+            <div className="text-xs text-muted-foreground">Executed / target = {reservePct.toFixed(1)}%</div>
             <Progress value={reservePct} />
             <div className="flex items-center justify-between text-xs font-mono">
               <span>Executed: ${executedSum.toLocaleString()}</span>
@@ -199,9 +187,7 @@ export default function AllocationsPage() {
                     <TableCell className="text-sm">{row.strategy_id}</TableCell>
                     <TableCell className="text-sm">{row.share_class}</TableCell>
                     <TableCell className="text-right text-sm font-mono">{row.target_amount_usd}</TableCell>
-                    <TableCell className="text-right text-sm font-mono">
-                      {row.executed_amount_usd ?? "—"}
-                    </TableCell>
+                    <TableCell className="text-right text-sm font-mono">{row.executed_amount_usd ?? "-"}</TableCell>
                     <TableCell>{executionStatusBadge(row.execution_status)}</TableCell>
                   </TableRow>
                 ))}

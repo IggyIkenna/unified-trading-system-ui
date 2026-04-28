@@ -158,7 +158,7 @@ function VenueRow({ venue, assetGroup, config, job, historyEntry }: VenueRowProp
                           pct >= 95 ? "text-emerald-400" : pct >= 80 ? "text-yellow-400" : "text-muted-foreground",
                         )}
                       >
-                        {pct > 0 ? `${formatPercent(pct, 0)}` : "—"}
+                        {pct > 0 ? `${formatPercent(pct, 0)}` : "-"}
                       </div>
                       <div className="text-[10px] text-muted-foreground">{tf}</div>
                       {pct > 0 && <Progress value={pct} className="h-0.5 mt-1" />}

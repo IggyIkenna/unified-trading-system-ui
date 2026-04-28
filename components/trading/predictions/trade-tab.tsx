@@ -72,7 +72,7 @@ export function TradePanelInner({
     setStakeAmount("");
     toast({
       title: "Position opened",
-      description: `${selectedSide.toUpperCase()} "${outcome.name}" — ${formatCurrency(stakeNum, "USD", 2)} @ ${formatNumber(price * 100, 0)}¢ (${order.id})`,
+      description: `${selectedSide.toUpperCase()} "${outcome.name}": ${formatCurrency(stakeNum, "USD", 2)} @ ${formatNumber(price * 100, 0)}¢ (${order.id})`,
     });
   }
 
@@ -236,7 +236,7 @@ export function TradePanelInner({
         disabled={stakeNum <= 0}
         onClick={submit}
       >
-        {selectedSide === "yes" ? "Buy YES" : "Buy NO"} — {outcome.name}
+        {selectedSide === "yes" ? "Buy YES" : "Buy NO"}: {outcome.name}
       </Button>
     </div>
   );

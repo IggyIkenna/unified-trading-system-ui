@@ -20,7 +20,7 @@ export function StrategiesPageHeader() {
           {!isLoading && (
             <p className="text-xs text-muted-foreground mt-0.5">
               {filteredStrategies.length} strategies across {Object.keys(groupedStrategies).length} asset classes
-              {isLive ? " — Live execution" : " — Batch reconstruction"}
+              {isLive ? ": Live execution" : ": Batch reconstruction"}
               <span className="block mt-1.5">
                 <span className="text-muted-foreground/80">Multi-widget DeFi verification:</span>{" "}
                 <Link className="text-primary hover:underline" href="/services/trading/strategies/carry-basis">

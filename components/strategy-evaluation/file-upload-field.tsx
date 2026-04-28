@@ -77,12 +77,12 @@ export function FileUploadField({
               {value.contentType && ` · ${value.contentType}`}
               {value.url.startsWith("blob:") && (
                 <span className="ml-2 rounded bg-blue-500/10 px-1.5 py-0.5 text-[10px] font-medium text-blue-700 dark:text-blue-300">
-                  cached — will upload on submit
+                  cached: will upload on submit
                 </span>
               )}
               {!value.url && (
                 <span className="ml-2 rounded bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-medium text-amber-700 dark:text-amber-300">
-                  mock mode — file not stored
+                  mock mode: file not stored
                 </span>
               )}
             </p>
@@ -112,8 +112,8 @@ export function FileUploadField({
         <>
           {staleDraft && (
             <p className="text-xs text-amber-700 dark:text-amber-300 mb-1">
-              Attachment &ldquo;{value?.filename}&rdquo; needs to be re-selected — the browser cache was cleared when
-              you reopened the form.
+              Attachment &ldquo;{value?.filename}&rdquo; needs to be re-selected: the browser cache was cleared when you
+              reopened the form.
             </p>
           )}
           <label className="mt-1 inline-flex cursor-pointer items-center gap-2 rounded-md border border-dashed border-border px-3 py-2 text-sm transition-colors hover:border-foreground hover:bg-muted/30">

@@ -213,7 +213,7 @@ export default function DashboardPage() {
         {/* 2026-04-21 — removed KPI grid, PlatformStateNarrative, SystemHealthStrip,
             HealthBar, Live/Batch toggle. All are DART-specific signals (backtest
             counts, net P&L, risk utilisation, alerts, system health, execution
-            mode) and belong on DART observe / terminal surfaces — not on the
+            mode) and belong on DART observe / terminal surfaces: not on the
             services hub. /dashboard is the hub for navigating TO services, not
             for rendering DART summaries. */}
 
@@ -235,7 +235,7 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-5">
           {/* Left: Service Grid.  2026-04-21 — removed lifecycle breadcrumb
               ("Data > Research > Promote > DART > Observe > Manage > Reports")
-              — 8-stage strip contradicts the 4-stage collapse, adds visual
+             : 8-stage strip contradicts the 4-stage collapse, adds visual
               noise on the services hub, and duplicates what the top-nav
               already exposes. */}
           <div className="space-y-4">
@@ -293,10 +293,10 @@ export default function DashboardPage() {
               ("Recent Activity"), and Live-vs-Batch drift summary. All three
               are DART-specific (training runs / strategy candidates / open
               positions / risk alerts / backtest events / P&L comparisons) and
-              belong inside DART observe / terminal / reports surfaces — not on
+              belong inside DART observe / terminal / reports surfaces: not on
               the services hub. Quick Actions stays because it's cross-cutting
               navigation (Manage Users, System Health, Audit Log, Deployments,
-              Configuration, Trading) — shortcuts into admin + ops. */}
+              Configuration, Trading): shortcuts into admin + ops. */}
           <div className="space-y-4">
             <Card>
               <CardHeader className="pb-2">
@@ -522,7 +522,7 @@ function WorkflowContinuity({
     if (showResearch) {
       entries.push({
         label: "Training Run",
-        detail: "BTC direction v4 — Epoch 38/50",
+        detail: "BTC direction v4: Epoch 38/50",
         href: "/services/research/ml/training",
         icon: Brain,
       });
@@ -544,7 +544,7 @@ function WorkflowContinuity({
     if (showReporting) {
       entries.push({
         label: "Monthly Report",
-        detail: "Draft — due May 5",
+        detail: "Draft: due May 5",
         href: "/services/reports/overview",
         icon: FileText,
       });
@@ -608,7 +608,7 @@ function PlatformStateNarrative({
 
   if (showTrading && pnlKpi) {
     segments.push(
-      `${isLive ? "Live" : "Batch"} P&L ${pnlKpi.value} across ${positionsKpi?.value ?? "—"} positions at ${riskKpi?.value ?? "—"} risk utilization`,
+      `${isLive ? "Live" : "Batch"} P&L ${pnlKpi.value} across ${positionsKpi?.value ?? "-"} positions at ${riskKpi?.value ?? "-"} risk utilization`,
     );
   }
   if (showTrading && alertsKpi && alertsKpi.value !== "0") {
@@ -632,7 +632,7 @@ function PlatformStateNarrative({
   return (
     <div className="px-4 py-3 rounded-lg border border-border/30 bg-muted/5">
       <p className="text-xs text-muted-foreground leading-relaxed">
-        <span className="font-medium text-foreground/80">Platform Status</span> — {segments.join(". ")}.
+        <span className="font-medium text-foreground/80">Platform Status</span>: {segments.join(". ")}.
       </p>
     </div>
   );

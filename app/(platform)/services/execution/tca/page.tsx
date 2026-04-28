@@ -14,7 +14,7 @@ export default function TcaPage() {
       <div className="platform-page-width p-6 space-y-6">
         <PageHeader
           title="Transaction Cost Analysis"
-          description="Per-order execution quality vs benchmarks — coming soon."
+          description="Per-order execution quality vs benchmarks: coming soon."
         />
 
         <Card>
@@ -24,16 +24,14 @@ export default function TcaPage() {
               <CardTitle>TCA surface under construction</CardTitle>
             </div>
             <CardDescription>
-              TCA (Transaction Cost Analysis) compares every executed order against benchmark prices
-              (arrival, VWAP, implementation shortfall) and surfaces execution alpha vs baseline.
-              This page will roll up per-order TCA from <code>execution-service</code> matching engine +
-              live fills, grouped by algo, venue, and strategy.
+              TCA (Transaction Cost Analysis) compares every executed order against benchmark prices (arrival, VWAP,
+              implementation shortfall) and surfaces execution alpha vs baseline. This page will roll up per-order TCA
+              from <code>execution-service</code> matching engine + live fills, grouped by algo, venue, and strategy.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             <p className="text-sm text-muted-foreground">
-              Tracked in the playbook SSOT roadmap under{" "}
-              <strong>Wave 2c — Execution Algo Catalogue</strong>.
+              Tracked in the playbook SSOT roadmap under <strong>Wave 2c: Execution Algo Catalogue</strong>.
             </p>
             <div className="flex gap-2">
               <Button asChild variant="outline" size="sm">

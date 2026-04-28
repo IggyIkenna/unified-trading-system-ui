@@ -66,14 +66,24 @@ export default function ReportsPage() {
   } = useSettlements();
 
   const mockDataMode = isMockDataMode();
-  const allReports: Array<any> = (reportsApiData as any)?.data ?? (mockDataMode ? SEED_REPORTS : []);
-  const allSettlements: Array<any> =
-    (settlementsApiData as any)?.settlements ??
-    (settlementsApiData as any)?.data ??
-    (mockDataMode ? SEED_SETTLEMENTS : []);
-  const allPortfolioSummary: Array<any> = (reportsApiData as any)?.portfolioSummary ?? (mockDataMode ? SEED_PORTFOLIO : []);
-  const allInvoices: Array<any> = (reportsApiData as any)?.invoices ?? [];
-  const accountBalances: Array<any> = (settlementsApiData as any)?.accountBalances ?? (mockDataMode ? SEED_BALANCES : []);
+  const allReports: Array<any> = React.useMemo(
+    () => (reportsApiData as any)?.data ?? (mockDataMode ? SEED_REPORTS : []),
+    [reportsApiData, mockDataMode],
+  );
+  const allSettlements: Array<any> = React.useMemo(
+    () =>
+      (settlementsApiData as any)?.settlements ??
+      (settlementsApiData as any)?.data ??
+      (mockDataMode ? SEED_SETTLEMENTS : []),
+    [settlementsApiData, mockDataMode],
+  );
+  const allPortfolioSummary: Array<any> = React.useMemo(
+    () => (reportsApiData as any)?.portfolioSummary ?? (mockDataMode ? SEED_PORTFOLIO : []),
+    [reportsApiData, mockDataMode],
+  );
+  const allInvoices: Array<any> = React.useMemo(() => (reportsApiData as any)?.invoices ?? [], [reportsApiData]);
+  const accountBalances: Array<any> =
+    (settlementsApiData as any)?.accountBalances ?? (mockDataMode ? SEED_BALANCES : []);
   const recentTransfers: Array<{
     time: string;
     from: string;
@@ -232,9 +242,24 @@ export default function ReportsPage() {
         <div className="flex items-center justify-between py-1">
           <DataFreshnessStrip
             sources={[
-              { label: "Portfolio", source: "batch", asOf: new Date().toISOString().split("T")[0] + "T08:00:00Z", staleAfterSeconds: 86400 },
-              { label: "Settlement", source: "batch", asOf: new Date().toISOString().split("T")[0] + "T06:00:00Z", staleAfterSeconds: 86400 },
-              { label: "NAV", source: "batch", asOf: new Date().toISOString().split("T")[0] + "T08:00:00Z", staleAfterSeconds: 86400 },
+              {
+                label: "Portfolio",
+                source: "batch",
+                asOf: new Date().toISOString().split("T")[0] + "T08:00:00Z",
+                staleAfterSeconds: 86400,
+              },
+              {
+                label: "Settlement",
+                source: "batch",
+                asOf: new Date().toISOString().split("T")[0] + "T06:00:00Z",
+                staleAfterSeconds: 86400,
+              },
+              {
+                label: "NAV",
+                source: "batch",
+                asOf: new Date().toISOString().split("T")[0] + "T08:00:00Z",
+                staleAfterSeconds: 86400,
+              },
             ]}
             compact={false}
           />
@@ -300,17 +325,40 @@ export default function ReportsPage() {
         {/* Narrative summary — investor-grade framing */}
         <div className="px-5 py-4 rounded-lg border border-border/20 bg-gradient-to-r from-muted/5 to-transparent">
           <p className="text-[11px] text-muted-foreground leading-[1.8] tracking-wide">
-            <span className="font-semibold text-foreground/80 tracking-normal">Period Summary</span>{" "}
-            &mdash; Total assets under management of{" "}
+            <span className="font-semibold text-foreground/80 tracking-normal">Period Summary</span> &mdash; Total
+            assets under management of{" "}
             <span className="font-mono font-medium text-foreground/70">${formatNumber(totalAum / 1_000_000, 1)}m</span>{" "}
             across {portfolioSummary.length} client mandate{portfolioSummary.length !== 1 ? "s" : ""}
-            {avgMtdReturn >= 0
-              ? <> delivered <span className="font-mono font-medium text-[var(--pnl-positive)]">+{formatPercent(avgMtdReturn, 2)}</span> month-to-date.</>
-              : <> declined <span className="font-mono font-medium text-[var(--pnl-negative)]">{formatPercent(avgMtdReturn, 2)}</span> month-to-date.</>}
-            {pendingSettlement > 0
-              ? <> {settlements.filter((s) => s.status !== "settled").length} settlement{settlements.filter((s) => s.status !== "settled").length !== 1 ? "s" : ""} pending totalling <span className="font-mono">{formatCurrency(pendingSettlement, "USD", 0)}</span>.</>
-              : " All settlement obligations confirmed."}
-            {" "}<span className="font-mono">{reports.filter((r) => r.status === "sent").length}</span> of{" "}
+            {avgMtdReturn >= 0 ? (
+              <>
+                {" "}
+                delivered{" "}
+                <span className="font-mono font-medium text-[var(--pnl-positive)]">
+                  +{formatPercent(avgMtdReturn, 2)}
+                </span>{" "}
+                month-to-date.
+              </>
+            ) : (
+              <>
+                {" "}
+                declined{" "}
+                <span className="font-mono font-medium text-[var(--pnl-negative)]">
+                  {formatPercent(avgMtdReturn, 2)}
+                </span>{" "}
+                month-to-date.
+              </>
+            )}
+            {pendingSettlement > 0 ? (
+              <>
+                {" "}
+                {settlements.filter((s) => s.status !== "settled").length} settlement
+                {settlements.filter((s) => s.status !== "settled").length !== 1 ? "s" : ""} pending totalling{" "}
+                <span className="font-mono">{formatCurrency(pendingSettlement, "USD", 0)}</span>.
+              </>
+            ) : (
+              " All settlement obligations confirmed."
+            )}{" "}
+            <span className="font-mono">{reports.filter((r) => r.status === "sent").length}</span> of{" "}
             <span className="font-mono">{reportsThisMonth}</span> reports delivered to clients this period.
           </p>
         </div>
@@ -394,7 +442,7 @@ export default function ReportsPage() {
                           </div>
                           <div className="text-right">
                             <p className="text-xs text-muted-foreground">Sharpe</p>
-                            <p className="font-mono font-semibold">{row.sharpe ?? "—"}</p>
+                            <p className="font-mono font-semibold">{row.sharpe ?? "-"}</p>
                           </div>
                           <Button variant="ghost" size="sm">
                             <ArrowRight className="size-4" />
@@ -415,7 +463,9 @@ export default function ReportsPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <CardTitle className="text-base font-semibold tracking-tight">Generated Reports</CardTitle>
-                    <p className="text-[10px] text-muted-foreground/60 mt-1">Client statements, attribution, and performance reports</p>
+                    <p className="text-[10px] text-muted-foreground/60 mt-1">
+                      Client statements, attribution, and performance reports
+                    </p>
                   </div>
                   <Button size="sm" variant="outline" className="gap-2">
                     <FileText className="size-4" />
@@ -431,12 +481,13 @@ export default function ReportsPage() {
                   >
                     <div className="flex items-center gap-4">
                       <div
-                        className={`size-10 rounded-lg flex items-center justify-center ${report.status === "ready"
+                        className={`size-10 rounded-lg flex items-center justify-center ${
+                          report.status === "ready"
                             ? "bg-[var(--status-live)]/10"
                             : report.status === "sent"
                               ? "bg-primary/10"
                               : "bg-muted"
-                          }`}
+                        }`}
                       >
                         <FileText
                           className="size-5"
@@ -495,7 +546,9 @@ export default function ReportsPage() {
               <CardHeader>
                 <div>
                   <CardTitle className="text-base font-semibold tracking-tight">Settlement Records</CardTitle>
-                  <p className="text-[10px] text-muted-foreground/60 mt-1">Trade settlements, confirmations, and pending obligations</p>
+                  <p className="text-[10px] text-muted-foreground/60 mt-1">
+                    Trade settlements, confirmations, and pending obligations
+                  </p>
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -595,8 +648,9 @@ export default function ReportsPage() {
                   >
                     <div className="flex items-center gap-4">
                       <Receipt
-                        className={`size-5 ${invoice.status === "paid" ? "text-[var(--status-live)]" : "text-[var(--status-warning)]"
-                          }`}
+                        className={`size-5 ${
+                          invoice.status === "paid" ? "text-[var(--status-live)]" : "text-[var(--status-warning)]"
+                        }`}
                       />
                       <div>
                         <p className="font-medium font-mono">{invoice.id}</p>
@@ -634,8 +688,12 @@ export default function ReportsPage() {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle className="text-base font-semibold tracking-tight">Capital Allocation by Venue</CardTitle>
-                    <p className="text-[10px] text-muted-foreground/60 mt-1">Distribution and utilization across trading venues</p>
+                    <CardTitle className="text-base font-semibold tracking-tight">
+                      Capital Allocation by Venue
+                    </CardTitle>
+                    <p className="text-[10px] text-muted-foreground/60 mt-1">
+                      Distribution and utilization across trading venues
+                    </p>
                   </div>
                   <div className="text-sm text-muted-foreground">
                     Total:{" "}
@@ -692,7 +750,9 @@ export default function ReportsPage() {
               <CardHeader>
                 <div>
                   <CardTitle className="text-base font-semibold tracking-tight">Recent Transfers</CardTitle>
-                  <p className="text-[10px] text-muted-foreground/60 mt-1">Cross-venue capital movements and confirmations</p>
+                  <p className="text-[10px] text-muted-foreground/60 mt-1">
+                    Cross-venue capital movements and confirmations
+                  </p>
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">

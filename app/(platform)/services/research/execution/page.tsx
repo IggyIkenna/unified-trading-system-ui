@@ -92,12 +92,12 @@ export default function ExecutionResearchPage() {
             {handoffMulti ? (
               <p>
                 Compare mode: {handoffMulti.split(",").filter(Boolean).length} strategy backtest(s). Primary selection:{" "}
-                <span className="font-mono text-foreground">{handoffSingle ?? "—"}</span>. Connect to execution API when
+                <span className="font-mono text-foreground">{handoffSingle ?? "-"}</span>. Connect to execution API when
                 available.
               </p>
             ) : (
               <p>
-                Single strategy backtest: <span className="font-mono text-foreground">{handoffSingle ?? "—"}</span>.
+                Single strategy backtest: <span className="font-mono text-foreground">{handoffSingle ?? "-"}</span>.
                 Signals will attach here when the pipeline is wired.
               </p>
             )}
@@ -115,7 +115,7 @@ export default function ExecutionResearchPage() {
       <div className="flex items-start justify-between gap-4">
         <PageHeader
           title="Execution Backtests"
-          description="Simulate order execution using strategy signals — compare TWAP,
+          description="Simulate order execution using strategy signals: compare TWAP,
             VWAP, and other algos. Analyse slippage, fill rates, and P&amp;L."
         />
         <div className="flex gap-2">

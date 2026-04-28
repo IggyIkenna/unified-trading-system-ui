@@ -93,7 +93,7 @@ function fmtLong(iso: string): string {
 }
 
 function fmtMoneyCompact(n: number | null | undefined): string {
-  if (n === null || n === undefined) return "—";
+  if (n === null || n === undefined) return "-";
   const abs = Math.abs(n);
   if (abs >= 1e12) return `$${(n / 1e12).toFixed(2)}T`;
   if (abs >= 1e9) return `$${(n / 1e9).toFixed(2)}B`;
@@ -103,7 +103,7 @@ function fmtMoneyCompact(n: number | null | undefined): string {
 }
 
 function fmtIntCompact(n: number | null | undefined): string {
-  if (n === null || n === undefined) return "—";
+  if (n === null || n === undefined) return "-";
   const abs = Math.abs(n);
   if (abs >= 1e9) return `${(n / 1e9).toFixed(2)}B`;
   if (abs >= 1e6) return `${(n / 1e6).toFixed(2)}M`;
@@ -298,7 +298,7 @@ export function MarketTimeline({ events }: { events: MarketStructureEvent[] }) {
                             isActive && "scale-150 ring-2 ring-primary ring-offset-1 ring-offset-background z-20",
                           )}
                           style={{ left: `${pctFor(ev.date)}%` }}
-                          title={`${fmtShort(ev.date)} — ${ev.label}`}
+                          title={`${fmtShort(ev.date)}: ${ev.label}`}
                           aria-label={`${ev.label} on ${fmtShort(ev.date)}`}
                         />
                       );

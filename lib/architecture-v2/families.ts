@@ -17,15 +17,7 @@ export interface FamilyMetadata {
   docHref: string;
   archetypes: readonly StrategyArchetype[];
   accentClass: string;
-  iconName:
-    | "Brain"
-    | "ListChecks"
-    | "Coins"
-    | "GitCompare"
-    | "LineChart"
-    | "Calendar"
-    | "Activity"
-    | "Shuffle";
+  iconName: "Brain" | "ListChecks" | "Coins" | "GitCompare" | "LineChart" | "Calendar" | "Activity" | "Shuffle";
 }
 
 const BY_FAMILY: Readonly<Record<StrategyFamily, StrategyArchetype[]>> = (() => {
@@ -91,7 +83,7 @@ export const FAMILY_METADATA: Readonly<Record<StrategyFamily, FamilyMetadata>> =
     slug: "arbitrage-structural",
     alphaSource: "Price dispersion or protocol mechanics (risk-free or near risk-free payments)",
     shortDescription:
-      "Cross-venue price dispersion and protocol mechanics — Aave liquidations via flash loan, CEX vs DEX mispricing, sports arb.",
+      "Cross-venue price dispersion and protocol mechanics: Aave liquidations via flash loan, CEX vs DEX mispricing, sports arb.",
     docHref:
       "https://github.com/IggyIkenna/unified-trading-pm/blob/main/codex/09-strategy/architecture-v2/families/arbitrage-structural.md",
     archetypes: BY_FAMILY.ARBITRAGE_STRUCTURAL,
@@ -104,7 +96,7 @@ export const FAMILY_METADATA: Readonly<Record<StrategyFamily, FamilyMetadata>> =
     slug: "market-making",
     alphaSource: "Bid-ask spread capture via two-sided quoting",
     shortDescription:
-      "Post two-sided liquidity — continuous MM on CEX / DEX pools plus event-settled back/lay quoting on sports exchanges.",
+      "Post two-sided liquidity: continuous MM on CEX / DEX pools plus event-settled back/lay quoting on sports exchanges.",
     docHref:
       "https://github.com/IggyIkenna/unified-trading-pm/blob/main/codex/09-strategy/architecture-v2/families/market-making.md",
     archetypes: BY_FAMILY.MARKET_MAKING,
@@ -117,7 +109,7 @@ export const FAMILY_METADATA: Readonly<Record<StrategyFamily, FamilyMetadata>> =
     slug: "event-driven",
     alphaSource: "Scheduled external events with measurable surprise",
     shortDescription:
-      "Trade the surprise of scheduled releases — macro prints, earnings, token unlocks, sports kickoff, prediction resolution.",
+      "Trade the surprise of scheduled releases: macro prints, earnings, token unlocks, sports kickoff, prediction resolution.",
     docHref:
       "https://github.com/IggyIkenna/unified-trading-pm/blob/main/codex/09-strategy/architecture-v2/families/event-driven.md",
     archetypes: BY_FAMILY.EVENT_DRIVEN,
@@ -130,7 +122,7 @@ export const FAMILY_METADATA: Readonly<Record<StrategyFamily, FamilyMetadata>> =
     slug: "vol-trading",
     alphaSource: "Vol-metric dislocation (IV/RV, skew, term, cross-asset vol)",
     shortDescription:
-      "Trade implied vs realised vol, skew, and term structure — options expression via Deribit with delta + gamma hedges.",
+      "Trade implied vs realised vol, skew, and term structure: options expression via Deribit with delta + gamma hedges.",
     docHref:
       "https://github.com/IggyIkenna/unified-trading-pm/blob/main/codex/09-strategy/architecture-v2/families/vol-trading.md",
     archetypes: BY_FAMILY.VOL_TRADING,
@@ -143,7 +135,7 @@ export const FAMILY_METADATA: Readonly<Record<StrategyFamily, FamilyMetadata>> =
     slug: "stat-arb-pairs",
     alphaSource: "Spread mean-reversion or momentum on paired underlyings",
     shortDescription:
-      "Co-integrated pair mean-reversion and cross-sectional basket ranking — equities, perps, and synthetic DeFi pairs.",
+      "Co-integrated pair mean-reversion and cross-sectional basket ranking: equities, perps, and synthetic DeFi pairs.",
     docHref:
       "https://github.com/IggyIkenna/unified-trading-pm/blob/main/codex/09-strategy/architecture-v2/families/stat-arb-pairs.md",
     archetypes: BY_FAMILY.STAT_ARB_PAIRS,

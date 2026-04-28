@@ -39,7 +39,7 @@ const NOTEBOOK_CELLS = [
   {
     id: 1,
     type: "code" as const,
-    source: `# Portfolio Optimization — Efficient Frontier Analysis
+    source: `# Portfolio Optimization: Efficient Frontier Analysis
 import pandas as pd
 import numpy as np
 from scipy.optimize import minimize
@@ -107,7 +107,7 @@ plt.scatter(results[0,max_sharpe_idx], results[1,max_sharpe_idx],
             marker="*", color="red", s=500, label="Max Sharpe")
 plt.xlabel("Annualised Volatility")
 plt.ylabel("Annualised Return")
-plt.title("Efficient Frontier — 5-Asset Crypto Portfolio")
+plt.title("Efficient Frontier: 5-Asset Crypto Portfolio")
 plt.legend()
 plt.show()`,
     output: "Efficient Frontier Plot",

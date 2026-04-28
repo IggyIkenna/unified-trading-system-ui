@@ -52,11 +52,9 @@ export default function BestExecutionPage() {
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-base font-semibold text-[var(--color-text-primary)]">
-            Best Execution Audit
-          </h1>
+          <h1 className="text-base font-semibold text-[var(--color-text-primary)]">Best Execution Audit</h1>
           <p className="text-xs text-[var(--color-text-tertiary)] mt-0.5">
-            TTS records — time-to-suppress events requiring review
+            TTS records: time-to-suppress events requiring review
           </p>
         </div>
         <Button variant="outline" size="sm">
@@ -68,32 +66,20 @@ export default function BestExecutionPage() {
       <div className="grid grid-cols-3 gap-4">
         <Card>
           <CardContent className="pt-4">
-            <div className="text-2xl font-semibold font-mono text-[var(--color-text-primary)]">
-              {MOCK_TTS.length}
-            </div>
-            <div className="text-xs text-[var(--color-text-secondary)] mt-1">
-              Total Records
-            </div>
+            <div className="text-2xl font-semibold font-mono text-[var(--color-text-primary)]">{MOCK_TTS.length}</div>
+            <div className="text-xs text-[var(--color-text-secondary)] mt-1">Total Records</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-4">
-            <div className="text-2xl font-semibold font-mono text-[var(--color-warning)]">
-              {openCount}
-            </div>
-            <div className="text-xs text-[var(--color-text-secondary)] mt-1">
-              Open
-            </div>
+            <div className="text-2xl font-semibold font-mono text-[var(--color-warning)]">{openCount}</div>
+            <div className="text-xs text-[var(--color-text-secondary)] mt-1">Open</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-4">
-            <div className="text-2xl font-semibold font-mono text-[var(--color-success)]">
-              {resolvedCount}
-            </div>
-            <div className="text-xs text-[var(--color-text-secondary)] mt-1">
-              Resolved
-            </div>
+            <div className="text-2xl font-semibold font-mono text-[var(--color-success)]">{resolvedCount}</div>
+            <div className="text-xs text-[var(--color-text-secondary)] mt-1">Resolved</div>
           </CardContent>
         </Card>
       </div>
@@ -120,9 +106,7 @@ export default function BestExecutionPage() {
                   <td className="table-cell font-mono text-xs text-[var(--color-text-muted)]">
                     {new Date(t.timestamp).toLocaleString()}
                   </td>
-                  <td className="table-cell font-mono text-xs">
-                    {t.service}
-                  </td>
+                  <td className="table-cell font-mono text-xs">{t.service}</td>
                   <td className="table-cell text-xs">{t.event_type}</td>
                   <td className="table-cell">
                     <Badge variant="default">{t.tts_tag}</Badge>
@@ -131,9 +115,7 @@ export default function BestExecutionPage() {
                     {t.reviewer ?? "unassigned"}
                   </td>
                   <td className="table-cell">
-                    <Badge variant={t.resolved ? "success" : "warning"}>
-                      {t.resolved ? "resolved" : "open"}
-                    </Badge>
+                    <Badge variant={t.resolved ? "success" : "warning"}>{t.resolved ? "resolved" : "open"}</Badge>
                   </td>
                 </tr>
               ))}

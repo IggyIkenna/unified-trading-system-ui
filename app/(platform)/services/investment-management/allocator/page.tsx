@@ -18,7 +18,7 @@ export const dynamic = "force-static";
 
 export const metadata: Metadata = {
   title: "Portfolio allocator · Investment Management",
-  description: "IM-side allocator surface — propose, review, approve, apply. Manual guardrail around every directive.",
+  description: "IM-side allocator surface: propose, review, approve, apply. Manual guardrail around every directive.",
 };
 
 export default function InvestmentManagementAllocatorPage(): React.ReactElement {
@@ -28,7 +28,7 @@ export default function InvestmentManagementAllocatorPage(): React.ReactElement 
         <div className="space-y-2">
           <h1 className="text-page-title font-semibold tracking-tight">Portfolio allocator</h1>
           <p className="text-body text-muted-foreground max-w-2xl">
-            Investment Management side — proposal-then-apply flow. Every ``AllocationDirective`` from the
+            Investment Management side: proposal-then-apply flow. Every ``AllocationDirective`` from the
             portfolio-allocator core is held for human review before it routes capital. Pick the target fund from the
             UAC ``FundBusinessUnitRegistry`` and click Apply.
           </p>

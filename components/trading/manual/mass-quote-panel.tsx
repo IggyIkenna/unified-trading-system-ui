@@ -35,7 +35,7 @@ function buildInitialQuotes(): QuoteRow[] {
 function computeSpread(bidPrice: string, askPrice: string): string {
   const bid = parseFloat(bidPrice) || 0;
   const ask = parseFloat(askPrice) || 0;
-  if (bid <= 0 || ask <= 0) return "—";
+  if (bid <= 0 || ask <= 0) return "-";
   const mid = (bid + ask) / 2;
   const spreadBps = ((ask - bid) / mid) * 10000;
   return formatNumber(spreadBps, 1);

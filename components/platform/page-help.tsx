@@ -41,7 +41,7 @@ const PAGE_DESCRIPTIONS: Record<string, { title: string; description: string; in
   "/services/trading/defi": {
     title: "DeFi",
     description:
-      "Execute DeFi operations — swaps (Uniswap), flash loans (Aave), and cross-chain bridges. All trades are pre-simulated before broadcast.",
+      "Execute DeFi operations: swaps (Uniswap), flash loans (Aave), and cross-chain bridges. All trades are pre-simulated before broadcast.",
     internalNotes:
       "Backend: execution-service DeFi connectors (Aave, Uniswap). Pre-simulation via Tenderly fork. RPC URLs from UAC CHAIN_RPC_TEMPLATES.",
   },
@@ -70,7 +70,7 @@ const PAGE_DESCRIPTIONS: Record<string, { title: string; description: string; in
   "/services/trading/risk": {
     title: "Risk",
     description:
-      "Real-time risk exposure dashboards — VaR, margin utilisation, concentration risk, and drawdown tracking.",
+      "Real-time risk exposure dashboards: VaR, margin utilisation, concentration risk, and drawdown tracking.",
   },
   "/services/trading/alerts": {
     title: "Alerts",
@@ -80,7 +80,7 @@ const PAGE_DESCRIPTIONS: Record<string, { title: string; description: string; in
   "/services/trading/book": {
     title: "Trade Book",
     description:
-      "Complete audit trail of every trade — order placement, fill, settlement. Use for compliance queries, debugging, or reconciliation.",
+      "Complete audit trail of every trade: order placement, fill, settlement. Use for compliance queries, debugging, or reconciliation.",
   },
   "/services/trading/terminal": {
     title: "Terminal",
@@ -95,7 +95,7 @@ const PAGE_DESCRIPTIONS: Record<string, { title: string; description: string; in
   "/services/trading/accounts": {
     title: "Accounts",
     description:
-      "Connected trading accounts — venue credentials, balances, margin status, and connectivity. Link new venue accounts here.",
+      "Connected trading accounts: venue credentials, balances, margin status, and connectivity. Link new venue accounts here.",
   },
   "/services/trading/defi/bundles": {
     title: "Bundles",
@@ -117,7 +117,7 @@ const PAGE_DESCRIPTIONS: Record<string, { title: string; description: string; in
   "/services/data/instruments": {
     title: "Instruments",
     description:
-      "Full instrument catalogue — search by name, symbol, venue, or asset class. Each entry shows listing date, data coverage, and trading status.",
+      "Full instrument catalogue: search by name, symbol, venue, or asset class. Each entry shows listing date, data coverage, and trading status.",
     internalNotes:
       "Backend: instruments-service with URDI adapters per venue. Instrument registry in UAC. DeFi instruments from The Graph subgraphs.",
   },
@@ -139,7 +139,7 @@ const PAGE_DESCRIPTIONS: Record<string, { title: string; description: string; in
   "/services/data/raw": {
     title: "Raw Data",
     description:
-      "Vendor and venue raw captures — ticks, bars, and chain events — with lineage and retention. Inspect payloads and replay windows for debugging.",
+      "Vendor and venue raw captures: ticks, bars, and chain events: with lineage and retention. Inspect payloads and replay windows for debugging.",
   },
   "/services/data/processing": {
     title: "Processing",
@@ -154,11 +154,11 @@ const PAGE_DESCRIPTIONS: Record<string, { title: string; description: string; in
   "/services/data/valuation": {
     title: "Token Valuation",
     description:
-      "Mark and fair-value inputs for tokens and instruments — MTM sources, stale flags, and cross-venue consensus where available.",
+      "Mark and fair-value inputs for tokens and instruments: MTM sources, stale flags, and cross-venue consensus where available.",
   },
   "/services/research/overview": {
     title: "Research Overview",
-    description: "Research pipeline dashboard — backtests, ML models, feature engineering, and signal configuration.",
+    description: "Research pipeline dashboard: backtests, ML models, feature engineering, and signal configuration.",
   },
   "/services/research/strategy/backtests": {
     title: "Backtests",
@@ -182,7 +182,7 @@ const PAGE_DESCRIPTIONS: Record<string, { title: string; description: string; in
   "/services/reports/overview": {
     title: "Reports",
     description:
-      "Portfolio reports — executive summary, settlement detail, reconciliation, and regulatory compliance. Export to CSV or PDF.",
+      "Portfolio reports: executive summary, settlement detail, reconciliation, and regulatory compliance. Export to CSV or PDF.",
   },
   "/services/reports/executive": {
     title: "Executive Report",
@@ -218,7 +218,7 @@ const PAGE_DESCRIPTIONS: Record<string, { title: string; description: string; in
   "/dashboard": {
     title: "Dashboard",
     description:
-      "Your platform home — all services, KPIs, and quick actions at a glance. Scope adjusts to your subscription tier.",
+      "Your platform home: all services, KPIs, and quick actions at a glance. Scope adjusts to your subscription tier.",
     internalNotes:
       "Backend: unified-trading-api aggregates service health, position summaries, and KPIs from downstream services.",
   },
@@ -229,7 +229,7 @@ const PAGE_DESCRIPTIONS: Record<string, { title: string; description: string; in
   "/admin": {
     title: "Admin & Ops",
     description:
-      "System administration — user management, deployments, service registry, batch jobs, and operational monitoring.",
+      "System administration: user management, deployments, service registry, batch jobs, and operational monitoring.",
   },
 };
 
@@ -262,8 +262,8 @@ export function getPageHelpInfo(
     const sectionTitle =
       DATA_SERVICE_SECTION_LABELS[segment as keyof typeof DATA_SERVICE_SECTION_LABELS] ?? formatPathSegment(segment);
     return {
-      title: `Data — ${sectionTitle}`,
-      description: `Explore ${sectionTitle} in the Data lifecycle — venue feeds, instruments, quality, and coverage.`,
+      title: `Data: ${sectionTitle}`,
+      description: `Explore ${sectionTitle} in the Data lifecycle: venue feeds, instruments, quality, and coverage.`,
     };
   }
 

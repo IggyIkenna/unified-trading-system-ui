@@ -114,7 +114,7 @@ export function WidgetGrid({ tab }: WidgetGridProps) {
           width=0, then animates them to their correct sizes via the bundled CSS transition
           (transition: all 200ms ease), producing the visible "resize on navigate" effect.
           AllWidgetProviders is hoisted to the trading layout so it stays mounted across
-          tab switches — no provider teardown/remount cost on navigation. */}
+          tab switches: no provider teardown/remount cost on navigation. */}
       {containerWidth > 0 && (
         <ResponsiveGridLayout
           className="widget-grid"

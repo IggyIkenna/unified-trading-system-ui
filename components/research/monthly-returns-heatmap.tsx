@@ -56,7 +56,7 @@ export function MonthlyReturnsHeatmap({ monthlyReturns, className }: MonthlyRetu
                 {MONTH_LABELS.map((_, mi) => {
                   const month = mi + 1;
                   const v = byYear.get(year)?.get(month);
-                  const display = v === undefined ? "—" : `${v > 0 ? "+" : ""}${formatPercent(v, 1)}`;
+                  const display = v === undefined ? "-" : `${v > 0 ? "+" : ""}${formatPercent(v, 1)}`;
                   return (
                     <td key={month} className="p-0.5">
                       <div

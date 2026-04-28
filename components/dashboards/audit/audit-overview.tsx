@@ -187,7 +187,7 @@ export function AuditOverview() {
                     </Badge>
                   </div>
                   <div className="text-xs text-muted-foreground truncate">
-                    {event.user} — {event.details}
+                    {event.user}: {event.details}
                   </div>
                 </div>
                 <div className="text-right shrink-0">

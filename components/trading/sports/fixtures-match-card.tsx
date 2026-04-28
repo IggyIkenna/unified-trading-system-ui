@@ -39,22 +39,22 @@ function InlineStatsRow({ stats, homeS, awayS }: { stats: MatchStats; homeS: str
       <span className="text-zinc-600 mx-1">·</span>
       xG{" "}
       <span className="text-zinc-200 font-semibold">
-        {formatNumber(stats.home.xg, 1)}–{formatNumber(stats.away.xg, 1)}
+        {formatNumber(stats.home.xg, 1)}-{formatNumber(stats.away.xg, 1)}
       </span>
       <span className="text-zinc-600 mx-1">·</span>
       SOT{" "}
       <span className="text-zinc-200 font-semibold">
-        {stats.home.shotsOnTarget}–{stats.away.shotsOnTarget}
+        {stats.home.shotsOnTarget}-{stats.away.shotsOnTarget}
       </span>
       <span className="text-zinc-600 mx-1">·</span>
       Poss{" "}
       <span className="text-zinc-200 font-semibold">
-        {stats.home.possession}%–{stats.away.possession}%
+        {stats.home.possession}%-{stats.away.possession}%
       </span>
       <span className="text-zinc-600 mx-1">·</span>
       Corn{" "}
       <span className="text-zinc-200 font-semibold">
-        {stats.home.corners}–{stats.away.corners}
+        {stats.home.corners}-{stats.away.corners}
       </span>
       <span className="text-zinc-600 mx-1">·</span>
       <span className="text-zinc-500 font-medium">{awayS}</span>
@@ -203,7 +203,7 @@ function LiveCard({
             Market suspended
           </p>
         )}
-        {isHT && <p className="text-sm text-amber-400 font-medium">Half time — markets reopening shortly</p>}
+        {isHT && <p className="text-sm text-amber-400 font-medium">Half time: markets reopening shortly</p>}
 
         <div className="flex items-center gap-3 min-h-[2.75rem]">
           <div className="flex items-center gap-2 flex-1 min-w-0">
@@ -212,11 +212,11 @@ function LiveCard({
           </div>
           <div className="flex items-center gap-1.5 shrink-0 px-1">
             <span className="text-3xl font-black tabular-nums text-white">{score?.home ?? 0}</span>
-            <span className="text-xl text-zinc-600">—</span>
+            <span className="text-xl text-zinc-600">-</span>
             <span className="text-3xl font-black tabular-nums text-white">{score?.away ?? 0}</span>
             {score?.ht && (
               <span className="text-xs text-zinc-500 ml-1 hidden sm:inline">
-                HT {score.ht.home}–{score.ht.away}
+                HT {score.ht.home}-{score.ht.away}
               </span>
             )}
           </div>
@@ -331,7 +331,7 @@ function PreMatchCard({
               {pm.xgModel && (
                 <span className="text-zinc-600">
                   {" "}
-                  · xG {formatNumber(pm.xgModel.home, 1)}–{formatNumber(pm.xgModel.away, 1)}
+                  · xG {formatNumber(pm.xgModel.home, 1)}-{formatNumber(pm.xgModel.away, 1)}
                 </span>
               )}
             </p>
@@ -408,15 +408,15 @@ function CompletedCard({
         <div className="flex items-center gap-3 flex-1 min-w-0 justify-center sm:justify-start">
           <span className="text-base font-bold text-zinc-300 truncate max-w-[40%]">{fixture.home.name}</span>
           <span className="text-2xl font-black tabular-nums text-white shrink-0">
-            {score?.home ?? "—"}–{score?.away ?? "—"}
+            {score?.home ?? "-"}-{score?.away ?? "-"}
           </span>
           <span className="text-base font-bold text-zinc-300 truncate max-w-[40%] text-right">{fixture.away.name}</span>
         </div>
         {stats && (
           <p className="text-sm text-zinc-500 sm:ml-auto">
-            xG {formatNumber(stats.home.xg, 1)}–{formatNumber(stats.away.xg, 1)}
+            xG {formatNumber(stats.home.xg, 1)}-{formatNumber(stats.away.xg, 1)}
             <span className="text-zinc-700 mx-2">·</span>
-            Corners {stats.home.corners}–{stats.away.corners}
+            Corners {stats.home.corners}-{stats.away.corners}
           </p>
         )}
         <div className="flex gap-2 shrink-0" onClick={(e) => e.stopPropagation()}>

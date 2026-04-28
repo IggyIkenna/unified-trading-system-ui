@@ -105,9 +105,9 @@ export function DateRangePicker({ from, to, minDate, maxDate, onChange, classNam
 
   const statusLabel =
     pending?.from && pending?.to
-      ? `${fmtDate(pending.from)} – ${fmtDate(pending.to)}`
+      ? `${fmtDate(pending.from)}-${fmtDate(pending.to)}`
       : pending?.from
-        ? `${fmtDate(pending.from)} — pick end date`
+        ? `${fmtDate(pending.from)}: pick end date`
         : "Pick start date";
 
   return (
@@ -122,7 +122,7 @@ export function DateRangePicker({ from, to, minDate, maxDate, onChange, classNam
         >
           <CalendarRange className="size-3 text-muted-foreground" />
           <span>
-            {fmtDate(fromDate)} – {fmtDate(toDateObj)}
+            {fmtDate(fromDate)}-{fmtDate(toDateObj)}
           </span>
         </button>
       </PopoverTrigger>

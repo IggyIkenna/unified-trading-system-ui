@@ -23,7 +23,7 @@ export function KPIStripWidget(_props: WidgetComponentProps) {
       highAlerts,
       formatCurrency,
     } = ctx;
-    const marginUsed = totalNav > 0 ? `${Math.round((totalExposure / totalNav) * 100)}%` : "—";
+    const marginUsed = totalNav > 0 ? `${Math.round((totalExposure / totalNav) * 100)}%` : "-";
     const totalAlerts = criticalAlerts + highAlerts;
     return [
       {

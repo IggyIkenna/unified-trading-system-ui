@@ -157,7 +157,7 @@ export function RiskStressTableWidget(_props: WidgetComponentProps) {
           </div>
           <div className="p-2 rounded bg-muted/30 text-center">
             <div className="text-micro text-muted-foreground">Worst Strategy</div>
-            <div className="text-sm font-bold font-mono">{String(stressTestResult.worst_strategy ?? "—")}</div>
+            <div className="text-sm font-bold font-mono">{String(stressTestResult.worst_strategy ?? "-")}</div>
           </div>
         </div>
       ) : (

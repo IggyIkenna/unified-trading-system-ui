@@ -12,24 +12,24 @@ import { Send } from "lucide-react";
 import { useSubmitAccessRequest } from "@/hooks/api/use-user-management";
 
 const ENTITLEMENTS = [
-  { key: "data-basic", label: "Data (Basic) — 180 instruments, CeFi only" },
+  { key: "data-basic", label: "Data (Basic): 180 instruments, CeFi only" },
   {
     key: "data-pro",
-    label: "Data (Pro) — 2400+ instruments, CeFi + TradFi + DeFi",
+    label: "Data (Pro): 2400+ instruments, CeFi + TradFi + DeFi",
   },
-  { key: "execution-basic", label: "Execution (Basic) — TWAP, VWAP algos" },
+  { key: "execution-basic", label: "Execution (Basic): TWAP, VWAP algos" },
   {
     key: "execution-full",
-    label: "Execution (Full) — All algos + SOR + dark pools",
+    label: "Execution (Full): All algos + SOR + dark pools",
   },
-  { key: "ml-full", label: "Research (ML) — Model training & deployment" },
+  { key: "ml-full", label: "Research (ML): Model training & deployment" },
   {
     key: "strategy-full",
-    label: "Research (Strategy) — Strategy backtesting & deployment",
+    label: "Research (Strategy): Strategy backtesting & deployment",
   },
   {
     key: "reporting",
-    label: "Reports — P&L, settlement, compliance",
+    label: "Reports: P&L, settlement, compliance",
   },
 ];
 

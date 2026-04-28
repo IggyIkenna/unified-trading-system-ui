@@ -99,7 +99,7 @@ const PRESENTATIONS: readonly IrDeckPresentation[] = [
     title: "Portal & website navigation",
     subtitle: "Three engagement routes",
     description:
-      "Walks the board through public, lighter gate, IR, and signed-in platform surfaces — three engagement routes (Odum-Managed Strategies, DART Trading Infrastructure, Regulated Operating Models) plus auth levels and where live vs fixture data matters.",
+      "Walks the board through public, lighter gate, IR, and signed-in platform surfaces: three engagement routes (Odum-Managed Strategies, DART Trading Infrastructure, Regulated Operating Models) plus auth levels and where live vs fixture data matters.",
     href: "/investor-relations/site-navigation",
     icon: MapIcon,
     color: "from-sky-500/20 to-sky-600/5",

@@ -1,17 +1,7 @@
 "use client";
 
 import * as React from "react";
-import {
-  AlertTriangle,
-  Check,
-  CheckCircle2,
-  Clock,
-  History,
-  Rocket,
-  TestTube,
-  Users,
-  XCircle,
-} from "lucide-react";
+import { AlertTriangle, Check, CheckCircle2, Clock, History, Rocket, TestTube, Users, XCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -39,16 +29,9 @@ function latestApprovedForRole(
   history: CandidateStrategy["reviewHistory"],
   role: string,
 ): CandidateStrategy["reviewHistory"][0] | null {
-  const hits = history.filter(
-    (r) => r.role === role && r.decision === "approved",
-  );
+  const hits = history.filter((r) => r.role === role && r.decision === "approved");
   if (hits.length === 0) return null;
-  return (
-    hits.sort(
-      (a, b) =>
-        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
-    )[0] ?? null
-  );
+  return hits.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())[0] ?? null;
 }
 
 export function GovernanceTab({ strategy }: { strategy: CandidateStrategy }) {
@@ -56,9 +39,7 @@ export function GovernanceTab({ strategy }: { strategy: CandidateStrategy }) {
   const [acknowledgedRisks, setAcknowledgedRisks] = React.useState(false);
   const [liveAckFlash, setLiveAckFlash] = React.useState(false);
   const [paperAckFlash, setPaperAckFlash] = React.useState(false);
-  const allStagesPassed = STAGE_ORDER.slice(0, -1).every(
-    (stage) => strategy.stages[stage].status === "passed",
-  );
+  const allStagesPassed = STAGE_ORDER.slice(0, -1).every((stage) => strategy.stages[stage].status === "passed");
 
   const requiredSignoffs = REQUIRED_SIGNOFF_ROLES.map((role) => {
     const hit = latestApprovedForRole(strategy.reviewHistory, role);
@@ -75,18 +56,12 @@ export function GovernanceTab({ strategy }: { strategy: CandidateStrategy }) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="font-semibold">
-            Governance & Approval — {strategy.name}
-          </h3>
+          <h3 className="font-semibold">Governance & Approval: {strategy.name}</h3>
           <p className="text-sm text-muted-foreground">
-            Committee sign-off, compliance review, and final deployment
-            authorization
+            Committee sign-off, compliance review, and final deployment authorization
           </p>
         </div>
-        <Badge
-          variant="outline"
-          className={statusBg(strategy.stages.governance.status)}
-        >
+        <Badge variant="outline" className={statusBg(strategy.stages.governance.status)}>
           {strategy.stages.governance.status.replace("_", " ")}
         </Badge>
       </div>
@@ -117,9 +92,7 @@ export function GovernanceTab({ strategy }: { strategy: CandidateStrategy }) {
                 key={signoff.role}
                 className={cn(
                   "flex min-w-0 items-center justify-between gap-2 rounded-lg border p-3",
-                  signoff.signed
-                    ? "bg-emerald-500/10 border-emerald-500/20"
-                    : "bg-muted/20 border-border/50",
+                  signoff.signed ? "bg-emerald-500/10 border-emerald-500/20" : "bg-muted/20 border-border/50",
                 )}
               >
                 <div className="flex min-w-0 items-center gap-3">
@@ -129,22 +102,13 @@ export function GovernanceTab({ strategy }: { strategy: CandidateStrategy }) {
                     <Clock className="size-4 shrink-0 text-muted-foreground" />
                   )}
                   <div className="min-w-0">
-                    <p className="text-sm font-medium leading-snug">
-                      {signoff.role}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {signoff.name}
-                    </p>
+                    <p className="text-sm font-medium leading-snug">{signoff.role}</p>
+                    <p className="text-xs text-muted-foreground">{signoff.name}</p>
                   </div>
                 </div>
                 <Badge
                   variant="outline"
-                  className={cn(
-                    "shrink-0",
-                    signoff.signed
-                      ? statusBg("passed")
-                      : "text-muted-foreground",
-                  )}
+                  className={cn("shrink-0", signoff.signed ? statusBg("passed") : "text-muted-foreground")}
                 >
                   {signoff.signed ? "Signed" : "Pending"}
                 </Badge>
@@ -167,9 +131,7 @@ export function GovernanceTab({ strategy }: { strategy: CandidateStrategy }) {
         </CardHeader>
         <CardContent>
           {strategy.reviewHistory.length === 0 ? (
-            <p className="text-sm text-muted-foreground py-4 text-center">
-              No reviews recorded yet
-            </p>
+            <p className="text-sm text-muted-foreground py-4 text-center">No reviews recorded yet</p>
           ) : (
             <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
               {[...strategy.reviewHistory].reverse().map((review) => (
@@ -177,9 +139,7 @@ export function GovernanceTab({ strategy }: { strategy: CandidateStrategy }) {
                   key={review.id}
                   className={cn(
                     "flex min-w-0 gap-3 rounded-lg border p-3",
-                    review.isOverride
-                      ? "border-amber-500/50 bg-amber-500/5"
-                      : "border-border/50",
+                    review.isOverride ? "border-amber-500/50 bg-amber-500/5" : "border-border/50",
                   )}
                 >
                   <div
@@ -202,9 +162,7 @@ export function GovernanceTab({ strategy }: { strategy: CandidateStrategy }) {
                   </div>
                   <div className="min-w-0 flex-1 space-y-2">
                     <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                      <span className="text-sm font-medium">
-                        {review.reviewer}
-                      </span>
+                      <span className="text-sm font-medium">{review.reviewer}</span>
                       <Badge variant="outline" className="text-xs">
                         {review.role}
                       </Badge>
@@ -224,10 +182,7 @@ export function GovernanceTab({ strategy }: { strategy: CandidateStrategy }) {
                         {review.decision}
                       </Badge>
                       {review.isOverride ? (
-                        <Badge
-                          variant="outline"
-                          className="text-xs border-amber-500/50 text-amber-400"
-                        >
+                        <Badge variant="outline" className="text-xs border-amber-500/50 text-amber-400">
                           Override
                         </Badge>
                       ) : null}
@@ -235,12 +190,8 @@ export function GovernanceTab({ strategy }: { strategy: CandidateStrategy }) {
                     <p className="text-xs text-muted-foreground font-mono">
                       {new Date(review.timestamp).toLocaleString()}
                     </p>
-                    <p className="text-sm leading-snug text-muted-foreground">
-                      {review.comment}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      Stage: {STAGE_META[review.stage].label}
-                    </p>
+                    <p className="text-sm leading-snug text-muted-foreground">{review.comment}</p>
+                    <p className="text-xs text-muted-foreground">Stage: {STAGE_META[review.stage].label}</p>
                   </div>
                 </div>
               ))}
@@ -254,31 +205,21 @@ export function GovernanceTab({ strategy }: { strategy: CandidateStrategy }) {
           <AlertTriangle className="size-5 text-amber-400 shrink-0 mt-0.5" />
           <div className="space-y-3 flex-1">
             <div>
-              <p className="text-sm font-medium">
-                Final Promotion Authorization
-              </p>
+              <p className="text-sm font-medium">Final Promotion Authorization</p>
               <p className="text-xs text-muted-foreground">
-                Promoting {strategy.name} v{strategy.version} to live production
-                will allocate real capital. This action requires{" "}
-                {requiredSignoffs.length} sign-offs and cannot be undone without
-                a formal wind-down process.
+                Promoting {strategy.name} v{strategy.version} to live production will allocate real capital. This action
+                requires {requiredSignoffs.length} sign-offs and cannot be undone without a formal wind-down process.
               </p>
             </div>
             <label className="flex items-center gap-2 cursor-pointer">
-              <Checkbox
-                checked={acknowledgedRisks}
-                onCheckedChange={(v) => setAcknowledgedRisks(v === true)}
-              />
+              <Checkbox checked={acknowledgedRisks} onCheckedChange={(v) => setAcknowledgedRisks(v === true)} />
               <span className="text-sm">
-                I have reviewed all stages, understand the risks, and authorize
-                live deployment
+                I have reviewed all stages, understand the risks, and authorize live deployment
               </span>
             </label>
             <div className="flex gap-2 pt-1 flex-wrap">
               <Button
-                disabled={
-                  !acknowledgedRisks || signedCount < requiredSignoffs.length
-                }
+                disabled={!acknowledgedRisks || signedCount < requiredSignoffs.length}
                 className="gap-2"
                 onClick={() => {
                   record?.(strategy.id, "governance", {

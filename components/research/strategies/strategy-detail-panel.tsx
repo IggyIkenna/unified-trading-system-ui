@@ -83,7 +83,7 @@ export function DetailPanel({
           onClick={() =>
             toast({
               title: "Marked as candidate (demo)",
-              description: `${bt.configName ?? bt.id} — full lineage capture when the promote API is available.`,
+              description: `${bt.configName ?? bt.id}: full lineage capture when the promote API is available.`,
             })
           }
         >
@@ -225,7 +225,7 @@ export function DetailPanel({
                       <div className="rounded-lg border bg-muted/20 p-2.5">
                         <span className="text-muted-foreground block text-[10px]">Duration</span>
                         <span className="font-mono">
-                          {bt.durationMs ? `${formatNumber(bt.durationMs / 60000, 1)}m` : "—"}
+                          {bt.durationMs ? `${formatNumber(bt.durationMs / 60000, 1)}m` : "-"}
                         </span>
                       </div>
                     </div>

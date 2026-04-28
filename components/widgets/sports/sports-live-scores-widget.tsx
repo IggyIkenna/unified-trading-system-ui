@@ -57,7 +57,7 @@ export function SportsLiveScoresWidget(_props: WidgetComponentProps) {
           />
           <span className="text-micro font-bold text-foreground truncate max-w-[100px]">{f.home.shortName}</span>
           <span className="text-micro font-mono tabular-nums text-muted-foreground">
-            {f.score ? `${f.score.home}–${f.score.away}` : "vs"}
+            {f.score ? `${f.score.home}-${f.score.away}` : "vs"}
           </span>
           <span className="text-micro font-bold text-foreground truncate max-w-[100px]">{f.away.shortName}</span>
           {f.minute != null && <span className="text-nano text-muted-foreground tabular-nums">{f.minute}′</span>}

@@ -229,7 +229,7 @@ export default function AccumulatorBuilderPage() {
                     </span>
                   </div>
                   <div className="text-[10px] text-muted-foreground mt-0.5">
-                    {leg.fixture.league} — {formatKickoff(leg.fixture.kickoff)}
+                    {leg.fixture.league}: {formatKickoff(leg.fixture.kickoff)}
                   </div>
                 </div>
                 <button

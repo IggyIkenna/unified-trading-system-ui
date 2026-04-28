@@ -114,7 +114,7 @@ export default function MLGovernancePage() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-xs text-muted-foreground">{v.registeredBy}</TableCell>
-                    <TableCell className="text-xs text-muted-foreground">{v.approvedBy ?? "—"}</TableCell>
+                    <TableCell className="text-xs text-muted-foreground">{v.approvedBy ?? "-"}</TableCell>
                     <TableCell className="text-xs text-muted-foreground">
                       {new Date(v.approvedAt ?? v.registeredAt).toLocaleDateString()}
                     </TableCell>

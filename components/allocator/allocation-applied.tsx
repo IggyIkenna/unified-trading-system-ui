@@ -95,7 +95,7 @@ export function AllocationApplied(): React.ReactElement {
           <div>
             <h3 className="text-lg font-semibold">Recent allocations</h3>
             <p className="text-xs text-muted-foreground">
-              Auto-applied directives from this allocator instance. No manual approval step — platform subscribers trust
+              Auto-applied directives from this allocator instance. No manual approval step: platform subscribers trust
               the algorithm.
             </p>
           </div>

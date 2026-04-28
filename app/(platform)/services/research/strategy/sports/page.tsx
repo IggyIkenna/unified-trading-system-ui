@@ -169,7 +169,7 @@ export default function SportsResearchPage() {
     <div className="space-y-6 p-4">
       <PageHeader
         title="Sports Research"
-        description="Fixture-based sports strategy research — model families, league coverage, CLV analysis, and feature pipeline."
+        description="Fixture-based sports strategy research: model families, league coverage, CLV analysis, and feature pipeline."
       />
 
       {/* KPI strip */}

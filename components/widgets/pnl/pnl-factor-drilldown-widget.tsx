@@ -133,7 +133,7 @@ export function PnlFactorDrilldownWidget(_props: WidgetComponentProps) {
     <div className="flex flex-col h-full min-h-0 p-2 gap-3">
       <div className="flex items-center justify-between gap-2 shrink-0">
         <p className="text-sm font-medium text-muted-foreground truncate">
-          {selectedFactorData ? `${selectedFactorData.factor.name} — by strategy` : "Factor Breakdown"}
+          {selectedFactorData ? `${selectedFactorData.factor.name}: by strategy` : "Factor Breakdown"}
         </p>
         {selectedFactorData && (
           <Button variant="ghost" size="sm" className="shrink-0" onClick={() => setSelectedFactor(null)}>

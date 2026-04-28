@@ -226,7 +226,7 @@ export default function StrategyGridPage() {
         {/* Grid */}
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-base">Backtest Results — {mockBacktestResults.length} configs</CardTitle>
+            <CardTitle className="text-base">Backtest Results: {mockBacktestResults.length} configs</CardTitle>
           </CardHeader>
           <CardContent>
             <DimensionalGrid

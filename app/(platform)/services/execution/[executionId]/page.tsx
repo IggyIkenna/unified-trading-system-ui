@@ -5,14 +5,7 @@ import { ArrowLeft, CheckCircle2, XCircle, Clock, ChevronRight } from "lucide-re
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useExecutionAnalysis } from "@/hooks/api/use-strategies";
 import { Spinner } from "@/components/shared/spinner";
 
@@ -117,7 +110,7 @@ export default function ExecutionAnalysisPage() {
           <h1 className="text-xl font-semibold">Execution Analysis</h1>
           <p className="text-sm text-muted-foreground">
             {analysis?.instrument ?? executionId}
-            {analysis?.strategy_id ? ` — Strategy: ${analysis.strategy_id}` : ""}
+            {analysis?.strategy_id ? `: Strategy: ${analysis.strategy_id}` : ""}
           </p>
         </div>
       </div>
@@ -193,18 +186,18 @@ export default function ExecutionAnalysisPage() {
               <TableBody>
                 {fills.map((fill, idx) => (
                   <TableRow key={idx}>
-                    <TableCell className="font-mono text-xs">{String(fill.id ?? "—").slice(0, 12)}</TableCell>
+                    <TableCell className="font-mono text-xs">{String(fill.id ?? "-").slice(0, 12)}</TableCell>
                     <TableCell>
                       <Badge variant={String(fill.side) === "BUY" ? "default" : "destructive"}>
-                        {String(fill.side ?? "—")}
+                        {String(fill.side ?? "-")}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right font-mono">{Number(fill.quantity ?? 0).toFixed(4)}</TableCell>
                     <TableCell className="text-right font-mono">${Number(fill.price ?? 0).toLocaleString()}</TableCell>
                     <TableCell className="text-right font-mono">${Number(fill.fees ?? 0).toFixed(2)}</TableCell>
-                    <TableCell>{String(fill.venue ?? "—")}</TableCell>
+                    <TableCell>{String(fill.venue ?? "-")}</TableCell>
                     <TableCell className="text-xs">
-                      {fill.filled_at ? new Date(String(fill.filled_at)).toLocaleTimeString() : "—"}
+                      {fill.filled_at ? new Date(String(fill.filled_at)).toLocaleTimeString() : "-"}
                     </TableCell>
                   </TableRow>
                 ))}

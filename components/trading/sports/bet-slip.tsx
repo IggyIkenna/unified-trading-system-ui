@@ -120,7 +120,7 @@ export function BetSlip({
                       {sel.fixture.home.shortName} vs {sel.fixture.away.shortName}
                     </p>
                     <p className="text-[10px] text-muted-foreground">
-                      {sel.market} — {sel.outcome}
+                      {sel.market}: {sel.outcome}
                     </p>
                   </div>
                   <div className="flex items-center gap-1.5 shrink-0">

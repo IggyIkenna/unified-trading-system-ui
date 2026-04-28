@@ -91,7 +91,7 @@ function OpenPositionRow({ pos }: { pos: PredictionPosition }) {
             pos.side === "yes" ? "border-emerald-500/40 text-emerald-400" : "border-red-500/40 text-red-400",
           )}
         >
-          {pos.side.toUpperCase()} — {pos.outcome}
+          {pos.side.toUpperCase()}: {pos.outcome}
         </Badge>
       </td>
       <td className="py-3 pr-3 tabular-nums text-right">{pos.sharesHeld.toLocaleString()}</td>
@@ -117,7 +117,7 @@ function OpenPositionRow({ pos }: { pos: PredictionPosition }) {
         {pos.resolutionDate ? (
           <span className="font-mono text-[10px]">{pos.resolutionDate}</span>
         ) : (
-          <span className="text-zinc-600">—</span>
+          <span className="text-zinc-600">-</span>
         )}
       </td>
     </tr>
@@ -144,7 +144,7 @@ function SettledPositionRow({ pos }: { pos: PredictionPosition }) {
             pos.side === "yes" ? "border-emerald-500/40 text-emerald-400" : "border-red-500/40 text-red-400",
           )}
         >
-          {pos.side.toUpperCase()} — {pos.outcome}
+          {pos.side.toUpperCase()}: {pos.outcome}
         </Badge>
       </td>
       <td className="py-3 pr-3 text-center">{pos.settlementOutcome && settlementBadge(pos.settlementOutcome)}</td>
@@ -155,7 +155,7 @@ function SettledPositionRow({ pos }: { pos: PredictionPosition }) {
         {fmtUsdPrecise(pos.realisedPnl ?? 0)}
       </td>
       <td className="py-3 text-right text-muted-foreground text-[10px] font-mono">
-        {pos.settledAt ? fmtRelativeTime(pos.settledAt) : "—"}
+        {pos.settledAt ? fmtRelativeTime(pos.settledAt) : "-"}
       </td>
     </tr>
   );

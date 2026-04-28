@@ -73,7 +73,7 @@ export function LendingArbDashboardWidget(_props: WidgetComponentProps) {
 
   const headerMetrics: KpiMetric[] = bestArb
     ? [
-        { label: "Best Arb", value: `${bestArb.protocol} — ${bestArb.token}`, sentiment: "positive" as const },
+        { label: "Best Arb", value: `${bestArb.protocol}: ${bestArb.token}`, sentiment: "positive" as const },
         { label: "Spread", value: `${bestArb.spreadBps} bps`, sentiment: "positive" as const },
         { label: "Rows", value: String(lendingArbData.length), sentiment: "neutral" as const },
       ]

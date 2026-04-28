@@ -50,26 +50,26 @@ export function SiteNavigationClient() {
               </p>
               <ul className="list-disc pl-5 space-y-2">
                 <li>
-                  <span className="text-foreground font-medium">Public</span> — zero-auth marketing (`/`,
+                  <span className="text-foreground font-medium">Public</span>: zero-auth marketing (`/`,
                   `/investment-management`, `/platform`, `/regulatory`, `/who-we-are`, `/contact`,
                   `/start-your-review`).
                 </li>
                 <li>
-                  <span className="text-foreground font-medium">Lighter gate</span> — `/briefings` pre-commitment
+                  <span className="text-foreground font-medium">Lighter gate</span>: `/briefings` pre-commitment
                   narrative; optional invite code via `NEXT_PUBLIC_BRIEFING_ACCESS_CODE`; separate session key from
                   staging gate and Firebase.
                 </li>
                 <li>
-                  <span className="text-foreground font-medium">Investor relations</span> — entitled decks under
+                  <span className="text-foreground font-medium">Investor relations</span>: entitled decks under
                   `/investor-relations/*` with granular keys plus optional `investor-archive`.
                 </li>
                 <li>
-                  <span className="text-foreground font-medium">Signed-in platform (Odum-Managed Strategies)</span> —
+                  <span className="text-foreground font-medium">Signed-in platform (Odum-Managed Strategies)</span>:
                   strategy catalogue and performance surfaces (`/services/research/strategy/catalog`,
                   `/services/im/funds`).
                 </li>
                 <li>
-                  <span className="text-foreground font-medium">Signed-in platform (DART)</span> — operational stack
+                  <span className="text-foreground font-medium">Signed-in platform (DART)</span>: operational stack
                   (data, research, build, trading, reporting, observation, signals) starting at `/dashboard`.
                 </li>
               </ul>
@@ -81,7 +81,7 @@ export function SiteNavigationClient() {
             <AccordionContent className="text-sm text-muted-foreground space-y-3 pb-4">
               <p>
                 Public and lighter gate do not require Firebase. Platform and Investment management share the same
-                signed-in session. Staging may use `NEXT_PUBLIC_STAGING_AUTH` and demo personas — see the UI repo
+                signed-in session. Staging may use `NEXT_PUBLIC_STAGING_AUTH` and demo personas: see the UI repo
                 `docs/DEPLOYMENT.md` for build-time flags.
               </p>
             </AccordionContent>
@@ -92,7 +92,7 @@ export function SiteNavigationClient() {
             <AccordionContent className="text-sm text-muted-foreground space-y-3 pb-4">
               <p>
                 `NEXT_PUBLIC_MOCK_API` and `NEXT_PUBLIC_STRATEGY_CATALOG_SOURCE` control catalogue sourcing. Runtime
-                honesty uses `RuntimeModeBadge` — there is no global “preview site” banner.
+                honesty uses `RuntimeModeBadge`: there is no global “preview site” banner.
               </p>
               <p>
                 Reporting and terminal widgets may still branch on fixtures; the mock delta pass is tracked in

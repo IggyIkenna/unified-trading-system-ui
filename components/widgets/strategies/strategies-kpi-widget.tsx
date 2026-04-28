@@ -11,22 +11,22 @@ export function StrategiesKpiWidget(_props: WidgetComponentProps) {
   const metrics: KpiMetric[] = [
     {
       label: "Active Strategies",
-      value: isLoading ? "—" : `${activeCount} / ${strategies.length}`,
+      value: isLoading ? "-" : `${activeCount} / ${strategies.length}`,
       sentiment: "neutral",
     },
     {
       label: "Total AUM",
-      value: isLoading ? "—" : `$${formatCurrency(totalAUM)}`,
+      value: isLoading ? "-" : `$${formatCurrency(totalAUM)}`,
       sentiment: "neutral",
     },
     {
       label: "Total P&L",
-      value: isLoading ? "—" : `${totalPnL >= 0 ? "+" : "-"}$${formatCurrency(Math.abs(totalPnL))}`,
+      value: isLoading ? "-" : `${totalPnL >= 0 ? "+" : "-"}$${formatCurrency(Math.abs(totalPnL))}`,
       sentiment: isLoading ? "neutral" : totalPnL >= 0 ? "positive" : "negative",
     },
     {
       label: "MTD P&L",
-      value: isLoading ? "—" : `${totalMTDPnL >= 0 ? "+" : "-"}$${formatCurrency(Math.abs(totalMTDPnL))}`,
+      value: isLoading ? "-" : `${totalMTDPnL >= 0 ? "+" : "-"}$${formatCurrency(Math.abs(totalMTDPnL))}`,
       sentiment: isLoading ? "neutral" : totalMTDPnL >= 0 ? "positive" : "negative",
     },
   ];

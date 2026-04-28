@@ -117,10 +117,10 @@ export default function GridConfigPage() {
                     </TableCell>
                     <TableCell className="text-xs text-muted-foreground">{cfg.feature_groups.length} groups</TableCell>
                     <TableCell className="text-xs text-muted-foreground">
-                      {cfg.exclude_features.length > 0 ? `${cfg.exclude_features.length} excluded` : "—"}
+                      {cfg.exclude_features.length > 0 ? `${cfg.exclude_features.length} excluded` : "-"}
                     </TableCell>
                     <TableCell className="text-xs text-muted-foreground">
-                      {cfg.created_at ? new Date(cfg.created_at).toLocaleDateString() : "—"}
+                      {cfg.created_at ? new Date(cfg.created_at).toLocaleDateString() : "-"}
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1">

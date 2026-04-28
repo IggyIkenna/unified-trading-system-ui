@@ -41,7 +41,7 @@ export function SportsMLStatusWidget(_props: WidgetComponentProps) {
   if (wsStatus === "error" || wsStatus === "disconnected") {
     return (
       <div className="flex h-full items-center justify-center p-4">
-        <p className="text-sm text-destructive">ML pipeline data unavailable — connection error</p>
+        <p className="text-sm text-destructive">ML pipeline data unavailable: connection error</p>
       </div>
     );
   }

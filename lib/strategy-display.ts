@@ -14,24 +14,24 @@
 // ── Bespoke display names for the 18 archetypes ───────────────────────────
 
 export const ARCHETYPE_DISPLAY_NAMES: Readonly<Record<string, string>> = {
-  ML_DIRECTIONAL_CONTINUOUS: "ML Directional — Continuous",
-  ML_DIRECTIONAL_EVENT_SETTLED: "ML Directional — Event Settled",
-  RULES_DIRECTIONAL_CONTINUOUS: "Rules Directional — Continuous",
-  RULES_DIRECTIONAL_EVENT_SETTLED: "Rules Directional — Event Settled",
-  CARRY_BASIS_DATED: "Basis Carry — Dated Futures",
-  CARRY_BASIS_PERP: "Basis Carry — Funding Rate (Perp)",
+  ML_DIRECTIONAL_CONTINUOUS: "ML Directional: Continuous",
+  ML_DIRECTIONAL_EVENT_SETTLED: "ML Directional: Event Settled",
+  RULES_DIRECTIONAL_CONTINUOUS: "Rules Directional: Continuous",
+  RULES_DIRECTIONAL_EVENT_SETTLED: "Rules Directional: Event Settled",
+  CARRY_BASIS_DATED: "Basis Carry: Dated Futures",
+  CARRY_BASIS_PERP: "Basis Carry: Funding Rate (Perp)",
   CARRY_STAKED_BASIS: "Staked Basis Carry",
   CARRY_RECURSIVE_STAKED: "Recursive Staked Carry",
   YIELD_ROTATION_LENDING: "Lending Yield Rotation",
   YIELD_STAKING_SIMPLE: "Simple Staking Yield",
   ARBITRAGE_PRICE_DISPERSION: "Price Dispersion Arbitrage",
   LIQUIDATION_CAPTURE: "Liquidation Capture",
-  MARKET_MAKING_CONTINUOUS: "Market Making — Continuous",
-  MARKET_MAKING_EVENT_SETTLED: "Market Making — Event Settled",
+  MARKET_MAKING_CONTINUOUS: "Market Making: Continuous",
+  MARKET_MAKING_EVENT_SETTLED: "Market Making: Event Settled",
   EVENT_DRIVEN: "Event Driven",
-  VOL_TRADING_OPTIONS: "Volatility Trading — Options",
-  STAT_ARB_PAIRS_FIXED: "Statistical Arbitrage — Fixed Pairs",
-  STAT_ARB_CROSS_SECTIONAL: "Statistical Arbitrage — Cross-Sectional",
+  VOL_TRADING_OPTIONS: "Volatility Trading: Options",
+  STAT_ARB_PAIRS_FIXED: "Statistical Arbitrage: Fixed Pairs",
+  STAT_ARB_CROSS_SECTIONAL: "Statistical Arbitrage: Cross-Sectional",
 } as const;
 
 // ── Bespoke display names for the 8 families ─────────────────────────────
@@ -50,9 +50,33 @@ export const FAMILY_DISPLAY_NAMES: Readonly<Record<string, string>> = {
 // ── Acronyms to preserve through title-casing ─────────────────────────────
 
 const ACRONYMS: ReadonlySet<string> = new Set([
-  "ML", "BTC", "ETH", "SOL", "USD", "USDT", "USDC", "GBP", "EUR",
-  "DeFi", "CeFi", "TradFi", "LP", "IV", "DEX", "CEX", "OKX", "ERC20",
-  "AAVE", "GMX", "IBKR", "CME", "CBOE", "ICE", "SPY", "ES", "NQ",
+  "ML",
+  "BTC",
+  "ETH",
+  "SOL",
+  "USD",
+  "USDT",
+  "USDC",
+  "GBP",
+  "EUR",
+  "DeFi",
+  "CeFi",
+  "TradFi",
+  "LP",
+  "IV",
+  "DEX",
+  "CEX",
+  "OKX",
+  "ERC20",
+  "AAVE",
+  "GMX",
+  "IBKR",
+  "CME",
+  "CBOE",
+  "ICE",
+  "SPY",
+  "ES",
+  "NQ",
 ]);
 
 const MIXED_CASE_ACRONYMS: ReadonlySet<string> = new Set(["DeFi", "CeFi", "TradFi"]);
@@ -68,11 +92,7 @@ function titleToken(token: string): string {
 }
 
 function genericFormat(raw: string): string {
-  return raw
-    .split("_")
-    .filter(Boolean)
-    .map(titleToken)
-    .join(" ");
+  return raw.split("_").filter(Boolean).map(titleToken).join(" ");
 }
 
 // ── Public formatters ─────────────────────────────────────────────────────
@@ -94,12 +114,7 @@ export function formatArchetype(archetype: string): string {
 export function formatVenueScope(scope: string): string {
   return scope
     .split("+")
-    .map((v) =>
-      v
-        .split("-")
-        .map(titleToken)
-        .join(" ")
-    )
+    .map((v) => v.split("-").map(titleToken).join(" "))
     .join(" + ");
 }
 
@@ -147,9 +162,27 @@ export function formatSlotLabel(slotLabel: string): string {
     .filter((t) => !envSuffixes.has(t) && Boolean(t));
 
   // First token(s) before the first known instrument keyword are the venue scope
-  const instrumentKeywords = new Set(["btc", "eth", "sol", "usdt", "usdc", "usd", "gbp", "eur",
-    "perp", "spot", "dated", "option", "lp", "staking", "lending", "usdc",
-    "1x2", "epl", "surface"]);
+  const instrumentKeywords = new Set([
+    "btc",
+    "eth",
+    "sol",
+    "usdt",
+    "usdc",
+    "usd",
+    "gbp",
+    "eur",
+    "perp",
+    "spot",
+    "dated",
+    "option",
+    "lp",
+    "staking",
+    "lending",
+    "usdc",
+    "1x2",
+    "epl",
+    "surface",
+  ]);
 
   // Heuristic: venue scope is tokens before the first "asset" or "instrument" keyword
   // Simple approach: join all tokens with spaces and title-case

@@ -136,7 +136,7 @@ export function NewExecutionBacktestDialog({ open, onClose }: { open: boolean; o
   const selectedBt = MOCK_STRATEGY_BACKTESTS.find((b) => b.id === strategyBt);
   const [instrAlgos, setInstrAlgos] = React.useState<Record<string, AlgoType>>({});
   const algo = (instrAlgos[Object.keys(instrAlgos)[0] ?? ""] ?? "VWAP") as AlgoType;
-  const setAlgo = (_a: AlgoType) => {}; // legacy — per-instruction now
+  const setAlgo = (_a: AlgoType) => {}; // legacy: per-instruction now
 
   // Init default algos when backtest selected
   React.useEffect(() => {
@@ -564,8 +564,8 @@ export function NewExecutionBacktestDialog({ open, onClose }: { open: boolean; o
 
             {algo === "BENCHMARK_FILL" && (
               <div className="rounded-md bg-muted/30 p-3 text-xs text-muted-foreground italic">
-                Benchmark Fill — zero-alpha execution at best available price. Used for LEND, STAKE, BORROW
-                instructions. No parameters.
+                Benchmark Fill: zero-alpha execution at best available price. Used for LEND, STAKE, BORROW instructions.
+                No parameters.
               </div>
             )}
           </CollapsibleConfigSection>

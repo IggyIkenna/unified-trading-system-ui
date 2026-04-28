@@ -57,30 +57,23 @@ export function StrategyParamVersionBumpModal({
 
   return (
     <Dialog open={open} onOpenChange={(next) => (!next ? onCancel() : undefined)}>
-      <DialogContent
-        className="max-w-xl"
-        data-testid="strategy-param-version-bump-modal"
-      >
+      <DialogContent className="max-w-xl" data-testid="strategy-param-version-bump-modal">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <AlertTriangle className="size-5 text-amber-400" aria-hidden />
-            Strategy parameter change — version bump recommended
+            Strategy parameter change: version bump recommended
           </DialogTitle>
           <DialogDescription>
-            You are editing live parameters for{" "}
-            <strong className="text-foreground">{strategyId}</strong> (current version{" "}
-            <code>{currentVersion}</code>). The Unified Trading System rule{" "}
-            <em>Batch = Live</em> means ad-hoc param changes break backtest-to-live
-            parity — choose the bump path to preserve parity.
+            You are editing live parameters for <strong className="text-foreground">{strategyId}</strong> (current
+            version <code>{currentVersion}</code>). The Unified Trading System rule <em>Batch = Live</em> means ad-hoc
+            param changes break backtest-to-live parity: choose the bump path to preserve parity.
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
           <div className="rounded-md border border-border bg-muted/30 p-3 text-xs">
             <p className="mb-1 font-medium text-muted-foreground">Param diff</p>
-            <pre className="whitespace-pre-wrap font-mono text-[11px] text-foreground/80">
-              {paramDiffSummary}
-            </pre>
+            <pre className="whitespace-pre-wrap font-mono text-[11px] text-foreground/80">{paramDiffSummary}</pre>
           </div>
 
           {/* (a) Recommended path — bump version */}
@@ -92,9 +85,8 @@ export function StrategyParamVersionBumpModal({
                   Bump version ({currentVersion} → {proposedVersion}) · recommended
                 </p>
                 <p className="mt-0.5 text-xs text-muted-foreground">
-                  Preserves backtest-to-live parity. New version becomes the live
-                  config; previous version stays available for comparison. Audit event:{" "}
-                  <code className="text-[10px]">STRATEGY_VERSION_BUMPED</code>.
+                  Preserves backtest-to-live parity. New version becomes the live config; previous version stays
+                  available for comparison. Audit event: <code className="text-[10px]">STRATEGY_VERSION_BUMPED</code>.
                 </p>
                 <Button
                   size="sm"
@@ -117,9 +109,8 @@ export function StrategyParamVersionBumpModal({
                   Hot-reload in place · breaks backtest/live parity
                 </p>
                 <p className="mt-0.5 text-xs text-muted-foreground">
-                  Applies the change without a version bump. Backtest replay for
-                  this strategy will no longer match live fills until the next
-                  version is cut. Audit event:{" "}
+                  Applies the change without a version bump. Backtest replay for this strategy will no longer match live
+                  fills until the next version is cut. Audit event:{" "}
                   <code className="text-[10px]">STRATEGY_PARAM_AD_HOC_CHANGE</code>.
                 </p>
                 <p className="mt-2 text-xs text-destructive">
@@ -148,11 +139,7 @@ export function StrategyParamVersionBumpModal({
         </div>
 
         <DialogFooter>
-          <Button
-            variant="outline"
-            onClick={onCancel}
-            data-testid="strategy-param-cancel"
-          >
+          <Button variant="outline" onClick={onCancel} data-testid="strategy-param-cancel">
             <X className="mr-1 size-4" aria-hidden />
             Cancel
           </Button>

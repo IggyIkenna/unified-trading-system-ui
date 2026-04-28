@@ -75,7 +75,7 @@ export function PredSettledPositionsWidget(_props: WidgetComponentProps) {
               row.side === "yes" ? "border-emerald-500/40 text-emerald-400" : "border-red-500/40 text-red-400",
             )}
           >
-            {row.side.toUpperCase()} — {row.outcome}
+            {row.side.toUpperCase()}: {row.outcome}
           </Badge>
         ),
       },
@@ -83,7 +83,7 @@ export function PredSettledPositionsWidget(_props: WidgetComponentProps) {
         key: "outcome",
         label: "Outcome",
         align: "center",
-        accessor: (row) => (row.settlementOutcome ? settlementBadge(row.settlementOutcome) : "—"),
+        accessor: (row) => (row.settlementOutcome ? settlementBadge(row.settlementOutcome) : "-"),
       },
       {
         key: "entry",
@@ -112,7 +112,7 @@ export function PredSettledPositionsWidget(_props: WidgetComponentProps) {
         key: "settled",
         label: "Settled",
         align: "right",
-        accessor: (row) => (row.settledAt ? fmtRelativeTime(row.settledAt) : "—"),
+        accessor: (row) => (row.settledAt ? fmtRelativeTime(row.settledAt) : "-"),
       },
     ],
     [],

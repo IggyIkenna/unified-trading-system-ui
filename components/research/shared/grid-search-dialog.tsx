@@ -975,10 +975,10 @@ export function GridSearchDialog({ open, onClose, domain }: { open: boolean; onC
     const instrPart =
       selectedInstruments.length <= 2 ? selectedInstruments.join("+") : `${selectedInstruments.length} instruments`;
     const venuePart = selectedVenues.length <= 2 ? selectedVenues.join("+") : `${selectedVenues.length} venues`;
-    return `${typeName} — ${instrPart} — ${venuePart}`;
+    return `${typeName}: ${instrPart}: ${venuePart}`;
   }, [selectedType, subs, config.selectorOptions]);
 
-  const fullConfigName = configSuffix ? `${autoConfigName} — ${configSuffix}` : autoConfigName;
+  const fullConfigName = configSuffix ? `${autoConfigName}: ${configSuffix}` : autoConfigName;
 
   // When archetype/algo/model changes, load that type's params + filter venues
   React.useEffect(() => {
@@ -1128,7 +1128,7 @@ export function GridSearchDialog({ open, onClose, domain }: { open: boolean; onC
               <span className="text-xs text-muted-foreground truncate flex-1 bg-muted/20 rounded px-2 py-1 border border-border/30 font-mono">
                 {autoConfigName}
               </span>
-              <span className="text-muted-foreground/40 text-xs">—</span>
+              <span className="text-muted-foreground/40 text-xs">-</span>
               <input
                 type="text"
                 placeholder="your label"

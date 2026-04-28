@@ -202,7 +202,7 @@ export default function ExecutionBenchmarksPage() {
                 Best Performer
               </div>
               <div className="text-2xl font-bold tabular-nums text-emerald-500">
-                {bestPerformer ? formatBps(bestPerformer.arrival) : "—"}
+                {bestPerformer ? formatBps(bestPerformer.arrival) : "-"}
               </div>
               <p className="text-xs text-muted-foreground mt-1">{bestPerformer?.algoName ?? "N/A"}</p>
             </CardContent>
@@ -214,7 +214,7 @@ export default function ExecutionBenchmarksPage() {
                 Worst Performer
               </div>
               <div className="text-2xl font-bold tabular-nums text-red-500">
-                {worstPerformer ? formatBps(worstPerformer.arrival) : "—"}
+                {worstPerformer ? formatBps(worstPerformer.arrival) : "-"}
               </div>
               <p className="text-xs text-muted-foreground mt-1">{worstPerformer?.algoName ?? "N/A"}</p>
             </CardContent>

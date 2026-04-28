@@ -32,7 +32,7 @@ export const UNITY_CHILD_BOOKS: readonly UnityChildBook[] = [
     commission_bps: 40,
     commission_type: "FLAT",
     supported_sports: ["SOCCER", "TENNIS", "BASKETBALL"],
-    notes: "Sharp book via Unity — lower limits than direct Pinnacle",
+    notes: "Sharp book via Unity: lower limits than direct Pinnacle",
     confirmed: true,
   },
   {
@@ -100,7 +100,7 @@ export const UNITY_CHILD_BOOKS: readonly UnityChildBook[] = [
   },
   {
     child_venue_id: "TBD_BOOK_9",
-    display_name: "TBD — pending from quant-portal",
+    display_name: "TBD: pending from quant-portal",
     commission_bps: null,
     commission_type: "FLAT",
     supported_sports: [],
@@ -109,7 +109,7 @@ export const UNITY_CHILD_BOOKS: readonly UnityChildBook[] = [
   },
   {
     child_venue_id: "TBD_BOOK_10",
-    display_name: "TBD — pending from quant-portal",
+    display_name: "TBD: pending from quant-portal",
     commission_bps: null,
     commission_type: "FLAT",
     supported_sports: [],

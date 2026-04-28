@@ -107,7 +107,7 @@ export function MLCompareSlotPicker({
                 </SelectTrigger>
                 <SelectContent className="max-h-[min(60vh,320px)]">
                   <SelectItem value={COMPARE_SELECT_EMPTY} className="text-xs text-muted-foreground">
-                    — Select run —
+                    : Select run:
                   </SelectItem>
                   {options.map((r) => (
                     <SelectItem key={r.id} value={r.id} className="text-xs">
@@ -175,8 +175,8 @@ function buildConfigDiffMatrix(
     Object.keys(r.config.hyperparameters).forEach((k) => hpKeys.add(k));
   }
   for (const k of [...hpKeys].sort()) {
-    const b = String(baseline.config.hyperparameters[k] ?? "—");
-    const vals = compares.map((c) => String(c.config.hyperparameters[k] ?? "—"));
+    const b = String(baseline.config.hyperparameters[k] ?? "-");
+    const vals = compares.map((c) => String(c.config.hyperparameters[k] ?? "-"));
     if (vals.some((v) => v !== b)) {
       rows.push({ key: `hp.${k}`, baseline: b, values: vals });
     }
@@ -400,7 +400,7 @@ export function RunComparisonView({
                                 colSpan={4}
                                 className="border-l border-border/30 px-2 py-1.5 text-muted-foreground text-center"
                               >
-                                —
+                                :
                               </td>
                             </React.Fragment>
                           );
@@ -425,7 +425,7 @@ export function RunComparisonView({
                                 : `${formatNumber(delta, 2)}${suffix}`}
                             </td>
                             <td className="px-1 py-1.5 font-mono text-muted-foreground text-[9px] text-center">
-                              {compLoading ? "…" : comp ? formatNumber(comp.p_value, 3) : "—"}
+                              {compLoading ? "…" : comp ? formatNumber(comp.p_value, 3) : "-"}
                             </td>
                             <td className="px-1 py-1.5 text-center">
                               {compLoading ? (
@@ -442,7 +442,7 @@ export function RunComparisonView({
                                   N
                                 </Badge>
                               ) : (
-                                "—"
+                                "-"
                               )}
                             </td>
                           </React.Fragment>

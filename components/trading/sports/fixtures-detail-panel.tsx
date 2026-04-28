@@ -339,7 +339,12 @@ function ResultsTab({ fixture }: { fixture: Fixture }) {
   }
 
   const totalGoals = fixture.score.home + fixture.score.away;
-  const result = fixture.score.home > fixture.score.away ? "Home Win" : fixture.score.away > fixture.score.home ? "Away Win" : "Draw";
+  const result =
+    fixture.score.home > fixture.score.away
+      ? "Home Win"
+      : fixture.score.away > fixture.score.home
+        ? "Away Win"
+        : "Draw";
   const btts = fixture.score.home > 0 && fixture.score.away > 0;
   const over25 = totalGoals > 2;
 
@@ -365,14 +370,18 @@ function ResultsTab({ fixture }: { fixture: Fixture }) {
         </div>
         <div className="flex flex-col items-center gap-1 rounded-lg bg-zinc-900/60 border border-zinc-800 px-2 py-3">
           <span className="text-xs text-zinc-500">BTTS</span>
-          <span className={cn("text-lg font-black", btts ? "text-[#4ade80]" : "text-red-400")}>{btts ? "Yes" : "No"}</span>
+          <span className={cn("text-lg font-black", btts ? "text-[#4ade80]" : "text-red-400")}>
+            {btts ? "Yes" : "No"}
+          </span>
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-2">
         <div className="flex flex-col items-center gap-1 rounded-lg bg-zinc-900/60 border border-zinc-800 px-2 py-3">
           <span className="text-xs text-zinc-500">Over 2.5</span>
-          <span className={cn("text-lg font-black", over25 ? "text-[#4ade80]" : "text-red-400")}>{over25 ? "Yes" : "No"}</span>
+          <span className={cn("text-lg font-black", over25 ? "text-[#4ade80]" : "text-red-400")}>
+            {over25 ? "Yes" : "No"}
+          </span>
         </div>
         <div className="flex flex-col items-center gap-1 rounded-lg bg-zinc-900/60 border border-zinc-800 px-2 py-3">
           <span className="text-xs text-zinc-500">HT Score</span>
@@ -418,7 +427,12 @@ function ResultsTab({ fixture }: { fixture: Fixture }) {
               >
                 <span className="text-xs text-zinc-500 uppercase tracking-wider">{row.label}</span>
                 <span className="text-sm text-zinc-400 text-center">{row.predicted}</span>
-                <span className={cn("text-sm font-bold text-center", row.correct === true ? "text-[#4ade80]" : row.correct === false ? "text-red-400" : "text-zinc-200")}>
+                <span
+                  className={cn(
+                    "text-sm font-bold text-center",
+                    row.correct === true ? "text-[#4ade80]" : row.correct === false ? "text-red-400" : "text-zinc-200",
+                  )}
+                >
                   {row.actual}
                 </span>
               </div>
@@ -590,7 +604,7 @@ export function FixtureDetailPanel({
               </div>
               <div className="flex items-center gap-2 shrink-0">
                 <span className="text-4xl font-black text-white tabular-nums">{fixture.score.home}</span>
-                <span className="text-2xl text-zinc-600">—</span>
+                <span className="text-2xl text-zinc-600">-</span>
                 <span className="text-4xl font-black text-white tabular-nums">{fixture.score.away}</span>
               </div>
               <div className="flex-1 min-w-0 text-right">

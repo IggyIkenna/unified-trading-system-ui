@@ -35,7 +35,7 @@ export function ClientsOrgDetail({
           </Button>
           <PageHeader
             title={selectedOrg.name}
-            description={`${selectedOrg.type === "internal" ? "Internal Team" : "Client Organization"} — Created ${selectedOrg.createdAt}`}
+            description={`${selectedOrg.type === "internal" ? "Internal Team" : "Client Organization"}: Created ${selectedOrg.createdAt}`}
           >
             <Badge
               className={
@@ -280,7 +280,7 @@ export function ClientsOrgDetail({
                           name: "MiFID II Suitability Assessment",
                           type: "Regulatory",
                           status: "draft",
-                          uploaded: "—",
+                          uploaded: "-",
                           docusign: "not sent",
                         },
                       ].map((doc, i) => (
@@ -456,7 +456,7 @@ export function ClientsOrgDetail({
                       },
                       {
                         service: "Investment Mgmt",
-                        tier: "—",
+                        tier: "-",
                         status: "not subscribed",
                         entitlements: [],
                       },

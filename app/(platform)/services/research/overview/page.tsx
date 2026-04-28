@@ -221,12 +221,8 @@ export default function BuildOverviewPage() {
 
   const runningJobs = activeJobs.filter((j) => j.status === "running");
   const queuedJobs = activeJobs.filter((j) => j.status === "queued");
-  const [scopeFamily, setScopeFamily] = React.useState<
-    StrategyFamily | undefined
-  >(undefined);
-  const [scopeArchetype, setScopeArchetype] = React.useState<
-    StrategyArchetype | undefined
-  >(undefined);
+  const [scopeFamily, setScopeFamily] = React.useState<StrategyFamily | undefined>(undefined);
+  const [scopeArchetype, setScopeArchetype] = React.useState<StrategyArchetype | undefined>(undefined);
 
   return (
     <div className="space-y-6 p-6">
@@ -234,7 +230,7 @@ export default function BuildOverviewPage() {
         title="Research Pipeline"
         description={
           <>
-            <p>Features, models, strategies, and execution research — one pipeline, one family.</p>
+            <p>Features, models, strategies, and execution research: one pipeline, one family.</p>
             <p className="text-caption text-muted-foreground/60 font-mono">
               {runningJobs.length} active job{runningJobs.length !== 1 ? "s" : ""} &middot;{" "}
               {alerts.filter((a) => a.severity === "critical" || a.severity === "warning").length} alert

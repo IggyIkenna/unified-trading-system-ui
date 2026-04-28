@@ -5,10 +5,7 @@ import { PageHeader } from "@/components/shared/page-header";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { DataFreshnessStrip } from "@/components/shared/data-freshness-strip";
 import type { DataSource } from "@/components/shared/data-freshness-strip";
-import {
-  ComparisonPanel,
-  BatchDetailDrawer,
-} from "@/components/batch-workspace";
+import { ComparisonPanel, BatchDetailDrawer } from "@/components/batch-workspace";
 import type { ComparisonEntity, MetricDefinition } from "@/components/batch-workspace/comparison-panel";
 import type { DetailSection } from "@/components/batch-workspace/batch-detail-drawer";
 import { Badge } from "@/components/ui/badge";
@@ -50,7 +47,13 @@ const ALGO_METRICS: MetricDefinition[] = [
   { key: "avgSlippage", label: "Avg Slippage (bps)", format: "number", higherIsBetter: false, group: "Performance" },
   { key: "avgFillRate", label: "Fill Rate (%)", format: "percent", higherIsBetter: true, group: "Performance" },
   { key: "avgLatency", label: "Latency (ms)", format: "duration", higherIsBetter: false, group: "Operational" },
-  { key: "costVsBenchmark", label: "Cost vs VWAP (bps)", format: "number", higherIsBetter: false, group: "Performance" },
+  {
+    key: "costVsBenchmark",
+    label: "Cost vs VWAP (bps)",
+    format: "number",
+    higherIsBetter: false,
+    group: "Performance",
+  },
 ];
 
 function algoToComparisonEntity(algo: AlgoListRow): ComparisonEntity {
@@ -76,7 +79,11 @@ function algoToDetailSections(algo: AlgoListRow): DetailSection[] {
       items: [
         { label: "Avg Slippage", value: `${formatNumber(algo.metrics.avgSlippage, 2)} bps`, format: "mono" },
         { label: "Fill Rate", value: `${formatNumber(algo.metrics.avgFillRate, 1)}%`, format: "mono" },
-        { label: "Cost vs VWAP", value: `${algo.metrics.costVsBenchmark >= 0 ? "+" : ""}${formatNumber(algo.metrics.costVsBenchmark, 2)} bps`, format: "mono" },
+        {
+          label: "Cost vs VWAP",
+          value: `${algo.metrics.costVsBenchmark >= 0 ? "+" : ""}${formatNumber(algo.metrics.costVsBenchmark, 2)} bps`,
+          format: "mono",
+        },
         { label: "Avg Latency", value: `${algo.metrics.avgLatency}ms`, format: "mono" },
       ],
     },
@@ -87,7 +94,13 @@ function algoToDetailSections(algo: AlgoListRow): DetailSection[] {
         { label: "Version", value: algo.version, format: "mono" },
         { label: "Supported Venues", value: algo.supportedVenues.join(", "), format: "text" },
         ...(algo.params?.aggressiveness !== undefined
-          ? [{ label: "Aggressiveness", value: `${formatNumber(algo.params.aggressiveness * 100, 0)}%` as string, format: "mono" as const }]
+          ? [
+              {
+                label: "Aggressiveness",
+                value: `${formatNumber(algo.params.aggressiveness * 100, 0)}%` as string,
+                format: "mono" as const,
+              },
+            ]
           : []),
       ],
     },
@@ -125,10 +138,7 @@ export default function ExecutionAlgosPage() {
 
   const selectedAlgoData = mockExecutionAlgos.filter((a: AlgoListRow) => selectedAlgos.includes(a.id));
 
-  const comparisonEntities = React.useMemo(
-    () => selectedAlgoData.map(algoToComparisonEntity),
-    [selectedAlgoData],
-  );
+  const comparisonEntities = React.useMemo(() => selectedAlgoData.map(algoToComparisonEntity), [selectedAlgoData]);
 
   const hasError = algosError || btError;
   const refetchAll = () => {
@@ -298,23 +308,38 @@ export default function ExecutionAlgosPage() {
         {mockExecutionAlgos.length > 0 && (
           <div className="px-4 py-3 rounded-lg border border-border/30 bg-muted/5">
             <p className="text-xs text-muted-foreground leading-relaxed">
-              <span className="font-medium text-foreground/80">Algo Fleet</span> —{" "}
+              <span className="font-medium text-foreground/80">Algo Fleet</span>:{" "}
               <span className="font-mono">{mockExecutionAlgos.length}</span> algorithms registered.{" "}
               <span className="font-mono text-emerald-400">
                 {mockExecutionAlgos.filter((a) => a.status === "live").length}
-              </span> live,{" "}
+              </span>{" "}
+              live,{" "}
               <span className="font-mono text-amber-400">
                 {mockExecutionAlgos.filter((a) => a.status === "testing").length}
-              </span> testing.
-              {" "}Avg slippage{" "}
+              </span>{" "}
+              testing. Avg slippage{" "}
               <span className="font-mono">
-                {formatNumber(mockExecutionAlgos.reduce((s, a) => s + a.metrics.avgSlippage, 0) / mockExecutionAlgos.length, 2)} bps
-              </span>,{" "}avg fill{" "}
+                {formatNumber(
+                  mockExecutionAlgos.reduce((s, a) => s + a.metrics.avgSlippage, 0) / mockExecutionAlgos.length,
+                  2,
+                )}{" "}
+                bps
+              </span>
+              , avg fill{" "}
               <span className="font-mono">
-                {formatNumber(mockExecutionAlgos.reduce((s, a) => s + a.metrics.avgFillRate, 0) / mockExecutionAlgos.length, 1)}%
-              </span>.
+                {formatNumber(
+                  mockExecutionAlgos.reduce((s, a) => s + a.metrics.avgFillRate, 0) / mockExecutionAlgos.length,
+                  1,
+                )}
+                %
+              </span>
+              .
               {MOCK_ALGO_BACKTESTS.length > 0 && (
-                <> <span className="font-mono">{MOCK_ALGO_BACKTESTS.length}</span> backtest{MOCK_ALGO_BACKTESTS.length !== 1 ? "s" : ""} available.</>
+                <>
+                  {" "}
+                  <span className="font-mono">{MOCK_ALGO_BACKTESTS.length}</span> backtest
+                  {MOCK_ALGO_BACKTESTS.length !== 1 ? "s" : ""} available.
+                </>
               )}
             </p>
           </div>
@@ -322,7 +347,9 @@ export default function ExecutionAlgosPage() {
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="h-8">
-            <TabsTrigger value="algos" className="text-xs">Algorithms</TabsTrigger>
+            <TabsTrigger value="algos" className="text-xs">
+              Algorithms
+            </TabsTrigger>
             <TabsTrigger value="compare" className="text-xs">
               Compare
               {selectedAlgos.length >= 2 && (
@@ -331,7 +358,9 @@ export default function ExecutionAlgosPage() {
                 </Badge>
               )}
             </TabsTrigger>
-            <TabsTrigger value="backtests" className="text-xs">Backtests</TabsTrigger>
+            <TabsTrigger value="backtests" className="text-xs">
+              Backtests
+            </TabsTrigger>
           </TabsList>
 
           {/* --- Algorithms Tab --- */}
@@ -375,60 +404,65 @@ export default function ExecutionAlgosPage() {
                   <p className="text-sm text-muted-foreground text-center py-6">No backtest results available yet</p>
                 )}
                 <div className="grid grid-cols-2 gap-4">
-                  {MOCK_ALGO_BACKTESTS.map((bt: {
-                    id: string;
-                    algoId: string;
-                    algoVersion: string;
-                    status: string;
-                    metrics: { avgSlippage: number; avgFillRate: number; costVsVWAP: number };
-                    testPeriod: { numOrders: number };
-                    instruments: string[];
-                  }) => {
-                    const algo = mockExecutionAlgos.find((a) => a.id === bt.algoId);
-                    return (
-                      <div key={bt.id} className="p-4 rounded-lg border border-border/50 hover:bg-muted/10 transition-colors">
-                        <div className="flex items-center justify-between mb-4">
-                          <div>
-                            <div className="font-medium">{algo?.name || bt.algoId}</div>
-                            <div className="text-xs text-muted-foreground">v{bt.algoVersion}</div>
+                  {MOCK_ALGO_BACKTESTS.map(
+                    (bt: {
+                      id: string;
+                      algoId: string;
+                      algoVersion: string;
+                      status: string;
+                      metrics: { avgSlippage: number; avgFillRate: number; costVsVWAP: number };
+                      testPeriod: { numOrders: number };
+                      instruments: string[];
+                    }) => {
+                      const algo = mockExecutionAlgos.find((a) => a.id === bt.algoId);
+                      return (
+                        <div
+                          key={bt.id}
+                          className="p-4 rounded-lg border border-border/50 hover:bg-muted/10 transition-colors"
+                        >
+                          <div className="flex items-center justify-between mb-4">
+                            <div>
+                              <div className="font-medium">{algo?.name || bt.algoId}</div>
+                              <div className="text-xs text-muted-foreground">v{bt.algoVersion}</div>
+                            </div>
+                            <StatusBadge
+                              status={
+                                bt.status === "live"
+                                  ? "live"
+                                  : bt.status === "completed" || bt.status === "done"
+                                    ? "done"
+                                    : "running"
+                              }
+                              label={bt.status}
+                              showDot
+                            />
                           </div>
-                          <StatusBadge
-                            status={
-                              bt.status === "live"
-                                ? "live"
-                                : bt.status === "completed" || bt.status === "done"
-                                  ? "done"
-                                  : "running"
-                            }
-                            label={bt.status}
-                            showDot
-                          />
-                        </div>
 
-                        <div className="grid grid-cols-3 gap-3 mb-4">
-                          <div className="p-2 rounded bg-muted/50">
-                            <div className="text-xs text-muted-foreground">Avg Slippage</div>
-                            <div className="font-mono font-medium">{formatNumber(bt.metrics.avgSlippage, 2)} bps</div>
-                          </div>
-                          <div className="p-2 rounded bg-muted/50">
-                            <div className="text-xs text-muted-foreground">Fill Rate</div>
-                            <div className="font-mono font-medium">{formatNumber(bt.metrics.avgFillRate, 1)}%</div>
-                          </div>
-                          <div className="p-2 rounded bg-muted/50">
-                            <div className="text-xs text-muted-foreground">vs VWAP</div>
-                            <div className={cn("font-mono font-medium", pnlColorClass(-bt.metrics.costVsVWAP))}>
-                              {bt.metrics.costVsVWAP >= 0 ? "+" : ""}
-                              {formatNumber(bt.metrics.costVsVWAP, 2)}
+                          <div className="grid grid-cols-3 gap-3 mb-4">
+                            <div className="p-2 rounded bg-muted/50">
+                              <div className="text-xs text-muted-foreground">Avg Slippage</div>
+                              <div className="font-mono font-medium">{formatNumber(bt.metrics.avgSlippage, 2)} bps</div>
+                            </div>
+                            <div className="p-2 rounded bg-muted/50">
+                              <div className="text-xs text-muted-foreground">Fill Rate</div>
+                              <div className="font-mono font-medium">{formatNumber(bt.metrics.avgFillRate, 1)}%</div>
+                            </div>
+                            <div className="p-2 rounded bg-muted/50">
+                              <div className="text-xs text-muted-foreground">vs VWAP</div>
+                              <div className={cn("font-mono font-medium", pnlColorClass(-bt.metrics.costVsVWAP))}>
+                                {bt.metrics.costVsVWAP >= 0 ? "+" : ""}
+                                {formatNumber(bt.metrics.costVsVWAP, 2)}
+                              </div>
                             </div>
                           </div>
-                        </div>
 
-                        <div className="text-xs text-muted-foreground">
-                          {bt.testPeriod.numOrders.toLocaleString()} orders · {bt.instruments.join(", ")}
+                          <div className="text-xs text-muted-foreground">
+                            {bt.testPeriod.numOrders.toLocaleString()} orders · {bt.instruments.join(", ")}
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    },
+                  )}
                 </div>
               </CardContent>
             </Card>

@@ -33,8 +33,7 @@ export default function DeploymentPage() {
               Upgrade to DART Full to access deployment controls
             </CardTitle>
             <CardDescription>
-              Runtime profile, chaos controller, and kill-switch configuration
-              require the Strategy-Full entitlement.
+              Runtime profile, chaos controller, and kill-switch configuration require the Strategy-Full entitlement.
             </CardDescription>
           </CardHeader>
         </Card>
@@ -117,19 +116,13 @@ export default function DeploymentPage() {
         <CardHeader>
           <CardTitle>Deep operations (deployment-ui)</CardTitle>
           <CardDescription>
-            Full canary rollout forensics, chaos scenarios, shard backfill, and
-            VM fleet state live in deployment-ui — kept separate so DART stays
-            focussed on strategy operations.
+            Full canary rollout forensics, chaos scenarios, shard backfill, and VM fleet state live in deployment-ui:
+            kept separate so DART stays focussed on strategy operations.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Button asChild variant="outline">
-            <Link
-              href="http://localhost:5183"
-              target="_blank"
-              rel="noreferrer"
-              className="gap-2"
-            >
+            <Link href="http://localhost:5183" target="_blank" rel="noreferrer" className="gap-2">
               Open deployment-ui <ExternalLink className="size-3.5" aria-hidden />
             </Link>
           </Button>

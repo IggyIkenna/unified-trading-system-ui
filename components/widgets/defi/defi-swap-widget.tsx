@@ -213,7 +213,7 @@ export function DeFiSwapWidget(props: WidgetComponentProps) {
       {isStakedBasis && (
         <>
           <Separator className="my-2" />
-          <CollapsibleSection title="Staked basis — swap leg" defaultOpen={true}>
+          <CollapsibleSection title="Staked basis: swap leg" defaultOpen={true}>
             <p className="text-xs text-muted-foreground px-1 pb-2">
               SOR swap stable → weETH (EtherFi LST). Then use{" "}
               <span className="font-mono text-foreground">Transfer &amp; Bridge</span> for Hyperliquid margin and{" "}
@@ -255,7 +255,7 @@ export function DeFiSwapWidget(props: WidgetComponentProps) {
                   {formatPercent(
                     (calculateBasisTradeFundingImpact(tokenOut) -
                       calculateBasisTradeCostOfCarry(parseFloat(amountIn), tokenOut)) /
-                    100,
+                      100,
                     1,
                   )}
                 </div>
@@ -287,7 +287,7 @@ export function DeFiSwapWidget(props: WidgetComponentProps) {
                 <span className="text-muted-foreground">Algo</span>
                 <span className="font-mono">{swapAlgos.find((a) => a.value === algoType)?.label ?? algoType}</span>
                 <span className="text-muted-foreground">Ref price</span>
-                <span className="font-mono">{route.reference_price?.toFixed(6) ?? "—"}</span>
+                <span className="font-mono">{route.reference_price?.toFixed(6) ?? "-"}</span>
                 <span className="text-muted-foreground">Agg. impact</span>
                 <span className={cn("font-mono", route.priceImpactPct > 0.5 ? "text-rose-400" : "text-emerald-400")}>
                   {(route.priceImpactPct * 100).toFixed(2)} bps

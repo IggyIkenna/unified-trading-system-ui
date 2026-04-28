@@ -174,7 +174,7 @@ export default function SportsBetPage() {
                         {fwo.fixture.home.name} vs {fwo.fixture.away.name}
                       </CardTitle>
                       <p className="text-[10px] text-muted-foreground">
-                        {fwo.fixture.league} — {fwo.fixture.round} — {new Date(fwo.fixture.kickoff).toLocaleString()}
+                        {fwo.fixture.league}: {fwo.fixture.round}: {new Date(fwo.fixture.kickoff).toLocaleString()}
                       </p>
                     </div>
                     <Badge variant="outline" className="text-[10px]">

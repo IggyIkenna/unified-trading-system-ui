@@ -159,7 +159,7 @@ export default function ApiKeysSettingsPage() {
             <Key className="size-6" /> Venue API Keys
           </span>
         }
-        description={`${org.name} — manage your exchange and venue API credentials`}
+        description={`${org.name}: manage your exchange and venue API credentials`}
       >
         <Button size="sm" onClick={() => setAdding(true)} disabled={adding}>
           <Plus className="mr-1 size-4" /> Add Key

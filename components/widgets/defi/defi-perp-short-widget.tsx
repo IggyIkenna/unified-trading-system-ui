@@ -81,7 +81,7 @@ export function DeFiPerpShortWidget(_props: WidgetComponentProps) {
         <div className="flex items-center justify-between text-xs">
           <span className="text-muted-foreground">Notional</span>
           <span className="font-mono" data-testid="perp-notional">
-            {sizeNum > 0 ? `$${formatNumber(notional, 2)}` : "—"}
+            {sizeNum > 0 ? `$${formatNumber(notional, 2)}` : "-"}
           </span>
         </div>
         <div className="flex items-center justify-between text-xs">

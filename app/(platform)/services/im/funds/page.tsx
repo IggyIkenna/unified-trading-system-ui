@@ -16,10 +16,7 @@ import {
   type AllocatorSubscription,
   type NavSnapshot,
 } from "@/lib/api/fund-administration";
-import {
-  MOCK_DEFAULT_FUND_ID,
-  MOCK_DEFAULT_SHARE_CLASS,
-} from "@/lib/mocks/fund-administration";
+import { MOCK_DEFAULT_FUND_ID, MOCK_DEFAULT_SHARE_CLASS } from "@/lib/mocks/fund-administration";
 
 interface OverviewData {
   subscriptions: AllocatorSubscription[];
@@ -31,14 +28,14 @@ const CHILD_LINKS = [
   {
     href: "/services/im/funds/subscriptions",
     label: "Subscriptions",
-    description: "Investor capital inflows — PENDING → APPROVED → SETTLED",
+    description: "Investor capital inflows: PENDING → APPROVED → SETTLED",
     icon: FilePlus,
     testId: "im-funds-overview-link-subscriptions",
   },
   {
     href: "/services/im/funds/redemptions",
     label: "Redemptions",
-    description: "Investor capital outflows — grace period, process, settle",
+    description: "Investor capital outflows: grace period, process, settle",
     icon: ScrollText,
     testId: "im-funds-overview-link-redemptions",
   },
@@ -64,11 +61,7 @@ export default function ImFundsOverviewPage() {
 
   React.useEffect(() => {
     let cancelled = false;
-    Promise.all([
-      listSubscriptions(),
-      listRedemptions(),
-      getNavHistory(MOCK_DEFAULT_FUND_ID, MOCK_DEFAULT_SHARE_CLASS),
-    ])
+    Promise.all([listSubscriptions(), listRedemptions(), getNavHistory(MOCK_DEFAULT_FUND_ID, MOCK_DEFAULT_SHARE_CLASS)])
       .then(([subscriptions, redemptions, navHistory]) => {
         if (!cancelled) setData({ subscriptions, redemptions, navHistory });
       })
@@ -88,7 +81,7 @@ export default function ImFundsOverviewPage() {
     <main className="flex-1 p-6 space-y-6" data-testid="im-funds-overview-page">
       <PageHeader
         title="Fund Administration"
-        description={`Pooled IM fund — subscriptions, redemptions, capital allocation, and NAV history for ${MOCK_DEFAULT_FUND_ID} / ${MOCK_DEFAULT_SHARE_CLASS}.`}
+        description={`Pooled IM fund: subscriptions, redemptions, capital allocation, and NAV history for ${MOCK_DEFAULT_FUND_ID} / ${MOCK_DEFAULT_SHARE_CLASS}.`}
       />
 
       {error ? (
@@ -108,7 +101,7 @@ export default function ImFundsOverviewPage() {
               </div>
               <div>
                 {data ? (
-                  <p className="text-xl font-semibold font-mono">{latestNav ?? "—"}</p>
+                  <p className="text-xl font-semibold font-mono">{latestNav ?? "-"}</p>
                 ) : (
                   <Skeleton className="h-7 w-24" />
                 )}

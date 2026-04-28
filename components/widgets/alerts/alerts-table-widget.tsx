@@ -162,7 +162,7 @@ export function AlertsTableWidget(_props: WidgetComponentProps) {
                   {alert.entity}
                 </Link>
               ) : (
-                <span className="text-foreground">{alert.entity || "—"}</span>
+                <span className="text-foreground">{alert.entity || "-"}</span>
               )}
               <span className="text-xs text-muted-foreground font-mono">{alert.alertType}</span>
             </div>
@@ -286,7 +286,7 @@ export function AlertsTableWidget(_props: WidgetComponentProps) {
                       </div>
                       <div>
                         <div className="text-xs text-muted-foreground mb-1">Entity</div>
-                        <div className="text-sm font-medium">{alert.entity || "—"}</div>
+                        <div className="text-sm font-medium">{alert.entity || "-"}</div>
                         <div className="text-xs text-muted-foreground font-mono">{alert.alertType}</div>
                       </div>
                       <div>
@@ -385,7 +385,7 @@ export function AlertsTableWidget(_props: WidgetComponentProps) {
           {highCount} High
         </Badge>
       )}
-      {isBatchMode && <span className="text-micro text-status-warning shrink-0">Batch — actions disabled</span>}
+      {isBatchMode && <span className="text-micro text-status-warning shrink-0">Batch: actions disabled</span>}
     </div>
   );
 
@@ -461,7 +461,7 @@ export function AlertsTableWidget(_props: WidgetComponentProps) {
       isLoading={isLoading}
       error={isError ? "Failed to load alerts" : null}
       onRetry={refetch}
-      emptyMessage="No active alerts — all systems operating normally"
+      emptyMessage="No active alerts: all systems operating normally"
       enableSorting
       enableColumnVisibility={false}
     />

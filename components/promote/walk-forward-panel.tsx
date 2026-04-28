@@ -1,28 +1,16 @@
 import { GitBranch } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { fmtNum, fmtPct, statusColor } from "./helpers";
 import { MetricCard } from "@/components/shared/metric-card";
 import type { CandidateStrategy } from "./types";
 
-export function WalkForwardPanel({
-  strategy,
-}: {
-  strategy: CandidateStrategy;
-}) {
+export function WalkForwardPanel({ strategy }: { strategy: CandidateStrategy }) {
   const w = strategy.walkForward;
   const sharpes = w.map((x) => x.sharpe);
   const mean = sharpes.reduce((a, b) => a + b, 0) / (sharpes.length || 1);
-  const variance =
-    sharpes.reduce((s, x) => s + (x - mean) ** 2, 0) / (sharpes.length || 1);
+  const variance = sharpes.reduce((s, x) => s + (x - mean) ** 2, 0) / (sharpes.length || 1);
   const std = Math.sqrt(variance);
   const degradation = w.length >= 2 ? w[w.length - 1].sharpe - w[0].sharpe : 0;
   const pooledT = mean / (std / Math.sqrt(sharpes.length || 1) || 1);
@@ -50,9 +38,7 @@ export function WalkForwardPanel({
             density="walkforward"
             label="Degradation (last − first)"
             primary={fmtNum(degradation)}
-            primaryClassName={
-              degradation < 0 ? "text-amber-400" : "text-emerald-400"
-            }
+            primaryClassName={degradation < 0 ? "text-amber-400" : "text-emerald-400"}
           />
           <MetricCard
             variant="bordered"
@@ -63,9 +49,8 @@ export function WalkForwardPanel({
           />
         </div>
         <p className="text-xs text-muted-foreground font-mono">
-          Window-level p-values are approximate (two-sided vs. zero mean
-          return); treat as triage, not hypothesis tests across overlapping
-          windows.
+          Window-level p-values are approximate (two-sided vs. zero mean return); treat as triage, not hypothesis tests
+          across overlapping windows.
         </p>
         <Table>
           <TableHeader>
@@ -94,30 +79,16 @@ export function WalkForwardPanel({
                   <TableCell className="text-muted-foreground">
                     {row.testStart} → {row.testEnd}
                   </TableCell>
-                  <TableCell className="text-right font-mono">
-                    {fmtNum(row.sharpe)}
-                  </TableCell>
-                  <TableCell className="text-right font-mono">
-                    {fmtPct(row.return)}
-                  </TableCell>
-                  <TableCell className="text-right font-mono text-rose-400/90">
-                    {fmtPct(row.maxDrawdown)}
-                  </TableCell>
-                  <TableCell className="text-right font-mono">
-                    {fmtNum(row.tStat)}
-                  </TableCell>
+                  <TableCell className="text-right font-mono">{fmtNum(row.sharpe)}</TableCell>
+                  <TableCell className="text-right font-mono">{fmtPct(row.return)}</TableCell>
+                  <TableCell className="text-right font-mono text-rose-400/90">{fmtPct(row.maxDrawdown)}</TableCell>
+                  <TableCell className="text-right font-mono">{fmtNum(row.tStat)}</TableCell>
                   <TableCell className="text-right font-mono">
                     {p === undefined ? (
-                      "—"
+                      "-"
                     ) : (
                       <span
-                        className={cn(
-                          pOk
-                            ? "text-emerald-400"
-                            : pWarn
-                              ? "text-amber-400"
-                              : statusColor("pending"),
-                        )}
+                        className={cn(pOk ? "text-emerald-400" : pWarn ? "text-amber-400" : statusColor("pending"))}
                       >
                         {fmtNum(p, 3)}
                       </span>

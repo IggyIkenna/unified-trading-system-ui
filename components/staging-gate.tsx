@@ -123,7 +123,7 @@ function StagingAuthWall({ children }: { children: React.ReactNode }) {
 
         <p className="text-center text-[10px] text-white/20 mt-6">
           <Lock className="inline size-3 mr-1" />
-          Internal staging — not for public access
+          Internal staging: not for public access
         </p>
       </div>
     </div>

@@ -332,12 +332,12 @@ export default function GapsPage() {
                           </Badge>
                         </td>
                         <td className="px-3 py-2 font-medium capitalize">{gap.venue.replace(/_/g, " ")}</td>
-                        <td className="px-3 py-2 font-mono">{gap.instrument ?? "—"}</td>
+                        <td className="px-3 py-2 font-mono">{gap.instrument ?? "-"}</td>
                         <td className="px-3 py-2 font-mono text-muted-foreground">
                           {gap.gapStart === gap.gapEnd ? gap.gapStart : `${gap.gapStart} → ${gap.gapEnd}`}
                         </td>
                         <td className="px-3 py-2 text-center font-mono">{gap.daysAffected}</td>
-                        <td className="px-3 py-2 text-muted-foreground max-w-[160px] truncate">{gap.cause ?? "—"}</td>
+                        <td className="px-3 py-2 text-muted-foreground max-w-[160px] truncate">{gap.cause ?? "-"}</td>
                       </tr>
                     );
                   })}

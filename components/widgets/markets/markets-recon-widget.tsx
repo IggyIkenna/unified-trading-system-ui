@@ -49,7 +49,7 @@ const columns: ColumnDef<ReconRun, unknown>[] = [
       return val > 0 ? (
         <div className="text-right text-muted-foreground">${formatNumber(val / 1000, 1)}k</div>
       ) : (
-        <div className="text-right">—</div>
+        <div className="text-right">-</div>
       );
     },
   },

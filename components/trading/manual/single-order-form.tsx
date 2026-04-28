@@ -395,7 +395,7 @@ export function SingleOrderForm({
             <div className="flex items-center gap-2 p-2 rounded bg-amber-500/10 border border-amber-500/30">
               <AlertTriangle className="size-3.5 text-amber-500 shrink-0" />
               <span className="text-xs text-amber-600 dark:text-amber-400">
-                Compliance check unavailable — submission permitted with caution
+                Compliance check unavailable: submission permitted with caution
               </span>
             </div>
           )}
@@ -448,7 +448,7 @@ export function SingleOrderForm({
                 ) : (
                   <>
                     <ShieldX className="size-3.5 shrink-0" />
-                    Order rejected — {failedCheck?.name ?? "compliance check"} violated
+                    Order rejected: {failedCheck?.name ?? "compliance check"} violated
                   </>
                 )}
               </div>

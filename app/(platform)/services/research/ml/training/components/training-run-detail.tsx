@@ -146,7 +146,7 @@ export function RunDetail({
               <StatusBadge status={run.status} />
             </div>
             <p className="text-[11px] text-muted-foreground mt-0.5">
-              {run.config.architecture} · {run.config.gpu_type} · {run.duration ?? "—"}
+              {run.config.architecture} · {run.config.gpu_type} · {run.duration ?? "-"}
               {run.status === "completed" && (
                 <>
                   {" · "}
@@ -207,7 +207,7 @@ export function RunDetail({
               },
               {
                 label: run.status === "running" ? "ETA" : "Duration",
-                value: run.status === "running" ? (run.estimated_time_remaining ?? "—") : (run.duration ?? "—"),
+                value: run.status === "running" ? (run.estimated_time_remaining ?? "-") : (run.duration ?? "-"),
               },
             ].map((m) => (
               <div key={m.label} className="text-center p-2 rounded-md bg-muted/30">

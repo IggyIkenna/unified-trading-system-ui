@@ -9,10 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { usePromoteListFilters } from "@/components/promote/promote-list-filters-context";
-import {
-  getOverallProgress,
-  promoteSlaBadge,
-} from "@/components/promote/helpers";
+import { getOverallProgress, promoteSlaBadge } from "@/components/promote/helpers";
 import { STAGE_META } from "@/components/promote/stage-meta";
 import { STAGE_ORDER } from "@/components/promote/types";
 import { usePromoteLifecycleStore } from "@/lib/stores/promote-lifecycle-store";
@@ -23,11 +20,7 @@ const FILTER_SELECT =
 
 const PAGE_SIZE_OPTIONS = [10, 15, 25, 50] as const;
 
-export function PromoteStrategyListPanel({
-  className,
-}: {
-  className?: string;
-}) {
+export function PromoteStrategyListPanel({ className }: { className?: string }) {
   const {
     asset,
     setAsset,
@@ -63,9 +56,7 @@ export function PromoteStrategyListPanel({
         label: `All (${cohortWithoutStageFilter.length})`,
       },
       ...STAGE_ORDER.map((stage) => {
-        const count = cohortWithoutStageFilter.filter(
-          (c) => c.currentStage === stage,
-        ).length;
+        const count = cohortWithoutStageFilter.filter((c) => c.currentStage === stage).length;
         return {
           value: stage,
           label: `${STAGE_META[stage].label} (${count})`,
@@ -87,10 +78,7 @@ export function PromoteStrategyListPanel({
         <div className="grid w-full grid-cols-1 gap-x-2 gap-y-2 sm:grid-cols-[minmax(0,3fr)_minmax(0,3fr)_minmax(0,3fr)_minmax(0,1fr)]">
           {/* Row 1: stage | asset | archetype | prev/next */}
           <div className="min-w-0">
-            <Label
-              htmlFor="promote-stage-filter"
-              className="text-[10px] uppercase tracking-wide text-muted-foreground"
-            >
+            <Label htmlFor="promote-stage-filter" className="text-[10px] uppercase tracking-wide text-muted-foreground">
               Stage
             </Label>
             <select
@@ -108,10 +96,7 @@ export function PromoteStrategyListPanel({
             </select>
           </div>
           <div className="min-w-0">
-            <Label
-              htmlFor="promote-asset-filter"
-              className="text-[10px] uppercase tracking-wide text-muted-foreground"
-            >
+            <Label htmlFor="promote-asset-filter" className="text-[10px] uppercase tracking-wide text-muted-foreground">
               Asset class
             </Label>
             <select
@@ -150,10 +135,7 @@ export function PromoteStrategyListPanel({
             </select>
           </div>
           <div className="flex min-w-0 flex-col justify-end">
-            <span
-              className="text-[10px] uppercase leading-none tracking-wide text-transparent select-none"
-              aria-hidden
-            >
+            <span className="text-[10px] uppercase leading-none tracking-wide text-transparent select-none" aria-hidden>
               ·
             </span>
             <div className="mt-0.5 flex h-7 items-center justify-center gap-0.5">
@@ -174,9 +156,7 @@ export function PromoteStrategyListPanel({
                 size="icon"
                 className="h-7 w-7 shrink-0"
                 disabled={listPage >= listTotalPages}
-                onClick={() =>
-                  setListPage((p) => Math.min(listTotalPages, p + 1))
-                }
+                onClick={() => setListPage((p) => Math.min(listTotalPages, p + 1))}
                 aria-label="Next page"
               >
                 <ChevronRight className="size-3.5" />
@@ -201,10 +181,7 @@ export function PromoteStrategyListPanel({
             />
           </div>
           <div className="min-w-0">
-            <Label
-              htmlFor="promote-from-date"
-              className="text-[10px] uppercase tracking-wide text-muted-foreground"
-            >
+            <Label htmlFor="promote-from-date" className="text-[10px] uppercase tracking-wide text-muted-foreground">
               From
             </Label>
             <Input
@@ -216,10 +193,7 @@ export function PromoteStrategyListPanel({
             />
           </div>
           <div className="min-w-0">
-            <Label
-              htmlFor="promote-to-date"
-              className="text-[10px] uppercase tracking-wide text-muted-foreground"
-            >
+            <Label htmlFor="promote-to-date" className="text-[10px] uppercase tracking-wide text-muted-foreground">
               To
             </Label>
             <Input
@@ -231,10 +205,7 @@ export function PromoteStrategyListPanel({
             />
           </div>
           <div className="min-w-0">
-            <Label
-              htmlFor="promote-page-size"
-              className="text-[10px] uppercase tracking-wide text-muted-foreground"
-            >
+            <Label htmlFor="promote-page-size" className="text-[10px] uppercase tracking-wide text-muted-foreground">
               Page
             </Label>
             <div className="mt-0.5 flex h-7 min-w-0 items-center justify-center gap-0.5">
@@ -274,15 +245,11 @@ export function PromoteStrategyListPanel({
                 onClick={() => setSelectedId(c.id)}
                 className={cn(
                   "w-full cursor-pointer rounded-lg border p-3 text-left transition-colors",
-                  active
-                    ? "border-primary bg-primary/5"
-                    : "border-border/50 hover:bg-muted/30",
+                  active ? "border-primary bg-primary/5" : "border-border/50 hover:bg-muted/30",
                 )}
               >
                 <div className="mb-1.5 flex items-center justify-between gap-2">
-                  <span className="truncate pr-2 text-sm font-medium">
-                    {c.name}
-                  </span>
+                  <span className="truncate pr-2 text-sm font-medium">{c.name}</span>
                   <Badge
                     variant="outline"
                     className={cn(
@@ -291,8 +258,7 @@ export function PromoteStrategyListPanel({
                         "border-emerald-500/30 bg-emerald-500/15 text-emerald-400",
                       c.stages[c.currentStage].status === "pending" &&
                         "border-amber-500/30 bg-amber-500/15 text-amber-400",
-                      c.stages[c.currentStage].status === "failed" &&
-                        "border-red-500/30 bg-red-500/15 text-red-400",
+                      c.stages[c.currentStage].status === "failed" && "border-red-500/30 bg-red-500/15 text-red-400",
                     )}
                   >
                     {stageMeta.label}
@@ -300,9 +266,7 @@ export function PromoteStrategyListPanel({
                 </div>
                 <p className="mb-2 text-[11px] text-muted-foreground">
                   {c.archetype} · {c.assetClass}{" "}
-                  <span className="font-mono text-muted-foreground/90">
-                    v{c.version}
-                  </span>
+                  <span className="font-mono text-muted-foreground/90">v{c.version}</span>
                 </p>
                 <div className="flex items-center gap-2">
                   <Progress value={progress} className="mb-0 h-1.5 flex-1" />
@@ -312,13 +276,9 @@ export function PromoteStrategyListPanel({
                 </div>
                 <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground">
                   <span className="font-mono">
-                    {c.daysInCurrentStage ?? "—"}d / {c.slaDaysExpected ?? "—"}d
-                    SLA
+                    {c.daysInCurrentStage ?? "-"}d / {c.slaDaysExpected ?? "-"}d SLA
                   </span>
-                  <Badge
-                    variant="outline"
-                    className={cn("text-[10px]", sla.className)}
-                  >
+                  <Badge variant="outline" className={cn("text-[10px]", sla.className)}>
                     {sla.label}
                   </Badge>
                 </div>
@@ -326,9 +286,7 @@ export function PromoteStrategyListPanel({
             );
           })}
           {filtered.length === 0 && (
-            <p className="px-1 py-8 text-center text-xs text-muted-foreground">
-              No strategies match filters.
-            </p>
+            <p className="px-1 py-8 text-center text-xs text-muted-foreground">No strategies match filters.</p>
           )}
         </div>
       </ScrollArea>

@@ -18,7 +18,7 @@ export function InstructionsPipelineTableWidget(_props: WidgetComponentProps) {
   const handleRefresh = React.useCallback(() => {
     refresh();
     toast.info("Instructions pipeline", {
-      description: "Live refresh not wired — showing mock fixture data.",
+      description: "Live refresh not wired: showing mock fixture data.",
     });
   }, [refresh]);
 

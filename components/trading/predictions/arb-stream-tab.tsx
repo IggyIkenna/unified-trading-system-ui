@@ -97,7 +97,7 @@ function ActiveArbCard({ arb, isNew }: { arb: PredictionArbOpportunity; isNew?: 
     });
     toast({
       title: "Arb executed",
-      description: `${arb.question} — ${formatPercent(arb.arbPct, 2)} locked in`,
+      description: `${arb.question}: ${formatPercent(arb.arbPct, 2)} locked in`,
     });
   }
 

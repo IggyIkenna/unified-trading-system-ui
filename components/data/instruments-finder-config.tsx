@@ -208,7 +208,7 @@ export function getInstrumentsContextStats(selections: FinderSelections): Finder
       name: inst?.symbol ?? instItem.label,
       metrics: [
         { label: "data types", value: inst?.dataTypes?.length ?? 0 },
-        { label: "available from", value: inst?.availableFrom ?? "—" },
+        { label: "available from", value: inst?.availableFrom ?? "-" },
       ],
     };
   }

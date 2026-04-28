@@ -16,8 +16,8 @@ function Row({ label, all, long, short }: { label: string; all: string; long?: s
     <tr className="border-t border-border/30">
       <td className="py-1.5 text-xs text-muted-foreground pr-4">{label}</td>
       <td className="py-1.5 text-xs font-mono tabular-nums text-right px-3">{all}</td>
-      <td className="py-1.5 text-xs font-mono tabular-nums text-right px-3">{long ?? "—"}</td>
-      <td className="py-1.5 text-xs font-mono tabular-nums text-right px-3">{short ?? "—"}</td>
+      <td className="py-1.5 text-xs font-mono tabular-nums text-right px-3">{long ?? "-"}</td>
+      <td className="py-1.5 text-xs font-mono tabular-nums text-right px-3">{short ?? "-"}</td>
     </tr>
   );
 }

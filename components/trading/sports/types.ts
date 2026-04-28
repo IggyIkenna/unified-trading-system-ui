@@ -1,13 +1,6 @@
 // ─── Union Types ─────────────────────────────────────────────────────────────
 
-export type FootballLeague =
-  | "EPL"
-  | "La Liga"
-  | "Bundesliga"
-  | "Serie A"
-  | "Ligue 1"
-  | "UCL"
-  | "UEL";
+export type FootballLeague = "EPL" | "La Liga" | "Bundesliga" | "Serie A" | "Ligue 1" | "UCL" | "UEL";
 
 // Aligned with backend Fixture.status_short values
 export type FixtureStatus =
@@ -99,11 +92,30 @@ export type Bookmaker =
 
 /** Bookmakers that can execute bets (not just odds) */
 export const EXECUTION_CAPABLE_BOOKMAKERS: Bookmaker[] = [
-  "betfair_exchange", "betfair_ex_uk", "betfair_ex_eu", "matchbook",
-  "kalshi", "polymarket", "pinnacle", "onexbet",
-  "bet365", "williamhill", "paddypower", "ladbrokes", "coral", "skybet", "betway",
-  "betfred", "betvictor", "boylesports", "sport888",
-  "draftkings", "fanduel", "betmgm", "betrivers", "espnbet",
+  "betfair_exchange",
+  "betfair_ex_uk",
+  "betfair_ex_eu",
+  "matchbook",
+  "kalshi",
+  "polymarket",
+  "pinnacle",
+  "onexbet",
+  "bet365",
+  "williamhill",
+  "paddypower",
+  "ladbrokes",
+  "coral",
+  "skybet",
+  "betway",
+  "betfred",
+  "betvictor",
+  "boylesports",
+  "sport888",
+  "draftkings",
+  "fanduel",
+  "betmgm",
+  "betrivers",
+  "espnbet",
 ];
 
 export const BOOKMAKER_DISPLAY_NAMES: Record<Bookmaker, string> = {
@@ -206,13 +218,7 @@ export interface MatchStats {
 // From FixtureEvent / SFMatchEvent
 export interface MatchEvent {
   minute: number;
-  type:
-  | "goal"
-  | "yellow_card"
-  | "red_card"
-  | "substitution"
-  | "var"
-  | "penalty";
+  type: "goal" | "yellow_card" | "red_card" | "substitution" | "var" | "penalty";
   team: "home" | "away";
   player: string;
   detail?: string; // "pen", "og", "assist: Salah"
@@ -237,7 +243,7 @@ export interface PreMatchData {
 // SFMatchProgressiveStats — 30-second interval snapshots (completed matches, As-Of replay)
 export interface ProgressiveStatsSnapshot {
   timer: string; // "45:30"
-  minuteDecimal: number; // 45.5 — for slider positioning
+  minuteDecimal: number; // 45.5: for slider positioning
   home: Partial<TeamStats>;
   away: Partial<TeamStats>;
 }

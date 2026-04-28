@@ -24,10 +24,7 @@ export interface EnvelopeCell {
 export interface EnvelopeArchetype {
   tenors?: string[] | null;
   timeframes: string[];
-  venue_combo_policy:
-    | "single_venue"
-    | "cross_venue_pairs"
-    | "same_venue_basis";
+  venue_combo_policy: "single_venue" | "cross_venue_pairs" | "same_venue_basis";
   bespoke_capable: boolean;
   instances_total: number;
   cells: EnvelopeCell[];
@@ -98,9 +95,7 @@ let instrumentsCache: Promise<StrategyInstrumentsJson> | null = null;
 let availabilityCache: Promise<AvailabilityJson> | null = null;
 
 async function fetchArtefact<T>(file: string): Promise<T> {
-  const res = await fetch(
-    `/api/catalogue/envelope?file=${encodeURIComponent(file)}`,
-  );
+  const res = await fetch(`/api/catalogue/envelope?file=${encodeURIComponent(file)}`);
   if (!res.ok) {
     throw new Error(`Failed to load ${file}: ${res.status} ${res.statusText}`);
   }
@@ -109,15 +104,13 @@ async function fetchArtefact<T>(file: string): Promise<T> {
   const text = await res.text();
   if (!text || text.trim().startsWith("<")) {
     throw new Error(
-      `Failed to load ${file}: response is not JSON (mock mode may be intercepting the GCS proxy route — switch to real-data mode or run regen-catalogue.sh).`,
+      `Failed to load ${file}: response is not JSON (mock mode may be intercepting the GCS proxy route: switch to real-data mode or run regen-catalogue.sh).`,
     );
   }
   try {
     return JSON.parse(text) as T;
   } catch (err) {
-    throw new Error(
-      `Failed to parse ${file}: ${err instanceof Error ? err.message : "invalid JSON"}`,
-    );
+    throw new Error(`Failed to parse ${file}: ${err instanceof Error ? err.message : "invalid JSON"}`);
   }
 }
 
@@ -130,9 +123,7 @@ export function loadEnvelope(): Promise<EnvelopeJson> {
 
 export function loadStrategyInstruments(): Promise<StrategyInstrumentsJson> {
   if (instrumentsCache === null) {
-    instrumentsCache = fetchArtefact<StrategyInstrumentsJson>(
-      "strategy_instruments.json",
-    );
+    instrumentsCache = fetchArtefact<StrategyInstrumentsJson>("strategy_instruments.json");
   }
   return instrumentsCache;
 }
@@ -154,25 +145,17 @@ export async function instrumentsForSlot(slotKey: string): Promise<string[]> {
   return data.slots[slotKey]?.instruments ?? [];
 }
 
-export async function slotsForArchetype(
-  archetype: string,
-): Promise<StrategyInstrumentsSlot[]> {
+export async function slotsForArchetype(archetype: string): Promise<StrategyInstrumentsSlot[]> {
   const data = await loadStrategyInstruments();
   return Object.values(data.slots).filter((s) => s.archetype_id === archetype);
 }
 
-export async function slotsForCategory(
-  category: string,
-): Promise<StrategyInstrumentsSlot[]> {
+export async function slotsForCategory(category: string): Promise<StrategyInstrumentsSlot[]> {
   const data = await loadStrategyInstruments();
-  return Object.values(data.slots).filter(
-    (s) => s.category.toLowerCase() === category.toLowerCase(),
-  );
+  return Object.values(data.slots).filter((s) => s.category.toLowerCase() === category.toLowerCase());
 }
 
-export async function archetypesAllowedInCategory(
-  category: string,
-): Promise<string[]> {
+export async function archetypesAllowedInCategory(category: string): Promise<string[]> {
   const data = await loadAvailability();
   return Object.entries(data.archetypes)
     .filter(([, a]) => a.allowed_categories.includes(category))
@@ -184,9 +167,7 @@ export async function isBespokeCapable(archetype: string): Promise<boolean> {
   return data.archetypes[archetype]?.bespoke_capable ?? false;
 }
 
-export async function tenorsForArchetype(
-  archetype: string,
-): Promise<string[] | null> {
+export async function tenorsForArchetype(archetype: string): Promise<string[] | null> {
   const data = await loadAvailability();
   return data.archetypes[archetype]?.tenor_buckets ?? null;
 }

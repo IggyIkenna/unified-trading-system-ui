@@ -159,7 +159,7 @@ export default function StrategyDetailPage() {
                   {cell.rollMode !== "n/a" ? <RollModeBadge rollMode={cell.rollMode} /> : null}
                 </div>
               ) : (
-                <p className="mt-2 italic">Slot not found in coverage matrix — showing default availability.</p>
+                <p className="mt-2 italic">Slot not found in coverage matrix: showing default availability.</p>
               )}
             </CardContent>
           </Card>
@@ -358,7 +358,7 @@ export default function StrategyDetailPage() {
                 Config knobs
               </CardTitle>
               <CardDescription className="text-[0.65rem]">
-                ConfigRegistry surface — tunable parameters within this slot.
+                ConfigRegistry surface: tunable parameters within this slot.
               </CardDescription>
             </CardHeader>
             <CardContent className="text-xs text-muted-foreground">
@@ -378,7 +378,7 @@ export default function StrategyDetailPage() {
             </CardHeader>
             <CardContent className="text-xs text-muted-foreground">
               Pending wiring to portfolio-allocator. The fail-loud gate in strategy-service Phase 10.5 enforces lock +
-              maturity on every AllocationDirective — this panel will surface the most recent directive + the clients
+              maturity on every AllocationDirective: this panel will surface the most recent directive + the clients
               currently subscribed to this slot.
             </CardContent>
           </Card>

@@ -443,11 +443,11 @@ export function MarketDetailPanel({
               setStakeAmount("");
               toast({
                 title: "Position opened",
-                description: `${selectedSide.toUpperCase()} ${selectedOutcome.name} — ${formatCurrency(stakeNum, "USD", 2)} @ ${formatNumber(price * 100, 0)}¢ (${order.id})`,
+                description: `${selectedSide.toUpperCase()} ${selectedOutcome.name}: ${formatCurrency(stakeNum, "USD", 2)} @ ${formatNumber(price * 100, 0)}¢ (${order.id})`,
               });
             }}
           >
-            {selectedSide === "yes" ? "Buy YES" : "Buy NO"} — {selectedOutcome.name}
+            {selectedSide === "yes" ? "Buy YES" : "Buy NO"}: {selectedOutcome.name}
           </Button>
         </div>
 
@@ -463,7 +463,7 @@ export function MarketDetailPanel({
               Resolves {market.resolutionDate}
             </span>
           )}
-          <Button variant="ghost" size="sm" className="text-[11px] h-6 px-1.5 text-muted-foreground" onClick={() => { }}>
+          <Button variant="ghost" size="sm" className="text-[11px] h-6 px-1.5 text-muted-foreground" onClick={() => {}}>
             <ExternalLink className="size-3 mr-1" />
             View on {market.venue === "polymarket" ? "Polymarket" : "Kalshi"}
           </Button>

@@ -46,7 +46,7 @@ export const PERSONAS: readonly AuthPersona[] = [
     org: { id: "odum-internal", name: "Odum Internal" },
     entitlements: ["*"],
     description:
-      "IM desk operator — locks/unlocks strategies via the catalogue admin toggle + sees reporting for cross-client observation.",
+      "IM desk operator: locks/unlocks strategies via the catalogue admin toggle + sees reporting for cross-client observation.",
   },
 
   // ── External-facing advisor / investor accounts (@odum-research.co.uk) ─
@@ -133,7 +133,7 @@ export const PERSONAS: readonly AuthPersona[] = [
       "reporting",
     ],
     description:
-      "Emerging manager prospect for DART Full Pipeline — research, build, promote, run, report. Full platform surface under Odum's regulated wrapper.",
+      "Emerging manager prospect for DART Full Pipeline: research, build, promote, run, report. Full platform surface under Odum's regulated wrapper.",
   },
   {
     id: "prospect-dart-signals-in",
@@ -144,7 +144,7 @@ export const PERSONAS: readonly AuthPersona[] = [
     org: { id: "odum-ir", name: "Odum Investor Relations" },
     entitlements: ["investor-relations", "investor-platform", "data-pro", "execution-full", "reporting"],
     description:
-      "Professional trading firm prospect for DART Signals-In — client keeps strategy IP, Odum provides execution and infrastructure. Research/promote hidden.",
+      "Professional trading firm prospect for DART Signals-In: client keeps strategy IP, Odum provides execution and infrastructure. Research/promote hidden.",
   },
   {
     id: "prospect-odum-signals",
@@ -155,7 +155,7 @@ export const PERSONAS: readonly AuthPersona[] = [
     org: { id: "odum-ir", name: "Odum Investor Relations" },
     entitlements: ["investor-relations", "execution-full", "reporting"],
     description:
-      "Counterparty / allocator prospect for Odum Signals — receives outbound signal emissions, executes elsewhere. Reports surface only, no DART.",
+      "Counterparty / allocator prospect for Odum Signals: receives outbound signal emissions, executes elsewhere. Reports surface only, no DART.",
   },
   {
     id: "prospect-regulatory",
@@ -187,7 +187,7 @@ export const PERSONAS: readonly AuthPersona[] = [
     org: { id: "odum-demo-im", name: "Demo IM Client Fund" },
     entitlements: ["reporting"],
     description:
-      "Reports-only IM client. No DART tile, no investor-relations — just the Reports surface. Use this when demoing the IM allocator's view: monthly P&L, attribution, settlement reconciliation. Distinct from client-im-pooled / client-im-sma which also have investor-relations.",
+      "Reports-only IM client. No DART tile, no investor-relations: just the Reports surface. Use this when demoing the IM allocator's view: monthly P&L, attribution, settlement reconciliation. Distinct from client-im-pooled / client-im-sma which also have investor-relations.",
   },
   {
     id: "demo-allocator",
@@ -198,7 +198,7 @@ export const PERSONAS: readonly AuthPersona[] = [
     org: { id: "odum-demo-allocator", name: "Demo Allocator Family Office" },
     entitlements: ["reporting"],
     description:
-      "Path A allocator demo persona for the Funnel Coherence walkthrough — investor evaluating Odum-managed strategies (NOT a builder). Entitlements: reporting only. Sees the Reports tile (catalogue + own-account); no DART, no Odum Signals, no Investor Relations. Pair with seeded /strategy-evaluation?path=allocator catalogue_seed for the demo/UAT walkthrough.",
+      "Path A allocator demo persona for the Funnel Coherence walkthrough: investor evaluating Odum-managed strategies (NOT a builder). Entitlements: reporting only. Sees the Reports tile (catalogue + own-account); no DART, no Odum Signals, no Investor Relations. Pair with seeded /strategy-evaluation?path=allocator catalogue_seed for the demo/UAT walkthrough.",
   },
   {
     id: "demo-investor-lp",
@@ -272,7 +272,7 @@ export const PERSONAS: readonly AuthPersona[] = [
     org: { id: "elysium", name: "Elysium" },
     entitlements: ["data-pro", "execution-full", { domain: "trading-defi", tier: "basic" }, "reporting"],
     description:
-      "DeFi client demo (base tier). Execution + reporting only. Strategy catalogue locked — use elysium-defi-full toggle to preview upgrade.",
+      "DeFi client demo (base tier). Execution + reporting only. Strategy catalogue locked: use elysium-defi-full toggle to preview upgrade.",
     // Patrick's base tier — only the two foundation DeFi carry strategies are
     // routed (no strategy-full, so resolver gives reports-only). Recursive
     // staked is in the upgrade-preview persona below, locked here.
@@ -296,7 +296,7 @@ export const PERSONAS: readonly AuthPersona[] = [
       "reporting",
     ],
     description:
-      "DeFi client demo (upgrade preview). Adds strategy-full — shows CARRY_BASIS_PERP + CARRY_STAKED_BASIS catalogue, recursive staked locked as next tier.",
+      "DeFi client demo (upgrade preview). Adds strategy-full: shows CARRY_BASIS_PERP + CARRY_STAKED_BASIS catalogue, recursive staked locked as next tier.",
     // Upgrade tier — adds CARRY_RECURSIVE_STAKED + multi-protocol yield
     // rotation. With strategy-full the resolver returns "terminal" for these.
     assigned_strategies: [
@@ -367,7 +367,7 @@ export const PERSONAS: readonly AuthPersona[] = [
     role: "client",
     org: { id: "hybrid-fund", name: "Hybrid Fund" },
     entitlements: ["reporting", "investor-relations", "data-pro"],
-    description: "Hybrid case — IM client operating under Odum's Regulatory Umbrella.",
+    description: "Hybrid case: IM client operating under Odum's Regulatory Umbrella.",
   },
   {
     id: "prospect-platform",
@@ -423,7 +423,7 @@ export const PERSONAS: readonly AuthPersona[] = [
       { domain: "trading-defi", tier: "basic" },
     ],
     description:
-      "Desmond (DART Full) — funding rate arb, stable yield, market-neutral, CeFi+DeFi, perp-only. Full Research/Promote access.",
+      "Desmond (DART Full): funding rate arb, stable yield, market-neutral, CeFi+DeFi, perp-only. Full Research/Promote access.",
     // Real catalogue slot labels routed to Desmond Capital — sourced from
     // strategy_instruments.json. Funding-rate carry on majors, structural
     // perp-funding arb, stat-arb across CeFi venues, ML-directional on perps.
@@ -459,7 +459,7 @@ export const PERSONAS: readonly AuthPersona[] = [
       { domain: "trading-defi", tier: "basic" },
     ],
     description:
-      "Desmond (Signals-In) — same universe as DART Full; Research/Promote locked. Toggle from desmond-dart-full to compare tiers.",
+      "Desmond (Signals-In): same universe as DART Full; Research/Promote locked. Toggle from desmond-dart-full to compare tiers.",
     // Same catalogue universe as DART-Full but lacks `strategy-full` — the
     // resolver returns "reports-only" for assigned slots since Research /
     // Promote are gated.

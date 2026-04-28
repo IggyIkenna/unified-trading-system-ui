@@ -5,22 +5,9 @@ import * as React from "react";
 import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
   getNavHistory,
   listAllocations,
@@ -31,10 +18,7 @@ import {
   type FundAllocation,
   type NavSnapshot,
 } from "@/lib/api/fund-administration";
-import {
-  MOCK_DEFAULT_FUND_ID,
-  MOCK_DEFAULT_SHARE_CLASS,
-} from "@/lib/mocks/fund-administration";
+import { MOCK_DEFAULT_FUND_ID, MOCK_DEFAULT_SHARE_CLASS } from "@/lib/mocks/fund-administration";
 
 interface LedgerEntry {
   kind: "subscription" | "redemption" | "allocation";
@@ -45,11 +29,7 @@ interface LedgerEntry {
   timestamp: string;
 }
 
-function toLedger(
-  subs: AllocatorSubscription[],
-  reds: AllocatorRedemption[],
-  allocs: FundAllocation[],
-): LedgerEntry[] {
+function toLedger(subs: AllocatorSubscription[], reds: AllocatorRedemption[], allocs: FundAllocation[]): LedgerEntry[] {
   const rows: LedgerEntry[] = [];
   for (const s of subs) {
     rows.push({
@@ -188,8 +168,8 @@ export default function HistoryPage() {
                     <TableCell className="text-xs font-mono">{n.snapshot_id}</TableCell>
                     <TableCell className="text-xs font-mono">{n.snapshot_timestamp}</TableCell>
                     <TableCell className="text-right text-sm font-mono">{n.nav_usd}</TableCell>
-                    <TableCell className="text-right text-sm font-mono">{n.nav_change_usd ?? "—"}</TableCell>
-                    <TableCell className="text-right text-sm font-mono">{n.nav_change_pct ?? "—"}</TableCell>
+                    <TableCell className="text-right text-sm font-mono">{n.nav_change_usd ?? "-"}</TableCell>
+                    <TableCell className="text-right text-sm font-mono">{n.nav_change_pct ?? "-"}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -201,7 +181,7 @@ export default function HistoryPage() {
       <Card>
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-sm">Ledger — cash movements + allocations</CardTitle>
+            <CardTitle className="text-sm">Ledger: cash movements + allocations</CardTitle>
             {ledger ? (
               <Badge variant="outline" className="text-xs font-mono">
                 {ledger.length} entr{ledger.length === 1 ? "y" : "ies"}
@@ -228,17 +208,14 @@ export default function HistoryPage() {
               </TableHeader>
               <TableBody>
                 {ledger.map((row) => (
-                  <TableRow
-                    key={`${row.kind}-${row.id}`}
-                    data-testid={`im-funds-history-row-${row.kind}-${row.id}`}
-                  >
+                  <TableRow key={`${row.kind}-${row.id}`} data-testid={`im-funds-history-row-${row.kind}-${row.id}`}>
                     <TableCell className="text-xs">
                       <Badge variant="outline" className="text-[10px]">
                         {row.kind}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-xs font-mono">{row.id}</TableCell>
-                    <TableCell className="text-sm">{row.allocator_id ?? "—"}</TableCell>
+                    <TableCell className="text-sm">{row.allocator_id ?? "-"}</TableCell>
                     <TableCell className="text-right text-sm font-mono">{row.amount}</TableCell>
                     <TableCell className="text-xs">{row.status}</TableCell>
                     <TableCell className="text-xs font-mono text-muted-foreground">{row.timestamp}</TableCell>

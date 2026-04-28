@@ -48,7 +48,7 @@ export function PortfolioImpactPanel({ strategy }: { strategy: CandidateStrategy
         </div>
         <p className="text-muted-foreground leading-relaxed">{divBenefit} based on correlation and sizing inputs.</p>
         <p className="text-xs text-muted-foreground leading-relaxed">
-          Illustrative portfolio metrics — not a production risk engine; pre-book ρ from portfolio SSOT mock.
+          Illustrative portfolio metrics: not a production risk engine; pre-book ρ from portfolio SSOT mock.
         </p>
       </CardContent>
     </Card>

@@ -264,7 +264,7 @@ export function DeFiFlashLoansWidget(_props: WidgetComponentProps) {
                 is_atomic: true,
               });
               toast.success("Flash loan executed", {
-                description: `${flashSteps.length}-step bundle — net P&L $${formatNumber(netPnl, 2)} (mock ledger)`,
+                description: `${flashSteps.length}-step bundle: net P&L $${formatNumber(netPnl, 2)} (mock ledger)`,
               });
             })
           }

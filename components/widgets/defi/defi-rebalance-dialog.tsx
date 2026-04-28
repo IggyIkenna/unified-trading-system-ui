@@ -45,7 +45,7 @@ export function DeFiRebalanceDialog({ preview, onConfirm, onCancel }: RebalanceD
           <div className="flex justify-between">
             <span>Treasury (current)</span>
             <span className="font-medium">
-              {preview.treasury_current_pct}% — ${preview.treasury_balance_usd.toLocaleString()}
+              {preview.treasury_current_pct}%: ${preview.treasury_balance_usd.toLocaleString()}
             </span>
           </div>
           <div className="flex justify-between text-muted-foreground">

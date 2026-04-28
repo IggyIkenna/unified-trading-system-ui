@@ -175,7 +175,7 @@ export function RiskLimitsHierarchyWidget(_props: WidgetComponentProps) {
                     {formatCurrency(limit.value)}
                   </TableCell>
                   <TableCell className="text-caption text-right font-mono tabular-nums text-muted-foreground">
-                    {limit.var95 ? formatCurrency(limit.var95) : "—"}
+                    {limit.var95 ? formatCurrency(limit.var95) : "-"}
                   </TableCell>
                   <TableCell className="text-caption text-right font-mono tabular-nums">
                     {formatPercent(util, 0)}

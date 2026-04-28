@@ -88,7 +88,7 @@ export const FUND_BUSINESS_UNIT_REGISTRY: readonly FundBusinessUnitEntry[] = [
     reservingBusinessUnitId: "admin",
     custodyModel: "NOT_APPLICABLE",
     serviceFamily: null,
-    notes: "Admin role row — capacity reservation for internal bring-up.",
+    notes: "Admin role row: capacity reservation for internal bring-up.",
   },
   {
     fundId: "im_desk_trading",

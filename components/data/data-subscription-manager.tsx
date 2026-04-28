@@ -68,7 +68,7 @@ export function DataSubscriptionManager({
           <CardContent className="pt-4 pb-3">
             <div className="text-xs text-muted-foreground">Monthly Cost</div>
             <div className="mt-1 text-2xl font-bold font-mono text-emerald-400">
-              {orgMode === "demo" ? "—" : `$${(totalMonthlyCents / 100).toLocaleString()}`}
+              {orgMode === "demo" ? "-" : `$${(totalMonthlyCents / 100).toLocaleString()}`}
             </div>
           </CardContent>
         </Card>
@@ -78,7 +78,7 @@ export function DataSubscriptionManager({
       {orgMode === "demo" && (
         <div className="flex items-center gap-2 rounded-md border border-amber-500/30 bg-amber-500/5 px-3 py-2 text-sm text-amber-400">
           <AlertCircle className="size-4 shrink-0" />
-          Demo mode — subscriptions are illustrative. Sign in to manage real data access.
+          Demo mode: subscriptions are illustrative. Sign in to manage real data access.
         </div>
       )}
 
@@ -185,7 +185,7 @@ export function DataSubscriptionManager({
                       )}
                     </div>
                     <span className="text-sm font-mono font-semibold">
-                      {orgMode === "demo" ? "—" : `$${(sub.monthlyCostCents / 100).toLocaleString()}/mo`}
+                      {orgMode === "demo" ? "-" : `$${(sub.monthlyCostCents / 100).toLocaleString()}/mo`}
                     </span>
                   </div>
                 </CardContent>

@@ -16,9 +16,9 @@ function formatUsd(n: number): string {
 }
 
 function formatRange(low: number, high: number): string {
-  if (low >= 1000) return `$${low.toLocaleString()} – $${high.toLocaleString()}`;
-  if (low >= 1) return `$${low} – $${high}`;
-  return `${low} – ${high}`;
+  if (low >= 1000) return `$${low.toLocaleString()}-$${high.toLocaleString()}`;
+  if (low >= 1) return `$${low}-$${high}`;
+  return `${low}-${high}`;
 }
 
 const columns: ColumnDef<LPPosition, unknown>[] = [

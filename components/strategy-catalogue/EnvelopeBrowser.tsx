@@ -75,7 +75,7 @@ export function EnvelopeBrowser(): React.ReactElement {
         // Mock mode intercepts the GCS proxy route and may return undefined
         // or malformed payloads. Validate shape before rendering.
         if (!env || typeof env !== "object" || !env.categories || typeof env.categories !== "object") {
-          setError("Catalogue unavailable in mock mode — switch to real-data mode or run regen-catalogue.sh.");
+          setError("Catalogue unavailable in mock mode: switch to real-data mode or run regen-catalogue.sh.");
           return;
         }
         setEnvelope(env);
@@ -258,7 +258,7 @@ export function EnvelopeBrowser(): React.ReactElement {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
-          <span>{TERMS.CATALOGUE} — full envelope</span>
+          <span>{TERMS.CATALOGUE}: full envelope</span>
           <span className="text-sm font-normal text-muted-foreground">
             {envelope.totals.instances.toLocaleString()} instances · {envelope.totals.bespoke_archetype_rows} bespoke
             archetypes

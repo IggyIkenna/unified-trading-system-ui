@@ -171,7 +171,7 @@ export function PnlWaterfallWidget(_props: WidgetComponentProps) {
                 </SelectItem>
                 {SHARE_CLASSES.map((sc) => (
                   <SelectItem key={sc} value={sc} className="text-micro font-mono">
-                    {sc} — {SHARE_CLASS_LABELS[sc]}
+                    {sc}: {SHARE_CLASS_LABELS[sc]}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -184,7 +184,7 @@ export function PnlWaterfallWidget(_props: WidgetComponentProps) {
             <AlertTriangle className="size-3 shrink-0" />
             <span>
               Unexplained residual <strong>${Math.abs(residualPnL.value).toLocaleString()}</strong> exceeds{" "}
-              {residualThresholdPct}% of net P&L — missing risk factor?
+              {residualThresholdPct}% of net P&L: missing risk factor?
             </span>
           </div>
         )}
@@ -351,7 +351,7 @@ export function PnlWaterfallWidget(_props: WidgetComponentProps) {
           <div className="pt-2 border-t border-dashed border-[var(--status-warning)]/40 space-y-2 shrink-0">
             <div
               className="p-2 -mx-1 rounded-lg bg-[var(--status-warning)]/5 border border-dashed border-[var(--status-warning)]/30"
-              title="Unexplained P&L — large residual indicates a missing risk factor."
+              title="Unexplained P&L: large residual indicates a missing risk factor."
             >
               <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center gap-2">

@@ -48,9 +48,7 @@ export default function ExecutionCandidatesPage() {
     : null;
 
   const dataSources = React.useMemo<DataSource[]>(
-    () => [
-      { label: "Candidates", source: "batch" as const, asOf: new Date().toISOString(), staleAfterSeconds: 300 },
-    ],
+    () => [{ label: "Candidates", source: "batch" as const, asOf: new Date().toISOString(), staleAfterSeconds: 300 }],
     [],
   );
 
@@ -130,19 +128,25 @@ export default function ExecutionCandidatesPage() {
         {/* Narrative summary */}
         <div className="px-4 py-3 rounded-lg border border-border/30 bg-muted/5">
           <p className="text-xs text-muted-foreground leading-relaxed">
-            <span className="font-medium text-foreground/80">Promotion Pipeline</span> —{" "}
+            <span className="font-medium text-foreground/80">Promotion Pipeline</span>:{" "}
             <span className="font-mono">{mockCandidates.length}</span> candidates under review.{" "}
             <span className="font-mono text-emerald-400">{readyCandidates.length}</span> ready for promotion,{" "}
             <span className="font-mono text-amber-400">
               {mockCandidates.filter((c) => c.status === "pending_review").length}
-            </span> pending review,{" "}
+            </span>{" "}
+            pending review,{" "}
             <span className="font-mono text-blue-400">
               {mockCandidates.filter((c) => c.status === "needs_paper").length}
-            </span> need paper trading.
+            </span>{" "}
+            need paper trading.
             {mockCandidates.filter((c) => c.status === "blocked").length > 0 && (
-              <>{" "}<span className="font-mono text-red-400">
-                {mockCandidates.filter((c) => c.status === "blocked").length}
-              </span> blocked.</>
+              <>
+                {" "}
+                <span className="font-mono text-red-400">
+                  {mockCandidates.filter((c) => c.status === "blocked").length}
+                </span>{" "}
+                blocked.
+              </>
             )}
           </p>
         </div>
@@ -155,7 +159,9 @@ export default function ExecutionCandidatesPage() {
                 <CheckCircle2 className="size-3.5 text-emerald-500" />
                 Ready for Promotion
               </div>
-              <div className="text-2xl font-semibold tabular-nums tracking-tight font-mono">{readyCandidates.length}</div>
+              <div className="text-2xl font-semibold tabular-nums tracking-tight font-mono">
+                {readyCandidates.length}
+              </div>
             </CardContent>
           </Card>
           <Card className="border-border/50 bg-gradient-to-br from-background to-muted/10">
@@ -186,7 +192,9 @@ export default function ExecutionCandidatesPage() {
                 <TrendingUp className="size-3.5" />
                 Avg Improvement
               </div>
-              <div className="text-2xl font-semibold tabular-nums tracking-tight font-mono text-emerald-500">+1.4 bps</div>
+              <div className="text-2xl font-semibold tabular-nums tracking-tight font-mono text-emerald-500">
+                +1.4 bps
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -369,31 +377,37 @@ export default function ExecutionCandidatesPage() {
             entityType="execution_algo"
             platform="execution"
             status={detailCandidate.status}
-            sections={[
-              {
-                title: "Performance",
-                items: [
-                  { label: "Slippage vs Arrival", value: `${detailCandidate.metrics.slippageVsArrival >= 0 ? "+" : ""}${formatNumber(detailCandidate.metrics.slippageVsArrival, 1)} bps`, format: "mono" as const },
-                  { label: "Fill Rate", value: `${detailCandidate.metrics.fillRate}%`, format: "mono" as const },
-                  { label: "Avg Latency", value: `${detailCandidate.metrics.avgLatency}ms`, format: "mono" as const },
-                ],
-              },
-              {
-                title: "Improvement vs Current",
-                items: [
-                  { label: "Slippage", value: detailCandidate.improvement.slippage, format: "text" as const },
-                  { label: "Fill Rate", value: detailCandidate.improvement.fillRate, format: "text" as const },
-                  { label: "Latency", value: detailCandidate.improvement.latency, format: "text" as const },
-                ],
-              },
-              {
-                title: "Promotion Path",
-                items: [
-                  { label: "Source Env", value: detailCandidate.sourceEnv, format: "text" as const },
-                  { label: "Target Env", value: detailCandidate.targetEnv, format: "text" as const },
-                ],
-              },
-            ] satisfies DetailSection[]}
+            sections={
+              [
+                {
+                  title: "Performance",
+                  items: [
+                    {
+                      label: "Slippage vs Arrival",
+                      value: `${detailCandidate.metrics.slippageVsArrival >= 0 ? "+" : ""}${formatNumber(detailCandidate.metrics.slippageVsArrival, 1)} bps`,
+                      format: "mono" as const,
+                    },
+                    { label: "Fill Rate", value: `${detailCandidate.metrics.fillRate}%`, format: "mono" as const },
+                    { label: "Avg Latency", value: `${detailCandidate.metrics.avgLatency}ms`, format: "mono" as const },
+                  ],
+                },
+                {
+                  title: "Improvement vs Current",
+                  items: [
+                    { label: "Slippage", value: detailCandidate.improvement.slippage, format: "text" as const },
+                    { label: "Fill Rate", value: detailCandidate.improvement.fillRate, format: "text" as const },
+                    { label: "Latency", value: detailCandidate.improvement.latency, format: "text" as const },
+                  ],
+                },
+                {
+                  title: "Promotion Path",
+                  items: [
+                    { label: "Source Env", value: detailCandidate.sourceEnv, format: "text" as const },
+                    { label: "Target Env", value: detailCandidate.targetEnv, format: "text" as const },
+                  ],
+                },
+              ] satisfies DetailSection[]
+            }
             onAddToBasket={() => {
               if (!selectedCandidates.includes(detailCandidate.id)) {
                 setSelectedCandidates((prev) => [...prev, detailCandidate.id]);
@@ -402,11 +416,15 @@ export default function ExecutionCandidatesPage() {
           >
             {/* Checklist detail */}
             <div className="space-y-3">
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Approval Checklist</h4>
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Approval Checklist
+              </h4>
               <div className="space-y-2">
                 {Object.entries(detailCandidate.checklist as Record<string, boolean>).map(([key, passed]) => (
                   <div key={key} className="flex items-center justify-between py-1">
-                    <span className="text-xs text-muted-foreground capitalize">{key.replace(/([A-Z])/g, " $1").trim()}</span>
+                    <span className="text-xs text-muted-foreground capitalize">
+                      {key.replace(/([A-Z])/g, " $1").trim()}
+                    </span>
                     {passed ? (
                       <CheckCircle2 className="size-3.5 text-emerald-500" />
                     ) : (
