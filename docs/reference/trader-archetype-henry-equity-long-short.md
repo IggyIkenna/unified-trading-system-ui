@@ -2,8 +2,7 @@
 
 A reference profile of a top-performing fundamental equity long/short PM — sector specialist (technology) — at a top-5 firm. Used as a yardstick for what an ideal **single-name equities** terminal must support. This document deliberately avoids any reference to our current platform — it describes the **ideal world**.
 
-For the underlying four-phase trader workflow, see [manual-trader-workflow.md](manual-trader-workflow.md).
-For sister archetypes on the same desk, see the other `trader-archetype-*.md` files in this folder.
+For shared platform surfaces referenced below, see [common-tools.md](common-tools.md). For the underlying four-phase trader workflow, see [manual-trader-workflow.md](manual-trader-workflow.md). For Henry-unique surfaces in the index, see [unique-tools.md](unique-tools.md).
 
 ---
 
@@ -24,7 +23,7 @@ Henry is a **fundamentals-first** trader. His mental model:
 
 - A stock's price is a claim on future cash flows; his job is to find names where the market's claim is wrong.
 - His edge is **research depth** — channel checks, expert calls, supplier/customer ecosystem mapping, deep model-building.
-- He sizes positions by **conviction** plus **risk-adjusted upside/downside**, not by signal strength.
+- He sizes by **conviction × risk-adjusted upside/downside**, not by signal strength.
 - He thinks in **catalysts**: earnings, product launches, regulatory rulings, M&A, conferences. Catalysts crystallize thesis into PnL — or break it.
 - He pairs positions: long the high-conviction name, short the lower-quality competitor (or sector ETF) to neutralize beta.
 
@@ -32,15 +31,13 @@ His longest hold can be 18 months. His shortest, days around an earnings event. 
 
 ### His cognitive load
 
-Henry covers ~100 names. He's not staring at 100 charts. He's:
+Henry covers ~100 names with **tiered attention**:
 
-- Tracking ~10–20 active positions deeply.
-- Tracking ~30–40 names on a watchlist with active thesis.
-- Tracking the rest at sector-level health.
+- ~10–20 active positions tracked deeply.
+- ~30–40 watchlist names with active thesis.
+- The rest at sector-level health.
 
-The terminal must support this **tiered attention** — different depth for different names.
-
-He must also **synthesize**: a Reuters headline + a sell-side note + a Twitter thread from a credible analyst + an earnings transcript snippet → does that change his model? The terminal feeds the synthesis; it does not replace it.
+The terminal must support this — different depth for different names. He must also **synthesize**: a Reuters headline + a sell-side note + a credible analyst's tweet + an earnings transcript snippet → does that change his model? The terminal feeds the synthesis; it does not replace it.
 
 ---
 
@@ -60,162 +57,172 @@ He must also **synthesize**: a Reuters headline + a sell-side note + a Twitter t
 | Bottom-right  | **Analyst / IR communication** — broker chat, sell-side ratings, conference calendar  |
 | Tablet        | Sell-side conference calls, earnings call audio, news terminal                        |
 
-Note: Henry typically has a **separate research environment** (often an on-prem analyst workstation or a notebook environment) for deep model-building. The terminal supports trading + monitoring; the research lives elsewhere but is linked.
+Note: Henry typically has a **separate research environment** (on-prem analyst workstation or notebook) for deep model-building. The terminal supports trading + monitoring; the research lives elsewhere but is linked.
 
 ---
 
 ## Phase 1: Decide
 
-For Henry, "decide" is mostly **building and updating thesis**, sized over weeks. The data sources are radically different from a crypto trader.
+For Henry, "decide" is mostly **building and updating thesis** over weeks. The data sources are radically different from a crypto trader.
 
 ### Charts and price action
 
-- **Multi-TF charts**: daily, weekly, monthly are the norm. Intraday matters around earnings or catalysts.
-- **Volume profile** — institutional accumulation / distribution patterns.
-- **Relative strength** — name vs sector vs index, normalized line overlays.
-- **Earnings markers on chart** — every prior earnings date as a vertical line, with surprise direction.
-- **Insider trading markers** — Form 4 buys and sells annotated on chart.
-- **Short interest overlay** — 13F-driven, days-to-cover, % of float.
-- **Indicators of interest:** moving averages, anchored VWAP from key dates (earnings, product launch), Bollinger bands.
+See [#1 Multi-Timeframe Charting](common-tools.md#1-multi-timeframe-charting). **Henry-specific overlays:** daily / weekly / monthly are default frames (intraday only around catalysts); **earnings markers** as vertical lines color-coded by surprise direction; **insider Form 4 markers** (buys / sells); **short-interest overlay** (% of float, days-to-cover in subpane); **anchored VWAP** from key dates (last earnings, product launch, IPO); volume profile for accumulation / distribution; **relative-strength overlay** vs sector vs index.
 
-### Fundamental data
+### Fundamental data + valuation panel — Henry-unique
 
-- **Financial statements** — income, balance sheet, cash flow, last 5–10 years quarterly.
-- **Common-size statements** — revenue mix, margin trends.
-- **Segment reporting** — for multi-segment companies, revenue / profit by segment.
-- **Estimate revision dashboard** — sell-side EPS / revenue estimates, consensus, dispersion, revision direction over 1m / 3m / 6m.
-- **Estimate vs actual track record** — beat / miss history with magnitudes.
-- **Guidance tracking** — management's guidance, prior guidance, raise/cut history.
+Co-pinned next to the chart, not in a separate tool:
+
+- **Financial statements** — income / balance sheet / cash flow, last 5–10 years quarterly, with **common-size statements** (revenue mix, margin trends).
+- **Segment reporting** — revenue / profit per segment for multi-segment companies.
+- **Guidance tracking** — current guidance, prior, raise/cut history.
 - **Capital structure** — debt maturities, share count, buyback history, dividend.
-
-### Valuation panel
-
-- **Current multiples** — P/E, EV/EBITDA, EV/Sales, P/FCF, P/B as relevant.
-- **Multiples history** — 5-year range, current vs median.
-- **Peer comparables table** — same-sector peers, ranked by relevant multiple.
-- **DCF link** — Henry's analyst's model, parametric, with key sensitivities.
+- **Current multiples** (P/E, EV/EBITDA, EV/Sales, P/FCF, P/B as relevant) with **5-year multiples-history range** and current vs median.
+- **Peer comparables table** — same-sector peers ranked by relevant multiple.
+- **DCF link** to Henry's analyst's parametric model with key sensitivities.
 - **Reverse DCF** — what does today's price imply about growth / margin assumptions?
-- **Implied probability** of upside scenario vs base vs downside.
+- **Implied probability** of upside vs base vs downside scenarios.
 
-### News & research
+Common-size statements, segment, multiples history, peer comps, DCF, and reverse DCF together form the valuation case in one pane.
 
-- **Filtered news feed** — Reuters, Bloomberg, FT, WSJ, sector-specific (TheRegister, The Information, etc.), trade press.
-- **Sell-side research aggregation** — every initiation, upgrade, downgrade, target change with link to full report.
-- **Analyst day calendar** with materials.
-- **Conference calendar** — Henry attending, watching, or having sales-side relay.
-- **Earnings transcript search** — full-text searchable across coverage universe.
-- **Expert network calls** — scheduled and historical, with notes.
-- **Competitor / supplier / customer mentions** — natural-language extracted.
+### Estimate-revision dashboard — Henry-unique
 
-### Catalyst calendar
+- **Sell-side EPS / revenue estimates** — consensus, mean, median, dispersion (high-low range, std-dev), N analysts.
+- **Revision direction** over 1m / 3m / 6m — net up-revisions vs down-revisions, with magnitude.
+- **Above-consensus / below-consensus posture** flagged when his analyst's model diverges from the street.
+- **Revision velocity** — accelerating ups before earnings is a known signal.
 
-The most important calendar for Henry:
+### Beat/miss track record — Henry-unique
 
-- **Earnings dates** with expected release time, consensus expectations, expected move from straddle.
-- **Product launches** (e.g. iPhone event, Nvidia GTC, AWS re:Invent).
-- **Regulatory dates** (FDA for biotech, FTC/DOJ for M&A, SEC for filings).
-- **Index rebalances** — when does this name enter / exit which index.
-- **Lock-up expirations** for recent IPOs.
-- **Investor days, analyst days.**
-- **Board meetings, dividend ex-dates.**
+Per name:
+
+- Every prior quarter — actual vs consensus EPS and revenue, surprise magnitude in % and σ.
+- Stock reaction in 1d / 5d / 30d post-print, separately for beats and misses.
+- Guidance reaction — did guidance raise/cut drive the move more than the print itself?
+- Pattern view: "this name beats and sells off" vs "this name misses and rallies on guidance" — known regime per ticker.
+
+### News & research feed
+
+See [#13 News & Research Feed](common-tools.md#13-news--research-feed). **Henry-specific sources & filters:** Reuters / Bloomberg / FT / WSJ + sector-specific (TheRegister, The Information, Stratechery, trade press); **sell-side research aggregation** (every initiation / upgrade / downgrade / target change with link to full PDF); **competitor / supplier / customer mentions** NLP-extracted from broader news for indirect reads; filter to focus name + portfolio + watchlist by default.
+
+### Earnings transcript search — Henry-unique
+
+A first-class research surface, not a buried feature:
+
+- **Full-text searchable** across his coverage universe and beyond — 10+ years of transcripts.
+- **Per-call view** — prepared remarks, Q&A, with speaker turns; analyst names linked to firm + history.
+- **Cross-call search** — "every time MSFT mentioned 'AI capex' in last 8 quarters," with snippet + page anchor.
+- **Diff view** between consecutive calls — language changes ("strong demand" → "mixed demand") flagged automatically.
+- **Mention frequency tracker** — keyword count per call across coverage (e.g. "supply constraint" usage across the semis universe by quarter).
+- **Sentiment / hedge-word scoring** per paragraph — "we expect" vs "we hope" vs "we believe."
+- **Bookmark + tag** snippets into Henry's thesis notes per name; snippets stay linked to source location.
+- **Audio sync** — click a transcript line, jump to that timestamp in the call recording.
+- **Competitor cross-reference** — when AAPL mentions "Vision Pro," surface every other transcript mentioning it in the same quarter.
+
+### Analyst-day & conference calendar — Henry-unique
+
+- Per coverage name: investor days, analyst days, sell-side conference appearances, capital markets days.
+- **Materials archive** — slide decks, prepared remarks, fireside-chat notes, audio recordings, all linked to the calendar entry.
+- **Henry's posture per event** — attending in person, watching webcast, or sales-side relay.
+- **Pre-event note prompt** — "AAPL analyst day in 3 days; thesis-update note pending."
+- **Post-event quick-tag** — what changed, what didn't, how the stock reacted.
+- **Cross-reference** to estimate-revision dashboard — did consensus move post-event?
+
+### Expert network call database — Henry-unique
+
+- **Scheduled + historical** calls (GLG, Third Bridge, Tegus, Mosaic, etc.) with subject expert, employer, role, date, names discussed.
+- **Notes per call** — full transcript or analyst notes — searchable across the database.
+- **Tagged to names** — every call linked to one or more tickers; opening a name shows recent expert calls.
+- **Topic tags** — supply chain, channel checks, competitive dynamics, hiring trends.
+- **Compliance view** — expert disclosure status, conflicts, internal review sign-off, MNPI flags.
+- **Re-use cap** — same expert across firms / sessions tracked to prevent over-reliance on a single source.
+- **Cross-name search** — "every call in last 90 days mentioning data-center GPU pricing."
+- Linked to thesis notes — a call's takeaway can be pinned to the position thesis as evidence.
+
+### Catalyst calendar specific to single names — Henry-unique
+
+The most important calendar for Henry. Builds on [#12 Catalyst / Event Calendar](common-tools.md#12-catalyst--event-calendar) with single-name catalyst types:
+
+- **Earnings dates** with expected release time, consensus EPS / revenue, **expected move from straddle**, prior-quarter reaction.
+- **Product launches** (iPhone event, Nvidia GTC, AWS re:Invent, OpenAI dev day).
+- **Regulatory dates** — FDA panels, FTC/DOJ M&A reviews, SEC filings, EU DMA milestones.
+- **Index rebalances** — entry/exit dates for SPX, NDX, Russell, MSCI; expected passive flow.
+- **Lock-up expirations** for recent IPOs and secondaries.
+- **Investor / analyst days, board meetings, dividend ex-dates.**
+- Per active position: next-catalyst countdown surfaced in the positions blotter.
 
 ### Sentiment & positioning
 
-- **Short interest** trend, days-to-cover, fail-to-deliver.
-- **Options skew** — put skew vs call skew on the name.
-- **Options open interest** by strike — gamma walls, max pain.
-- **Hedge fund crowding** (per 13F data) — names where many funds are long, contrarian risk.
-- **ETF flows** affecting the name (in/out of XLK, SOXX, etc.).
-- **Twitter / X / Stocktwits sentiment** — useful for retail-name risk.
+- **Short interest & borrow analytics — Henry-unique:** trend, days-to-cover, fail-to-deliver, % of float, HTB flag, recall risk, borrow cost YTD by name.
+- **Insider trading & 13F crowding dashboard — Henry-unique:** Form 4 buys/sells with cluster detection (multiple insiders same week); 13F crowding score per name (how many top-50 funds long), contrarian-risk flag for over-owned names.
+- **Options skew and open interest** — put vs call skew, gamma walls, max pain.
+- **ETF flow read-through** — XLK, SOXX, SMH, QQQ flows affecting his constituents.
+- **Twitter / X / Stocktwits sentiment** — relevant for retail-name risk, not primary.
 
-### Macro & sector
+### Macro & sector — beta-adjusted exposure & factor exposure dashboard (Henry-unique)
 
-- **Macro tickers always visible** — DXY, US 10Y, SPX futures, VIX, MOVE.
+- Macro tickers always visible: DXY, US 10Y, SPX futures, VIX, MOVE.
 - **Sector heatmap** — XLK constituents performance.
-- **Factor exposure dashboard** — value vs growth, momentum, quality, low-vol; Henry's book exposures vs those factors.
-- **Style box drift** — has his net exposure drifted from his stated mandate?
+- **Factor exposure dashboard:** book exposure to **Fama-French 5-factor** (market, size, value, profitability, investment), **Barra-style** factors (momentum, quality, low-vol, leverage, liquidity), and **custom factors** (AI capex beneficiaries, semi-cyclical exposure). Targets and tolerance bands per factor.
+- **Beta-adjusted net exposure** — book net delta scaled by per-name beta to SPX / XLK; the right unit, not raw $ net.
+- **Style box drift** — has net exposure drifted from stated mandate (growth-tilted, beta-neutral, etc.)?
 
-**Layout principle for Decide:** charts and fundamentals share the foveal space. News feed is constantly scrolling peripheral. Catalyst calendar is the planning surface he opens daily.
+**Layout principle for Decide:** charts and fundamentals share foveal space. News feed scrolls peripheral. Catalyst calendar is the planning surface he opens daily.
 
 ---
 
 ## Phase 2: Enter
 
-Equities entry differs from crypto entry in important ways:
-
-- Far more **liquidity considerations** at the single-name level (market cap, ADV, % of daily volume).
-- **Compliance & restrictions** — restricted lists, blackout periods, insider information procedures.
-- **Locate / borrow** for shorts — must arrange before selling.
-- **Smart order routing** across many venues (NYSE, NASDAQ, dark pools, ATSs).
+Equities entry differs from crypto in important ways: heavy **liquidity** considerations, **compliance & restrictions** (restricted lists, blackout, MNPI), **locate / borrow** for shorts, and **smart routing** across many venues (NYSE, NASDAQ, dark pools, ATSs).
 
 ### Single-name order ticket
 
-- **Symbol, side, size, type, TIF, venue strategy.**
-- **% of ADV preview** — "your order is 4% of 30-day ADV; estimated impact 12bps."
-- **VWAP / TWAP / IS algos** with custom parameters.
-- **Dark / lit routing options** — % to dark pools, midpoint pegging.
-- **Hidden / iceberg sizing.**
-- **Pre-trade compliance check** — "this name is on watch list, requires approval" / "you're at 4.9% of float, 5% triggers 13D filing."
-- **Locate availability** for shorts — borrow rate, hard-to-borrow flag.
-- **Settlement preview** — T+1 / T+2 implications for cash.
+See [#2 Order Entry Ticket Framework](common-tools.md#2-order-entry-ticket-framework) and [#3 Pre-Trade Risk Preview](common-tools.md#3-pre-trade-risk-preview). **Henry-specific extensions:** **% of ADV preview** ("4% of 30-day ADV; ~12bps impact"); dark / lit routing controls (% to dark pools, midpoint pegging); hidden / iceberg sizing with venue-aware refresh; T+1 / T+2 settlement preview; **pre-trade compliance check** (restricted list, watch list, MNPI gate, **5%-of-float / 13D threshold** warning, blackout window).
 
-### Pairs ticket
+**Locate / borrow check inline — Henry-unique.** For short tickets, the ticket queries the borrow desk in-line: availability, rate (bps annualized), HTB flag, recall probability over 1d / 7d. Locate ID is returned and stamped on the ticket. No separate "request locate" workflow — the ticket fails closed if borrow isn't secured.
 
-A first-class entry mode:
+### Pairs ticket — Henry-unique
 
-- Long leg + short leg, sized by ratio (dollar-neutral, beta-neutral, or custom).
-- **Live spread** displayed in z-score terms.
-- **Ratio limit orders** — execute when spread reaches X.
-- **Leg-by-leg order placement** with synchronization rules.
+A first-class entry mode (not a derived workflow on top of two single-name tickets):
 
-### Basket ticket
+- Long leg + short leg in one ticket, sized by **ratio** (dollar-neutral, beta-neutral, or custom — vol-weighted, factor-neutral).
+- **Live spread** displayed in z-score terms vs a configurable lookback.
+- **Ratio limit orders** — execute when spread reaches a level (entered as z-score or absolute spread).
+- **Leg-by-leg order placement** with synchronization rules — "fill long first," "execute legs simultaneously within X seconds," or "fill leg 1 then sweep leg 2 with IS algo."
+- **Partial-fill rules** — what to do if one leg fills but the other doesn't (cancel filled leg? hold? alert).
+- Pair tracked as one logical position downstream (positions blotter, PnL, risk).
 
-- Upload or build a basket of names, with weights.
-- Execute as a basket via specialized algo (sensitive to relative liquidity).
-- Track basket-level fills and PnL.
+### Basket ticket — Henry-unique
 
-### Risk arbitrage / event ticket
+- Upload a list of names with weights (or build inline) — long basket, short basket, or paired baskets.
+- **Basket-level execution algo** — sensitive to relative liquidity, holds back fast-fillers to wait on slow ones, keeps tracking error to target weights.
+- **Track basket-level fills and PnL** as one logical entity, with leg drill-down.
+- **Pre-trade impact estimate** at basket level (not just per-leg sum).
 
-For M&A spreads:
+### Risk-arbitrage / event ticket — Henry-unique
 
-- Buy target, short acquirer (cash-and-stock deals).
-- Deal-break risk preview.
-- Spread-to-deal-close in $ and bps.
-- Time-to-close estimate.
+For announced M&A:
 
-### Pre-trade greeks / risk preview
+- **Cash-and-stock structure** — buy target, short acquirer at the deal-implied ratio (e.g. 0.18 shares of acquirer per target share + $X cash).
+- **Spread-to-deal-close** in $ and bps; **deal-break risk preview** with implied probability.
+- **Time-to-close** estimate from antitrust review history; key regulatory dates linked from catalyst calendar.
+- **Locate check on the acquirer leg** inline.
 
-- Delta added to book ($).
-- Beta-adjusted exposure added.
-- Sector concentration impact.
-- Factor exposure impact.
-- Margin / leverage impact.
-- Estimated all-in cost (commission + impact + spread + financing).
-- **Compliance attestation** — large positions require sign-off.
+### Pre-trade preview — Henry-specific add-ons
+
+Builds on [#3 Pre-Trade Risk Preview](common-tools.md#3-pre-trade-risk-preview). Henry-specific lines: $ delta and **beta-adjusted exposure** added; sector-concentration impact vs cap; **factor-exposure deltas** vs factor targets; margin / leverage / financing impact; **all-in cost** = commission + impact + spread + financing + (for shorts) borrow; compliance attestation for large positions.
+
+### Execution algos
+
+See [#4 Execution Algos Library](common-tools.md#4-execution-algos-library) and [#5 Smart Order Router](common-tools.md#5-smart-order-router--multi-venue-aggregation). **Henry-specific selections:** **Implementation shortfall** as the default for sized parents; VWAP / TWAP with curve shaping for less urgent size; POV for opportunistic fills; liquidity-seeking (dark first, lit if needed); **close auction (MOC / LOC) and open auction** algos for index-tracked names; **earnings-window algos** — defer or accelerate around scheduled earnings; never leave a child working through the print.
 
 ### Block trading
 
-- Indications of interest from broker dealers.
-- Block desk chat aggregated.
-- Cross-network access (Liquidnet, Cboe, etc.).
-- Direct broker call for size.
-
-### Execution algos (richer than crypto)
-
-- **Implementation shortfall** — minimize total cost vs decision price.
-- **VWAP / TWAP** with curve shaping.
-- **POV** — % of volume.
-- **Liquidity-seeking** — dark first, lit if needed.
-- **Close auction algos** — participate in MOC / LOC.
-- **Open auction algos** — participate in opening auction.
-- **Earnings-window algos** — defer or accelerate around earnings.
+Aggregated broker-dealer IOIs; block-desk chat in [#17 Communications Panel](common-tools.md#17-communications-panel); cross-network access (Liquidnet, Cboe Block, etc.); direct broker call escalation for size that won't work in algos.
 
 ### Hotkeys
 
-- Standard buy/sell at NBBO.
-- Cancel all on this name.
-- Move stops.
-- Flatten name.
+See [#6 Hotkey System](common-tools.md#6-hotkey-system). **Henry-specific bindings:** buy/sell at NBBO, cancel-all on focus name, move stops, flatten name. Lower hotkey reliance than crypto / vol traders — most orders go through the ticket with full preview.
 
 **Layout principle for Enter:** the single-name ticket is dominant. Pairs and basket modes selectable. Compliance and locate are inline, not separate workflows.
 
@@ -227,87 +234,47 @@ Henry's positions don't move minute by minute (mostly). His Hold surface is **lo
 
 ### Positions blotter
 
-- **By position** — symbol, side, size, avg cost, mark, unrealized PnL (% and $), realized PnL, days held.
-- **Greeks not relevant** for cash equities; **beta-adjusted exposure** is.
-- **Sector / industry / sub-industry tags.**
-- **Strategy tag** — directional, pair, hedge, special-situation.
-- **Catalyst association** — "this position is sized for earnings on 2026-05-12."
-- **Position thesis** stored inline — author, date, summary, invalidation.
+See [#7 Positions Blotter](common-tools.md#7-positions-blotter). **Henry-specific characteristics:** beta-adjusted exposure as trader-native unit (greeks N/A for cash equities); sector / industry / sub-industry tags; strategy tag — directional / pair / hedge / special-situation (see [#29 Strategy Tagging Framework](common-tools.md#29-strategy-tagging-framework)); catalyst association with next-catalyst countdown column; position thesis stored inline (author, date, summary, invalidation); **pairs view** for pair positions — both legs side by side with live spread vs entry, z-score, per-leg + combined PnL.
 
-### Pairs view
+### Working orders
 
-- For pair trades: show both legs side by side.
-- Live spread vs entry spread.
-- z-score of spread vs historical.
-- PnL of each leg + combined.
+See [#8 Working Orders Blotter](common-tools.md#8-working-orders-blotter). **Henry-specific:** child-order rollups under parent IS / VWAP algos; cancel-all per name and per parent; algo pause / resume controls.
 
 ### Live PnL
 
-- **Total today** — realized + unrealized.
-- **By name, by sector, by pair, by strategy tag.**
-- **Long PnL vs short PnL** — alpha-generation diagnostic.
-- **Beta-explained vs alpha-explained** — how much of today's PnL is just market beta?
+See [#9 Live PnL Panel](common-tools.md#9-live-pnl-panel). **Henry-specific decomposition:** long PnL vs short PnL separately (different skills), beta-explained vs alpha-explained, by name / sector / pair / strategy tag.
 
-### Risk panel — equity-specific
+### Risk panel
 
-- **Net market exposure** (% gross, % NAV).
-- **Beta-adjusted net exposure.**
-- **Gross exposure** vs leverage limit.
-- **Sector exposures** (% NAV per sector, with limits).
-- **Single-name concentration** (% NAV, with limit).
-- **Factor exposures** — value, growth, momentum, size, quality, low-vol — with target ranges.
-- **Liquidity profile** — % of book that could be exited in 1 day, 5 days at 20% ADV.
-- **Borrow risk** — short positions with high borrow cost or HTB flag.
-- **Stress scenarios** — SPX -10%, sector -20%, factor reversal, rates +50bps.
-- **Earnings concentration** — % of book reporting in next 7 days.
+See [#10 Risk Panel (Multi-Axis)](common-tools.md#10-risk-panel-multi-axis). **Henry-specific axes:** net market exposure (% gross, % NAV) and **beta-adjusted net exposure** as headline numbers; gross vs leverage limit; sector exposures vs caps; single-name concentration vs cap; **factor exposures** vs target ranges (see Phase-1 dashboard); **liquidity profile** (% of book exitable in 1d / 5d at 20% ADV); **borrow risk** (HTB / high-cost shorts); **earnings concentration** (% of book reporting in next 7 / 14 days).
+
+### Stress
+
+See [#11 Stress / Scenario Panel](common-tools.md#11-stress--scenario-panel). **Henry-specific scenarios:** SPX -10%, sector -20%, factor reversal (growth → value), rates +50bps, AI-narrative unwind.
 
 ### Catalyst tracker for active positions
 
-For each active position:
-
-- Next catalyst date and type.
-- Position sizing pre-catalyst (was it sized for the catalyst, or by accident in the window?).
-- Recent newsflow related to this name.
-- Open analyst questions.
+Builds on [#12 Catalyst / Event Calendar](common-tools.md#12-catalyst--event-calendar) with **per-position framing:** next catalyst date and type per active name; **sized-for-catalyst vs in-the-window-by-accident** flag (terminal warns when exposure crosses a catalyst the thesis didn't intend); recent newsflow per name surfaced inline; open analyst questions / outstanding research items.
 
 ### Alerts
 
-- **Price alerts** — multi-condition, per name.
-- **News alerts** — name-specific keyword hits.
-- **Estimate revision alerts** — consensus moved >X%.
-- **Rating change alerts** — sell-side upgrade / downgrade.
-- **Insider trading alerts** — new Form 4 filing.
-- **Short interest alerts** — significant change.
-- **Volatility / volume alerts** — name doing something unusual.
-- **Catalyst countdown alerts** — earnings T-7, T-1.
-- **Compliance alerts** — restricted list change, position threshold approach.
-- **Risk limit alerts** — sector cap, beta-adjusted exposure.
+See [#14 Alerts Engine](common-tools.md#14-alerts-engine). **Henry-specific categories:** estimate-revision (consensus moved >X%), rating-change (upgrade / downgrade / target), insider Form 4 (new filing on coverage name), short-interest (% of float / days-to-cover change), catalyst countdown (earnings T-7 / T-1 / intraday), compliance (restricted-list change, 5% / 10% position-threshold approach), factor / sector / beta-adjusted exposure breach.
 
-### Trade journal — thesis-tracking
+### Trade journal
 
-- Inline notes per position: thesis, key drivers, invalidation, expected catalyst path.
-- Updated weekly or post-catalyst.
-- Searchable across history.
+See [#15 Trade Journal](common-tools.md#15-trade-journal). **Henry-specific template:** thesis, key drivers, invalidation, expected catalyst path; updated weekly or post-catalyst; searchable across history.
 
 ### Communications
 
-- **Sell-side chat / messaging** integrated.
-- **Analyst notes** from internal analyst attached to positions.
-- **IR contact log** — calls with company IR teams.
-- **Expert network call notes.**
+See [#17 Communications Panel](common-tools.md#17-communications-panel). **Henry-specific sources:** sell-side chat / messaging, internal-analyst notes attached to positions, IR contact log (calls with company IR), expert-network call notes (from the expert network call database above).
 
-### Heatmap of own book
+### Heatmap
 
-- Names sized by gross exposure, colored by today's % move.
-- Sector grouping.
+See [#16 Heatmap of Own Book](common-tools.md#16-heatmap-of-own-book). **Henry-specific:** treemap sized by gross exposure, colored by today's % move, grouped by sector / sub-industry.
 
 ### Kill switch
 
-Less hair-trigger than a crypto trader's but still present:
-
-- **Reduce all to gross/net target** — algo-execute over the day.
-- **Stop new entries** — pause additions.
-- **Flatten by mandate** — emergency wind-down.
+See [#19 Kill Switches (Granular)](common-tools.md#19-kill-switches-granular). **Henry-specific stages** (less hair-trigger than crypto): **reduce all to gross/net target** (algo-execute over the day toward a target exposure profile), **stop new entries** (pause additions, leave open positions running), **flatten by mandate** (emergency wind-down — rare).
 
 **Layout principle for Hold:** positions and risk visible; catalyst tracker for active names always close to hand. News feed peripheral, with name-filtered alerts.
 
@@ -317,71 +284,55 @@ Less hair-trigger than a crypto trader's but still present:
 
 Equities post-trade analytics emphasize **catalyst outcome**, **alpha attribution**, and **execution quality** at single-name level.
 
-### Trade history & blotter
+### Trade history
 
-- Every fill, every name, with strategy tag, parent order, catalyst association.
-- Filterable by date, name, sector, strategy, catalyst type.
+See [#21 Trade History / Blotter (Historical)](common-tools.md#21-trade-history--blotter-historical). **Henry-specific filters:** by name, sector, strategy tag, catalyst type, parent algo.
 
 ### PnL attribution
 
-- **Alpha vs beta decomposition** — how much from name selection, how much from market.
-- **Long alpha vs short alpha** — separately, because they're different skills.
-- **By sector / sub-industry.**
-- **By strategy tag** — directional, pair, event-driven.
-- **By catalyst type** — earnings, product launch, M&A, regulatory.
-- **By market regime** — bull / bear / chop.
+See [#22 PnL Attribution (Multi-Axis)](common-tools.md#22-pnl-attribution-multi-axis). **Henry-specific axes:** alpha vs beta decomposition (name selection vs market move); long alpha vs short alpha separately (different skills); by sector / sub-industry / strategy tag / catalyst type / market regime (bull / bear / chop).
 
-### Catalyst outcome tracking
+### Catalyst outcome tracker — Henry-unique
 
-Every catalyst-sized position closed: was the thesis right? Was the sizing right? Was the timing right?
+Every catalyst-sized position closed: thesis right? sizing right? timing right?
 
-- **Pre-catalyst expected move vs realized.**
-- **Position PnL through the catalyst.**
-- **Pattern recognition over time** — which catalyst types is Henry good at? Bad at?
+- **Pre-catalyst expected move** (from straddle) **vs realized move.**
+- **Position PnL through the catalyst** — entry-to-pre-event, event-day, event-to-exit.
+- **Decision quality** — did Henry trim into the catalyst or hold through? Was that the right call ex-post?
+- **Pattern recognition by catalyst type** — earnings / product launch / regulatory / M&A: hit rate, avg win, avg loss, Sharpe **per catalyst type**.
+- **Per-name catalyst history** — "AAPL into earnings: 8 prior, hit rate 62%, avg PnL +$2.1M."
+- **Skill-vs-luck filter** — sample size + dispersion to flag where catalyst track record is real edge vs noise.
+- Feedback loop into Phase 1: sizing recommendations for next catalyst lean on this dashboard.
 
 ### Performance metrics
 
-- Sharpe, Sortino, Calmar.
-- **Hit rate by strategy** — directional vs pair vs event.
-- **Avg win vs avg loss** by strategy.
-- **Holding period analysis** — did long-hold positions outperform short-hold ones?
-- **Sector skill** — Sharpe by sector.
+See [#23 Performance Metrics](common-tools.md#23-performance-metrics). **Henry-specific cuts:** Sharpe / Sortino / Calmar at book and strategy-tag level; hit rate, avg win vs avg loss by strategy (directional / pair / event); holding-period analysis (long-holds vs short-holds); sector skill (Sharpe per sector / sub-industry).
+
+### Equity curve
+
+See [#24 Equity Curve](common-tools.md#24-equity-curve). **Henry-specific benchmark:** vs SPX, vs XLK, vs HFRX equity-hedge index, with rolling-Sharpe and drawdown-shading.
 
 ### Factor attribution
 
-- Run portfolio against factor model (Fama-French 5-factor, Barra-style, custom).
-- Identify how much return is explained by factor exposure vs idiosyncratic alpha.
-- Track factor drift over time.
+Run portfolio against factor model (Fama-French 5, Barra-style, custom). Returns explained by factor exposure vs idiosyncratic alpha. Factor drift over time. Tightly coupled to the beta-adjusted exposure & factor exposure dashboard from Phase 1 — same model, used ex-ante for sizing and ex-post for attribution.
 
-### Execution quality / TCA
+### TCA
 
-- **Implementation shortfall** per parent order: arrival vs final fill.
-- **VWAP slippage** by algo.
-- **Dark vs lit fill quality.**
-- **Broker scorecard** — commission paid, execution quality by broker.
-- **Crossing opportunities missed** — could a block have been done internally?
+See [#25 Execution Quality / TCA](common-tools.md#25-execution-quality--tca-transaction-cost-analysis). **Henry-specific dimensions:** IS slippage per parent (arrival vs final fill); VWAP slippage by algo; dark vs lit fill quality; **broker scorecard** (commission, execution quality by broker); **missed crossing opportunities** (could a block have been done internally?).
 
 ### Borrow / short analytics
 
-- **Borrow cost paid YTD** by name.
-- **Recall events** experienced (forced buy-ins).
-- **HTB usage patterns** — flagged for review.
+Borrow cost paid YTD by name; recall events experienced (forced buy-ins); HTB usage patterns flagged for review.
 
 ### Behavioral analytics
 
-- **Position-sizing consistency** — does Henry size by conviction or by recent PnL?
-- **Drawdown response** — does he revenge-add to losers?
-- **Catalyst hold-through rate** — does he sit through earnings or trim before?
+See [#26 Behavioral Analytics](common-tools.md#26-behavioral-analytics). **Henry-specific indicators:** position-sizing consistency (conviction-driven vs PnL-driven), drawdown response (revenge-add to losers?), catalyst hold-through rate (sit through earnings or trim before?).
 
 ### Reports
 
-- Daily P/L commentary.
-- Weekly portfolio review.
-- Monthly performance attribution package.
-- Quarterly investor / committee letter contribution.
-- Compliance / regulatory filings (13F, 13G/D, Form PF inputs).
+See [#27 Reports](common-tools.md#27-reports). **Henry-specific reports:** daily P/L commentary, weekly portfolio review, monthly performance attribution package, quarterly investor / committee letter contribution, regulatory filings (13F, 13G/D, Form PF inputs — see [#28 Compliance & Audit Trail](common-tools.md#28-compliance--audit-trail)).
 
-**Layout principle for Learn:** big tables, drilldowns, factor / catalyst / sector slices. Henry spends weekends here.
+**Layout principle for Learn:** big tables, drilldowns, factor / catalyst / sector slices. Henry spends weekends here. Workspace state persisted via [#30 Customizable Layout & Workspace](common-tools.md#30-customizable-layout--workspace).
 
 ---
 
@@ -389,8 +340,8 @@ Every catalyst-sized position closed: was the thesis right? Was the sizing right
 
 1. **Fundamentals are first-class.** Financials, estimates, valuation are presented next to price, not in a separate tool.
 2. **Catalyst calendar is the planning spine.** Every active position is associated with one or more upcoming catalysts.
-3. **News & research are continuous, filtered, prioritized** — to portfolio and watchlist names.
-4. **Sell-side and IR ecosystem is integrated.** Chats, ratings, calls, conferences live alongside the book.
+3. **News & research are continuous, filtered, prioritized** to portfolio and watchlist names.
+4. **Sell-side and IR ecosystem is integrated.** Chats, ratings, calls, conferences, expert-network calls live alongside the book.
 5. **Pairs and baskets are first-class entry modes**, not bolted-on.
 6. **Compliance is inline, not a separate workflow.** Restricted lists, position thresholds, locate availability shown in the ticket.
 7. **Beta-adjusted exposure is the right unit of risk.** Gross and net delta in $ are insufficient.
@@ -411,5 +362,6 @@ When evaluating any single-name equities terminal (including our own), walk thro
 - Is risk shown in beta-adjusted and factor terms, not just $ and net delta?
 - Is post-trade attribution multi-axis (sector / strategy / catalyst / regime)?
 - Are catalyst outcomes tracked to pattern-match the trader's skill?
+- Are earnings transcript search and the expert network call database first-class research surfaces, not bolt-ons?
 
 Gaps are not necessarily defects — they may be deliberate scope decisions — but they should be **known** gaps, not **accidental** ones.

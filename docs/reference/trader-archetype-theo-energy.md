@@ -2,8 +2,7 @@
 
 A reference profile of a top-performing energy trader at a top-5 firm. Used as a yardstick for what an ideal **energy / commodities** terminal must support. This document deliberately avoids any reference to our current platform — it describes the **ideal world**.
 
-For the underlying four-phase trader workflow, see [manual-trader-workflow.md](manual-trader-workflow.md).
-For sister archetypes on the same desk, see the other `trader-archetype-*.md` files in this folder.
+For shared platform surfaces, see [common-tools.md](common-tools.md). For Theo's unique surfaces indexed alongside other archetypes, see [unique-tools.md](unique-tools.md). For the underlying four-phase trader workflow, see [manual-trader-workflow.md](manual-trader-workflow.md). For sister archetypes on the same desk, see the other `trader-archetype-*.md` files in this folder.
 
 ---
 
@@ -21,25 +20,25 @@ For sister archetypes on the same desk, see the other `trader-archetype-*.md` fi
 
 Energy is **physical-aware finance**. Theo's mental model:
 
-- The price of oil reflects **supply, demand, storage, and logistics** — not just sentiment. A pipeline outage is more important than a chart pattern.
+- The price of oil reflects **supply, demand, storage, and logistics** — not just sentiment. A pipeline outage matters more than a chart pattern.
 - Almost every trade is **calendar-shaped** — long Dec, short Mar, betting on the spread. Outright direction is hard; relative-value is the bread and butter.
-- **Seasonality is real.** Winter heating demand drives natgas; summer driving drives gasoline; cold snaps blow out heating oil cracks; hurricane season disrupts Gulf production.
-- **Locations matter.** WTI (Cushing) is not Brent (North Sea) is not Dubai (Middle East). Same product, different geography, different dynamics. Spreads between them are first-class trades.
-- **Cracks and crushes** — oil into gasoline + diesel (the "crack spread") — relate inputs to outputs. Refiner economics are tradable.
-- **Inventories are the price.** Weekly EIA petroleum / DOE natgas storage reports move markets. Storage levels vs 5-year average is the central indicator.
-- **OPEC and geopolitics** drive crude. War in producing regions, sanctions, OPEC+ decisions, Strategic Petroleum Reserve actions.
-- **Weather drives natgas and power.** Heating degree days, cooling degree days, hurricane forecasts, polar vortex.
+- **Seasonality is real.** Winter heating drives natgas; summer driving drives gasoline; cold snaps blow out heating-oil cracks; hurricane season disrupts Gulf production.
+- **Locations matter.** WTI (Cushing) ≠ Brent (North Sea) ≠ Dubai. Same product, different geography, different dynamics. Inter-location spreads are first-class trades.
+- **Cracks and crushes** — oil into gasoline + diesel — relate inputs to outputs. Refiner economics are tradable.
+- **Inventories are the price.** Weekly EIA petroleum / DOE natgas reports move markets. Storage vs 5-year average is the central indicator.
+- **OPEC and geopolitics** drive crude. Wars in producing regions, sanctions, OPEC+ decisions, SPR actions.
+- **Weather drives natgas and power.** HDD/CDD, hurricane forecasts, polar vortex.
 
 ### His cognitive load
 
 Theo holds in his head:
 
-- **Forward curves** for every product he trades — typically 12–60 months out.
-- **Spread structures** — calendar spreads, location spreads, crack spreads — each its own market.
+- **Forward curves** for every product — typically 12–60 months out.
+- **Spread structures** — calendar, location, crack — each its own market.
 - **Storage levels** vs seasonal norms.
-- **Fundamental drivers** — production rates (rigs, OPEC quotas, US shale productivity), demand indicators (refining utilization, miles driven, jet fuel demand), inventory flows.
+- **Fundamental drivers** — production rates (rigs, OPEC quotas, US shale productivity), demand indicators (refining utilization, miles driven, jet demand), inventory flows.
 - **Weather forecasts** at multiple horizons (1–14 days, monthly, seasonal).
-- **Geopolitical flashpoints** — Middle East tensions, Russian sanctions, Venezuela, Libya, Iran nuclear deal, Houthi attacks on shipping.
+- **Geopolitical flashpoints** — Middle East, Russia sanctions, Venezuela, Libya, Iran, Houthi shipping.
 
 The terminal must surface **physical reality** alongside financial pricing.
 
@@ -61,26 +60,26 @@ The terminal must surface **physical reality** alongside financial pricing.
 | Bottom-right  | **Macro tickers, related markets** — DXY, equities, freight rates, refining margins |
 | Tablet        | Bloomberg / Reuters chat, IB commodity strategist notes, weather services           |
 
-Theo's days are calendar-driven: weekly EIA report (Wednesday 10:30am ET for petroleum, Thursday 10:30am for natgas), monthly OPEC report, monthly IEA report. These structure his week.
+Theo's days are **calendar-driven**: weekly EIA report (Wed 10:30am ET for petroleum, Thu 10:30am for natgas), monthly OPEC report, monthly IEA report. These structure his week.
 
 ---
 
 ## Phase 1: Decide
 
-### Forward curves (the primary thinking surface)
+### Forward curves (the primary thinking surface) — UNIQUE
 
-For each product:
+For each product (WTI, Brent, Dubai, HH natgas, RBOB, ULSD, gasoil):
 
 - **Current curve** — futures prices by month, out 12–60 months.
 - **Curve overlay** — current vs 1d / 1w / 1m / 1y / 5y-avg.
-- **Curve shape labeling** — backwardation (front > back) vs contango (back > front), with magnitude.
-- **Spread breakdown** — adjacent calendar spreads (Mar-Apr, Apr-May, etc.) as a sub-curve.
+- **Curve shape labeling** — backwardation (front > back) vs contango (back > front), with magnitude badge.
+- **Spread breakdown** — adjacent calendar spreads (Mar-Apr, Apr-May, …) as a sub-curve.
 - **Implied storage cost** in contango — the curve premium for holding.
 - **Term structure of vol** — IV by tenor on options.
 
-### Spread dashboard
+### Spread dashboard — UNIQUE
 
-The trader's bread and butter. First-class instruments:
+The trader's bread and butter. Spreads are first-class instruments, not derived views:
 
 - **Calendar spreads** — every adjacent and non-adjacent pair (M1-M2, M1-M3, M1-M6, M1-M12) with z-score vs historical.
 - **Location spreads** — WTI-Brent, Brent-Dubai, WTI-WCS (Canadian), WTI-LLS (Light Louisiana Sweet), HH-TTF (US-Europe natgas), TTF-JKM (Europe-Asia LNG).
@@ -89,70 +88,68 @@ The trader's bread and butter. First-class instruments:
 - **Dark spread** — coal vs power.
 - **Crush spreads** for ags (soybean → meal + oil) — adjacent commodity.
 - **z-scores** on each spread vs 1m / 6m / 1y / 5y history.
-- **Seasonal overlays** — current spread vs 5-year seasonal average.
+- **Seasonal overlays** — current spread vs 5-year seasonal average band.
 
-### Inventory & fundamentals
+### Inventory & fundamentals dashboard — UNIQUE
 
 The single most important data layer in energy:
 
-- **EIA Weekly Petroleum Status** — crude, gasoline, distillate, jet fuel inventories. Total + by PADD region. Vs prior week, vs 5-year avg, vs 5-year range.
+- **EIA Weekly Petroleum Status** — crude, gasoline, distillate, jet fuel inventories. Total + by PADD region. Vs prior week, vs 5y avg, vs 5y range.
 - **EIA Weekly Natural Gas Storage** — total + by region (East, Midwest, Mountain, Pacific, South Central). Working gas.
 - **OPEC Monthly Oil Market Report** — production, demand forecasts, OECD inventory.
 - **IEA Monthly Oil Market Report** — global supply/demand balance.
 - **Strategic Petroleum Reserve** — US SPR levels, recent actions.
-- **Floating storage** — ships at sea with crude (vela / Vortexa data).
+- **Floating storage** — ships at sea with crude (Vortexa-style data).
 - **Refining utilization rates** — % of capacity running.
 - **Rig counts** — Baker Hughes, US oil + gas rigs.
 - **Production data** — US weekly, OPEC monthly, Russia (where reported).
 
-### Weather & seasonality
+### Weather & seasonality tracker — UNIQUE
 
 Energy is a weather market:
 
-- **Heating degree days (HDD) / Cooling degree days (CDD)** forecasts — 1–14 day, 30-day, 90-day. Vs normal, vs prior year.
+- **Heating / Cooling Degree Days (HDD/CDD)** forecasts — 1–14 day, 30-day, 90-day. Vs normal, vs prior year.
 - **Population-weighted temperature forecasts** — actual demand-relevant.
 - **Storm tracker** — Atlantic / Pacific hurricanes during season; threats to Gulf production / refining.
 - **Polar vortex / arctic blast** indicators.
-- **El Niño / La Niña** seasonal context.
+- **El Niño / La Niña (ENSO)** seasonal context.
 - **Snowfall, drought** — affecting natgas demand, hydropower.
 
-### Geopolitical & supply tracker
+### Geopolitical & supply tracker — UNIQUE
 
 - **Conflict / sanctions tracker** — Russia, Iran, Venezuela, Libya, Iraq.
 - **Houthi shipping attacks** — Red Sea / Suez impact on flows.
 - **OPEC+ meeting calendar** — JMMC, ministerial meetings, with countdown.
-- **OPEC+ production targets** vs realized.
+- **OPEC+ production targets** vs realized (per-member compliance).
 - **US shale productivity** — DUC (drilled uncompleted) wells, well completions, production per rig.
 - **LNG export terminals** — US capacity additions, outages.
 - **Pipeline outages** — Colonial, TC Energy, Druzhba, etc.
 - **Refinery outages** — turnarounds, fires, planned maintenance.
 
-### Macro inputs
-
-- **DXY** — strong dollar typically pressures oil.
-- **US 10y yield** — inflation expectations.
-- **Equities** — risk-on / risk-off proxy.
-- **Freight rates** — Baltic Dry, tanker rates (VLCC, Suezmax) — physical demand proxy.
-- **Industrial production** — global PMIs.
-- **China data** — implied oil demand from refinery throughput, trade balance.
-
-### Positioning data
-
-- **CFTC Commitment of Traders** — managed money positioning by contract.
-- **ICE positioning** for Brent.
-- **Commitments of Speculators** — net long / short, % of OI.
-
-### Sell-side and physical research
-
-- **Energy strategist morning notes.**
-- **Trade ideas** with track records.
-- **Physical desk color** — refining margins, blender economics, where physical traders see flows.
-
-### Carbon & adjacent
+### Carbon & adjacent markets — UNIQUE
 
 - **EUA (EU carbon allowances)** — increasingly correlated with European energy.
 - **California carbon (CCA), RGGI** — US.
 - **Renewable fuel credits (RINs).**
+
+### Charting
+
+See [#1 Multi-Timeframe Charting](common-tools.md#1-multi-timeframe-charting). **Theo-specific characteristics:**
+
+- Outright **and** spread charts (calendar / location / crack as first-class chartable series).
+- 5-year **seasonal overlay** band on every series.
+- Inventory release annotations (EIA / DOE / OPEC / IEA dates marked).
+- Multi-TF; longer horizons (weekly/monthly) more useful than for short-term traders.
+
+### Refining margin board — UNIQUE
+
+Gasoline crack, distillate crack, jet crack by region (USGC, NWE, Singapore). Refiner economics tradable.
+
+### Macro & positioning inputs
+
+- **DXY, US 10y yield, equities, freight rates** (Baltic Dry, VLCC, Suezmax — physical demand proxy), global PMIs, China refinery throughput.
+- **CFTC Commitments of Traders** — managed money positioning by contract; ICE for Brent.
+- Sell-side strategist morning notes; physical desk color (refining margins, blender economics, where physical traders see flows).
 
 **Layout principle for Decide:** forward curves and spread dashboards are foveal. Inventory release dates structure the week. Weather and geopolitics are continuous peripherals.
 
@@ -162,80 +159,27 @@ Energy is a weather market:
 
 Energy execution is **calendar-spread native**, **location-aware**, and **product-fragmented** (futures vs options vs swaps vs cleared OTC).
 
-### Outright futures ticket
+### Tickets — outright, calendar spread, crack, options, swaps
 
-- **Product, contract month, side, size, type, TIF.**
-- **Tick-size aware** — energy futures have specific tick increments and dollar values per tick.
-- **Last-trade-date awareness** — front month expires soon; UI flags it.
-- **Pre-trade preview:** position impact, margin (initial + maintenance), DV01-equivalent (price sensitivity).
+**Outright futures ticket** — see [#2 Order Entry Ticket](common-tools.md#2-order-entry-ticket-framework). Tick-size aware (NYMEX WTI $0.01 = $10/contract; HH natgas $0.001 = $10/contract); last-trade-date flagged; contract-month selector front-and-center.
 
-### Calendar spread ticket (first-class)
+**Calendar spread ticket — UNIQUE (first-class):** two contract months (long Dec24, short Jun25), spread quoted as a single price differential, atomic execution via exchange-recognized spread combos (e.g. CME calendar combos), z-score history vs entry shown inline, carry / storage implication called out.
 
-- **Two contract months** — long Dec24, short Jun25.
-- **Spread quoted as a single number** — the price differential.
-- **Atomic execution** — both legs go in coordinated, often via exchange-recognized spread products.
-- **Z-score history** of the spread vs entry.
-- **Carry / storage implication** — does this spread reflect storage cost?
+**Crack / location spread ticket — UNIQUE:** multi-leg multi-product (long crude, short gasoline, short heating oil for 3:2:1 crack), standard ratio templates (3:2:1, 2:1:1, gasoline-only, distillate-only), quoted in $/bbl of refining margin.
 
-### Crack / location spread ticket
+**Options ticket** — see [#2](common-tools.md#2-order-entry-ticket-framework). Futures options (American, expire ~1 month before futures); templated multi-leg structures (straddle, strangle, calendars, ratios); vol-quoted entry; greeks displayed.
 
-- **Multi-leg multi-product** — long crude future, short gasoline future, short heating oil future (3:2:1 crack).
-- **Standard ratios** as templates (3:2:1, 2:1:1).
-- **Quoted in $/bbl** of refining margin.
+**Swaps / OTC ticket:** basis differentials (e.g. WTI Midland vs Cushing), index-on-a-month, OTC options for non-listed strikes, RFQ workflow to broker-dealer panel, cleared-vs-bilateral awareness.
 
-### Options ticket
+### Roll workflow — UNIQUE
 
-- **Futures options** primarily — American-style, expiration 1 month before futures expiry.
-- **Multi-leg structures** — straddle, strangle, calendars, ratios.
-- **Vol-quoted entry.**
-- **Greeks displayed.**
+Energy futures expire monthly; rolling is constant. **Roll calendar** flags first-notice-day and last-trade-day per position; **roll algos** are calendar-spread-aware (TWAP through roll window watching the spread); **cost-of-roll tracker** accumulates vs theoretical mid.
 
-### Swaps / OTC ticket
+### Pre-trade preview, algos, hotkeys
 
-For products without exchange futures or with specialized structures:
-
-- **Swap on a basis differential** — e.g. WTI Midland vs WTI Cushing.
-- **Index-on-a-month** — average price over a month.
-- **OTC options** for non-listed strikes.
-- **RFQ workflow** to broker-dealer panel.
-- **Cleared vs bilateral** awareness.
-
-### Roll workflow
-
-Energy futures expire monthly; rolling positions is a constant activity:
-
-- **Roll calendar** — when to roll each position.
-- **Roll algos** — TWAP through roll window, calendar-spread-aware.
-- **Cost-of-roll tracker** — accumulated roll cost over time.
-
-### Hedge workflow
-
-- **Spot-hedge against physical exposure** (rare for financial desk but structural).
-- **Cross-hedge** — using one product to hedge another (gasoil for jet fuel, etc.).
-
-### Pre-trade preview
-
-For multi-leg structures:
-
-- DV01 by tenor.
-- Spread P/L per scenario.
-- Margin (initial + maintenance + variation).
-- Liquidity profile.
-- Basis risk if cross-hedge.
-
-### Algos
-
-- **TWAP / VWAP** for futures.
-- **Calendar-spread-aware** — execute outright while watching spread to optimize.
-- **Auction-aware** for inventory release windows.
-- **Settlement-window algos** — participate in trade-at-settlement.
-
-### Hotkeys
-
-- Buy / sell at top of book.
-- Cancel all on contract.
-- Roll position forward.
-- Flatten product.
+- **Pre-trade preview** — see [#3](common-tools.md#3-pre-trade-risk-preview). Adds DV01-equivalent by tenor, spread P/L per scenario for multi-leg, basis-risk flag for cross-hedges, margin (initial + maintenance + variation).
+- **Algos** — see [#4](common-tools.md#4-execution-algos-library). Adds calendar-spread-aware outright execution, inventory-release-aware (pause / accelerate around EIA Wednesday), settlement-window algos for trade-at-settlement (TAS).
+- **Hotkeys** — see [#6](common-tools.md#6-hotkey-system). Buy/sell at top of book per contract month; cancel-all on contract month; **roll position forward** (single key); flatten product across all months.
 
 **Layout principle for Enter:** the calendar spread ticket is first-class, not buried. Crack spreads are templated. Options structures are templated. Roll is a designed workflow, not an ad-hoc action.
 
@@ -245,47 +189,27 @@ For multi-leg structures:
 
 Energy positions evolve through the curve as time passes (roll), as fundamentals shift (inventory, weather), and as events erupt (geopolitics).
 
-### Positions blotter — by product & spread
+### Positions, working orders, PnL, risk
 
-- **Outright positions** — by product, by month.
-- **Spread positions** — calendar / location / crack — as composite objects.
-- **Greek-equivalents** — price sensitivity per $1 move; vega for options.
-- **Drill-down to legs.**
+- **Positions blotter** — see [#7](common-tools.md#7-positions-blotter). Outright positions by product × month; spread positions (calendar / location / crack) as composite objects with drill-down to legs; **forward exposure ladder** showing net position and DV01-equivalent per tenor; greek-equivalents (price sensitivity per $1 move; vega for options).
+- **Working orders** — see [#8](common-tools.md#8-working-orders-blotter). Grouped by contract month within product; calendar-spread orders shown as one composite, not two legs.
+- **Live PnL** — see [#9](common-tools.md#9-live-pnl-panel). Energy-style decomposition: outright price PnL, curve-change PnL, spread P/L, roll cost (accumulated), vol PnL (options); per-product / per-spread breakdown.
+- **Risk panel** — see [#10](common-tools.md#10-risk-panel-multi-axis). Axes: position by product & month vs limits, spread exposure (calendar / location / crack) vs limits, DV01-equivalent total, vega for options, liquidity profile (most-traded vs back-month illiquidity), margin & collateral consumption.
 
-### Forward exposure ladder
+### Stress / scenarios — physical-aware library — UNIQUE
 
-- **Net position by month** — out across the curve.
-- **DV01-equivalent by month** — concentration per tenor.
-- **Total position aggregate per product.**
+See [#11 Stress / Scenario Panel](common-tools.md#11-stress--scenario-panel). **Theo-specific scenarios:**
 
-### Live PnL — energy-style decomposition
+- **Outright shocks** — WTI ±$10, HH natgas ±$1.
+- **Curve shocks** — front contango → backwardation, parallel shifts.
+- **Crack widening / narrowing.**
+- **Hurricane scenario** — Gulf production -20%, refinery outages.
+- **OPEC surprise** — 1mb/d cut or release.
+- **SPR release** — 30M barrels.
+- **Cold snap / heat wave** scenarios for natgas.
+- **Geopolitical** — Iran-Israel conflict, $100 → $130 oil.
 
-- **Outright price PnL** — directional moves.
-- **Curve change PnL** — calendar spread shape.
-- **Spread P/L** — for active spread trades.
-- **Roll cost** — accumulated.
-- **Vol PnL** — for options.
-- **Per-product, per-spread breakdown.**
-
-### Risk panel
-
-- **Position by product & month** with limits.
-- **Spread exposure** — calendar / location / crack — with limits.
-- **DV01-equivalent total** vs limit.
-- **Vega** for options exposure.
-- **Stress scenarios:**
-  - Outright shocks: WTI ±$10, HH natgas ±$1.
-  - Curve shocks: front contango → backwardation, parallel shifts.
-  - Crack widening / narrowing.
-  - Hurricane scenario — Gulf production -20%.
-  - OPEC surprise — 1mb/d cut or release.
-  - SPR release — 30M barrels.
-  - Cold snap / heat wave scenarios for natgas.
-  - Geopolitical — Iran-Israel conflict, $100 → $130 oil.
-- **Liquidity profile** — most-traded contracts vs back-month illiquidity.
-- **Margin & collateral** consumption.
-
-### Inventory countdown
+### Inventory release countdown — UNIQUE
 
 - **EIA Wednesday countdown** — minutes-to-release.
 - **Pre-release positioning** by product.
@@ -293,51 +217,15 @@ Energy positions evolve through the curve as time passes (roll), as fundamentals
 - **Whisper number** — desk consensus.
 - **Recent surprises** — pattern of how surprises move price.
 
-### Weather watch
+### Calendar, news, alerts, journal, heatmap, comms, kill switches
 
-- **Active weather threats** to positions.
-- **Forecast updates** — when daily/weekly forecast updates land.
-- **Hurricane watch** during season — track positions exposed to Gulf.
-
-### Geopolitical alerts
-
-- **Conflict escalation** — keyword-based news alerts.
-- **OPEC+ decision** countdowns.
-- **SPR action** announcements.
-- **Sanctions changes** — Russia, Iran.
-
-### Alerts
-
-- **Price alerts** — outright and spread.
-- **Spread z-score alerts.**
-- **Inventory release alerts** — pre-release, post-release surprise size.
-- **Weather alerts** — new HDD/CDD forecast diverging from prior.
-- **Geopolitical alerts.**
-- **Roll alerts** — contract approaching expiry.
-- **Risk limit alerts.**
-
-### Trade journal
-
-- Per trade / spread: thesis, fundamentals supporting, expected catalyst, invalidation.
-- Updated around inventory and OPEC events.
-
-### Communications
-
-- **Bloomberg / Reuters chat** — broker chat, sell-side desk color.
-- **Physical desk chat** if firm has one.
-- **Weather service** integrated.
-- **Geopolitical analyst** feed.
-
-### Heatmap
-
-- Products / spreads sized by exposure × today's move.
-
-### Kill switches
-
-- **Reduce by product** — flatten gasoline, keep crude.
-- **Reduce all energy.**
-- **Hedge to neutral** — buy front-month to offset back-month exposure.
-- **Cancel all working orders.**
+- **Calendar** — see [#12](common-tools.md#12-catalyst--event-calendar). EIA weekly (Wed 10:30am ET petroleum, Thu 10:30am natgas), DOE weekly, OPEC monthly, IEA monthly, OPEC+ JMMC / ministerial meetings, contract roll dates (first-notice / last-trade-day), hurricane season window, winter heating season.
+- **News & research** — see [#13](common-tools.md#13-news--research-feed). Product-tagged (crude / gasoline / distillate / natgas / power / carbon); always-on geopolitical conflict feed; OPEC headlines and SPR actions surfaced; weather-service integration.
+- **Alerts** — see [#14](common-tools.md#14-alerts-engine). Theo-specific types: spread z-score, inventory release (pre + post-surprise), HDD/CDD forecast divergence, geopolitical keyword (war / sanctions / pipeline / refinery), roll (contract approaching expiry).
+- **Trade journal** — see [#15](common-tools.md#15-trade-journal). Thesis links a fundamental driver (inventory build, weather event, OPEC decision, geopolitical premium); updated around inventory and OPEC events.
+- **Heatmap** — see [#16](common-tools.md#16-heatmap-of-own-book). Products / spreads sized by exposure × today's move, colored by intraday PnL %.
+- **Communications** — see [#17](common-tools.md#17-communications-panel). Bloomberg / Reuters broker chat, sell-side desk color, physical desk chat (if firm has one), weather service, geopolitical analyst feed.
+- **Kill switches** — see [#19](common-tools.md#19-kill-switches-granular). Reduce by product (flatten gasoline, keep crude); reduce all energy; **hedge to neutral** (buy front-month to offset back-month); cancel all working orders.
 
 **Layout principle for Hold:** spread positions and forward exposure are foveal. Inventory countdown and weather/geopolitics are critical peripherals. Roll workflow is always pending in the background.
 
@@ -347,72 +235,27 @@ Energy positions evolve through the curve as time passes (roll), as fundamentals
 
 Energy post-trade emphasizes **fundamentals fit**, **spread vs outright skill**, **seasonal pattern recognition**.
 
-### Trade history
+### Trade history, attribution, performance, equity curve
 
-- Every trade with curve / spread / inventory / weather / geopolitical context at entry.
-- Tagged by trade type (outright, calendar, location, crack) and theme (inventory build, weather event, OPEC, geopolitics).
+- **Trade history** — see [#21](common-tools.md#21-trade-history--blotter-historical). Tagged by trade type (outright / calendar / location / crack) × theme (inventory build, weather event, OPEC, geopolitics).
+- **PnL attribution** — see [#22](common-tools.md#22-pnl-attribution-multi-axis). Axes: outright vs spread vs cracks (different skills); by product (crude vs natgas vs power); by tenor (front vs back-month); by season (winter natgas vs summer gasoline); by event type.
+- **Performance metrics** — see [#23](common-tools.md#23-performance-metrics). Adds hit rate by trade type / event type; **DV01-equivalent return** (risk-adjusted); **carry capture** (earned roll yield in backwardated curves).
+- **Equity curve** — see [#24](common-tools.md#24-equity-curve). Event markers for EIA surprises, OPEC decisions, hurricane landfalls, geopolitical breaks.
 
-### PnL attribution
+### Spread / inventory / weather / geopolitical analytics — UNIQUE slicing
 
-- **Outright vs spread vs cracks** — different skills.
-- **By product** — crude skill vs natgas skill vs power skill.
-- **By tenor** — front-month vs back-month.
-- **By season** — winter natgas vs summer gasoline.
-- **By event type** — inventory trades, OPEC trades, weather trades, geopolitical trades.
+- **Spread mean-reversion** — when did the spread converge? Half-life of dislocations by product. Stop-out vs target-hit ratio.
+- **Inventory trade analytics** — pre-release positioning vs result; surprise direction skill; surprise magnitude calibration.
+- **Weather trade analytics** — forecast-driven outcomes vs realized weather.
+- **Geopolitical trade analytics** — event response speed; persistence of geopolitical risk premia (when did they fade?).
+- **Seasonal pattern fit** — multi-year backtest of recurring seasonal trades; was the entry timely within the seasonal pattern?
 
-### Performance metrics
+### TCA, behavioral, reports, compliance
 
-- Sharpe, Sortino, Calmar.
-- Hit rate by trade type and event type.
-- **DV01-equivalent return** — risk-adjusted.
-- **Carry capture** — earned roll yield in backwardated curves.
-
-### Spread trade analytics
-
-- **Spread mean-reversion** — when did the spread converge?
-- **Half-life of dislocations** by product.
-- **Stop-out vs target-hit ratio.**
-
-### Inventory trade analytics
-
-- **Pre-release positioning vs result** — were we on the right side?
-- **Surprise direction skill.**
-- **Surprise magnitude calibration.**
-
-### Weather trade analytics
-
-- **Forecast-driven trade outcomes** — did the forecast match reality?
-- **Forecast vs realized weather** — was the forecast we traded actually right?
-
-### Geopolitical trade analytics
-
-- **Event response speed** — how fast did we react?
-- **Persistence of geopolitical risk premia** — when did they fade?
-
-### Execution quality / TCA
-
-- **Per-trade slippage** vs decision-time mid.
-- **Roll cost** vs theoretical (calendar spread mid).
-- **Block / RFQ** best-quote frequency by counterparty.
-
-### Seasonal pattern fit
-
-- **Was the seasonal trade timely?** Did we enter at the right point in the seasonal pattern?
-- **Multi-year backtest** of recurring seasonal trades.
-
-### Behavioral analytics
-
-- **Inventory-week discipline** — held through release or exited?
-- **Weather forecast trust** — over- or under-reacted to forecast updates?
-- **Geopolitical reaction** — chased the news or faded it?
-
-### Reports
-
-- Daily P/L commentary (especially around inventory days).
-- Weekly portfolio review.
-- Monthly attribution by product / spread / event.
-- Quarterly investor / committee letter contribution.
-- Compliance / regulatory filings (CFTC large trader reports, position limits).
+- **TCA** — see [#25](common-tools.md#25-execution-quality--tca-transaction-cost-analysis). Roll cost vs theoretical (calendar spread mid); block / RFQ best-quote frequency by counterparty; per-leg slippage on multi-leg structures.
+- **Behavioral analytics** — see [#26](common-tools.md#26-behavioral-analytics). Inventory-week discipline (held through release or exited?); weather-forecast trust (over- or under-reacted?); geopolitical reaction (chased news or faded it?).
+- **Reports** — see [#27](common-tools.md#27-reports). Daily P/L commentary (especially around inventory days); weekly portfolio review; monthly attribution by product / spread / event; quarterly investor / committee letter.
+- **Compliance** — see [#28](common-tools.md#28-compliance--audit-trail). CFTC large trader reports; position limits per contract.
 
 **Layout principle for Learn:** spread / event / seasonal slicing. Pattern-matching across years is the key learning loop.
 
@@ -421,7 +264,7 @@ Energy post-trade emphasizes **fundamentals fit**, **spread vs outright skill**,
 ## What Ties Theo's Terminal Together
 
 1. **Forward curves are first-class.** Every product is a curve, not a price.
-2. **Spreads are first-class instruments.** Calendar / location / crack spreads with z-scores and dedicated tickets.
+2. **Spreads are first-class instruments.** Calendar / location / crack with z-scores and dedicated tickets.
 3. **Physical reality is surfaced.** Inventories, production, refining utilization, pipeline / refinery outages.
 4. **Weather is a market input.** HDD/CDD, hurricanes, polar vortex, droughts.
 5. **Inventory release calendar dominates the week.** EIA Wednesday, DOE Thursday, OPEC monthly.

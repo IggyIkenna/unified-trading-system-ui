@@ -3,6 +3,7 @@
 A reference profile of a top-performing hybrid (CeFi + DeFi) crypto trader at a top-5 firm, used as a yardstick for what an ideal trading terminal must support. This document deliberately avoids any reference to our current platform — it describes the **ideal world**.
 
 For the underlying four-phase trader workflow this profile is built on, see [manual-trader-workflow.md](manual-trader-workflow.md).
+For shared platform surfaces referenced throughout, see [common-tools.md](common-tools.md).
 For the pure-CeFi sister archetype on Julius's desk, see [trader-archetype-marcus-cefi.md](trader-archetype-marcus-cefi.md).
 
 ---
@@ -70,56 +71,71 @@ Note the categories that don't exist on Marcus's desk: **on-chain state surface,
 
 Everything Marcus has, **plus** an entire DeFi data dimension.
 
-### CeFi-side data (inherited from Marcus, condensed)
+### CeFi-side data (condensed)
 
-Marcus's full CeFi stack — multi-TF charts, aggregated CeFi depth, funding/OI/liquidations, options surface, macro tickers, large-trade tape — but for Julius these are **half the picture**, not the whole picture. He runs them in compressed form.
+See [Multi-Timeframe Charting](common-tools.md#1-multi-timeframe-charting), [News & Research Feed](common-tools.md#13-news--research-feed), and [Catalyst / Event Calendar](common-tools.md#12-catalyst--event-calendar).
 
-### On-chain data (his unique edge surface)
+**Julius-specific characteristics:**
 
-- **Pool state dashboards** — for every pool he trades, real-time TVL, depth at price levels, fee tier, recent volume, LP count.
-- **Lending market state** — Aave / Compound / Morpho / Spark utilization, supply rates, borrow rates per asset, available liquidity, top borrowers.
-- **AMM concentrated-liquidity heatmap** — Uniswap v3-style: where is liquidity concentrated, where are the gaps, where will price move easily?
+- Marcus's full CeFi stack runs in **compressed form** — half the picture, not the whole picture. Charts, aggregated CeFi depth, funding/OI/liquidations, options surface, macro tickers, large-trade tape get one monitor instead of three.
+- Crypto-native macro context (BTC dominance, stables flow, ETF flows) sits next to traditional macro tickers.
+
+### On-chain pool-state dashboards
+
+Real-time state of every pool, lending market, and concentrated-liquidity venue Julius trades into. Pool depth and oracle freshness are the ground truth that CeFi prices are downstream of; mispricings show up here first. Data sources: node RPC, subgraphs, protocol-specific APIs (Aave, Pendle), pool-event websockets.
+
+- **Pool state per venue** — Uniswap v3 / Curve / Balancer pools: TVL, depth at price levels, fee tier, recent volume, LP count, range concentration.
+- **Lending market state** — Aave / Compound / Morpho / Spark / Kamino / MarginFi utilization, supply rates, borrow rates, available liquidity, top borrowers and their health factors.
+- **AMM concentrated-liquidity heatmap** — where liquidity sits, where the gaps are, where price moves easily on size.
 - **Stablecoin peg monitor** — every major stable, real-time price across CeFi and DeFi venues, with z-score-of-deviation alerts.
 - **Bridge state** — depth and fees on every major bridge (LayerZero, Wormhole, Across, Stargate, native), with health/incident indicators.
-- **DEX aggregator route preview** — for any swap, what 1inch / CowSwap / Jupiter / Odos would route, with expected slippage and MEV exposure.
 
-### Yield landscape
+These surfaces sit at monitor parity with orderbooks and funding rates — first-class, not "advanced features."
+
+### DeFi yield landscape board
+
+A single normalized board comparing every yield source across chains and protocols, **net of frictions** (gas, IL, slippage, bridge cost). Gross APY without frictions is the lie that loses money. Reading funding-rate vs borrow-rate vs LP yield vs staking yield as one comparable matrix is the cleanest way to spot cash-and-carry, basis, or LP+hedge trades.
 
 - **Lending APY board** — ETH, BTC, USDC, USDT lending rates across Aave / Compound / Morpho / Spark / Kamino / MarginFi. Sortable by chain and risk.
 - **LST yield board** — stETH / rETH / cbETH / etc., underlying APR, MEV-boost premium, withdrawal queue, exit liquidity.
-- **Restaking points / AVS yields** — EigenLayer points value (estimated), Symbiotic, Karak, with implied $/point.
-- **LP yields with IL-adjusted return** — not just gross APY, but APY net of expected impermanent loss given recent vol.
-- **Pendle market board** — for each pool: PT YTM, YT implied APY, days to maturity, liquidity, basis vs underlying.
+- **Restaking points / AVS yields** — EigenLayer, Symbiotic, Karak, with implied $/point and confidence interval.
+- **LP yields with IL-adjusted return** — gross APY net of expected impermanent loss given recent realized vol.
+- **Pendle market board** — per pool: PT YTM, YT implied APY, days to maturity, liquidity, basis vs underlying.
 - **Funding-rate vs borrow-rate spread board** — per asset, the cleanest single metric for cash-and-carry trades.
 
-### MEV & mempool
+### Mempool monitor & MEV intelligence
 
-- **Mempool monitor** — pending swaps above $X size, with target pools and expected price impact.
-- **MEV bot leaderboard** — who's profitable, what strategies, which blocks.
-- **Sandwich risk indicator** — for any pending swap, the historical sandwich rate on this pool/route.
+Real-time view of pending transactions and MEV flow. Mempool flow is leading-edge price discovery; sandwich risk on his own swaps is a measurable cost. Data sources: mempool stream (Blocknative, Flashbots), MEV-Boost relays, wallet-cluster databases (Nansen / Arkham).
+
+- **Pending swaps above $X size** — with target pools, expected price impact, originator wallet annotations.
+- **MEV bot leaderboard** — who's profitable, what strategies, which blocks, what fees they pay validators.
+- **Sandwich risk indicator** — historical sandwich rate on this pool/route given current mempool conditions.
 - **Private order flow venues** — MEV-Share, Flashbots Protect, CoW Protocol — health and recent inclusion rates.
+- **Large-wallet feed** — tracked smart-money / market-maker / treasury wallets with annotated recent moves.
 
-### Governance & event calendar
+### Governance, unlocks & on-chain calendar
 
-- **Token unlock calendar** — daily $ amount unlocking per protocol, vesting cliffs.
-- **Governance vote calendar** — active proposals across major protocols, with quorum status.
+Protocol-layer overlay on [Catalyst / Event Calendar](common-tools.md#12-catalyst--event-calendar).
+
+**Julius-specific characteristics:**
+
+- **Token unlock calendar** — daily $ amount unlocking per protocol, vesting cliffs, recipient-wallet annotations.
+- **Governance vote calendar** — active proposals, quorum status, his voting power.
 - **Audit / incident feed** — recent audits passed/failed, recent exploits, security firm advisories.
 - **Protocol upgrade calendar** — Ethereum forks, L2 upgrades, restaking epochs, Pendle market expirations.
 - **Validator / staking events** — withdrawal queue lengths, slashing events.
-
-### Whale & wallet intelligence
-
-- **Tracked wallets dashboard** — known smart-money wallets, market-maker wallets, treasury wallets — their recent moves with annotations.
-- **Cluster analysis** — wallets that move together (Nansen / Arkham-style), with PnL.
-- **Exchange wallet flows** — net inflow/outflow per CEX, broken down by asset and chain.
-- **Token holder concentration changes** — top 10 / 100 holder share over time.
+- Every event auto-cross-references current positions ("you have $4.2M exposed to this protocol").
 
 ### Sentiment & narrative
 
-- **Crypto Twitter (X) sentiment** — by ticker, narrative trending strength, KOL alignment.
-- **Farcaster / Lens** — DeFi-native sentiment.
-- **Onchain "social" signals** — ENS registrations, NFT mints as cultural temperature.
-- **Narrative tracker** — RWA, AI agents, restaking, BTC L2s, etc., with capital-flow evidence.
+Layer on top of [News & Research Feed](common-tools.md#13-news--research-feed).
+
+**Julius-specific characteristics:**
+
+- Crypto Twitter (X) sentiment by ticker; KOL alignment; narrative trending strength.
+- Farcaster / Lens for DeFi-native sentiment.
+- On-chain "social" signals — ENS registrations, NFT mints as cultural temperature.
+- Narrative tracker — RWA, AI agents, restaking, BTC L2s — with capital-flow evidence (TVL growth, wallet inflows).
 
 **Layout principle:** Julius scans **two parallel worlds simultaneously**. The CeFi world tells him what price is doing; the on-chain world tells him _why_ and _what's coming_. Mempool and pool-state data are his unique edge — these get prime monitor space.
 
@@ -127,57 +143,73 @@ Marcus's full CeFi stack — multi-TF charts, aggregated CeFi depth, funding/OI/
 
 ## Phase 2: Enter
 
-This is where Julius's terminal is most different from any standard tool. He needs **three fundamentally different order types** in one cohesive surface.
+Julius needs **three fundamentally different order types** in one cohesive surface.
 
-### CeFi order ticket (Marcus-style)
+### CeFi order ticket
 
-Same multi-leg, bracket-capable, post-only-default ticket Marcus uses, with full pre-trade preview.
+See [Order Entry Ticket Framework](common-tools.md#2-order-entry-ticket-framework).
 
-### On-chain order ticket — DEX swap / LP / lend / borrow / stake
+**Julius-specific characteristics:** the same multi-leg, bracket-capable, post-only-default ticket Marcus uses, but the pre-trade preview folds in on-chain consequences (see unified preview below).
 
-This doesn't exist in any commercial product as a serious tool. Julius's terminal needs:
+### On-chain order ticket
 
-- **Action selector:** swap, add LP, remove LP, lend, borrow, repay, stake, unstake, claim rewards, vote, multicall.
-- **Aggregator-aware route preview** — show 1inch / CoW / Jupiter / Odos / Bebop quotes side-by-side. Pick the route, see expected output, slippage tolerance, MEV exposure rating, gas cost.
-- **Private vs public mempool toggle** — route via Flashbots / MEV-Share / private RPC vs public mempool, with default policy per trade size.
-- **Gas strategy** — base fee + priority tip suggestion based on urgency. Display USD cost, time-to-inclusion estimate.
-- **Simulation before send** — Tenderly-style local fork simulation showing exact state changes, balance changes, errors. Never sign blind.
-- **Slippage and MEV-loss preview** — "expected: 0.04%, worst case under current mempool: 0.18%."
-- **Multi-call composition** — chain multiple actions (swap → LP → stake) into one transaction with atomic rollback.
-- **Approval management** — see all outstanding token approvals, revoke from same surface, default to limited approvals (not infinite).
-- **Wallet selector** — multiple hardware wallets, multi-sigs (Safe), MPC wallets — each with pre-approved policies.
-- **Nonce manager** — see pending nonces per wallet, ability to cancel/replace stuck transactions.
+The largest single piece of net-new UX on Julius's desk; no commercial product builds this seriously.
 
-### Bridge / cross-chain ticket
+- **Action selector** — swap, add LP, remove LP, lend, borrow, repay, stake, unstake, claim rewards, vote, multicall. Mode-aware: selecting an action reshapes the ticket body to that action's required fields.
+- **Aggregator-aware route preview** — 1inch / CoW / Jupiter / Odos / Bebop quotes side-by-side. Per-route: expected output, slippage tolerance, MEV exposure rating, gas cost in USD and bps. Default policy ("best execution net of MEV") configurable; trader overrides per trade.
+- **Simulation pre-send (mandatory)** — Tenderly-style local fork simulation against the latest block before any signature is requested. Output shows exact state changes: balances in/out per token per address, contract storage diffs, events emitted, gas used, revert reasons. A simulation that reverts blocks the send. Re-runs on every input change; the diff is the surface, not just a button. **Never sign blind.**
+- **Private vs public mempool toggle** — default policy by trade size: small swaps → public (cheaper, faster); large swaps → private (Flashbots Protect / MEV-Share / CoW). Per-trade override with explicit confirmation when moving in the riskier direction. Slippage and MEV-loss preview shows both regimes — "expected: 0.04% private / 0.18% worst-case public under current mempool."
+- **Gas strategy** — base fee + priority tip suggestion by urgency: "next block" / "within 1 min" / "within 5 min" / "cheap when possible." Display USD cost, time-to-inclusion estimate, fail-rate distribution at the chosen tip. Solana / Hyperliquid use equivalent priority-fee model.
+- **Approval management** — inline view of all outstanding ERC-20 / ERC-721 approvals across his wallets, with $-at-risk per approval. Default to **limited approvals** (exact amount or 2× amount); infinite approvals require explicit confirmation. One-click revoke, batched into a single tx where possible. Approval hygiene rolls up into Phase-4 behavioral analytics.
+- **Nonce manager** — per-wallet pending-nonce list with the tx that owns each nonce. Stuck-tx detection (older than N blocks at current tip). Cancel / replace (speed-up) with auto-computed minimum tip bump. Rebroadcast on RPC failure.
+- **Multi-call composition** — chain multiple actions (swap → LP → stake) into one tx with atomic rollback. Visualized as a DAG so the dependency graph is visible before signing.
+- **Wallet selector** — multiple hardware wallets, multi-sigs (Safe), MPC wallets — each with pre-approved policies (per-wallet daily limits, protocol allowlists, signer requirements). Hot / warm / cold tagging visible at all times.
 
-- **Route comparison across bridges** — LayerZero, Across, Stargate, native canonical, intent-based (Across, Squid). Compare cost, time, security model.
-- **Risk indicator per bridge** — TVL, recent incidents, security model (optimistic, native, multisig).
-- **Liquidity check** — does the destination chain have enough depth to receive this size?
+### Bridge ticket & bridge state monitor
+
+A single surface for moving capital across chains with route comparison and live bridge health. Bridges are the most-exposed moment for any cross-chain trade.
+
+- **Route comparison** — LayerZero, Across, Stargate, native canonical, intent-based (Across, Squid). All-in cost (fee + slippage), time-to-finality, security model (optimistic, native, multisig).
+- **Risk indicator per bridge** — TVL, recent incidents, security model, active validator/relayer health.
+- **Liquidity check** — destination chain depth at the swap that follows.
+- **In-flight monitor** — currently bridging amount, source tx, destination expected-arrival window, relayer health, escalation path if stuck.
+
+### Cross-chain arb scanner
+
+Real-time scanner showing the same asset priced differently across Ethereum / L2s / Solana / etc., **net of bridge cost and time**.
+
+- Per-pair (asset × chain × chain) spread in bps, gross and net.
+- Time-to-close estimate from historical persistence.
+- One-click prefill of the bridge ticket + destination swap when an opportunity is selected.
 
 ### Atomic / conditional execution
 
-- **Cross-venue triggers** — "if Binance perp funding > X, send order to short on Binance and simultaneously borrow on Aave." Glue logic the trader configures, executed by the platform.
+- **Cross-venue triggers** — "if Binance perp funding > X, send order to short on Binance and simultaneously borrow on Aave." Trader-configured glue logic, executed by the platform.
 - **Limit orders on-chain** — via CoW or 1inch fusion, with off-chain order monitoring on his terminal.
-- **TWAP/VWAP for on-chain** — split a large swap across blocks/hours to minimize price impact.
+- **TWAP/VWAP for on-chain** — split a large swap across blocks/hours; see [Execution Algos Library](common-tools.md#4-execution-algos-library).
 
-### Pre-trade risk preview (unified across CeFi + DeFi)
+### Pre-trade risk preview — unified across CeFi + DeFi
 
-This is the real innovation. The ticket shows:
+See [Pre-Trade Risk Preview](common-tools.md#3-pre-trade-risk-preview).
 
-- Resulting **net delta per asset** across the entire book (CeFi + on-chain).
-- Resulting **liquidation risk** — for every leveraged leg, on every venue.
+**Julius-specific characteristics:**
+
+- Resulting **net delta per asset** spans CeFi positions and on-chain positions in one number.
 - **Counterparty/protocol exposure breakdown** — "this trade increases your Aave exposure to 22% of book."
 - **Smart-contract risk score** — protocol audit history, TVL, age, recent incidents.
 - **Bridge/oracle dependencies** — which oracles must be live for this position to mark correctly.
-- **Estimated all-in cost** — gas + slippage + bridge fees + CEX fees, in basis points.
+- **Estimated all-in cost** — gas + slippage + bridge fees + CEX fees + expected MEV, in basis points.
 
-### Hotkeys and automation
+### Hotkeys, playbooks, smart routing
 
-- Hotkeys for CeFi actions (Marcus-style).
-- **Saved on-chain "playbooks"** — one-click multi-step actions ("rebalance my Pendle YT positions," "claim and compound all rewards," "unwind my GMX position and bridge USDC home").
-- Kill switch that **flattens CeFi positions and unwinds on-chain positions in a defined order**, respecting gas / liquidity constraints.
+See [Hotkey System](common-tools.md#6-hotkey-system) and [Smart Order Router](common-tools.md#5-smart-order-router--multi-venue-aggregation).
 
-**Layout principle:** the order ticket is **mode-aware**. When focused on a CeFi instrument, it's Marcus's ticket. When focused on a pool or protocol, it's the on-chain ticket. When the trade is multi-leg cross-domain, it's a unified ticket showing all legs. The trader sees one consistent UI that adapts.
+**Julius-specific characteristics:**
+
+- **On-chain "playbooks"** — one-click multi-step actions ("rebalance my Pendle YT positions," "claim and compound all rewards," "unwind my GMX position and bridge USDC home"). Saved multicalls with parameter prompts.
+- Smart router spans CeFi venues **and** DEX aggregators in one decision; route comparison shows both sides.
+
+**Layout principle:** the order ticket is **mode-aware**. CeFi instrument → Marcus's ticket. Pool/protocol → on-chain ticket. Multi-leg cross-domain → unified ticket showing all legs. One consistent UI that adapts.
 
 ---
 
@@ -192,14 +224,18 @@ Dramatically harder than Marcus's job. Julius has positions across:
 
 A flat position list is useless. He needs a **hierarchical, role-tagged view**.
 
-### Unified positions blotter
+### Unified positions blotter — three-level hierarchy
 
-- **Top level: by underlying** — "ETH: net delta +$X, gross exposure $Y, decomposed across N legs."
-- **Second level: by role** — directional, hedge, LP, lending collateral, lending debt, staking, restaking, options leg.
-- **Third level: by venue/protocol** — Binance perp short, Aave ETH supply, Lido stETH, Pendle PT, Uniswap v3 LP.
-- **Per-position metadata** — entry timestamp, entry tx hash (for on-chain), strategy tag, parent trade ID.
+See [Positions Blotter](common-tools.md#7-positions-blotter).
 
-### On-chain-specific position tracking
+**Julius-specific characteristics:** the three-level hierarchy is the unique surface.
+
+- **Level 1: by underlying** — "ETH: net delta +$X, gross exposure $Y, decomposed across N legs."
+- **Level 2: by role** — directional, hedge, LP, lending collateral, lending debt, staking, restaking, options leg.
+- **Level 3: by venue/protocol** — Binance perp short, Aave ETH supply, Lido stETH, Pendle PT, Uniswap v3 LP.
+- **Per-position metadata** — entry timestamp, entry tx hash (on-chain), strategy tag, parent trade ID.
+
+**On-chain-specific position fields** (collapsed by default, expandable):
 
 - **LP positions:** current price range, in-range %, fees accrued, IL realized vs unrealized, days since last rebalance.
 - **Lending positions:** health factor, liquidation threshold, current rate, accrued interest.
@@ -207,64 +243,72 @@ A flat position list is useless. He needs a **hierarchical, role-tagged view**.
 - **Staking/restaking:** rewards accrued, points accrued (where measurable), lockup remaining.
 - **Vesting/locked positions:** unlock schedule visible.
 
-### Live PnL — across worlds
+### Working orders & live PnL
 
-Decomposed:
+See [Working Orders Blotter](common-tools.md#8-working-orders-blotter) and [Live PnL Panel](common-tools.md#9-live-pnl-panel).
 
-- CeFi spot PnL.
-- CeFi futures PnL (mark + funding).
-- On-chain spot PnL (mark-to-market).
-- LP fees earned.
-- Lending interest earned/paid.
-- Staking rewards (mark-to-market).
-- Points/airdrops accrued (estimated $ value, with confidence interval).
-- Gas spent (always negative).
-- Bridge fees paid.
+**Julius-specific characteristics:**
 
-Plus **equity curve intraday** for the unified book.
+- Working orders include **on-chain limit orders** (CoW, 1inch fusion) and **pending bridges** alongside CeFi resting orders.
+- Live PnL decomposes into: CeFi spot, CeFi futures (mark + funding), on-chain spot (mark-to-market), LP fees, lending interest earned/paid, staking rewards (mark-to-market), points/airdrops accrued (estimated $ with confidence interval), gas spent, bridge fees paid.
+
+### Counterparty / protocol risk dashboard
+
+A continuously-updated dashboard of every non-self entity Julius depends on. In DeFi, counterparty/protocol risk is everyday, not tail; a 22% Aave concentration matters more than a small directional bet.
+
+- **Counterparty exposure breakdown** by protocol (Aave / Lido / EigenLayer / Binance / etc.) as % of book, with concentration warnings.
+- **Smart-contract risk score** per protocol — audit firms, audit recency, TVL, age, recent incidents, bug-bounty status.
+- **Stablecoin exposure** by issuer (USDT / USDC / DAI / FDUSD / crvUSD) with depeg risk score.
+- **Oracle-dependency map** — which positions depend on which oracles (Chainlink, Pyth, RedStone, internal); alerts on staleness or deviation.
+- **Bridge-in-flight** — capital currently traversing bridges, the most-exposed moment.
 
 ### Risk panel — unified, multi-domain
 
-- **Net delta per underlying** combining CeFi and on-chain.
-- **Counterparty exposure breakdown** — Binance, OKX, Aave, Lido, etc., as % of book. With concentration warnings.
-- **Smart-contract risk** — total $ in audited / unaudited / recently-deployed contracts.
-- **Stablecoin exposure** — USDT vs USDC vs DAI vs FDUSD vs crvUSD, with depeg risk score.
-- **Bridge-in-flight** — capital currently traversing bridges (most exposed moment).
-- **Greeks book-wide** — including on-chain options (Lyra, Aevo) where applicable.
-- **Liquidation distance** for every leveraged leg, CeFi and DeFi.
-- **Health-factor monitor** — for every lending position, alert thresholds with margin-call distance.
-- **Oracle-dependency map** — which positions depend on which oracles; alert if oracle staleness or deviation detected.
+See [Risk Panel](common-tools.md#10-risk-panel-multi-axis) and [Stress / Scenario Panel](common-tools.md#11-stress--scenario-panel).
+
+**Julius-specific characteristics:**
+
+- Net delta per underlying combines CeFi and on-chain positions in one number.
+- Greeks book-wide include on-chain options (Lyra, Aevo) where applicable.
+- Liquidation distance shown for every leveraged leg, CeFi and DeFi.
+- **Health-factor monitor** for every lending position with margin-call distance in % and in std-dev of recent realized vol.
+- Counterparty/protocol risk dashboard (above) sits adjacent.
 
 ### Alerts — domain-aware
 
-Everything Marcus has, plus:
+See [Alerts Engine](common-tools.md#14-alerts-engine).
 
-- **On-chain alerts** — pool TVL drops X%, oracle price deviates from CeFi, gas spikes above threshold.
+**Julius-specific characteristics:**
+
+- **On-chain alerts** — pool TVL drops X%, oracle price deviates from CeFi reference, gas spikes above threshold.
 - **Health-factor alerts** — Aave/Compound positions approaching liquidation.
-- **Pending tx alerts** — your transaction stuck, mempool replaced, MEV sandwich detected on your fill.
+- **Pending tx alerts** — transaction stuck, mempool replaced, MEV sandwich detected on a fill.
 - **Governance alerts** — proposal affecting a protocol he's exposed to, vote ending soon.
-- **Unlock alerts** — token he's exposed to has a major unlock in N days.
-- **Exploit / incident alerts** — protocol he's in just had a security incident, get out.
+- **Unlock alerts** — exposed token has a major unlock in N days.
+- **Exploit / incident alerts** — protocol he's in just had a security incident.
 - **Bridge / RPC alerts** — endpoint degraded, switch nodes.
 - **Whale-wallet alerts** — tracked wallet just made a large move in his exposure.
 
-### Trade journal
+### Trade journal & heatmap
 
-Same as Marcus, with on-chain-specific fields: tx hash, gas used, MEV experienced, route taken.
+See [Trade Journal](common-tools.md#15-trade-journal) and [Heatmap of Own Book](common-tools.md#16-heatmap-of-own-book).
 
-### Heatmap of own book
+**Julius-specific characteristics:**
 
-Treemap by gross exposure, colored by intraday PnL. **Grouped by domain** (CeFi vs on-chain) or by underlying (toggle).
+- Journal captures on-chain-specific fields: tx hash, gas used, MEV experienced, route taken.
+- Heatmap toggles between **grouped by domain** (CeFi vs on-chain) and **grouped by underlying**.
 
-### Kill switch — multi-stage
+### Multi-stage kill switch
 
-A unified kill switch is genuinely hard because on-chain positions can't be exited instantly. Julius's kill switch is **staged**:
+See [Kill Switches (Granular)](common-tools.md#19-kill-switches-granular).
 
-- **Stage 1:** flatten all CeFi positions, cancel all CeFi orders. Instantaneous.
-- **Stage 2:** route all on-chain positions to "exit-mode" — close LPs, repay loans, unstake where possible. Estimated time and gas shown.
-- **Stage 3:** bridge all proceeds to a designated safety wallet on Ethereum L1.
+**Julius-specific characteristics:** a unified instant flatten doesn't exist, because on-chain positions can't be exited atomically. The kill switch is **staged and choreographed**:
 
-Each stage requires confirmation and shows progress in real time.
+- **Stage 1 — CeFi flatten (instantaneous).** Cancel all CeFi orders, flatten all CeFi positions via aggressive limits, pause all CeFi algos. Confirmation required.
+- **Stage 2 — On-chain exit-mode.** Close LPs, repay loans (priority order: lowest health factor first), unstake where instantly possible, queue withdrawals where there's a queue. Estimated total gas, total time, and ordered action list shown before confirmation. Per-action progress; gas / liquidity constraints respected.
+- **Stage 3 — Bridge to safety wallet.** Bridge all proceeds to a designated cold/safety wallet on Ethereum L1 via the most-secure (not cheapest) route. Per-bridge progress, escalation path if a bridge stalls.
+
+Each stage requires its own confirmation. Mid-execution, the trader can pause and inspect. The whole flow is recorded in the audit log.
 
 **Layout principle:** the unified positions / PnL / risk view is the most-glanced surface. The on-chain alerts panel sits next to it because on-chain risk events (exploits, depegs, oracle failures) can't be ignored even briefly.
 
@@ -276,50 +320,50 @@ The hardest analytic problem on Julius's desk is **attribution across CeFi and D
 
 ### Trade history & blotter
 
-- Every CeFi fill, with full Marcus-style metadata.
-- Every on-chain transaction, decoded — protocol, action, inputs, outputs, gas, MEV, route.
-- Tagged by parent strategy.
-- Linkable: a "cash-and-carry" parent trade has 4 child fills (long spot CeFi, short perp CeFi, deposit Aave, borrow Aave).
+See [Trade History / Blotter (Historical)](common-tools.md#21-trade-history--blotter-historical).
 
-### PnL attribution — multi-axis
+**Julius-specific characteristics:**
 
-- **By instrument class** — spot, perp directional, funding, basis, options, LP fees, lending interest, staking rewards, point/airdrop value, gas cost.
-- **By underlying** — BTC, ETH, SOL, etc.
-- **By strategy tag** — basis arb, funding harvest, cash-and-carry, LP+hedge, points farming, governance arb.
-- **By domain** — CeFi vs DeFi share of returns.
-- **By venue/protocol** — which venues contribute Sharpe, which contribute drawdown.
-- **By chain** — Ethereum vs L2 vs Solana.
+- Every on-chain transaction decoded — protocol, action, inputs, outputs, gas, MEV, route.
+- Tagged by parent strategy. A "cash-and-carry" parent has 4 child fills (long spot CeFi, short perp CeFi, deposit Aave, borrow Aave), linked bidirectionally.
 
-### Performance metrics
+### PnL attribution & performance metrics
 
-Standard suite (Sharpe, Sortino, Calmar, profit factor) plus DeFi-specific:
+See [PnL Attribution (Multi-Axis)](common-tools.md#22-pnl-attribution-multi-axis), [Performance Metrics](common-tools.md#23-performance-metrics), and [Equity Curve](common-tools.md#24-equity-curve).
 
-- **Net APY** of yield strategies — gross APY minus IL minus gas minus slippage.
-- **Effective $/point** for points strategies, retroactively, once airdrops land.
-- **Bridge round-trip cost** by route.
-- **MEV cost realized** — estimated $ lost to MEV, by route.
-- **Smart-contract uptime** for protocols he's used (none lost capital? good).
+**Julius-specific characteristics:**
 
-### Equity curve
+- **Attribution axes** add: by domain (CeFi vs DeFi share of returns), by chain (Ethereum vs L2 vs Solana), by venue/protocol (which contributes Sharpe, which contributes drawdown).
+- **Instrument-class buckets** include: LP fees, lending interest, staking rewards, point/airdrop value, gas cost, bridge cost.
+- **DeFi-specific performance metrics:** Net APY (gross APY minus IL minus gas minus slippage); effective $/point retroactively once airdrops land; bridge round-trip cost by route; MEV cost realized by route; smart-contract uptime for protocols used.
+- **Equity curve** shaded to indicate domain composition (stacked area: CeFi vs DeFi share of capital).
 
-Unified book equity, with shading to indicate domain composition (e.g. stacked area: CeFi vs DeFi share of capital).
+### Synchronized CeFi+DeFi replay
 
-### Trade replay
+See [Replay Tool](common-tools.md#20-replay-tool).
 
-- **CeFi replay** — Marcus-style, with full orderbook reconstruction.
-- **On-chain replay** — pool state, mempool around tx submission, gas conditions, route alternatives at the time.
-- For combined trades, **replay both surfaces synchronized** — see what was happening on Binance and on Uniswap at the same instant.
+**Julius-specific characteristics:** the unique surface, and the highest-value Phase-4 tool for hybrid trades.
+
+- **CeFi replay** — full orderbook reconstruction, Marcus-style.
+- **On-chain replay** — pool state, mempool around tx submission, gas conditions, route alternatives at the time, oracle prices.
+- **Synchronized scrubber** — for combined trades, see what was happening on Binance and on Uniswap at the same instant. One scrubber drives both surfaces.
+- For a cash-and-carry trade, replay shows the four legs landing in real time and the slippage-vs-quote for each.
 
 ### Execution quality / TCA
 
-- **CeFi TCA** (Marcus-style).
-- **DeFi TCA**: actual fill vs aggregator quote, MEV experienced, gas paid vs optimal, route taken vs optimal.
-- **Bridge TCA**: realized cost vs quoted, time vs estimate, loss to bridge fee/slippage.
-- **Multi-leg TCA**: for cash-and-carry trades, was the leg execution synchronized? Where did slippage occur?
+See [Execution Quality / TCA](common-tools.md#25-execution-quality--tca-transaction-cost-analysis).
+
+**Julius-specific characteristics:**
+
+- **DeFi TCA** — actual fill vs aggregator quote, MEV experienced, gas paid vs optimal, route taken vs optimal.
+- **Bridge TCA** — realized cost vs quoted, time vs estimate, loss to bridge fee/slippage.
+- **Multi-leg TCA** — for cash-and-carry trades, was the leg execution synchronized? Where did slippage occur?
 
 ### Behavioral analytics
 
-Same as Marcus, plus DeFi-specific:
+See [Behavioral Analytics](common-tools.md#26-behavioral-analytics).
+
+**Julius-specific characteristics:**
 
 - **Approval hygiene** — ratio of limited vs infinite approvals, frequency of revocations.
 - **Wallet hygiene** — over-concentration in single hot wallet flagged.
@@ -327,7 +371,12 @@ Same as Marcus, plus DeFi-specific:
 
 ### Reports
 
-Daily / monthly / compliance / client, all with CeFi+DeFi unified view.
+See [Reports](common-tools.md#27-reports) and [Compliance & Audit Trail](common-tools.md#28-compliance--audit-trail).
+
+**Julius-specific characteristics:**
+
+- Daily / monthly / compliance / client, all with CeFi+DeFi unified view.
+- On-chain audit trail includes signed-tx history per wallet with full decoded inputs.
 
 **Layout principle:** drilldowns are the primary interaction. Replay is the highest-value tool — for hybrid trades, **synchronized CeFi+DeFi replay** is unique to this archetype.
 

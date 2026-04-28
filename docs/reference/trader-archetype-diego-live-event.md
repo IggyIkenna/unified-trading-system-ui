@@ -2,6 +2,7 @@
 
 A reference profile of a top-performing live event trader at a top-5 firm — the "sports trading" desk. Used as a yardstick for what an ideal **in-play sports / horse-racing** terminal must support. This document deliberately avoids any reference to our current platform — it describes the **ideal world**.
 
+For shared surfaces every archetype uses, see [common-tools.md](common-tools.md).
 For the underlying four-phase trader workflow, see [manual-trader-workflow.md](manual-trader-workflow.md).
 For the prediction-market sister archetype, see [trader-archetype-aria-prediction-markets.md](trader-archetype-aria-prediction-markets.md).
 
@@ -67,73 +68,60 @@ Mode-switching is constant:
 
 ### Pre-event research (model-driven)
 
-For each upcoming event Diego trades:
+Inputs per upcoming event: team / player form, xG and Elo models, surface dependence (clay vs grass; track bias; home/away splits), lineups & team news (confirmed ~1h pre-kickoff, the day's biggest market-mover), weather forecast, referee / umpire assignment (penalty rates, strike-zone size), injury reports and insider leaks, travel and fatigue, motivational context (already qualified, dead rubber, derby, tournament pressure).
 
-- **Team / player form data** — historical results, head-to-head, recent matches.
-- **xG (expected goals) models** — predictive performance models for football.
-- **Elo / power ratings** for teams or horses.
-- **Surface / venue dependence** — clay vs grass for tennis; track bias for racing; home/away splits.
-- **Lineups & team news** — confirmed lineups release ~1 hour pre-kickoff; massive market mover.
-- **Weather forecast** — wind, rain, temperature; affects scoring environments.
-- **Referee/umpire assignment** — referee penalty rates for football; umpire strike-zone size for baseball.
-- **Injury reports & insider info** — sometimes leaked on social before official release.
-- **Travel / fatigue** — back-to-back games, time zones, long flights.
-- **Motivational context** — already qualified, dead rubber, derby, tournament pressure.
+### Horse-racing form-book (UNIQUE)
 
-### Horse-racing-specific research
+A dedicated form-book surface per race-card — pre-race form study is its own discipline:
 
-- **Form book** — last 6 starts per horse, distance/going/class.
-- **Sectional times** — pace analysis, will the race be fast or slow paced?
-- **Jockey & trainer form** — recent strike rates, course-and-distance specialists.
-- **Going & weather** — soft / good / firm; wet ground favors stamina.
-- **Draw bias** — for flat racing, stall position affects probability.
-- **Breeding / pedigree** — for big-day races, stamina indicators.
-- **Market signals** — late support (money for a horse just before off), drift (price lengthening) is informative.
+- **Last 6 starts per horse** — finishing position, distance, going, class, beaten lengths, in-running comments.
+- **Sectional times** — pace analysis (fast vs slow paced); front-runners vs hold-up horses sized accordingly.
+- **Jockey & trainer form** — recent strike rates, course-and-distance specialists, jockey-trainer combinations.
+- **Going & draw bias** — soft / good / firm; stall position for flat racing (e.g. Chester low-numbers).
+- **Breeding** — sire's average winning distance for stamina indicators on big-day races.
+- **Market signals** — late support (steamers) vs drift, cross-checked against tipster/syndicate flow.
 
-### Pre-event price comparison
+### Cross-book pricing & Pinnacle benchmark (UNIQUE)
 
-- **Pinnacle vs Betfair** — sharps reference Pinnacle as fair price; Betfair midpoints.
-- **Closing line value (CLV)** — was my entry beating the closing price? CLV is the truest measure of edge in sports.
-- **Cross-book arb scanner** — when one book's price differs enough from others to lock arb (rare, fast-disappearing).
-- **Liquidity preview** — depth at top 3 ticks per book; how much can I get on at this price?
+The single most-glanced research surface alongside the form-book:
+
+- **Same market across Betfair / Smarkets / Pinnacle / Matchbook** with spread in odds and implied probability points.
+- **Pinnacle as fair-price benchmark** — Pinnacle accepts sharp action and doesn't restrict winners; entries are evaluated against Pinnacle at entry and at close (CLV).
+- **Liquidity per venue** — depth at top 3 ticks per book.
+- **Cross-book arb scanner** — flagged when spread > cost; filtered by account-health (skip venues where Diego is restricted).
+
+### Models & strategy templates (UNIQUE)
+
+- **Pre-game model fair-prices** — model output per market vs current market price; edge in probability points.
+- **In-play strategy templates** — saved, hotkey-bound, performance-tracked: lay-the-draw, trade-favourite-at-0-0, back-leader-pre-final-furlong, tennis-serve-scalp, tick-scalp. Per-template hit-rate, ROI, and conditioning details live in Phase 4 analytics.
 
 ### Calendar & event flow
 
-- **Match-day schedule** — every event Diego will trade today, with kickoff times, expected liquidity profile, and importance.
-- **Pre-event windows** — when team news drops, when betting markets really thicken (~1h pre-event).
-- **Cluster awareness** — Saturday 3pm UK has 6 EPL matches simultaneously; Cheltenham has 7 races over an afternoon. Capacity-planning matters.
-- **Major tournament context** — World Cup, Wimbledon, Cheltenham Festival, Breeders' Cup: extreme liquidity + extreme volatility.
+See [#12 Catalyst Calendar](common-tools.md#12-catalyst--event-calendar). **Diego-specific characteristics:**
 
-### Models & strategy library
+- Match-day schedule with kickoff / off times, expected liquidity profile, importance.
+- **Lineup-release windows** marked — confirmed lineups (~1h pre-kickoff) are the daily attention spike for football.
+- **Cluster awareness** — Saturday 3pm UK has 6 EPL matches simultaneously; Cheltenham 7 races over an afternoon. Capacity-planning matters: which events foveal vs which on the multi-event grid.
+- **Major tournament context** — World Cup, Wimbledon, Cheltenham Festival, Breeders' Cup: extreme liquidity + extreme volatility, distinct preset layouts.
 
-- **Pre-game model fair-prices** — model output per market vs current market price.
-- **In-play model archetypes** — "lay-the-draw" (back home, lay draw on a goal), "trade the favorite at 0–0," "back the leading horse pre-final-furlong," "scalp tennis serve probabilities."
-- **Saved bet templates** — pre-configured for common in-play scenarios.
+### News & sentiment
 
-### Sentiment & flow
+See [#13 News & Research](common-tools.md#13-news--research-feed). **Diego-specific feeds:** team-news drop monitors, verified-source social (Fabrizio Romano-class for football, Racing Post for racing), Telegram syndicate chat with private signals, public-bias indicators (favored teams, popular horses), sharp-money signals (late sustained moves vs early big bets).
 
-- **Public bias indicators** — favored teams, popular horses; sportsbook overlay tells which side public is on.
-- **Sharp money signals** — late, sustained price moves are sharps; early big bets often public.
-- **Twitter / Telegram chatter** — late team news leaks, insider intel; verified sources only.
-
-**Layout principle for Decide:** model dashboards + form study during quiet windows. Lineup-release windows are the daily attention spike. Cross-book pricing always visible.
+**Layout principle for Decide:** model dashboards + form-book during quiet windows. Lineup-release windows are the daily attention spike. Cross-book pricing always visible.
 
 ---
 
 ## Phase 2: Enter
 
-Sports/event entry differs from financial entry in important ways:
+Sports/event entry differs from financial entry: **back vs lay** instead of buy/sell (on exchanges either side); **stake** = risked, **liability** for a lay = (odds – 1) × stake; exchanges take **2–5% commission** on net winnings, not per trade; in-play exchanges impose a **bet-delay** (1–8s) to protect liquidity providers.
 
-- **Back vs Lay** instead of buy/sell — back = bet for, lay = bet against. On exchanges, you can do either side.
-- **Stake** = how much you're risking; **payout** = stake × decimal odds.
-- **Liability** for a lay = (odds – 1) × stake — what you lose if the outcome happens.
-- **Commission** — exchanges take 2–5% of net winnings, not per trade.
-- **Latency arbitrage prevention** — exchanges may impose **bet delays** (1–8 seconds in-play) to protect liquidity providers.
+### Order entry ticket — back/lay native (UNIQUE)
 
-### Order entry ticket
+The order ticket is mode-aware: a back/lay binary is the primary axis, not buy/sell.
 
 - **Back or Lay** toggle (or split-button).
-- **Stake / liability** input — UI shows the other automatically.
+- **Stake / liability** input — UI shows the other automatically (lay-side liability = (odds – 1) × stake).
 - **Odds input** in selected format (decimal, fractional, American, probability %).
 - **Pre-trade preview:**
   - Liability if losing.
@@ -141,69 +129,81 @@ Sports/event entry differs from financial entry in important ways:
   - Position impact on this event.
   - Aggregate exposure across events.
   - Cash impact.
+  - **Bet-delay window** for the venue/market (in-play exchanges typically 1–8s; pre-event 0s).
 - **Persistence flag** — Keep / Take SP / Cancel — what to do at off (for racing) or in-play moments.
 - **Time-in-force** — until cancelled, until off, immediate-or-cancel.
 
-### Ladder ticket (Betfair-style)
+### Betfair-style ladder (UNIQUE — the defining UI)
 
-The defining UI for in-play exchange trading:
+The central in-play exchange-trading surface; the ladder is foveal, everything else supports it.
 
-- **Vertical price ladder** — odds in fixed ticks, with bid/ask depth at each level.
-- **Click-to-back** at offer / **Click-to-lay** at bid.
-- **One-click pre-fill stake** from saved presets (£100, £500, £2k, etc.).
-- **Hotkeys** — H1/H2/H3 stakes; "back at offer," "lay at bid," "cancel level," "cancel all."
-- **Order book display** — my orders shown inline at their price levels.
-- **Recent trades tape** — every match, with size, side inferred.
-- **Volume traded at price** — total matched volume per level (Betfair-native).
-- **WOM (weight of money)** — bid stack vs offer stack, real-time.
+- **Vertical price ladder** — odds in fixed Betfair ticks (finer at short prices, coarser at long), bid/ask depth at each level.
+- **Click-to-back** at offer / **click-to-lay** at bid; one-click at the ladder's current stake preset.
+- **Stake presets** F1–F4 (£100 / £500 / £2k / £10k typical).
+- **My orders shown inline** as coloured chips on the ladder; drag to modify, click to cancel.
+- **Recent trades tape** with size, side inferred from ladder context.
+- **Volume traded at price** — total matched volume per level (Betfair-native; shows where liquidity has clustered).
+- **WOM (weight of money)** — bid-stack vs offer-stack imbalance, one of the strongest short-horizon in-play signals.
+- **Multi-ladder layout** — parallel ladders for correlated selections (tennis server vs receiver, horse-by-horse on a race).
 
-### Hedge / green-up calculator
+### Hedge / green-up calculator (UNIQUE — the most-used post-entry tool)
 
-The single most-used post-entry tool. After a position moves, **green up** = take a counter-position to lock in profit equally across all outcomes.
+**Green up** = take a counter-position to lock P/L equally across all outcomes. One click from any open position.
 
-- **Auto-calc green-up amount** at current bid/ask.
-- **Show post-hedge P/L per outcome** before submitting.
-- **One-click execute** the hedging order.
-- **Partial green-up** — lock 50%, let 50% run.
-- **Asymmetric hedge** — keep more on the favored outcome.
+- **Auto-calc green-up amount** at current bid/ask; **post-hedge P/L per outcome** previewed before submit.
+- **One-click execute** at the auto-calc amount.
+- **Partial green-up** — lock 50% (or any %), let the rest run.
+- **Asymmetric hedge** — lock loss-side fully, keep upside on the favoured outcome.
 
 ### Multi-bet / accumulator builder
 
-For pre-event longer-horizon plays:
+Single, multiple, accumulator (parlay), system bet; combined-odds calc; max-payout warning where books cap.
 
-- **Single bet, multiple bet, accumulator (parlay), system bet.**
-- **Combined odds calculation.**
-- **Max payout warning** (some books cap).
+### In-play strategy templates (UNIQUE)
 
-### In-play scratch / scalp templates
+Saved, hotkey-bound, one-click entries with auto-stake, market-state preconditions, and post-fill green-up rules:
 
-- **"Tick-scalp"** — back at 2.10, lay at 2.08 = locked tick profit if both fill.
-- **"Lay the draw"** — back home pre-game, lay draw at lower odds after a goal.
-- **"Tennis serve scalp"** — server's price drifts during return game, snaps back on serve hold.
-- **Saved as one-click templates** with auto-stake.
+- **Tick-scalp** — back at 2.10, lay at 2.08 (locked tick profit if both fill).
+- **Lay-the-draw** — back home pre-game, lay draw at lower odds after a goal.
+- **Tennis serve scalp** — server's price drifts during return game, snaps back on serve hold.
+- **Pre-final-furlong** — lay leader on the turn, back closer.
 
-### Cross-book / arb ticket
+Each template's CLV and ROI are tracked (see Phase 4) — templates demote out of the hotkey rotation when CLV decays.
 
-- **Detect arb opportunity** — same outcome priced differently across books.
-- **Calculate stakes per book** to lock guaranteed profit regardless of outcome.
-- **Sequenced execution** — fastest leg first to lock the price.
-- **Bookie-account-aware** — many sportsbooks limit / ban arb-takers; the system tracks account health.
+### Cross-book / arb ticket (UNIQUE)
+
+Same outcome priced differently across Betfair / Smarkets / Pinnacle / Matchbook locks guaranteed profit.
+
+- Stakes-per-book auto-calculated (Dutching) to flat regardless of outcome.
+- **Sequenced execution** — fastest leg first; leg-out risk warned.
+- **Bookie-account-aware** — downsizes the leg to within current stake-factor, or skips banned venues entirely (see Account-Health below).
+
+### Bookmaker account-health tracker (UNIQUE — sports-specific)
+
+Sportsbooks (Pinnacle aside) systematically restrict winning customers — "stake factoring." A banned account is dead capital regardless of edge, so account health is a first-class operational metric.
+
+- **Per-book stake limit** — the actual size each book will accept on a typical market, with declining trend visible.
+- **Restriction history** — every limit cut logged with date, market, suspected trigger (size, edge, frequency).
+- **Ban-risk score** — derived from limit-cut velocity and time since last unrestricted bet.
+- **Effective book-of-books per market** — which books will actually take Diego's intended size; dictates execution feasibility before edge.
+- **Concentration warning** — capital concentrated at a book about to ban is operational risk.
+
+### Bet-delay awareness (UNIQUE — sports-specific)
+
+Exchanges impose a 1–8 second delay on in-play bet acceptance to protect liquidity providers — turning sub-second price moves into stale-quote risk.
+
+- **Delay window** surfaced on the ladder header and ticket preview (e.g. "Betfair in-play delay: 5s").
+- **Stale-quote badge** — when match probability is moving fast (ball in box, set point), the ladder flashes a "delay-active" warning; back-at-offer in this state is high-variance.
+- **Delay-aware order types** where supported ("match only if price still ≥ X"); client-side cancel-on-stale otherwise.
+- **Suspension is distinct from delay** — during a goal / red card / VAR review the market is suspended (no fills); during normal play only the bet-delay applies. Both states surface explicitly.
 
 ### Pre-trade compliance / account state
 
-- **Account balances per book.**
-- **Per-book limits** — some sportsbooks ration winning customers; UI shows current effective stake limit.
-- **Geo-restrictions** — venue accessible from current jurisdiction?
-- **Bet-delay awareness** — for in-play, the delay can mean a stale price by the time you're matched.
+See [#3 Pre-Trade Preview](common-tools.md#3-pre-trade-risk-preview) and [#28 Compliance](common-tools.md#28-compliance--audit-trail). **Diego-specific checks:** account balance per book, per-book effective stake limit (from the account-health tracker), geo-jurisdiction accessibility, in-play bet-delay window for the focused market.
 
 ### Hotkeys
 
-- **One-touch back/lay** at top of book.
-- **Cancel all on event.**
-- **Green-up to flat.**
-- **Lock 50% / lock 100%.**
-- **Emergency lay-off** — close at market, eat the spread.
-- **Switch ladder to next event** in queue.
+See [#6 Hotkey System](common-tools.md#6-hotkey-system). **Diego-specific bindings:** one-touch back/lay at top of book per ladder, cancel all on event, green-up to flat, lock 50% / lock 100%, emergency lay-off (close at market, eat the spread), switch ladder to next event in queue, F1–F4 stake-preset cycle, strategy-template hotkeys (lay-the-draw, tick-scalp, serve-scalp).
 
 **Layout principle for Enter:** the ladder is central. Hedge calculator is one click. Saved templates for scalp / scratch / lay-the-draw are hotkey-bound. Cross-book arb is a separate workflow because it involves multiple accounts.
 
@@ -213,188 +213,129 @@ For pre-event longer-horizon plays:
 
 Diego's "Hold" mode is **mid-event trading**, often across multiple events simultaneously. This is where his terminal differs most from any financial-market trader.
 
-### Multi-event dashboard
+### Multi-event grid (UNIQUE — the master view)
 
-The single most-watched view. A row per active event:
+A row per active event with score, time elapsed, key situation (corner, red card, set point, furlongs remaining), my position, current odds vs entry, unrealized P/L and liability per outcome, top-of-book liquidity, alert badges, suspension status, bet-delay window. Click any row → ladder + video for that event becomes foveal.
 
-- **Event** (with score, time elapsed, key situation: corner, red card, set point).
-- **My current position** per market (match odds, over/under, correct score, etc.).
-- **Current odds** vs my entry.
-- **Unrealized P/L per outcome** — if home wins / draw / away wins.
-- **Liability per outcome.**
-- **Liquidity remaining** — depth at top of book.
-- **Alert badges** — goal scored, red card, injury, market suspension.
-- **Suspension status** — exchange suspended (during goals/disputes); orders frozen.
+### Live event view (foveal, UNIQUE)
 
-Click any row → ladder + video for that event.
+When an event is in foveal focus: ladder with live depth, low-latency video, live stats (possession / shots / xG for football; break points / serve % for tennis; sectional times / race-position for racing), in-play model output ("over 2.5 fair 1.45, market 1.65 → buy"), position summary with hedge-to-flat one-click.
 
-### Live event view (foveal)
+### Sports-equivalent greeks (UNIQUE)
 
-- **Ladder** with live depth.
-- **Live video feed** (low-latency).
-- **Live stats** — possession, shots, xG live, expected outcomes.
-- **In-play model output** — "model fair price for over 2.5: 1.45; market: 1.65 → buy."
-- **Position summary** — my P/L per outcome, liability, hedge to flat.
+Rendered explicitly per event:
 
-### Per-event greeks-equivalents
+- **Position delta** — P/L sensitivity to outcome probability.
+- **Implicit time-decay** — over-2.5 lines mathematically decay toward "no" as scoreless time elapses; UI surfaces this.
+- **Implied probability per outcome** from current odds (commission stripped).
+- **In-play model fair-prob** evolving as the match unfolds.
 
-Sports doesn't have greeks but has equivalents:
+### Live PnL
 
-- **Position delta** — sensitivity to outcome probability (analog of equity delta).
-- **Time-decay equivalent** — as the match progresses without a goal, the over-2.5 line decays toward "no" probability mathematically. UI surfaces this.
-- **Implied probability per outcome** from current odds.
-
-### Live PnL — sports-decomposed
-
-- **Realized today** — closed positions.
-- **Unrealized per event** — broken into per-outcome.
-- **Per-event hedged P/L** if I greened up now.
-- **By sport / league / strategy.**
+See [#9 Live PnL](common-tools.md#9-live-pnl-panel). **Diego-specific decomposition:** realized today (closed / settled / greened-up), unrealized per event broken to per-outcome scenario P/L, per-event hedged-P/L (what if I greened up now), sliced by sport / league / strategy template.
 
 ### Risk panel
 
-- **Aggregate liability** if all current positions resolve worst-case.
-- **Per-event liability vs limit.**
-- **Per-sport, per-strategy concentration.**
-- **Cash / margin impact** across exchanges.
-- **Stress scenarios** — "what if all my away teams win" / "what if all my favorites lose."
-- **Drawdown today** vs daily-loss limit.
+See [#10 Risk](common-tools.md#10-risk-panel-multi-axis) and [#11 Stress](common-tools.md#11-stress--scenario-panel). **Diego-specific axes:** aggregate worst-case liability, per-event liability vs limit, per-sport / per-strategy concentration, cash held per book / exchange, bookmaker concentration (escalated when concentrated at a book at ban risk), stress scenarios ("all favourites lose," "Cheltenham card SPs 20% off market"), drawdown today vs daily-loss limit.
 
 ### News & info feeds (event-attached)
 
-- **Team news / injury news** filtered to active events.
-- **Weather updates** for outdoor events.
-- **Referee statements / VAR decisions.**
-- **Twitter/X verified sources** filtered.
+See [#13 News](common-tools.md#13-news--research-feed). **Diego-specific filters:** team news / injury news filtered to active events, weather updates for outdoor events, referee statements / VAR decisions, verified-source social filtered to active markets.
 
 ### Latency / connectivity panel
 
-Critical for in-play:
-
-- **Round-trip latency to each exchange** in ms.
-- **Video feed latency** vs benchmark.
-- **Bet-delay window** for current event.
-- **Connection health** — feed lag, dropped messages.
-- **Account / API rate-limit headroom.**
+See [#18 Latency / Infra](common-tools.md#18-latency--connectivity--infra-panel). **Diego-specific dimensions:** round-trip ms to each exchange (Betfair / Smarkets / Matchbook), video-feed latency vs benchmark (stadium vs scout-relay vs broadcast), **bet-delay window** for the current event as structural latency separate from network latency, feed-health (lag, dropped messages, sequence gaps), per-book API rate-limit headroom.
 
 ### Alerts
 
-- **Goal / score alerts** — sound + visual + auto-pause if pre-configured.
-- **Red card / penalty / VAR review.**
-- **Market suspension / resumption.**
-- **Liquidity collapse** — top-of-book depth dropping.
-- **Cross-book arb opportunity** appearing.
-- **Stat threshold alerts** — possession >70%, xG > opponent, shots >15.
-- **Team news late drop** — lineup changes.
-- **Position alerts** — P/L thresholds.
-- **Risk limit alerts.**
+See [#14 Alerts](common-tools.md#14-alerts-engine). **Diego-specific categories:** goal / score alerts (sound + visual + configurable auto-pause), red card / penalty / VAR review, market suspension / resumption, liquidity collapse (top-of-book depth dropping), cross-book arb opportunity, stat-threshold (possession, xG vs opponent, shots), late team-news drop (lineup change after the 1h release), position P/L thresholds, **bookmaker restriction alert** (limit cut imposed mid-session).
 
 ### Trade journal
 
-- Per event: pre-game thesis, key in-play decisions and rationale.
-- Reviewed post-event.
+See [#15 Trade Journal](common-tools.md#15-trade-journal). **Diego-specific:** per-event entry with pre-game thesis, key in-play decisions and rationale, scrubable to event timeline. Reviewed post-event in Phase 4.
 
 ### Communications
 
-- **Syndicate chat / Telegram** — sharp groups share signals.
-- **Inhouse desk chat.**
-- **Verified-source social media** filtered to active events.
+See [#17 Communications](common-tools.md#17-communications-panel). **Diego-specific channels:** syndicate Telegram (sharp groups share signals), inhouse desk chat, verified-source social filtered to active events, Racing Post / Sporting Life for racing, on-track scout chat for big-meeting days.
 
 ### Heatmap / sport view
 
-- Active markets grouped by sport, sized by exposure, colored by P/L.
+See [#16 Heatmap](common-tools.md#16-heatmap-of-own-book). **Diego-specific:** active markets grouped by sport, sized by exposure (or liability), colored by P/L; useful for end-of-half scan across many events.
 
 ### Kill switches
 
-- **Flatten event** — green-up to zero P/L exposure.
-- **Cancel all working orders on event.**
-- **Pause new entries on event.**
-- **Aggregate flatten** — green-up across all events.
-- **Account-level lock** — stop new orders to a specific exchange.
+See [#19 Kill Switches](common-tools.md#19-kill-switches-granular). **Diego-specific levels:** flatten-event (green-up to zero on one event), cancel-all on event, pause-new-entries on event, aggregate flatten (green-up across all events), account-level lock (stop new orders to a specific exchange when a book is restricting or feed unreliable).
 
-**Layout principle for Hold:** multi-event dashboard + foveal live event view. Video and audio are continuously consumed. Latency / suspension / liquidity always visible.
+**Layout principle for Hold:** multi-event grid + foveal live event view. Video and audio are continuously consumed. Latency / suspension / liquidity always visible.
 
 ---
 
 ## Phase 4: Learn
 
-Sports post-trade emphasizes **closing line value (CLV)**, **strategy/template performance**, **per-sport skill**.
+Sports post-trade emphasizes **CLV (closing line value)**, **strategy/template performance**, and **per-sport / per-book skill**.
 
 ### Trade history
 
-- Every bet: event, market, side (back/lay), stake, odds, matched odds, fill venue, fill time, settlement, P/L.
-- Tagged by strategy / template (lay-the-draw, scalp, model bet, in-play momentum, etc.).
-- Linked to live-state context at decision (score, time elapsed, statistics).
+See [#21 Trade History](common-tools.md#21-trade-history--blotter-historical). **Diego-specific fields:** event, market, side (back/lay), stake, odds at entry, matched odds, fill venue, fill time, settlement outcome, P/L, commission paid, strategy-template tag (lay-the-draw, scalp, model-bet, in-play momentum). Linked to live-state context at decision (score, time elapsed, statistics).
 
-### CLV (closing line value) attribution
+### CLV (closing line value) tracker (UNIQUE — the truest sports edge metric)
 
-The truest sports edge metric:
+In sports, **P/L is noise; CLV is signal**. CLV measures whether Diego's entry beat the closing price (Pinnacle's close as benchmark).
 
-- **My entry odds vs closing odds** — if I consistently beat the closing line, I have edge. P/L can be noise; CLV is the signal.
-- **CLV by sport, league, market, strategy.**
-- **CLV trend over time.**
-- Single most important post-trade metric.
+- **Per-bet CLV** — entry odds vs Pinnacle close in probability points.
+- **Aggregate CLV** sliced by sport, league, market, strategy template, time horizon (pre-event vs in-play), book.
+- **CLV trend** — rolling 30 / 90 / 365-day; the truest leading indicator of long-run profitability.
+- **CLV vs realized P/L divergence** flagged (noise, mis-tagging, or edge decay).
+- **CLV-weighted sizing** — CLV-positive areas grow, CLV-negative areas cut.
 
 ### PnL attribution
 
-- **By sport** (football vs tennis vs racing vs basketball).
-- **By league / tournament.**
-- **By market type** (match odds, over/under, correct score, handicap, in-play).
-- **By strategy / template.**
-- **By time window** (pre-event vs in-play; sport-specific phases).
-- **Pre-event vs in-play** — different skill, different markets.
+See [#22 PnL Attribution](common-tools.md#22-pnl-attribution-multi-axis). **Diego-specific axes:** sport (football / tennis / racing / basketball), league / tournament, market type (match odds, over/under, correct score, handicap, in-play), strategy template, time window (pre-event vs in-play; sport-specific phases — half-by-half football, set-by-set tennis), book / exchange (cross-checked against account-health).
 
 ### Performance metrics
 
-- **ROI per stake** — total profit / total turnover.
+See [#23 Performance Metrics](common-tools.md#23-performance-metrics). **Diego-specific metrics:**
+
+- **ROI per stake** — total profit / total turnover (the standard sports yield metric).
 - **Yield by sport / league / strategy.**
-- **Hit rate** for binary bets.
+- **Hit rate** for binary bets (with CLV-adjusted expected hit rate as benchmark).
 - **Sharpe of daily P/L.**
 - **Max drawdown.**
-- **Bankroll growth curve.**
+- **Bankroll growth curve** (see [#24 Equity Curve](common-tools.md#24-equity-curve)).
 
-### Strategy / template analytics
+### Strategy / template analytics (UNIQUE)
 
-- For each saved template (lay-the-draw, etc.):
-  - Sample size.
-  - Win rate.
-  - Avg win / avg loss.
-  - ROI.
-  - Conditions where it works (home favorite vs away dog; high-scoring leagues vs low-scoring; specific minute windows).
-- Drives template refinement and retirement.
+Per saved template (lay-the-draw, tennis-serve-scalp, pre-final-furlong, tick-scalp):
 
-### In-play decision review
+- Sample size, win rate, avg win/loss, ROI, CLV.
+- **Conditioning** — home-favourite vs away-dog, high- vs low-scoring leagues, minute windows, soft vs firm going. Templates that work in EPL fail in League Two.
+- **Drift** — is the edge decaying as markets sharpen? When CLV turns negative for 90+ days, the template is demoted out of hotkey rotation.
 
-- **Replay** — pick an event, see ladder + video + my orders + my P/L over time, scrub through.
-- Identify decision points: did I scratch too early? Hold too long?
-- Compare what I did vs what model said optimal would be.
+### Replay tool (UNIQUE — synchronized video + ladder + orders + P/L)
+
+See [#20 Replay](common-tools.md#20-replay-tool). **Diego-specific extension** — sports replay is genuinely unique because the source-of-truth is video, not just price data:
+
+- **Synchronized timeline** — DVR'd video feed, ladder with depth at every tick, my orders (entered / modified / cancelled), match stats, realized P/L curve, suspension intervals.
+- **Scrub bar** with chapter markers — kickoff, first-goal, half-time, key incidents, my entry/exit points.
+- **Decision-point review** — pause at each entry; see ladder, stats, model output. "Did I scratch too early? Hold too long?"
+- **Counterfactual P/L** — what if I'd held instead of greened up at minute 65? Computed from realized outcome + ladder history.
+- Requires tick-level ladder store, DVR'd video, execution history aligned to event-clock.
 
 ### Model performance
 
-- **Pre-game model fair-prices vs realized closing prices** — calibration.
-- **In-play model output vs realized outcomes.**
-- **Model drift alerts** — feature distribution changes.
+Calibration curves on pre-game fair-prices vs realized closing prices and in-play minute-by-minute output vs realized outcomes; model-drift alerts on feature-distribution shifts (new league, rule change, scoring-rate trend).
 
 ### Bookmaker / exchange analytics
 
-- **CLV by venue.**
-- **Account health** per book — stake limits, restrictions imposed, ban risk.
-- **Commission paid YTD** by exchange.
-- **Liquidity availability** by event/sport — am I getting matched at the price I want?
+Phase 4 view on the account-health tracker: CLV by venue, stake-limit and restriction history per book, ban-risk evolution, commission paid YTD by exchange, fill-quality (am I being matched at the price I want or pushed up the ladder?).
 
 ### Behavioral analytics
 
-- **Tilt indicators** — increased stake size after losses; chasing.
-- **Strategy drift** — am I deviating from template into discretion?
-- **Time-of-day fatigue** — late-night decisions worse than morning?
-- **Sport bleed** — do I lose more in sports I love than ones I don't follow?
+See [#26 Behavioral](common-tools.md#26-behavioral-analytics). **Diego-specific patterns:** tilt indicators (stake-size up after losses, late-card chasing), strategy drift (template → discretion, with CLV-sign of the discretion tracked), time-of-day fatigue, sport-bleed (do I lose more in sports I follow?), in-play-vs-pre-event mode mismatch (taking pre-event-style positions during in-play).
 
 ### Reports
 
-- Daily P/L commentary (sport-tagged).
-- Weekly portfolio review.
-- Monthly attribution by sport / strategy / venue / CLV.
-- Account-management reports — book-by-book health.
+See [#27 Reports](common-tools.md#27-reports). **Diego-specific:** daily P/L commentary (sport-tagged), weekly portfolio review, monthly attribution by sport / strategy / venue / CLV, account-management reports (book-by-book health, restriction movements), syndicate/desk distribution if applicable.
 
 **Layout principle for Learn:** CLV dashboard is foveal. Replay tool with video + ladder + orders is the highest-value review surface. Sport / strategy / template slicing.
 
@@ -407,11 +348,13 @@ The truest sports edge metric:
 3. **Video and audio are first-class data feeds.** Low-latency stadium feed beats broadcast TV; commentary often leads market moves.
 4. **The ladder is the central UI.** Back/lay at price levels, hotkey execution, depth visible.
 5. **Hedge / green-up is one click.** The most-used post-entry action.
-6. **Multi-event parallelism is mandatory.** Saturday afternoons run 6+ events simultaneously.
+6. **Multi-event parallelism is mandatory.** Saturday afternoons run 6+ events simultaneously; the grid + foveal-event pattern scales attention.
 7. **Cross-book pricing surfaces arb and benchmark.** Pinnacle is the truth-teller; Betfair is the liquidity.
 8. **CLV (closing line value) is the truest edge metric.** P/L can be noise; CLV is signal.
-9. **Suspension / latency / connection state is always visible.** Markets pause during goals; latency to truth is the edge.
-10. **Strategy templates are first-class.** Lay-the-draw, tennis serve scalp, racing pre-final-furlong — saved, hotkey-bound, performance-tracked.
+9. **Bookmaker account health is operational risk.** A banned account is dead capital; the tracker is first-class.
+10. **Bet-delay and suspension are explicit states.** Stale-quote and frozen-market are different and must not be conflated.
+11. **Strategy templates are first-class.** Saved, hotkey-bound, performance-tracked, retired when CLV decays.
+12. **Replay synchronizes video + ladder + orders + P/L.** Sports review without video is incomplete.
 
 ---
 
@@ -419,13 +362,15 @@ The truest sports edge metric:
 
 When evaluating any sports / live-event trading terminal (including our own), walk through Diego's four phases and ask:
 
-- Is the ladder a foveal trading surface, with hotkey back/lay at price levels?
-- Is hedge / green-up a one-click post-entry action?
-- Is multi-event parallel attention supported (grid of active events)?
-- Are video and audio feeds integrated at low latency?
-- Are cross-book prices (Pinnacle / Betfair / Smarkets) surfaced for arb and benchmark?
+- Is the ladder a foveal trading surface, with hotkey back/lay at price levels and inline orders?
+- Is hedge / green-up a one-click post-entry action with per-outcome P/L preview?
+- Is multi-event parallel attention supported (grid of active events with one-click foveal switch)?
+- Are video and audio feeds integrated at low latency (stadium-feed or scout-relay, not broadcast)?
+- Are cross-book prices (Pinnacle / Betfair / Smarkets / Matchbook) surfaced for arb and benchmark?
 - Is CLV measured and reported as the primary edge metric?
-- Is suspension / latency / liquidity state always visible?
-- Are strategy templates saved, hotkey-bound, and performance-tracked?
+- Is suspension / bet-delay / liquidity state always visible and distinct?
+- Is bookmaker account-health tracked per book (limits, restrictions, ban-risk)?
+- Are strategy templates saved, hotkey-bound, and CLV-tracked?
+- Is the replay tool video-synchronized to ladder, orders, stats, and P/L?
 
 Gaps are not necessarily defects — they may be deliberate scope decisions — but they should be **known** gaps, not **accidental** ones.

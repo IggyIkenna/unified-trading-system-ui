@@ -3,6 +3,8 @@
 A reference profile of the senior PM / Head of Risk who sits **above** the trading desk — overseeing all traders, all strategies, all venues, and the firm's aggregate exposure. Used as a yardstick for what an ideal supervisory terminal must support. This document deliberately avoids any reference to our current platform — it describes the **ideal world**.
 
 For the underlying four-phase trader workflow, see [manual-trader-workflow.md](manual-trader-workflow.md).
+For shared surfaces (charting, blotters, risk, reports, etc.), see [common-tools.md](common-tools.md).
+For an index of David's unique surfaces, see [unique-tools.md](unique-tools.md).
 For the trader archetypes David supervises, see the other `trader-archetype-*.md` files.
 
 ---
@@ -63,114 +65,85 @@ He moves between his desk (live monitoring) and his office (review, planning, st
 
 ## Phase 1: Decide
 
-For David, "decide" is mostly **capital allocation and limit-setting**, plus go/no-go calls on strategy promotions and client capital changes.
+For David, "decide" is mostly **capital allocation and limit-setting**, plus go/no-go calls on strategy promotions and client capital changes. He rarely consults a chart for trade timing; charts are context for narrative.
 
-### Capital allocation context
+### Shared surfaces (firm-aggregated)
+
+- See [Charting](common-tools.md#1-multi-timeframe-charting). **David-specific characteristics:** glanced for narrative, not entry timing; favours weekly/daily over intraday.
+- See [Calendar](common-tools.md#12-catalyst--event-calendar). **David-specific:** filters to firm-material catalysts (FOMC, ETF flows, protocol upgrades) and to events that touch multiple desks.
+- See [News & Research Feed](common-tools.md#13-news--research-feed). **David-specific:** macro and counterparty/venue/protocol streams are the priority; trader-shared notes surface as desk pulse.
+- See [Heatmap of Own Book](common-tools.md#16-heatmap-of-own-book). **David-specific:** firm heatmap aggregated across all traders and strategies — used to spot hidden cross-desk concentrations.
+
+### Capital allocation context (David-unique)
 
 - **Firm-wide capital** — total, deployed, free, in-flight (bridges, settlements).
-- **Per-trader capital** — allocated, used, free.
-- **Per-strategy capital** — allocated, used, free.
-- **Per-venue capital** — at each CeFi venue, in each on-chain wallet, across each prime broker.
+- **Per-trader / per-strategy / per-venue capital** — allocated, used, free.
 - **Capital efficiency** — Sharpe per $ allocated, by trader and strategy.
+- **Per-strategy expected Sharpe and capacity** (research vs. live), with diminishing-returns curves.
+- **Marginal allocation** — incremental Sharpe of adding $X to strategy A.
 
-### Edge / capacity context
+### Risk-budget and correlation context (David-unique)
 
-- **Per-strategy expected Sharpe** (from research / backtests, validated against live).
-- **Per-strategy capacity** estimates.
-- **Marginal capital allocation** — if I add $X to strategy A, expected incremental Sharpe.
-- **Diminishing-returns curve** per strategy.
+- **Total risk budget** (VaR or stress-loss target) and **risk consumed** by each trader / strategy.
+- **Risk-adjusted return** and top contributors to firm VaR.
+- **Correlation matrix** — trader×trader, strategy×strategy, asset×asset at firm level, with **hidden-correlation flags** for books that should be uncorrelated but are drifting.
 
-### Risk-budget context
+### Macro / regime and client capital (David-unique)
 
-- **Total risk budget** — VaR or stress-loss target.
-- **Risk consumed** by each trader / strategy.
-- **Risk-adjusted return** per trader / strategy.
-- **Risk concentration** — top contributors to firm VaR.
+- **Regime indicators** (vol / liquidity / macro) — used to set **firm posture**, with regime-fit annotations per strategy.
+- **Client capital** (for firms with external capital) — AUM by client / strategy / share class; net flows today / WTD / MTD; subscription / redemption pipeline; high-water marks; fee accrual.
 
-### Correlation matrix
-
-- **Trader-vs-trader correlation** — daily PnL correlation between traders.
-- **Strategy-vs-strategy correlation.**
-- **Asset-vs-asset correlation** at firm level.
-- **Hidden correlations** — strategies that _should_ be uncorrelated but are drifting toward correlation.
-
-### Macro / regime view
-
-David cares about regime not for trades but for **firm posture**:
-
-- **Vol regime, liquidity regime, macro regime** — same indicators traders see.
-- **Regime fit by strategy** — which strategies historically thrive in current regime.
-- **Risk-on / risk-off proxy** for portfolio dial.
-
-### Client capital context (for firms with external capital)
-
-- **AUM by client / strategy / share class.**
-- **Net flows in / out** today / WTD / MTD.
-- **Subscription / redemption pipeline.**
-- **High-water marks** per client.
-- **Fee accrual.**
-
-**Layout principle for Decide:** the capital allocation view and the correlation matrix are most-glanced. Regime and macro are peripheral peripherals.
+**Layout principle for Decide:** capital allocation and correlation matrix are most-glanced. Regime and macro are peripheral peripherals.
 
 ---
 
 ## Phase 2: Enter
 
-David rarely enters trades. His "enter" actions are:
+David rarely enters trades. His "enter" actions are **capital allocation changes, limit changes, strategy promotion gates, authorizations, and interventions** — every one signed and audited.
 
-- **Capital allocation changes** — increase/decrease a trader's or strategy's allocation.
-- **Risk limit changes** — adjust per-trader, per-strategy, or firm-level limits.
-- **Strategy promotion / demotion** — final go/no-go on lifecycle stage changes.
-- **Counterparty allocation** — how much exposure can the desk take to Aave, to Binance, to a specific dealer.
-- **Manual override / kill** — pull risk on a trader / strategy / venue.
-- **Authorization actions** — approve large structures, approve out-of-policy exposures.
+### Shared surfaces (firm-scoped)
 
-### Capital allocation panel
+- See [Order Ticket](common-tools.md#2-order-entry-ticket-framework), [Pre-Trade Preview](common-tools.md#3-pre-trade-risk-preview), [Algos](common-tools.md#4-execution-algos-library), [SOR](common-tools.md#5-smart-order-router--multi-venue-aggregation), [Hotkeys](common-tools.md#6-hotkey-system). **David-specific:** rarely used directly; available for the rare manual override or unwind. Hotkeys are disabled by default — David's actions are deliberate, not muscle-memory.
+
+### Capital allocation panel (David-unique)
 
 Per trader / strategy:
 
 - **Current allocation** with proposed change.
-- **Effective immediately or scheduled** (e.g. effective tomorrow at session open).
+- **Effective immediately or scheduled** (e.g. tomorrow at session open).
 - **Reason field** — mandatory, audited.
-- **Approval workflow** — large changes require risk committee co-sign.
+- **Approval workflow** — large changes require risk-committee co-sign.
 
-### Risk limits panel
+### Risk-limit changes (David-unique)
 
-Hierarchy of limits, all editable with audit:
+Every limit, at every level — firm / trader / strategy / venue / counterparty — is editable from the same hierarchy view used in Hold (see Phase 3). Edits carry mandatory reason, timestamp, signature, and (for material thresholds) co-sign.
 
-- **Firm-level**: gross exposure, net VaR, counterparty caps, single-name caps, leverage cap, drawdown trigger.
-- **Trader-level**: same set, scoped to one trader.
-- **Strategy-level**: capital, max position, max daily loss, max drawdown, kill-on-breach.
-- **Venue-level**: max exposure to Binance, Bybit, Aave, etc.
-- **Counterparty-level**: per dealer, per smart contract address.
-
-Every change is timestamped, reasoned, signed.
-
-### Strategy promotion gate
+### Strategy promotion gate (David-unique)
 
 When Quinn pushes a strategy from pilot → live, David is the final gate:
 
-- Sees the full promotion checklist + Quinn's notes.
-- Sees correlation impact on the existing fleet.
-- Sees capacity and capital impact.
-- Approves / rejects / sends back with notes.
-- Approval is signed and audited.
+- Full promotion checklist + Quinn's notes.
+- **Correlation impact** on the existing fleet.
+- **Capacity and capital impact.**
+- Approve / reject / send back with notes — signed and audited.
 
-### Manual intervention ticket
+### Manual intervention ticket (David-unique)
 
-When David intervenes in trader books (rare but real):
+Used to act on a trader's book — rare but real:
 
-- **Pull risk** — instruct trader to reduce position, with rationale.
-- **Force flatten** — emergency override; cancels orders and flattens, audited.
-- **Pause trader / strategy** — disable their entry capability for a window.
+- **Pull risk** — instruct trader to reduce, with rationale.
+- **Force flatten** — emergency override; cancels orders and flattens.
+- **Pause trader / strategy** — disable entry capability for a window.
 - **Change counterparty access** — revoke ability to trade a venue or protocol.
 
-### Client-facing actions
+All four require a written reason and produce an immutable audit record.
 
-- **Approve subscription / redemption** above threshold.
-- **Reallocate client capital** between strategies.
-- **Trigger client report** generation off-schedule.
-- **Publish narrative** — daily/weekly note attached to performance.
+### Client-facing actions (David-unique)
+
+- Approve subscription / redemption above threshold.
+- Reallocate client capital between strategies.
+- Trigger client report off-schedule.
+- Publish narrative — daily/weekly note attached to performance.
 
 **Layout principle for Enter:** every action is friction-y, reasoned, and audited. David doesn't make impulsive decisions; the UI reinforces this.
 
@@ -178,195 +151,100 @@ When David intervenes in trader books (rare but real):
 
 ## Phase 3: Hold / Manage — overseeing the firm
 
-This is the bulk of David's day during market hours.
+This is the bulk of David's day during market hours. The terminal is dense aggregation with drill-down: he reads dashboards, not order books.
 
-### Firm-wide aggregate book
+### Shared surfaces (firm-aggregated)
 
-The single most important view:
+- See [Positions](common-tools.md#7-positions-blotter), [Working Orders](common-tools.md#8-working-orders-blotter). **David-specific:** rolled up across all traders/strategies/venues, with drill-down to a single trader's blotter on click. Per-trader and per-strategy group-bys are first-class.
+- See [Live PnL](common-tools.md#9-live-pnl-panel). **David-specific:** firm PnL with breakdown by trader / strategy / underlying / venue; intraday and session-to-date in one view.
+- See [Risk Panel](common-tools.md#10-risk-panel-multi-axis). **David-specific:** firm-aggregated greeks (delta, gamma, vega, theta), net VaR (parametric / historical / Monte Carlo), gross exposure vs. leverage cap, single-name and counterparty concentration, margin utilization across venues, in-flight capital (bridges, settlements, deposits/withdrawals pending), stablecoin & cash dry powder.
+- See [Stress Panel](common-tools.md#11-stress--scenario-panel). **David-specific:** firm-level stress library including BTC -20% / ETH -25% / alts -40% combo, all-IV +20v vol shock, USDC depeg to $0.95, "Binance halts withdrawals" venue shock, SPX -5% + BTC -15% cross-asset shock, plus custom scenarios. Each scenario shows firm loss + breakdown by trader / strategy / underlying.
+- See [Alerts Engine](common-tools.md#14-alerts-engine). **David-specific:** firm aggregate alerts console — limit breaches at any level, concentration warnings, drawdown triggers, behavioral drift flags, fleet anomalies of high severity, external events (venue degradation, protocol exploits, depegs, oracle failures), operational (settlement failures, withdrawal delays, audit-trail gaps).
+- See [Comms Panel](common-tools.md#17-communications-panel). **David-specific:** trader chat integrated; risk-committee notification rail with pre-formatted updates; desk-wide announcement broadcast.
+- See [Latency / Connectivity](common-tools.md#18-latency--connectivity--infra-panel). **David-specific:** scoped to **per-venue and per-protocol health** rather than micro-latency — counterparty rating, recent incidents, bridge in-flight value, audit status of DeFi protocols, governance events.
 
-- **Net delta per underlying** at firm level. Often surprisingly different from sum-of-traders because hedges between desks may align or cancel.
-- **Gross exposure** — sum of absolutes, vs leverage cap.
-- **Net VaR** — parametric or historical or Monte Carlo.
-- **Greeks aggregated** — delta, gamma, vega, theta — across all traders and strategies.
-- **Counterparty concentration** — top exposures with limits visible.
-- **Stablecoin & cash position** — dry powder, in $.
-- **Margin utilization across venues** — close to any venue's haircut?
-- **In-flight capital** — bridges, settlements, deposits/withdrawals pending.
-
-### Per-trader tile board
+### Per-trader tile board (David-unique)
 
 For each trader (Marcus, Julius, Mira, Sasha, Quinn-fleet):
 
-- **PnL today / WTD / MTD / YTD** in $ and Sharpe-ratio terms.
-- **Capital used / allocated.**
-- **Risk consumed / allocated.**
-- **Behavioral health badge** — see below.
-- **Recent interventions** — was this trader recently warned or capped?
-- **Notes & flags.**
+- PnL today / WTD / MTD / YTD in $ and Sharpe terms.
+- Capital used / allocated; risk consumed / allocated.
+- Behavioral health badge (see below).
+- Recent interventions — was this trader recently warned or capped?
+- Notes & flags.
 
 Click a tile → drill into that trader's book.
 
-### Behavioral health monitor
+### Behavioral health monitor (David-unique)
 
 David watches for **trader behavioral drift**:
 
 - **Overtrading** — sudden trade-frequency spike.
 - **Position-sizing drift** — bigger sizes than recent average.
-- **Hold-time drift** — shorter hold times (revenge trading) or longer (anchored to losers).
+- **Hold-time drift** — shorter (revenge trading) or longer (anchored to losers).
 - **Loss-cutting discipline** — % of trades hitting pre-defined stop.
-- **Strategy-tag distribution shift** — trader drifting from his mandate.
+- **Strategy-tag distribution shift** — drifting from mandate.
 
 Each indicator carries history; sustained drift triggers an interventions conversation.
 
-### Strategy fleet view (Quinn-shared)
+### Strategy fleet view (David-unique, Quinn-shared)
 
-David watches Quinn's fleet at a higher level:
+- Aggregate fleet PnL vs expectation.
+- Strategy stages — counts in research, paper, pilot, live, retired.
+- Strategy-level alerts surfaced when severe.
 
-- **Aggregate fleet PnL** vs expectation.
-- **Strategy stages** — how many in research, paper, pilot, live, retired.
-- **Strategy-level alerts surfaced** when severe.
+### Risk-limit dashboard (David-unique)
 
-### Risk-limit dashboard
+Every limit, every level — firm / trader / strategy / venue / counterparty — with current value and headroom:
 
-Every limit, with current value and headroom:
-
-- Limits at 80%+ utilization highlighted amber.
-- Limits at 95%+ red.
+- **80%+ utilization** highlighted amber, **95%+** red.
 - Recent breaches with resolution status.
 - Limit changes pending approval.
 
-### Counterparty / venue health board
+### Liquidity / unwind panel (David-unique)
 
-- Per venue: positions, working orders, open margin, counterparty rating, recent incidents.
-- Per protocol (DeFi): exposure, audit status, recent governance events.
-- Bridge in-flight value.
-
-### Aggregate alerts console
-
-- **Limit breaches** (any level).
-- **Concentration warnings** — single-name, single-counterparty, single-strategy.
-- **Drawdown triggers** — trader, strategy, firm.
-- **Behavioral drift** flagged.
-- **Strategy fleet anomalies** of high severity.
-- **External events** — venue degradation, protocol exploit, stablecoin depeg, oracle failure.
-- **Operational** — settlement failures, withdrawal delays, audit-trail gaps.
-
-### Stress / scenario panel
-
-Pre-computed PnL under stress scenarios:
-
-- **Crypto-specific:** BTC -20%, ETH -25%, alts -40% simultaneously.
-- **Vol shock:** all IV +20v.
-- **Stablecoin shock:** USDC depeg to $0.95.
-- **Venue shock:** Binance halts withdrawals.
-- **Cross-asset shock:** SPX -5% + BTC -15%.
-- **Custom scenarios** he can configure.
-
-Each scenario shows firm-level loss + breakdown by trader/strategy/underlying.
-
-### Liquidity / unwind panel
-
-- **Estimated unwind cost** if firm needed to fully exit in 1 day, 3 days, 1 week.
+- **Estimated unwind cost** to fully exit in 1 day, 3 days, 1 week.
 - **Liquidity by venue** — which positions are illiquid.
 - **Concentration vs venue daily volume.**
 
-### Communications panel
+### Kill switches (David-unique scope on top of [common-tools.md#19-kill-switches-granular](common-tools.md#19-kill-switches-granular))
 
-- **Trader chat** integrated — ping a trader without leaving the terminal.
-- **Risk committee notification** rail — pre-formatted updates ready to send.
-- **Client / desk announcement broadcast** for desk-wide messages.
-
-### Kill switches
-
-- **Per-trader kill** — disable trader's order entry, optionally flatten.
-- **Per-strategy kill.**
-- **Per-venue kill** — pull all firm activity from venue.
+- Per-trader, per-strategy, per-venue kills (granular).
 - **Firm-wide kill** — multi-key (David + CIO + risk officer) for catastrophic events.
 
-**Layout principle for Hold:** dense aggregation, with drill-down. He's reading dashboards, not order books. Color and badges drive attention; he doesn't read numbers that look fine.
+**Layout principle for Hold:** dense aggregation, with drill-down. Color and badges drive attention; he doesn't read numbers that look fine.
 
 ---
 
 ## Phase 4: Learn
 
-David's "learn" is institutional. Reviews, post-mortems, planning, reporting.
+David's "learn" is institutional — reviews, post-mortems, planning, reporting. Most analytical work happens off-hours or during quiet periods.
 
-### Daily / weekly / monthly performance review
+### Shared surfaces (firm-aggregated)
 
-- Firm PnL with attribution by trader / strategy / underlying / regime.
-- Sharpe, Sortino, Calmar at firm level.
-- Drawdown analysis.
-- Capital efficiency by trader.
-- Risk consumed vs return generated.
+- See [Replay](common-tools.md#20-replay-tool). **David-specific:** firm-wide replay — pick a date / time window and reconstruct the entire desk's state, including every trader's book and every alert that fired. Used for post-incident review (drawdown days, exploits, venue outages).
+- See [Trade History](common-tools.md#21-trade-history--blotter-historical), [Attribution](common-tools.md#22-pnl-attribution-multi-axis), [Performance](common-tools.md#23-performance-metrics), [Equity Curve](common-tools.md#24-equity-curve), [TCA](common-tools.md#25-execution-quality--tca-transaction-cost-analysis). **David-specific:** firm-level rollups — PnL attribution by trader / strategy / underlying / regime; firm Sharpe / Sortino / Calmar; drawdown analysis; capital efficiency by trader; risk consumed vs return generated. Per-trader and per-strategy retrospectives are drill-downs from the firm view.
+- See [Behavioral Analytics](common-tools.md#26-behavioral-analytics). **David-specific:** read across the trader fleet, not for self-review; feeds the per-trader retrospective and compensation/mandate conversations.
+- See [Reports](common-tools.md#27-reports). **David-specific:** client letters (per-client, gross/net of fees, benchmark, narrative-attached); regulator/auditor pulls; **risk-committee deck auto-prepared** weekly/monthly with firm performance, risk consumed, breaches, concentration evolution, stress scenarios, lifecycle changes, forward-looking risks.
+- See [Compliance & Audit Trail](common-tools.md#28-compliance--audit-trail). **David-specific:** end-to-end audit of every authorization he's signed — capital changes, limit changes, promotions, overrides, interventions — alongside the standard trade audit trail. Retention guarantees.
+- See [Strategy Tagging](common-tools.md#29-strategy-tagging-framework). **David-specific:** firm-level taxonomy used to roll up attribution and to track mandate adherence across traders.
+- See [Layout](common-tools.md#30-customizable-layout--workspace). **David-specific:** desk workspace + private-office presentation workspace; the office workspace is presentation-ready (large fonts, narrative panels) for client and committee meetings.
 
-### Trader retrospectives
+### David-unique reviews
 
-- Per trader: PnL, Sharpe, hit rate, behavior trend, strategy mix evolution.
-- Variance vs trader's stated mandate.
-- Notes from interventions and conversations.
-- Used for compensation, capital reallocation, mandate adjustments.
+- **Capital efficiency** — Sharpe per $ allocated over time; reallocation history with outcomes; counterfactuals (what if we'd allocated differently?).
+- **Risk retrospectives** — limit breaches and root cause; stress scenarios that materialized vs. pre-computed losses; counterparty and operational incidents with lessons and remediation.
 
-### Strategy retrospectives
-
-- Synthesis of Quinn's strategy retrospectives at firm level.
-- Decay analysis.
-- Capacity vs allocation review.
-- Promote / retire decisions made and outcomes.
-
-### Risk retrospectives
-
-- Limit breaches and root cause.
-- Stress scenarios that materialized — how close were our pre-computed losses to actuals?
-- Counterparty incidents and lessons.
-- Operational incidents and remediation.
-
-### Capital efficiency review
-
-- Sharpe per $ allocated, evolving over time.
-- Capital reallocation history with outcomes.
-- Counterfactual: what if we'd allocated differently?
-
-### Client reporting
-
-- Per-client performance (if external capital).
-- Net of fees, gross of fees.
-- Benchmark comparison.
-- Narrative attached to numbers.
-- **Generation pipeline** for compliant client letters.
-
-### Regulatory / compliance reporting
-
-- Trade audit trail by request (regulator, auditor).
-- AML / KYC trade-monitoring summaries.
-- Position reports as required.
-- Retention guarantees on logs.
-
-### Risk committee deliverable
-
-- Weekly / monthly committee deck auto-prepared:
-  - Firm performance.
-  - Risk consumed.
-  - Limit breaches.
-  - Concentration evolution.
-  - Stress scenarios.
-  - Trader/strategy lifecycle changes.
-  - Forward-looking risks David flags.
-
-### Replay — desk-wide
-
-- Pick a date / time window — see firm's aggregate state then, including each trader's book and the alerts firing.
-- Used for post-incident review (drawdown days, exploits, venue outages).
-
-**Layout principle for Learn:** workspace + drilldowns + report generation. Most analytical work happens off-hours or during quiet periods.
+**Layout principle for Learn:** workspace + drilldowns + report generation, mostly off-hours.
 
 ---
 
 ## What Ties David's Terminal Together
 
-1. **Aggregation is the product.** Every number he sees is rolled up across traders, strategies, venues, underlyings — but always drillable to the source.
+1. **Aggregation is the product.** Every number is rolled up across traders, strategies, venues, underlyings — but always drillable to the source.
 2. **Limits are first-class.** Every position is contextualized against a limit, every breach is auditable.
-3. **Behavioral telemetry on traders.** Not just performance numbers — patterns of behavior that predict future performance and risk.
-4. **Stress scenarios are precomputed.** He can answer "what if X happens?" in seconds, not hours.
+3. **Behavioral telemetry on traders.** Not just performance — patterns of behavior that predict future performance and risk.
+4. **Stress scenarios are precomputed.** "What if X happens?" answered in seconds, not hours.
 5. **Counterparty / venue / protocol exposure is always visible.** Concentration kills firms; he sees it before it does.
 6. **Audit trails are non-negotiable.** Every change he makes is timestamped, reasoned, signed.
 7. **Communications are integrated.** Pinging traders, notifying committee, broadcasting to desk — all from the terminal.

@@ -2,8 +2,7 @@
 
 A reference profile of a top-performing event-driven / merger-arbitrage trader at a top-5 firm. Used as a yardstick for what an ideal **event-driven** terminal must support. This document deliberately avoids any reference to our current platform — it describes the **ideal world**.
 
-For the underlying four-phase trader workflow, see [manual-trader-workflow.md](manual-trader-workflow.md).
-For sister archetypes on the same desk, see the other `trader-archetype-*.md` files in this folder.
+For the underlying four-phase trader workflow, see [manual-trader-workflow.md](manual-trader-workflow.md). For the shared surfaces every archetype uses, see [common-tools.md](common-tools.md). For the index of unique surfaces per archetype, see [unique-tools.md](unique-tools.md). For sister archetypes on the same desk, see the other `trader-archetype-*.md` files in this folder.
 
 ---
 
@@ -64,115 +63,65 @@ Naomi spends substantial time **reading documents** — merger agreements run hu
 
 ## Phase 1: Decide
 
-### Deal pipeline (the spine of her terminal)
+### Deal pipeline (UNIQUE — the spine of her terminal)
 
-A list (or kanban) of every deal she's tracking:
+A list / kanban of every deal she's tracking. **Every deal is a first-class object** carrying its own status, terms, catalysts, documents, position, P/L, and journal.
 
-**Status categories:**
+**Status (lifecycle):** Rumored → Announced → Definitive agreement → Shareholder vote → Regulatory review → Final approvals → Closed | Broken.
 
-- **Rumored** — press leaks, no official announcement.
-- **Announced** — official announcement, terms public.
-- **Definitive agreement** — merger agreement signed.
-- **Shareholder vote** — pending vote of target / acquirer holders.
-- **Regulatory review** — antitrust / sectoral approvals pending.
-- **Final approvals** — all material conditions met.
-- **Closed** — completed.
-- **Broken** — terminated, withdrawn, blocked.
+**Per-row fields:** target (name/ticker), acquirer (name/ticker), deal type (cash/stock/mixed/tender/scheme), headline value, current spread (gross + annualized), days to expected close, probability of close (subjective + market-implied), active position size, deal P/L, next catalyst date + type.
 
-**Per deal, the row shows:**
+### Active deal deep-dive (UNIQUE)
 
-- Target name, ticker.
-- Acquirer name, ticker.
-- Deal type (cash, stock, mixed, tender, scheme).
-- Headline value.
-- Current spread (gross + annualized) — the trade's edge.
-- Days to expected close.
-- Probability of close (her subjective + market-implied).
-- Active position size.
-- P/L on this deal.
-- Next catalyst date and type.
+For the focused deal:
 
-### Active deal deep-dive
-
-When she focuses on one deal, the dashboard shows:
-
-- **Deal terms** — price, ratio (for stock deals), collar (if any), CVRs, breakup fees.
-- **Spread analytics** — gross spread, days to close, annualized return, break price (where target trades if deal breaks).
-- **Probability decomposition** — conditional on regulatory approval, conditional on shareholder vote, etc.
-- **Implied probability of close** from current spread vs her estimate.
+- **Deal terms** — price, ratio (stock deals), collar, CVRs, breakup fees.
+- **Spread analytics** — gross spread, days to close, annualized return, break price.
+- **Probability decomposition** — conditional on regulatory approval, on shareholder vote, on financing.
+- **Implied vs subjective probability** — current spread implies X; her estimate is Y.
 - **Risk/reward** — payoff if closes, payoff if breaks, expected value.
-- **Hedge structure** — what's the hedge? Index put? Acquirer short? Capital-structure?
+- **Hedge structure** — index put / acquirer short / capital-structure / sector ETF.
 
-### Regulatory & antitrust dashboard
-
-Deal-specific:
+### Regulatory & antitrust dashboard per deal (UNIQUE)
 
 - **Filings tracker** — HSR (US), Form CO (EU), CMA notification (UK), MOFCOM/SAMR (China), SEC S-4, proxy DEFM14A.
-- **Review periods** — initial 30-day, second-request, statutory deadlines.
+- **Review-period deadlines** — initial 30-day, second-request, statutory deadlines per jurisdiction.
 - **Antitrust analysis** — concentration metrics, HHI changes, geographic / product overlaps.
 - **Recent precedents** — similar deals approved/blocked in recent past.
-- **Regulatory commissioner profiles** — current FTC chair stance, EU competition commissioner pattern.
+- **Commissioner profiles** — current FTC chair stance, EU competition commissioner pattern, voting records.
 
-### Catalyst calendar
+### Catalyst calendar — deal-attached (UNIQUE)
 
-The most deterministic calendar in trading:
+The most deterministic calendar in trading; the [#12 Calendar](common-tools.md#12-catalyst--event-calendar) framework with **Naomi-specific event types**: HSR clearance dates/deadlines, second-request deadlines, EU phase-1/phase-2 ends, other jurisdictional reviews (UK CMA, Canada, China, Brazil, India), shareholder votes (target + acquirer), court hearings (Delaware Chancery, federal, appellate), tender-offer expirations, drop-dead dates (outside date in the merger agreement), walk rights triggers. Every catalyst is linked back to its deal object; click-through opens the deep-dive.
 
-- **HSR clearance** dates (or deadlines).
-- **Second request** deadlines.
-- **EU phase-1 / phase-2** review end dates.
-- **Other jurisdictional** review endings (UK CMA, Canada, China, Brazil, India).
-- **Shareholder votes** — dates, expected outcomes.
-- **Court hearings** — Delaware Chancery, federal court, appellate.
-- **Tender offer expiration.**
-- **Drop-dead date** — outside date in merger agreement.
-- **Walk rights** — trigger events for acquirer / target to walk.
+### Document library (UNIQUE)
 
-### Document library
+Per deal, all searchable across deals:
 
-Per deal:
-
-- **Merger agreement** (full text + key clause excerpts).
+- **Merger agreement** (full text + key clause excerpts: MAC, breakup fee, ticking fee, financing, regulatory efforts).
 - **Proxy / scheme document.**
 - **S-4 / F-4** for stock deals.
-- **Antitrust filings.**
+- **Antitrust filings** (HSR/Form CO/CMA filings as redacted/published).
 - **Press releases** — chronological.
 - **Court filings** if litigation involved.
-- **Sell-side research** — event-driven analyst notes.
-- **Internal memos** — Naomi's own notes, lawyers' opinions.
+- **Sell-side event-driven analyst notes.**
+- **Internal memos** — Naomi's own notes, in-house lawyers' opinions, expert call summaries.
 
-All searchable across deals.
+### Pipeline & rumor tracker (UNIQUE)
 
-### Pipeline & rumor tracker
+Pre-deal lifecycle: rumored deals (press leaks, chatter), companies under review (strategic alternatives announced), activist situations (under pressure to sell), sponsor / PE interest (known acquirers exploring targets), spinoffs & corporate actions (parent vs spin-co valuation, tracking stocks, splits, mergers-of-equals, SPAC pipeline), distressed / restructuring (near-bankruptcy claims, post-bankruptcy equity, recovery analyses, capital structure for distressed names).
 
-- **Rumored deals** — press leaks, market chatter.
-- **Companies under review** — strategic alternatives announced, exploring sale.
-- **Activist situations** — companies under pressure to sell.
-- **Sponsor / PE interest** — known acquirers exploring targets.
+### Shared surfaces in Decide
 
-### Spinoff & corporate-action tracker
-
-- **Announced spinoffs** — parent vs spin-co valuation analysis.
-- **Tracking stocks, splits, mergers-of-equals** — each with its own payoff structure.
-- **SPAC pipeline** — proposed mergers, target announcements, vote dates.
-
-### Distressed / restructuring tracker
-
-- **Companies in or near bankruptcy** — claim trading, post-bankruptcy equity.
-- **Capital structure** for distressed names — bonds, loans, equities, ranked by seniority.
-- **Recovery analyses** — projected creditor recoveries.
+- [#1 Charting](common-tools.md#1-multi-timeframe-charting) — daily/weekly horizons dominate; the spread overlay (target vs deal price, or pair spread for stock deals) matters more than the price line itself; announcements, definitive-agreement signing, regulatory milestones and vote dates annotated.
+- [#13 News](common-tools.md#13-news--research-feed) — event-driven sell-side desk notes and law-firm antitrust analyses are first-class; expert-network transcripts attach to deals; government/regulator sources (FTC press, EU Commission, DOJ filings, court dockets) are primary.
 
 ### Macro context
 
-- **Equity indices, sector heatmaps.**
-- **Credit spreads** — IG / HY / CDX — financing market health.
-- **Vol indices** — VIX, MOVE — risk environment for deal closes.
-- **Rates environment** — affects LBO financing, cash deal premiums.
-
-### Sell-side and external research
-
-- **Event-driven research** — strategist notes, deal-specific analyses.
-- **Antitrust legal analyses** — law firm publications.
-- **Expert network calls** — specialists on industries, regulators.
+- Equity indices, sector heatmaps.
+- Credit spreads (IG / HY / CDX) — financing-market health drives LBO closability.
+- Vol indices (VIX, MOVE) — risk environment for deal closes.
+- Rates environment — affects LBO financing, cash deal premiums.
 
 **Layout principle for Decide:** the deal pipeline is foveal. Each deal has a deep-dive view. Document library is one click away. Catalyst calendar drives daily attention.
 
@@ -182,87 +131,43 @@ All searchable across deals.
 
 Event-driven entry is **deal-attached**, **multi-leg native**, and **borrow-aware**.
 
-### Single-name ticket (for cash deals)
+### Order entry — ticket framework
 
-- **Buy target stock** at spread to deal price.
-- **Pre-trade:** spread captured, days to close, annualized return, hedge requirement.
-- **Locate / borrow check** if required.
+See [#2 Order Ticket](common-tools.md#2-order-entry-ticket-framework). **Naomi-specific tickets** (all UNIQUE first-class shapes):
 
-### Cash-and-stock pair ticket (first-class)
-
-For stock-for-stock or cash-and-stock deals:
-
-- **Buy target / sell short acquirer** at deal ratio.
-- **Ratio enforced** — automatic sizing.
-- **Live spread** in $ and bps.
-- **Atomic execution.**
-- **Borrow availability** for acquirer short — flagged.
-- **Recall risk** — likelihood of forced buy-in during deal.
-
-### Capital structure ticket
-
-- **Long the bond / short the equity** of the same company.
-- **Long pref / short common.**
-- **Long convertible / short common.**
-- **Cross-asset coordination** with single-leg entries on each side.
-
-### Hedge ticket
-
-- **Index put hedge** — buy SPX puts to cover deal break risk.
-- **Sector hedge** — sector ETF short.
-- **Vol hedge** — buy VIX calls.
-- **Custom hedge structures** Naomi designs for specific deals.
-
-### Tender offer participation
-
-- **Tender** her shares into a tender offer.
-- **Don't tender** (when she expects price to rise).
-- **Workflow** — submit through prime broker, track tender status.
-
-### Distressed / claims ticket
-
-- **Buy bonds, loans, claims** at distressed levels.
-- **Claim trading** through specialist intermediaries.
-- **Bankruptcy claim acquisition workflow.**
+- **Single-name ticket (cash deals)** — buy target stock at spread to deal price; pre-trade shows spread captured, days to close, annualized return, hedge requirement.
+- **Cash-and-stock pair ticket** — buy target / sell short acquirer at deal ratio, ratio enforced for automatic sizing, live spread in $ and bps, atomic execution, **borrow availability + recall-risk flag** for the acquirer short leg.
+- **Capital-structure ticket** — long the bond / short the equity of the same company; long pref / short common; long convert / short common. Cross-asset coordination with single-leg entries on each side.
+- **Hedge ticket** — index puts (SPX) for deal-break protection, sector ETF shorts, VIX calls, custom structures designed per deal.
+- **Tender offer participation workflow** — tender / don't-tender decisions through prime broker, with status tracking and timeline visualization.
+- **Distressed / claims ticket** — buy bonds, loans, and bankruptcy claims at distressed levels through specialist intermediaries; bankruptcy claim acquisition workflow.
 
 ### Pre-trade preview
 
-- **Deal-specific** — spread captured, days to close, annualized return, IRR.
-- **Risk** — break price, max loss, probability-weighted expected value.
-- **Hedge effectiveness** — beta / sector exposure.
-- **Capital usage** — long + short capital required.
-- **Borrow cost** — annualized financing for short legs.
-- **Compliance:** position limits, restricted lists, conflicts (if firm advises one side).
+See [#3 Pre-Trade Preview](common-tools.md#3-pre-trade-risk-preview). **Naomi-specific lines:** deal economics (spread captured, days to close, annualized return, IRR); risk (break price, max loss if deal terminates, probability-weighted EV); hedge effectiveness (beta / sector exposure of the proposed structure); capital usage (long + short capital required, financing for the short leg); borrow cost (annualized financing as a line item); compliance (position limits, restricted lists, conflicts when firm advises one side).
 
-### RFQ / block workflow
+### Algos & SOR
 
-For size or illiquid names:
+- [#4 Algos](common-tools.md#4-execution-algos-library) — VWAP/TWAP at slow tempos, spread-targeting (execute when pair spread reaches X bps), close-tightening accumulation that increases rate as the deal-close window approaches.
+- [#5 SOR](common-tools.md#5-smart-order-router--multi-venue-aggregation) — block / RFQ workflow for size or illiquid names (broker dealers, IOI aggregation, anonymized RFQ); information-leakage suppression is paramount and predictable multi-day accumulation patterns are flagged.
 
-- **Block trading** through broker dealers.
-- **IOIs aggregation.**
-- **Anonymized RFQ** for size-sensitive trades.
+### Compliance — inline & serious (information-barrier & restricted-list automation, UNIQUE)
 
-### Algos
+See [#28 Compliance](common-tools.md#28-compliance--audit-trail). **Naomi-specific characteristics:**
 
-- **VWAP / TWAP** for large positions.
-- **Spread-targeting** — execute when pair spread reaches X.
-- **Close-tightening algos** — accumulate as deal close approaches.
-
-### Compliance specifics
-
-Event-driven trades are compliance-heavy:
-
-- **Restricted lists** — when firm has MNPI on a deal, name is blocked.
-- **Information barriers** — Naomi's access scoped per side of the wall.
-- **Tender offer rules** — Reg 14E timing.
-- **13D/13G** filing thresholds — 5%, 10%.
-- **Insider trading prevention** — automated checks against firm's research / advisory side.
+- **Restricted lists** — when firm has MNPI on a deal, the name is auto-blocked at the ticket; override requires desk-head + compliance dual sign-off.
+- **Information barriers** — Naomi's market data + research access scoped per side of the wall; cross-wall views simply do not render.
+- **Tender-offer rules** — Reg 14E timing checks at the ticket.
+- **13D/13G** filing thresholds (5%, 10%) tracked with pre-breach alerts.
+- **Insider-trading prevention** — automated checks against firm's research / advisory side activity on the same name.
 
 ### Hotkeys
 
+See [#6 Hotkeys](common-tools.md#6-hotkey-system). **Naomi-specific bindings:**
+
 - Buy target / sell acquirer at NBBO with deal-ratio sizing.
 - Cancel all on deal.
-- Hedge deal break risk (preconfigured per deal).
+- Hedge deal-break risk (preconfigured per deal).
 - Flatten deal.
 
 **Layout principle for Enter:** the deal-pair ticket is first-class. Compliance is inline. Borrow / financing are pre-trade-visible. Hedge structure is configured per deal in advance.
@@ -275,109 +180,81 @@ Event-driven positions are **slow-moving day-to-day** but **catalyst-cliffs** ma
 
 ### Positions blotter — by deal
 
-Primary view groups positions by deal:
+See [#7 Positions](common-tools.md#7-positions-blotter). **Naomi-specific characteristics:**
 
-- **Deal: Target Inc / Acquirer Co**
-  - Long Target: 500k shares, +$X, P/L +$Y.
-  - Short Acquirer: 200k shares, +$X, P/L +$Y.
-  - Index put hedge: 100 contracts, P/L –$Z.
-  - Net deal P/L: +$W.
-  - Spread captured: 60% of headline spread realized.
-  - Days remaining: 87.
+- Primary grouping is **by deal**, not by instrument:
+  - Deal: Target Inc / Acquirer Co
+    - Long Target: 500k shares, P/L +$Y
+    - Short Acquirer: 200k shares, P/L +$Y
+    - Index put hedge: 100 contracts, P/L –$Z
+    - Net deal P/L: +$W
+    - Spread captured: 60% of headline spread realized
+    - Days remaining: 87
+- Secondary views: by category (M&A / spinoff / SPAC / distressed) and by underlying instrument (for trading).
+- Live spread monitor inline: current spread, change today, change since entry, distance to break price, distance to deal close payoff, z-score of spread vs entry.
 
-A secondary view groups by category (M&A / spinoff / SPAC / distressed) and another by underlying instrument type for trading.
+### Working orders
 
-### Live spread monitor
+See [#8 Working Orders](common-tools.md#8-working-orders-blotter). Orders inherit a **deal tag** (closing a deal flattens all related working legs); spread-targeting working orders dominate and may sit for days.
 
-- For every active deal: current spread, change today, change since entry.
-- Distance to break price.
-- Distance to deal close payoff.
-- z-score of spread vs entry.
+### Live PnL — event-decomposed (deal P/L decomposition, UNIQUE)
 
-### Catalyst countdown
+See [#9 Live PnL](common-tools.md#9-live-pnl-panel). **Naomi-specific characteristics:**
 
-The most important live surface:
-
-- Next 7 / 30 / 90 days of catalyst events across all deals.
-- Color-coded by significance (regulatory deadline, vote, court date).
-- Pre-event positioning summary.
-
-### Live PnL — event-decomposed
-
-- **Per deal, per leg.**
-- **Spread tightening P/L** — passive accrual as deals approach close.
+- Per deal, per leg.
+- **Spread tightening P/L** — passive accrual as deals approach close, separated from active.
 - **Spread widening P/L** — adverse moves.
 - **Hedge P/L** — separate.
 - **Borrow / financing cost** — daily accrual.
-- **By deal type** — M&A vs spinoff vs SPAC vs distressed.
+- By deal type — M&A vs spinoff vs SPAC vs distressed.
 
 ### Risk panel — event-driven specific
 
-- **Deal break risk per deal** — max loss if deal terminates.
-- **Aggregate break risk** — what if 3 deals broke simultaneously? (Stress-test)
+See [#10 Risk](common-tools.md#10-risk-panel-multi-axis). **Naomi-specific axes:**
+
+- **Deal-break risk per deal** — max loss if deal terminates.
+- **Aggregate break risk** — what if 3 deals broke simultaneously?
 - **Concentration risk** — % of book in a single deal.
-- **Sector concentration** — too many tech deals?
-- **Acquirer concentration** — multiple deals by same PE sponsor?
+- **Sector concentration** — too many tech deals, too many healthcare deals.
+- **Acquirer concentration** — multiple deals by the same PE sponsor.
 - **Regulatory regime risk** — % of book exposed to current FTC stance.
 - **Vol exposure** — for deals with stock components.
 - **Borrow risk** — high-borrow positions, recall probability.
 - **Liquidity** — % of book in illiquid names.
-- **Stress scenarios:**
-  - "All FTC reviews block" — 30% of M&A pipeline.
-  - "Risk-off shock" — deal break premium widens.
-  - "Credit shock" — LBO deals re-underwritten.
-  - "Specific deal break" — top-3 deals individually.
-- **VaR.**
 
-### Regulatory news watch
+### Stress
 
-- Per-deal news alerts on regulatory filings, statements, hearings.
-- Pattern monitoring — second requests issued, EU phase-2 launched, complaints filed.
+See [#11 Stress](common-tools.md#11-stress--scenario-panel). **Naomi-specific scenarios:**
 
-### Document watch
+- "All FTC reviews block" — 30% of M&A pipeline.
+- "Risk-off shock" — deal-break premium widens broadly.
+- "Credit shock" — LBO deals re-underwritten.
+- "Specific deal break" — top-3 deals individually.
 
-- New SEC filings on tracked names — auto-flagged.
-- Court docket monitoring — new filings on deals in litigation.
-- Press releases auto-categorized.
+### Catalyst countdown
+
+The most important live surface; renders on top of [#12 Calendar](common-tools.md#12-catalyst--event-calendar). Next 7 / 30 / 90 days of catalyst events across all deals, color-coded by significance (regulatory deadline, vote, court date), with a pre-event positioning summary at T-7, T-1, T-0.
+
+### News & document watch (deal-tagged news watch, UNIQUE)
+
+See [#13 News](common-tools.md#13-news--research-feed). Per-deal news on regulatory filings, statements, hearings; new SEC filings on tracked names auto-flagged to the deal; court docket monitoring (new filings on deals in litigation); press releases auto-categorized; pattern monitoring across the book — second requests issued, EU phase-2 launched, complaints filed.
 
 ### Alerts
 
-- **Catalyst countdown** — T-7, T-1, T-0 of major events.
-- **Spread alerts** — beyond entry parameters.
-- **Regulatory alerts** — filing, statement, ruling.
-- **News alerts** — deal-specific keywords.
-- **Recall alerts** — short borrow status changing.
-- **Compliance alerts** — restricted-list changes, position thresholds.
-- **Risk limit alerts** — concentration, deal-break aggregate, sector.
+See [#14 Alerts](common-tools.md#14-alerts-engine). **Naomi-specific types:** catalyst countdown (T-7, T-1, T-0), spread alerts (beyond entry parameters), regulatory alerts (filing/statement/ruling), deal-keyword news alerts, recall alerts (short-borrow status changes), compliance alerts (restricted-list changes, 13D/G thresholds), risk-limit alerts (concentration, deal-break aggregate, sector).
 
 ### Trade journal — deal journal
 
-Per deal:
+See [#15 Journal](common-tools.md#15-trade-journal). Journal is **per deal**, not per trade: thesis at entry, probability-of-close estimate, key risks, regulatory/catalyst progress, decision points (add / trim / hedge / exit), reviewed weekly.
 
-- Thesis at entry.
-- Probability of close estimate.
-- Key risks tracked.
-- Updates on regulatory / catalyst progress.
-- Decision points (add / trim / hedge / exit).
-- Reviewed weekly.
+### Heatmap & comms
 
-### Communications
-
-- **Sell-side event-driven desk chat** — flow color, deal-specific intel.
-- **Internal lawyers** — opinions on regulatory questions.
-- **Expert network call notes** attached to deals.
-- **Industry sources** — analysts, trade press.
-
-### Heatmap
-
-- Deals sized by capital deployed × today's P/L move.
+- [#16 Heatmap](common-tools.md#16-heatmap-of-own-book) — tiles are **deals** (not instruments), sized by capital deployed × today's P/L move.
+- [#17 Comms](common-tools.md#17-communications-panel) — sell-side event-driven desk chat, internal-lawyer threads (regulatory opinions), expert-network call notes, and industry analysts/trade press; threads attach to deals.
 
 ### Kill switches
 
-- **Reduce a deal's exposure** — pre-defined unwind algo.
-- **Close all M&A positions** — emergency, multi-day algo.
-- **Hedge to neutral** — fast index hedge.
-- **Cancel all working orders.**
+See [#19 Kill](common-tools.md#19-kill-switches-granular). **Naomi-specific levels:** reduce a deal's exposure (pre-defined unwind algo); close all M&A positions (multi-day algo, emergency); hedge to neutral (fast index hedge); cancel all working orders.
 
 **Layout principle for Hold:** deal pipeline + catalyst calendar are foveal. Regulatory news is constant peripheral. Document watch surfaces filings the moment they post.
 
@@ -387,81 +264,35 @@ Per deal:
 
 Event-driven post-trade emphasizes **deal-by-deal outcomes**, **probability calibration**, **sub-strategy performance**.
 
-### Deal closeouts
+### Trade history, attribution, performance
 
-Per deal closed (or broken), a retrospective:
+- [#21 Trade History](common-tools.md#21-trade-history--blotter-historical) — history is organized as **closed deals**, each with a retrospective: entry thesis vs realized outcome, probability estimate vs realized, spread captured vs available, hedge effectiveness, regulatory path vs predicted, time-to-close vs predicted, lessons.
+- [#22 Attribution](common-tools.md#22-pnl-attribution-multi-axis) — by deal, by deal type (M&A / spin / SPAC / distressed / capital structure), by regulatory jurisdiction (US / EU / cross-border), by outcome (closes vs breaks vs renegotiations), by sector, by regulatory regime (favorable vs hostile).
+- [#23 Performance](common-tools.md#23-performance-metrics) — hit rate by deal type, avg deal won vs avg deal lost, **spread-realization rate** (% of available spread captured), **calendar discipline** (% of deals exited at or near close).
+- [#24 Equity Curve](common-tools.md#24-equity-curve) — stepwise: long flat stretches punctuated by catalyst-day jumps; the visualization should preserve, not smooth, these steps.
+- [#25 TCA](common-tools.md#25-execution-quality--tca-transaction-cost-analysis) — spread-leg execution vs arrival mid, pair-leg synchronization slippage, block / RFQ price improvement vs lit benchmark.
 
-- **Entry thesis** vs realized outcome.
-- **Probability estimate** vs realized — was she calibrated?
-- **Spread captured** vs available spread.
-- **Hedge effectiveness** — did it pay off when needed?
-- **Regulatory path** vs predicted.
-- **Time-to-close** vs predicted.
-- **Lessons** — what would she do differently.
+### Probability calibration tracker (UNIQUE)
 
-### PnL attribution
+Critical for Naomi — her edge is forecast accuracy, so the system measures it. When she said "85% chance of close," did 85% of those deals close? When 60%, did 60%? Calibration curve over time, updated per closed deal; **Brier score** as headline metric, decomposed by deal type, jurisdiction, and regulatory regime. Drives improvement of subjective-probability formation.
 
-- **By deal.**
-- **By deal type** (M&A / spin / SPAC / distressed / capital structure).
-- **By regulatory jurisdiction** — US deals vs EU vs cross-border.
-- **By outcome** — closes vs breaks vs renegotiations.
-- **By sector.**
-- **By regime** — favorable vs hostile regulatory environment.
+### Hedge-effectiveness tracker (UNIQUE)
 
-### Performance metrics
+Hedge cost vs hedge protection ratio per deal; **hedges that paid off** (list of deals where the hedge saved her, with magnitude); **wasted hedges** (unnecessary hedges with cost). Aggregated by deal type, regulatory regime, and hedge structure.
 
-- Sharpe, Sortino, Calmar.
-- **Hit rate by deal type.**
-- **Avg deal won vs avg deal lost.**
-- **Spread realization rate** — % of available spread captured.
-- **Calendar discipline** — % of deals exited at or near close.
+### Adjacent analytics
 
-### Probability calibration
+- **Regulatory pattern analysis** — performance by commissioner / regime, by industry, precedent fit.
+- **Capital-structure analytics** — long-bond / short-equity mean reversion, convertible-equity spreads, distressed recovery analysis.
+- **Borrow / financing analytics** — borrow cost paid YTD per deal, recall events, hard-to-borrow trade selection.
 
-Critical for Naomi:
+### Behavioral, reports, replay, tagging, layout
 
-- When she said "85% chance of close," did 85% of those deals close?
-- When she said "60%," did 60%?
-- Calibration curve over time.
-- Drives improvement of subjective-probability formation.
-
-### Regulatory pattern analysis
-
-- **By commissioner / regime** — performance across FTC chairs, EU commissioners, etc.
-- **By industry** — antitrust performance in tech vs healthcare vs financial services.
-- **Precedent fit** — when she relied on a precedent, did it hold?
-
-### Hedge analysis
-
-- **Hedge cost vs hedge protection** ratio.
-- **Hedges that paid off** — list of deals where the hedge saved her.
-- **Wasted hedges** — list of unnecessary hedges.
-
-### Capital structure analytics
-
-- **Long-bond / short-equity** trades — mean-reversion of spreads.
-- **Convertible-equity** spreads.
-- **Recovery analysis** for distressed.
-
-### Borrow / financing analytics
-
-- **Borrow cost paid YTD** per deal.
-- **Recall events.**
-- **Hard-to-borrow** trade selection.
-
-### Behavioral analytics
-
-- **Entry timing** — does she enter too early, too late?
-- **Exit timing** — does she hold to close or cash out early?
-- **Probability anchoring** — does her estimate move with market spread (a circularity warning)?
-
-### Reports
-
-- Daily P/L commentary (deal-tagged).
-- Weekly portfolio review.
-- Monthly attribution by deal type / sector / outcome.
-- Quarterly investor / committee letter contribution — event-driven storytelling.
-- Compliance / regulatory filings (13F, 13D/G, Schedule TO).
+- [#26 Behavioral](common-tools.md#26-behavioral-analytics) — entry timing vs deal lifecycle, exit timing (hold to close vs cash out early), and **probability anchoring** (does her estimate move with market spread? a circularity warning).
+- [#27 Reports](common-tools.md#27-reports) — daily P/L commentary (deal-tagged), weekly portfolio review, monthly attribution by deal type/sector/outcome, quarterly investor/committee letter (event-driven storytelling), regulatory filings (13F, 13D/G, Schedule TO).
+- [#20 Replay](common-tools.md#20-replay-tool) — scrub the lifecycle of any closed deal: terms, spread evolution, regulatory milestones, position changes, journal entries — synchronized.
+- [#29 Tagging](common-tools.md#29-strategy-tagging-framework) — every order/position carries a **deal_id** tag (primary) plus deal-type, jurisdiction, and hedge-role tags.
+- [#30 Layout](common-tools.md#30-customizable-layout--workspace) — saved workspaces are typically per-deal (a deep-dive workspace per active situation) plus the master pipeline view.
 
 **Layout principle for Learn:** deal-by-deal retrospectives. Probability calibration over time. Pattern recognition across regulatory regimes and deal types.
 

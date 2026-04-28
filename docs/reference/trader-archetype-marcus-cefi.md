@@ -2,7 +2,7 @@
 
 A reference profile of a top-performing discretionary crypto trader at a top-5 firm, used as a yardstick for what an ideal trading terminal must support. This document deliberately avoids any reference to our current platform — it describes the **ideal world**.
 
-For the underlying four-phase trader workflow this profile is built on, see [manual-trader-workflow.md](manual-trader-workflow.md).
+For the underlying four-phase trader workflow this profile is built on, see [manual-trader-workflow.md](manual-trader-workflow.md). For the shared platform surfaces referenced throughout, see [common-tools.md](common-tools.md). For Marcus's unique surfaces tracked alongside other archetypes, see [unique-tools.md](unique-tools.md).
 
 ---
 
@@ -51,53 +51,141 @@ He uses Binance because of liquidity, but he routes orders programmatically via 
 
 ### Charts (the thinking surface)
 
-- Multi-TF chart of **BTC and ETH always pinned** — these set the regime even if he's trading SOL or an alt.
-- **Custom chart layouts per instrument class:**
-  - **Spot:** candles + volume + VWAP + cumulative volume delta (CVD).
-  - **Perps:** candles + funding rate overlay + open interest overlay + liquidation levels marked.
-  - **Dated futures:** candles + basis vs spot subpane + days-to-expiry awareness.
-  - **Options:** surface-driven, not chart-driven (see below).
-- **Footprint / order-flow charts** for short-horizon entries — bid/ask volume per candle, delta divergence.
-- **Volume profile** — session, weekly, composite. He cares about high-volume nodes as magnets / rejection zones.
-- **Liquidation heatmap** — clusters of leveraged positions the market will hunt.
-- **Funding heatmap** — across venues and instruments: where is funding extreme?
+See [Multi-Timeframe Charting](common-tools.md#1-multi-timeframe-charting) for the shared multi-pane, multi-TF, drawing-tool framework.
 
-### Microstructure data
+**Marcus-specific characteristics:**
 
-- **Aggregated order book depth** across Binance spot, Binance perps, Bybit, OKX. Same instrument, multiple venues, stacked depth.
-- **CVD per venue and aggregated.**
-- **Large trade tape** — every print above $1M, with venue and aggressor side. Whale tape.
-- **Liquidation feed** — real-time longs/shorts liquidated, with size and venue.
-- **Open interest changes** — OI delta over 1h / 4h / 24h, per venue, per instrument. Combined with price = is this new money or short covering?
+- BTC and ETH multi-TF charts are always pinned — these set regime even when he's trading SOL or an alt.
+- Per-instrument-class chart layouts swap automatically: spot adds VWAP + CVD; perps add funding overlay + OI overlay + liquidation level marks; dated futures add a basis-vs-spot subpane and days-to-expiry awareness; options are surface-driven, not chart-driven.
+- Footprint chart is a first-class chart mode for short-horizon entries (see Footprint chart below).
+- Volume profile (session / weekly / composite) is always available; high-volume nodes are treated as magnets and rejection zones.
+- Liquidation heatmap and funding heatmap layers are toggle-able overlays on the primary chart, not separate windows.
 
-### Cross-instrument context (this is huge for a crypto pro)
+### Aggregated CeFi cross-venue depth book
 
-- **Spot–perp basis** in bps and annualized, per asset, per venue.
-- **Dated futures term structure** — Mar / Jun / Sep / Dec curves on Binance and CME.
-- **Funding rate term structure** — current, 8h-ahead implied, weighted across venues.
+A unified, single-tick-resolution order book that stacks Binance spot, Binance perps, Bybit, OKX, and (where relevant) Coinbase depth side-by-side for the same underlying. Marcus uses this surface every minute during active trading because crypto price discovery is genuinely cross-venue: an iceberg printing on OKX five seconds ahead of Binance is the kind of edge his book is sized to capture.
+
+**What it shows.** Per price level, the depth contributed by each venue, color-coded. Aggregated total depth on each side. Imbalance ratio (bid notional vs ask notional within ±10bps, ±25bps, ±50bps). Iceberg-detection highlights when the same level keeps refilling. Spread-vs-mid for each venue so Marcus can see when one venue is leading or lagging.
+
+**Why he uses it.** Binance is his execution venue, but Bybit and OKX often move first on Asian-led flow, and Coinbase often moves first on US-spot-ETF flow. Watching aggregate depth tells him whether a Binance move is genuine cross-venue conviction or a thin local print he should fade. The aggregated view also informs his router: if Binance depth dries up at his target level, he'll route across venues (see Smart Order Router below).
+
+**Design principles.** Single-tick resolution — no rounding bins. Venue color-coding consistent across every surface in the terminal. Latency badge per venue (last book-update age in ms) — stale venues are visually de-weighted so he doesn't trade against a frozen feed.
+
+### Funding-rate heatmap & term structure
+
+Funding is the single most important crypto-native sentiment signal for a perp trader, and it is the leg of Marcus's basis trade. He needs both the **current** state and the **term structure**.
+
+**What it shows.** A two-pane surface. The heatmap is rows=instruments (BTC, ETH, SOL, top-50 perps), columns=venues (Binance, Bybit, OKX, dYdX, Hyperliquid). Cell color = current funding rate, with a z-score overlay (green/red intensity = how extreme vs that pair's 30-day distribution). The term-structure pane shows, per asset, the implied funding curve: current 8h rate, next-8h-implied (from basis), 24h-implied, 7d-implied — annualized to bps.
+
+**Why he uses it.** Extreme positive funding = crowded longs = setup for a long squeeze. Extreme negative funding on a venue Bybit/OKX while Binance prints near zero = a cross-venue arb (long Bybit perp, short Binance perp, collect the funding spread). The term structure tells him whether a one-off 8h spike is mean-reverting or whether the market is pricing sustained pressure.
+
+**Design principles.** Z-score, not raw rate, drives color — raw funding ranges differ per asset and per regime, so a uniform color scale would mislead. Click any cell to drill into a venue/instrument-specific funding history chart. Alerts integrate with the [Alerts Engine](common-tools.md#14-alerts-engine).
+
+### Liquidation heatmap
+
+A predictive-magnets view: where do leveraged positions cluster, and at what price will they cascade? Crypto markets hunt liquidations — knowing where the clusters sit is half the trade.
+
+**What it shows.** A price-vs-cumulative-leveraged-notional histogram, per asset, per venue. Long-cluster magnitudes shaded one color (e.g. red, "longs liquidated below"), shorts the opposite (e.g. green, "shorts liquidated above"). Overlay-able onto the primary chart so the lines sit at the right price levels. Real-time updates as OI changes. Aggregated view across Binance, Bybit, OKX is the default; per-venue toggle for diagnosis.
+
+**Why he uses it.** When price approaches a $200M long-cluster at 68k and momentum is weak, Marcus knows market-makers will press it — the cascade is mechanical, not narrative. He'll either get out of the way or get short ahead of it. Conversely, a price level with no clusters near it has no magnetic pull; momentum trades there are higher-friction.
+
+**Data source.** Synthesized from venue-published liquidation feeds plus inferred clustering models that back-out leverage distribution from OI + funding + open-position-size proxies. Acknowledges model uncertainty — clusters are estimates, shown with confidence shading.
+
+**Design principles.** Direction is unambiguous (color). Size is to scale (a $50M cluster looks materially smaller than a $500M one). The heatmap is never the only reason to take a trade — it is a contextual layer on the chart.
+
+### Open-interest delta dashboard
+
+Open interest combined with price action is how Marcus reads whether a move is _new money_ or _short covering_ — a question that changes the trade entirely.
+
+**What it shows.** Per asset, per venue: OI now, OI 1h / 4h / 24h ago, OI delta in absolute and %. A stacked-area chart of OI history. A diagnostic quadrant: price up + OI up = new longs (sustainable); price up + OI down = short covering (rally is fragile); price down + OI up = new shorts (downtrend has fuel); price down + OI down = long capitulation (often a bottom signal).
+
+**Why he uses it.** It's the cleanest signal for "how much conviction is behind this move." A 5% rally on falling OI is a fade. A 5% rally on rising OI plus rising funding is a momentum entry — but if funding goes too extreme, he flips to fading.
+
+**Design principles.** Diagnostic quadrant is the default front-and-center read; raw numbers are the drill-down. Per-venue breakdown matters because Bybit OI behavior differs from Binance OI behavior structurally — aggregating without disclosing the split would hide signal.
+
+### Spot–perp basis & dated-futures term structure
+
+Basis is the crypto fixed-income trade. Marcus runs basis trades as a meaningful share of his book — he is not just _aware_ of basis, he _trades_ it. So basis is a first-class instrument surface for him, not a derived analytic.
+
+**What it shows.** Two integrated views.
+
+- **Spot–perp basis grid.** Rows=assets, columns=venues. Cells display current basis in bps and annualized. Z-score shading vs 30-day distribution. Click a cell to open the historical basis chart with funding annotations.
+- **Dated-futures term structure.** For each underlying with dated futures (BTC, ETH on Binance and CME), a curve plot of Mar / Jun / Sep / Dec contracts vs spot, expressed as annualized basis. Overlay the previous day's curve to see steepening / flattening intraday. CME and Binance curves on the same axes so he can spot dislocation.
+
+**Why he uses it.** The basis is the leg of a delta-neutral trade — it pays him to hold spot and short perp (or short spot and long dated future) when basis is rich. He sizes basis trades by capital-at-risk, not by "view" — so a clear, low-noise basis surface is operationally critical.
+
+**Design principles.** Annualized bps everywhere — apples to apples across maturities. Funding curve overlaid on the perp basis chart since they're economically the same trade in different clothing. CME futures get equal billing with crypto-native venues because CME basis is its own opportunity set when on-chain ETFs distort flows.
+
+### Whale tape
+
+Every large print on every venue, in real time, with metadata.
+
+**What it shows.** A scrolling tape of trades >$1M (configurable threshold). Per row: timestamp (ms-precision), venue, instrument, side, size, price, aggressor (taker side). Color-coded by venue. Filterable by asset, venue, size bucket, aggressor side. A small inline sparkline shows price for the surrounding 60 seconds so Marcus can see whether the whale led or chased.
+
+**Why he uses it.** Whales leak. A series of $5M aggressor-buys on Binance perp BTC followed 30 seconds later by similar prints on OKX is rarely coincidence — it's one fund moving size across venues, and Marcus wants to be in front of leg three. The whale tape is also his early-warning for liquidation cascades: a single $20M aggressor sell into thin depth often is the cascade trigger.
+
+**Design principles.** Latency is the feature — if the tape is even 2 seconds delayed, the signal is dead. Aggressor side must be reliable (some venues' tapes are ambiguous; the terminal's enrichment logic is shown when hovering for transparency). De-dupe across venues for the same arbitraged trade if the venue API supports it; otherwise show both with a "co-arrived" badge.
+
+### CVD per venue and aggregated
+
+Cumulative volume delta — sum of (aggressor-buy size − aggressor-sell size) over a window — is Marcus's flow-direction read.
+
+**What it shows.** A line chart per asset: CVD plotted alongside price. Per-venue lines (Binance, Bybit, OKX) plus an aggregated line. Divergences are visually called out (price new high but CVD lower high → sellers absorbing, exhaustion likely). Window is configurable: 5m / 15m / 1h / session.
+
+**Why he uses it.** Price tells him _what_ happened; CVD tells him _who_ caused it. A grinding rally with strong positive CVD is buyers in control. A rally with flat or negative CVD is short-covering or thin liquidity — and he treats those rallies as suspect. Per-venue CVD also exposes when one venue is doing the heavy lifting (often a tell for who the marginal buyer/seller is, e.g. Asian retail on Bybit vs US institutional on Coinbase).
+
+**Design principles.** Tied to the [Multi-Timeframe Charting](common-tools.md#1-multi-timeframe-charting) framework as an indicator overlay; opens as a dedicated panel below the price pane. Per-venue lines are toggleable; default-on for Binance, default-off for the rest until he turns them on. The aggregator weighting is exposed (volume-weighted by default).
+
+### Footprint chart
+
+Bid/ask volume per candle, rendered _inside_ each candle as a two-column histogram. Marcus uses this for short-horizon entries when he's already decided direction and is timing the actual click.
+
+**What it shows.** Each candle is split into price levels; at each level, the volume traded on the bid vs the ask is shown side-by-side. Aggregated delta per candle (signed sum) shown as a band below. Imbalance highlighting (e.g. >3:1 ask:bid at a level prints in bold) flags absorption and exhaustion patterns.
+
+**Why he uses it.** Standard candles compress information that matters. A green candle that closed near its high but had heavy bid-side absorption is a different trade from a green candle with continuous ask-side initiation — same close, opposite implication. For entries at key levels (volume profile high-volume node, liquidation cluster edge), the footprint tells him whether the level is holding or breaking.
+
+**Design principles.** Performant rendering — the footprint can render thousands of price-volume cells per visible chart, so virtualization and zoom-aware aggregation are non-negotiable. Coexists with the standard candle view; Marcus toggles between them with a hotkey, not a settings menu. Tick-aggregation rules (1-tick / 5-tick / 10-tick footprint) are saved per instrument-class.
+
+### Cross-instrument context dashboard
+
 - **Options term structure & smile** — Deribit IV by tenor, 25-delta risk reversals (skew), butterflies (kurtosis), DVOL.
 - **Cross-asset correlations** — BTC-ETH, BTC-SOL, BTC-SPX, BTC-DXY rolling correlation panel.
 - **Stablecoin flows** — USDT/USDC mint/burn, exchange inflows. Indicates dry powder.
 
+This dashboard is Marcus's second-most-glanced surface (after the primary chart). Its layout is fixed; only the content updates.
+
 ### Macro and on-chain
 
 - **Macro tickers always visible** — DXY, US 10Y yield, SPX futures, gold, oil, VIX, MOVE.
-- **Economic calendar** — CPI, FOMC, NFP highlighted with countdown timers.
 - **On-chain dashboard** — exchange netflows, miner outflows, stablecoin supply, ETH staking flows, ETF flows (spot BTC/ETH ETFs).
 - **Whale alert feed** — large on-chain transfers, especially to/from exchanges.
 
-### Sentiment
+### Catalyst calendar
 
-- **Funding-as-sentiment proxy** — extreme positive funding = crowded longs.
-- **Long/short ratios** per venue.
-- **Options put/call ratio and 25-delta skew** as fear/greed proxies.
-- **Social** — curated Twitter/X list, fear & greed index, Santiment-style social volume.
+See [Catalyst / Event Calendar](common-tools.md#12-catalyst--event-calendar) for the shared event-calendar framework.
 
-### Scanners
+**Marcus-specific characteristics:**
 
-- **Outlier scanner** — coins moving >3σ on volume, funding spiking, OI exploding.
-- **Basis / funding arb scanner** — where is the spot-perp or perp-dated basis abnormal?
-- **Options flow scanner** — unusual option size, IV moves, gamma walls.
+- CPI, FOMC, NFP, and crypto-native events (token unlocks, ETF decisions, exchange listings) all surface in one calendar with countdown timers.
+- Each event has a "historical reaction" annotation (BTC and ETH median move ±N hours around prior instances of the same event class).
+- Funding-reset events (8h Binance, 1h Bybit) are pinned as recurring events; he times exits around them.
+
+### News & research
+
+See [News & Research Feed](common-tools.md#13-news--research-feed) for the shared news framework.
+
+**Marcus-specific characteristics:**
+
+- Premium feeds prioritized (Bloomberg crypto, The Block premium, Coindesk pro, Velo).
+- Keyword alerts route to the [Alerts Engine](common-tools.md#14-alerts-engine) (e.g. "ETF approval", "exchange hack", "exploit", "depeg").
+- On-chain whale-alert feed and social sentiment (curated X list, Santiment) are sub-tabs in the same surface.
+
+### Sentiment & scanners
+
+- **Sentiment proxies.** Funding-as-sentiment (extreme = crowded), long/short ratios per venue, options put/call ratio and 25-delta skew, fear & greed index.
+- **Outlier scanner.** Coins moving >3σ on volume, funding spiking, OI exploding.
+- **Basis / funding arb scanner.** Where is the spot-perp or perp-dated basis abnormal?
+- **Options flow scanner.** Unusual option size, IV moves, gamma walls.
 
 **Layout principle:** primary chart and the cross-instrument context dashboard are the two most-glanced surfaces. Everything else is consultable but not always foveal.
 
@@ -107,54 +195,78 @@ He uses Binance because of liquidity, but he routes orders programmatically via 
 
 A custom terminal beats Binance's UI by an order of magnitude here.
 
-### Order entry ticket — multi-leg native
+### Order entry ticket
 
-- **Multi-leg tickets.** Build a single ticket: "long 100 BTC spot, short 100 BTC perp" — submit both legs atomically with leg-level slippage tolerances.
-- **Bracket orders native** — entry + stop + multiple take-profits, with partial-fill rules.
-- **OCO and trailing stops** — server-side preferred (less latency risk than client-side simulated).
-- **Time-in-force and post-only** — he uses post-only constantly to earn rebates; the ticket defaults to post-only and warns if removed.
-- **Reduce-only flag** for perp exits — prevents accidental position flips.
-- **Pre-trade preview shows:**
-  - Margin impact (initial + maintenance).
-  - Resulting position size and avg entry.
-  - Resulting greeks (if options leg).
-  - Resulting net exposure on the book (delta, by asset).
-  - Estimated slippage and market impact based on current depth.
-  - Estimated fees (maker vs taker, with VIP tier applied).
-  - Liquidation price after fill.
+See [Order Entry Ticket Framework](common-tools.md#2-order-entry-ticket-framework) for the shared multi-leg, bracket-capable, post-only-default ticket framework.
 
-### Execution algos (built in-house)
+**Marcus-specific characteristics:**
 
-- **VWAP / TWAP** with custom participation curves.
-- **POV (percentage of volume).**
-- **Iceberg** — show 5% of size, refresh logic configurable.
-- **Sniper / liquidity-seeking** — sits passive, crosses only when conditions met.
-- **Implementation shortfall** — minimizes total cost vs arrival price.
-- **Cross-venue smart router** — even though Binance is primary, can sweep Bybit/OKX if Binance depth is poor and policy allows.
+- Multi-leg atomic submission for spot+perp basis trades is the **default** mode, not an edge case — the ticket opens with two legs by default for any asset that has both spot and perp.
+- Post-only is the default time-in-force; the ticket warns when removed (he relies on rebates).
+- Reduce-only is the default flag for any perp exit (prevents accidental position flips).
+- Greeks impact preview activates when an options leg is included (delta / gamma / vega / theta change to the book).
+- Funding-cost projection appears in the preview for any perp leg held > 8h.
+
+### Pre-trade risk preview
+
+See [Pre-Trade Risk Preview](common-tools.md#3-pre-trade-risk-preview) for the shared margin / liquidation / fee / slippage preview.
+
+**Marcus-specific characteristics:**
+
+- Liquidation price is shown _per leg_ for cross-margin perp positions — and the aggregate liquidation distance for the whole basis trade.
+- Estimated slippage is computed against the **aggregated** cross-venue book, not just Binance — so he can see whether a sweep will help.
+- Fees shown reflect his VIP tier (maker rebate / taker discount) explicitly.
+
+### Execution algos
+
+See [Execution Algos Library](common-tools.md#4-execution-algos-library) for the shared VWAP / TWAP / POV / Iceberg / Sniper / IS algo set.
+
+**Marcus-specific characteristics:**
+
+- All algos are crypto-tuned: 24/7 operation, no session-close logic, weekend-aware participation curves.
+- Iceberg refresh logic is randomized within configurable bounds (anti-detection).
+- Algos can be configured to **respect funding-rate windows** — e.g. don't be aggressive in the 30 seconds before a funding settlement.
+
+### Smart order router / multi-venue aggregation
+
+See [Smart Order Router / Multi-Venue Aggregation](common-tools.md#5-smart-order-router--multi-venue-aggregation) for the shared cross-venue routing framework.
+
+**Marcus-specific characteristics:**
+
+- Binance is the default venue with strong preference; the router only sweeps Bybit/OKX when Binance depth at the target level is materially worse and policy allows.
+- Per-venue API-credential and rate-limit headroom is enforced (rate-limit indicator visible inline).
+- Venue-specific algo extensions: e.g. Bybit-conditional orders, OKX algo-orders are first-class options when the router selects those venues.
 
 ### DOM / ladder
 
-- **Aggregated multi-venue ladder** — Binance + Bybit + OKX depth stacked, with venue color-coding.
-- **Click-to-trade** at any price level.
-- **Iceberg detection** highlighted.
-- **Footprint inside the ladder** — recent volume traded at each level.
+The aggregated multi-venue ladder is built on the [Aggregated CeFi cross-venue depth book](#aggregated-cefi-cross-venue-depth-book). The ladder layers click-to-trade, iceberg detection, and inline footprint volume at each level on top of that data. The ladder is what Marcus uses for time-critical clicks; the depth book is what he uses for analysis.
 
 ### Hotkeys
 
-- Buy/sell at bid/ask.
-- Flatten current instrument.
-- Cancel all working orders on current instrument.
-- Reverse position.
-- Move all working stops to breakeven.
-- Toggle reduce-only.
-- **Kill switch** — special key combo, requires confirmation.
+See [Hotkey System](common-tools.md#6-hotkey-system) for the shared hotkey framework.
 
-### Order management
+**Marcus-specific characteristics:**
 
-- **Working orders shown inline on the chart** as draggable lines. Drag to move price. Right-click to cancel.
-- **Position marker on chart** with avg-price line, liquidation line, stop/target lines.
-- **Latency indicator** — round-trip ms to Binance, color-coded.
-- **Rate-limit indicator** — how close to the per-minute API limit.
+- Buy/sell at bid/ask and flatten-current-instrument are the most-bound keys.
+- "Reverse position" is bound (rare for other archetypes; common for him because basis trades flip).
+- "Move all working stops to breakeven" is one chord.
+- Toggle reduce-only is hotkey-bound.
+- Kill-switch combo is intentionally awkward (modifier + key) and requires confirmation.
+
+### Order management on chart
+
+- Working orders shown inline on the chart as draggable lines. Drag to move price. Right-click to cancel.
+- Position marker on chart with avg-price line, liquidation line, stop/target lines.
+
+### Latency / connectivity panel
+
+See [Latency / Connectivity / Infra Panel](common-tools.md#18-latency--connectivity--infra-panel) for the shared latency/health framework.
+
+**Marcus-specific characteristics:**
+
+- Round-trip ms to Binance is the headline metric, color-coded.
+- Rate-limit headroom (% of per-minute API quota consumed) is always visible — exceeding limits during active trading is unacceptable.
+- WebSocket health per venue (last message age, reconnect count) is a peripheral indicator.
 
 **Layout principle:** order ticket and DOM adjacent to primary chart. Hotkey execution is the default; clicking is for non-time-critical orders.
 
@@ -166,69 +278,92 @@ This is where a multi-instrument crypto trader's terminal differs most from a si
 
 ### Positions blotter — aggregated by underlying
 
-A flat list of positions is useless when one underlying has spot + perp + dated future + options legs. Marcus needs:
+See [Positions Blotter](common-tools.md#7-positions-blotter) for the shared positions framework.
 
-- **Aggregated view per underlying** — e.g.
-  _"BTC: net delta +$4.2M, net gamma +$80k/$, theta –$12k/day, vega +$45k, financing –$8k/day."_
-- **Drill-down to legs** — click BTC, see all the spot/perp/future/option positions making up that aggregate.
-- **Per-leg detail** — instrument, side, size, avg price, mark, unrealized PnL, funding accrued (perps), basis PnL (futures), greeks (options).
-- **Liquidation prices** for leveraged legs, with **distance to liquidation** in % and in standard deviations of recent realized vol.
-- **Margin breakdown** — cross vs isolated, initial vs maintenance, free margin remaining.
+**Marcus-specific characteristics:**
+
+- Default grouping is **by underlying**, not flat — e.g. _"BTC: net delta +$4.2M, net gamma +$80k/$, theta –$12k/day, vega +$45k, financing –$8k/day."_ — and drill-down shows the spot/perp/future/option legs.
+- Per-leg fields include funding accrued (perps), basis PnL (futures), greeks (options), distance to liquidation in % and in standard deviations of recent realized vol.
+- Margin breakdown per leg: cross vs isolated, initial vs maintenance, free margin remaining.
+- A flat-leg view is one toggle away when he needs it (e.g. for venue-by-venue reconciliation).
 
 ### Working orders blotter
 
-- Grouped by instrument.
-- Modifiable inline (drag price, type new size, hit enter).
-- Cancel-all per instrument and globally.
-- **Working bracket children visualized** — see which stops/targets belong to which entry.
+See [Working Orders Blotter](common-tools.md#8-working-orders-blotter) for the shared working-orders framework.
+
+**Marcus-specific characteristics:**
+
+- Grouped by instrument, with bracket children visualized hierarchically (which stops/targets belong to which entry).
+- Inline-modifiable (drag price, type new size, hit enter); cancel-all per instrument and globally.
 
 ### Live PnL
 
-- **Total PnL today** — realized + unrealized, broken into spot, perp funding, basis, options theta/vega/gamma realized.
-- **Equity curve intraday** — sparkline of mark-to-market.
-- **PnL by underlying.**
-- **PnL by strategy tag** — directional, basis arb, vol short, calendar.
+See [Live PnL Panel](common-tools.md#9-live-pnl-panel) for the shared live-PnL framework.
+
+**Marcus-specific characteristics:**
+
+- PnL decomposition is **crypto-native**: spot directional, perp directional, perp funding accrued, basis PnL, options theta / vega / gamma realized.
+- PnL by underlying and by strategy tag (directional / basis arb / vol short / calendar) are first-class slices.
+- Intraday equity-curve sparkline is the headline glance.
 
 ### Risk panel — multi-dimensional
 
-- **Net delta per asset** ($ and notional).
-- **Gross exposure** (sum of absolutes) — important for leverage limits.
-- **Beta-weighted to BTC** — book as "equivalent BTC delta."
-- **Greeks book-wide** — gamma, vega, theta, rho-funding (sensitivity to funding rate).
-- **Stress scenarios** — pre-computed grid (BTC ±5/10/20%, IV ±20%).
-- **Concentration warnings** — "your top 3 positions are 80% of risk."
-- **Correlation cluster risk** — "you're long 6 L1s; this is one bet, not six."
-- **Margin utilization** with warning thresholds.
-- **Funding cost projection** — at current rates, perps cost $X over next 8h, $Y over 24h.
+See [Risk Panel (Multi-Axis)](common-tools.md#10-risk-panel-multi-axis) for the shared risk framework.
+
+**Marcus-specific characteristics:**
+
+- Net delta per asset ($ and notional) and beta-weighted-to-BTC ("equivalent BTC delta") are headline metrics.
+- Greeks book-wide: gamma, vega, theta, **rho-funding** (sensitivity to funding rate — crypto-native, not a generic risk axis).
+- Concentration warnings: "your top 3 positions are 80% of risk."
+- Correlation cluster risk: "you're long 6 L1s; this is one bet, not six."
+- Funding cost projection: at current rates, perps cost $X over next 8h, $Y over 24h.
+
+### Stress / scenario panel
+
+See [Stress / Scenario Panel](common-tools.md#11-stress--scenario-panel) for the shared scenario framework.
+
+**Marcus-specific characteristics:**
+
+- Pre-computed grid: BTC ±5/10/20%, IV ±20%, funding ±100bps annualized.
+- Per-scenario margin call check: does any leg get liquidated under this scenario?
 
 ### Alerts
 
-- **Price alerts** — multi-condition, per instrument.
-- **PnL alerts** — daily drawdown, position drawdown.
-- **Funding alerts.**
-- **Basis alerts.**
-- **Liquidation-cluster alerts** — "$200M of longs cluster at 68k, price approaching."
-- **Volatility alerts** — "BTC realized 1h vol just spiked to 2σ."
-- **News alerts** — keyword-based on premium news feeds.
-- **Connection / API alerts** — WebSocket dropped, REST latency >500ms, rate-limit at 80%.
+See [Alerts Engine](common-tools.md#14-alerts-engine) for the shared alerts framework.
+
+**Marcus-specific characteristics:**
+
+- Crypto-native alert types are first-class: funding alerts, basis alerts, liquidation-cluster proximity ("$200M of longs cluster at 68k, price approaching"), volatility-regime alerts ("BTC realized 1h vol just spiked to 2σ").
+- Connection / API alerts (WebSocket dropped, REST latency >500ms, rate-limit at 80%) route through the same engine but to a peripheral banner so they don't compete with trade alerts.
 
 ### Trade journal
 
-- Inline note capture per position: thesis, invalidation, plan.
-- Auto-tagging by strategy.
-- Linkable to chart snapshots at entry time.
+See [Trade Journal](common-tools.md#15-trade-journal) for the shared journal framework.
+
+**Marcus-specific characteristics:**
+
+- Inline note capture per position with thesis / invalidation / plan template.
+- Auto-tagged by strategy (directional / basis / vol / calendar).
+- Linkable to chart snapshots at entry time (same chart layers active when he revisits).
 
 ### Heatmap of own book
 
+See [Heatmap of Own Book](common-tools.md#16-heatmap-of-own-book) for the shared book-heatmap framework.
+
+**Marcus-specific characteristics:**
+
 - Treemap sized by gross exposure, colored by intraday PnL %.
-- Glance and know what's working and what's bleeding.
+- Drill-down respects the by-underlying grouping (BTC tile contains spot/perp/future/option sub-tiles).
 
-### Kill switch
+### Kill switches
 
-- **Flatten all positions** — confirmation required. Issues market or aggressive limit orders across all legs.
-- **Cancel all working orders** — instant, no confirmation.
-- **Pause all algos** — stops in-flight execution algos.
-- Three separate buttons; one must not trigger the others by accident.
+See [Kill Switches (Granular)](common-tools.md#19-kill-switches-granular) for the shared kill-switch framework (flatten-all, cancel-all, pause-all-algos, with confirmations and audit trail).
+
+**Marcus-specific characteristics:**
+
+- Three separate buttons; one must not trigger the others by accident (physical layout rule).
+- Flatten-all uses aggressive limit orders by default (not market) — markets in thin alts can move 5% on a flatten if not bounded.
+- Cancel-all is no-confirmation, instant; the other two require confirmation.
 
 **Layout principle:** positions, PnL, and risk panel are most-glanced. The chart of the active trade is contextual. Alerts are peripherally visible (corner banner) without being intrusive.
 
@@ -240,56 +375,75 @@ Different cognitive mode, often a different tab or a different session at end-of
 
 ### Trade history & blotter
 
-- Every fill, with venue, instrument, side, size, price, fee (maker/taker), strategy tag, parent order ID.
-- Filterable by date range, instrument, strategy, tag.
-- Group by parent order to reconstruct execution quality.
+See [Trade History / Blotter (Historical)](common-tools.md#21-trade-history--blotter-historical) for the shared historical-blotter framework.
+
+**Marcus-specific characteristics:**
+
+- Every fill carries venue, instrument, side, size, price, fee (maker/taker), strategy tag, parent order ID.
+- Group by parent order to reconstruct execution quality across the venues a smart-router sweep touched.
 
 ### PnL attribution
 
-- **By instrument class** — spot, perp directional, perp funding, basis, options theta, options vega, options gamma scalping.
-- **By underlying** — BTC vs ETH vs alts.
-- **By strategy tag** — directional vs arb vs vol.
-- **By time of day / day of week / market regime** — Asia vs US session, weekend vs weekday, trending vs chop.
+See [PnL Attribution (Multi-Axis)](common-tools.md#22-pnl-attribution-multi-axis) for the shared attribution framework.
+
+**Marcus-specific characteristics:**
+
+- Instrument-class axis is crypto-native: spot, perp directional, perp funding, basis, options theta, options vega, options gamma scalping.
+- Underlying axis (BTC vs ETH vs alts) and strategy-tag axis (directional vs arb vs vol) are first-class.
+- Regime axis: Asia vs US session, weekend vs weekday, trending vs chop.
 
 ### Performance metrics
 
-- Win rate, avg win/loss, expectancy, profit factor.
-- Sharpe, Sortino, Calmar.
-- Max drawdown, max time underwater.
-- All sliced by strategy and regime.
+See [Performance Metrics](common-tools.md#23-performance-metrics) for the shared metrics framework.
+
+**Marcus-specific characteristics:**
+
+- All metrics sliced by strategy tag and regime; aggregate-only views are de-emphasized.
 
 ### Equity curve
 
-- Cumulative PnL with drawdown shading.
-- Compared against benchmarks (BTC buy-and-hold, BTC perp funding-only).
-- Rolling Sharpe (30/60/90 day).
+See [Equity Curve](common-tools.md#24-equity-curve) for the shared equity-curve framework.
+
+**Marcus-specific characteristics:**
+
+- Benchmarks are crypto-native: BTC buy-and-hold, BTC perp funding-only, basis-only carry.
+- Rolling Sharpe (30/60/90 day) is the headline diagnostic.
 
 ### Trade replay
 
-- Pick any historical trade. Replay the chart with all data layers (orderbook, funding, liquidations, his own orders) reconstructed at that moment. Scrub through the trade.
-- Requires a tick-level historical store — non-trivial — but expected at this tier.
+See [Replay Tool](common-tools.md#20-replay-tool) for the shared replay framework.
+
+**Marcus-specific characteristics:**
+
+- Replay reconstructs orderbook, funding, liquidations, and his own working orders at tick resolution — all data layers he had live at decision time, available for retrospect.
+- Tick-level historical store across Binance/Bybit/OKX is required (non-trivial; expected at this tier).
 
 ### Execution quality / TCA
 
+See [Execution Quality / TCA](common-tools.md#25-execution-quality--tca-transaction-cost-analysis) for the shared TCA framework.
+
+**Marcus-specific characteristics:**
+
 - Per parent order: arrival price, VWAP during execution, final fill price, slippage vs arrival, slippage vs VWAP.
-- Maker vs taker ratio, fees paid, rebates earned.
-- Sliced by venue, by algo type, by size bucket.
-- Example finding: _"My VWAP algo is leaving 4bps on the table for orders >$5M; investigate."_
+- Maker vs taker ratio and rebates earned are tracked against his VIP-tier expectations.
+- Sliced by venue — so cross-venue sweeps are evaluable per-venue, not just in aggregate.
 
 ### Behavioral analytics
 
-- Time-in-position distribution.
-- Overtrading days flagged (trades > 2× daily average).
-- Revenge-trade detection (large size shortly after a loss).
-- Discipline metrics — % of trades that hit pre-defined stop vs got moved.
+See [Behavioral Analytics](common-tools.md#26-behavioral-analytics) for the shared behavioral framework.
+
+**Marcus-specific characteristics:**
+
+- Time-in-position distribution is bimodal for him (intraday momentum vs multi-day basis); the analytics surface separates the two regimes rather than averaging across.
+- Revenge-trade detection (large size shortly after a loss) and discipline metrics (% of trades that hit pre-defined stop vs got moved) are the two metrics he checks weekly.
 
 ### Reports
 
-- Daily PnL report.
-- Monthly performance report (for risk, for the PM committee).
-- Compliance report (regulatory).
-- Client report (if running external capital).
-- All exportable, all schedulable.
+See [Reports](common-tools.md#27-reports) for the shared reports framework.
+
+**Marcus-specific characteristics:**
+
+- Daily PnL report, monthly performance report (for risk and the PM committee), regulatory compliance report, optional client report when running external capital. All exportable, all schedulable.
 
 **Layout principle:** big tables, big charts, drill-down. Not real-time. Persistent workspace state — when he comes back tomorrow, his filters and views are where he left them.
 

@@ -2,6 +2,7 @@
 
 A reference profile of a senior quant overseeing a fleet of automated trading strategies at a top-5 firm. Used as a yardstick for what an ideal terminal must support for the **systematic** side of the desk. This document deliberately avoids any reference to our current platform — it describes the **ideal world**.
 
+For shared surfaces every archetype uses, see [common-tools.md](common-tools.md).
 For the underlying four-phase trader workflow, see [manual-trader-workflow.md](manual-trader-workflow.md).
 For sister archetypes on the same desk, see the other `trader-archetype-*.md` files in this folder.
 
@@ -25,7 +26,7 @@ Quinn does **not** trade discretionarily. Her job is:
 - **Supervising** the live fleet — monitoring health, drift, capacity, regime fit; intervening when something is off.
 - **Allocating capital** across strategies based on rolling performance and correlation.
 
-Her edge is **process**, not market reading. The terminal must serve a research-and-control workflow, not a point-and-click trading workflow.
+Her edge is **process**, not market reading. The terminal must serve a research-and-control workflow, not a point-and-click trading workflow. Most "shared" surfaces are abstract for her — her trade ticket is rare, her chart is a strategy equity curve, her positions blotter rolls up by strategy ID. The primary surface is the strategy fleet dashboard.
 
 ### Her cognitive load
 
@@ -46,7 +47,7 @@ The hardest thing about Quinn's job is **scale of attention**. She can't watch 5
 
 Plus tablet for chat / news / desk coordination.
 
-She works **part-time at the desk**, part-time in the research environment. The terminal must transition cleanly between the two modes.
+She works **part-time at the desk**, part-time in the research environment. The terminal must transition cleanly between the two modes. See [#30 Customizable Layout](common-tools.md#30-customizable-layout--workspace) — Quinn's mode-switch is research ↔ live-supervision.
 
 ---
 
@@ -54,96 +55,51 @@ She works **part-time at the desk**, part-time in the research environment. The 
 
 For Quinn, "decide" is mostly **strategy-level**, not trade-level. The trades are decided by code; she decides which code runs at what size.
 
-### Strategy lifecycle stages
+### Strategy lifecycle stages (UNIQUE)
 
-The terminal must explicitly model where every strategy is in its lifecycle:
+Every strategy carries a stage tag everywhere it appears (positions, PnL, attribution, journal, kill): **Research** (offline backtests + walk-forward) → **Paper** (live data, simulated fills) → **Pilot** (real money, 1–5% of target) → **Live** (full target capital) → **Monitor** (capped, decay being measured) → **Retired** (archived, re-promotable). A first-class extension of the [tagging framework](common-tools.md#29-strategy-tagging-framework) — stage is not metadata, it's a state machine with promotion gates.
 
-- **Research:** offline only, backtests + walk-forward.
-- **Paper:** running live on real data, simulated fills.
-- **Pilot:** real money, capped at 1–5% of target size.
-- **Live:** at full target capital.
-- **Monitor:** running but capped, decay being measured.
-- **Retired:** code archived, can be re-promoted.
+### Research workspace (UNIQUE)
 
-Each strategy carries a stage tag everywhere it appears.
+The center of gravity for Phase 1, not a "tool" so much as an integrated environment:
 
-### Research workspace
+- **Notebook environment** — Jupyter-style, attached to the firm's data lake. One-click access to historical tick data, orderbook snapshots, on-chain history, fundamental data. Kernel runs against research compute, not her laptop.
+- **Backtest engine** — realistic execution simulation: slippage curves, fee schedules, latency model, partial fills, queue position estimation. _Not_ a toy backtester. Same execution code path as live, fed historical data instead of live feeds.
+- **Walk-forward validation framework** — out-of-sample by default, configurable splits (rolling / expanding / purged k-fold for time series), anti-overfitting checks (White's reality check, deflated Sharpe ratio, combinatorial purged CV).
 
-- **Notebook environment** integrated with the firm's data lake. One-click access to historical tick data, orderbook snapshots, on-chain history, fundamental data.
-- **Backtest engine** with realistic execution simulation — slippage, fees, latency, partial fills, queue position. _Not_ a toy backtester.
-- **Walk-forward validation framework** — out-of-sample by default, configurable splits, anti-overfitting checks (white's reality check, deflated Sharpe).
-- **Feature library** — searchable catalog of all features the firm has engineered, with metadata (cost to compute, freshness, owner, used-by).
-- **Model registry** — every model trained, versioned, with training data hash, hyperparameters, performance, and reproducibility guarantee.
-- **Experiment tracker** — every backtest run logged with full config, comparable side-by-side.
+### Feature library (UNIQUE)
 
-### Strategy promotion checklist
+A searchable catalog of every feature the firm has engineered. Per feature: **identity** (name, version, owner, source code link), **metadata** (description, computation cost in CPU-ms and $, update cadence — tick/1s/1m/EOD, freshness SLA), **lineage** (upstream raw sources, downstream dependent features), **used-by** (every live strategy currently consuming it — impact-of-change visible before deprecating), **distribution monitor** (rolling histogram, drift vs training distribution), and **quality** (null rate, outlier rate, recent incidents). Search by name, tag (price / volume / on-chain / sentiment / macro), owner, or used-by-strategy. New strategies start by browsing this catalog — feature reuse over re-engineering.
 
-Before a strategy moves stages, the terminal enforces:
+### Model registry & experiment tracker (UNIQUE)
 
-- Walk-forward Sharpe above threshold.
-- Drawdown profile within bounds.
-- Capacity estimate sanity check.
-- Correlation to live book within limit.
-- Code review sign-off.
-- Risk team sign-off.
-- Production deployment + monitoring + kill-switch wired.
+Every model trained, ever. Per entry: **version** (semantic version + content hash — same code + same data = same hash), **training data hash** (exact snapshot, reproducible), **hyperparameters** (full config, not just headlines), **code commit** of the training pipeline, **performance** (in-sample, out-of-sample, walk-forward, by regime), **reproducibility guarantee** (rerun-from-registry produces bit-identical model, or flagged drift if the data lake changed), **lineage** (parent if fine-tuned/retrained, children), **deployment status** (which versions are live where). The experiment tracker logs every backtest run with full config, comparable side-by-side, filterable by feature set / hyperparameter / regime / period. Failed experiments stay in the log — negative results are also data.
 
-This is a **promotion gate UI**, not a chat conversation.
+### Strategy promotion gate UI (UNIQUE)
+
+Before a strategy moves stages, the terminal enforces a **checklist** — not a chat conversation. Each gate is a binary check with evidence link: walk-forward Sharpe above threshold (with confidence interval); drawdown profile within bounds; capacity estimate sanity check (slippage curve fit); correlation to live book within limit; code review sign-off (PR link); risk team sign-off (David's archetype); production deployment + monitoring + kill-switch wired. Gate state, evidence, and approver identities are immutable once promoted (audit trail per [#28 Compliance](common-tools.md#28-compliance--audit-trail)).
 
 ### Market regime context
 
-Quinn cares about regime not to trade on it discretionarily, but to understand **which of her strategies should be working right now**. She watches:
-
-- Vol regime (BTC realized 30d, SPX VIX, MOVE).
-- Correlation regime (intra-crypto, crypto-equity).
-- Liquidity regime (bid-ask spreads, depth, on-chain TVL).
-- Macro regime (risk-on / risk-off proxy).
-
-Each regime indicator is mapped to **which strategies historically perform** in that regime — so she can pre-empt underperformance and intervene with sizing.
+Quinn cares about regime not to trade discretionarily on it, but to understand **which of her strategies should be working right now**. She watches: vol regime (BTC realized 30d, SPX VIX, MOVE), correlation regime, liquidity regime, macro risk-on/off. Each indicator is mapped to **which strategies historically perform** in that regime — pre-empt underperformance, intervene with sizing rather than wait for drawdown.
 
 ---
 
 ## Phase 2: Enter
 
-Quinn rarely enters trades manually. When she does, it's:
+Quinn rarely enters trades manually. The "enter" surface for her is an **operations console**, not an order ticket. Manual order entry exists as a fallback (see [#2 Order Ticket](common-tools.md#2-order-entry-ticket-framework)) but is deliberately friction-y so it's not the default — and when used, requires a mandatory reason field that tags the trade as a manual override on top of strategy ID.
 
-- **Manual override** of an automated strategy (pause, force-close).
-- **Capital allocation change** — increase/decrease size on a running strategy.
-- **Strategy promotion / demotion** — push from pilot to live, or live to monitor.
-- **Hot-fix deployment** — push an updated model version live.
+### Strategy control panel (UNIQUE — primary Phase 2 surface)
 
-The "enter" surface for her is therefore an **operations console**, not an order ticket.
+Per strategy: start / pause / stop with confirmation + audit trail; capital cap (slider/input, effective-immediately or scheduled); risk limits (max position, max daily loss, max drawdown — kill-on-breach); symbol whitelist/blacklist; schedule (active hours/days, blackout windows around macro events); mode (live / paper / shadow — runs code but doesn't send orders, compared to live). What Quinn touches dozens of times a day; it is to her what the order ticket is to Marcus.
 
-### Strategy control panel
+### Canary deployment & rollback surface (UNIQUE)
 
-Per strategy:
-
-- **Start / pause / stop** with confirmation and audit trail.
-- **Capital cap** — slider/input, with effective-immediately or scheduled change.
-- **Risk limits** — max position, max daily loss, max drawdown (kill-on-breach).
-- **Symbol whitelist / blacklist** — temporarily exclude an instrument.
-- **Schedule** — active hours / days, blackout windows around macro events.
-- **Mode** — live / paper / shadow (run code but don't send orders, compare to live).
-
-### Deployment surface
-
-- **Model version control** — every deployed model has a hash, trained-on commit, rolled-out timestamp.
-- **Canary deployment** — push a new version at 1% of size first, compare to incumbent for N days, then promote.
-- **Rollback** — one-click revert to previous version.
-- **Code-config separation** — non-code config changes (thresholds, sizing) deployable without rebuilds.
+Every model deployment goes through a canary path: push at 1% of target size for N days alongside the incumbent; side-by-side comparison (fills, PnL, slippage, signal correlation between canary and incumbent); promote (ramp canary to full size, retire incumbent); one-click rollback (revert to previous version, with the canary's positions absorbed or flattened per a documented rule). **Code-config separation:** non-code config changes (thresholds, sizing) are deployable without rebuilds but still versioned and canaried for high-risk parameters.
 
 ### Orchestration view
 
-- **Compute health** — CPU, RAM, GPU usage of strategy nodes.
-- **Data pipeline health** — feature computation lag, data freshness per source.
-- **Order router health** — order rates, reject rates, latency per venue.
-- **Connectivity** — venue connections, mempool nodes, oracle feeds.
-
-If any of this is degraded, Quinn needs to know before her strategies degrade.
-
-### Manual override ticket
-
-When she does intervene manually (rare), she gets a Marcus-style ticket — but with a mandatory **reason field** that tags the trade as a manual override on top of strategy ID. This tag carries through to attribution.
+Compute health (CPU / RAM / GPU per strategy node), data pipeline health (feature computation lag, freshness per source), order-router health (rates, rejects, latency per venue), connectivity (venues, mempool nodes, oracle feeds). If any of this is degraded, Quinn needs to know **before** her strategies degrade — these tie into [#18 Latency / Infra](common-tools.md#18-latency--connectivity--infra-panel) but the granularity is per-strategy-node, not per-venue-link.
 
 **Layout principle for Enter:** the strategy control panel is the most-used surface. Manual order entry is a fallback, deliberately friction-y so it's not the default.
 
@@ -153,74 +109,39 @@ When she does intervene manually (rare), she gets a Marcus-style ticket — but 
 
 This is where Quinn spends the most live time, and where the terminal must work hardest.
 
-### Strategy fleet dashboard (the master view)
+### Strategy fleet dashboard (UNIQUE — the master view)
 
-A table or grid with one row per strategy:
+A table/grid, one row per strategy, sortable and filterable. Per row: ID, name, stage, owner, **health badge** (green/amber/red composite), capital deployed/cap, PnL today/WTD/MTD/YTD ($ and % of cap), rolling 30d Sharpe, current and since-go-live drawdown, trade count today/yesterday (unusual silence is a signal), hit rate, avg trade $, **recent regime fit** indicator, **last intervention** (when, by whom).
 
-- **Strategy ID, name, stage, owner.**
-- **Health badge** — green / amber / red, computed from a composite of metrics.
-- **Capital deployed / cap.**
-- **PnL today / WTD / MTD / YTD** in $ and as % of cap.
-- **Sharpe rolling 30d.**
-- **Drawdown** — current, max-since-go-live.
-- **Trade count today / yesterday** (unusual silence is a signal).
-- **Hit rate, avg trade $.**
-- **Recent regime fit** — model-vs-regime indicator.
-- **Last intervention** — when was this strategy last touched, by whom.
+Click a row → strategy detail page: live equity curve, current positions (rolled up from [#7 Positions](common-tools.md#7-positions-blotter) filtered by strategy ID), live signal feed (signals generated, executed vs skipped, with reasons), feature health, drift indicators, capacity utilization, slippage realized vs assumed, full decisions log.
 
-Sortable, filterable, expandable. Click a row → strategy detail page.
+### Drift indicators per strategy (UNIQUE)
 
-### Strategy detail page
+Per live strategy, continuously computed: **feature drift** (KS-test or PSI on each input vs training distribution), **prediction drift** (KS-test on model output vs training), **label drift** (for strategies with measurable realized labels). Severity tiers: info / warn / critical (auto-pause candidate). **Drift breakdown** identifies which feature is contributing most; click through to feature distribution chart. Surfaces both as a fleet dashboard badge and as alerts ([#14 Alerts](common-tools.md#14-alerts-engine)) routed by severity.
 
-Per strategy:
+### Capacity utilization tracker (UNIQUE)
 
-- **Live equity curve** with drawdown shading.
-- **Position breakdown** — what is this strategy currently holding?
-- **Live signal feed** — recent signals generated, executed vs skipped, with reasons.
-- **Feature health** — are the features feeding this model fresh and within historical distribution?
-- **Drift indicators** — KS-test or PSI on features and predictions vs training distribution.
-- **Capacity utilization** — % of estimated capacity in use; degradation curve.
-- **Slippage realized vs assumed** — execution quality monitor, by venue.
-- **Recent decisions log** — every model output, executed or not, why.
+Per strategy: **% of estimated capacity in use** (derived from realized slippage vs the slippage curve fitted in research), **degradation curve** (actual slippage at current size vs projected), **headroom** (additional capital absorbable before slippage exceeds threshold), and **signal-skip rate** (when capacity is hit, fraction of signals dropped — a strategy at cap is _earning less than it could_). An underdeployed alpha is as important to know as a losing one.
 
 ### Anomaly / alert console
 
-Anomaly detection is the heart of Quinn's day. Alerts include:
+See [#14 Alerts](common-tools.md#14-alerts-engine). **Quinn-specific alert categories:** performance anomaly (rolling distribution 2σ/3σ), behavior anomaly (trade frequency / size / hit rate outside historical bounds), feature drift, prediction drift, execution anomaly (slippage / reject / fill-rate spike), capacity warning, correlation drift, regime mismatch, infra (node down, data lag, RPC degraded). Critical alerts auto-pause the strategy by default (unique policy — most archetypes' alerts only notify).
 
-- **Performance anomalies** — strategy underperforming its rolling distribution at 2σ / 3σ.
-- **Behavior anomalies** — trade frequency, position size, hit rate outside historical bounds.
-- **Feature drift** — input distribution shifted vs training.
-- **Prediction drift** — output distribution shifted.
-- **Execution anomalies** — slippage spike, rejection rate spike, fill rate drop.
-- **Capacity warnings** — strategy hitting size cap; signals being skipped.
-- **Correlation anomaly** — strategy starting to correlate with a strategy it was supposed to be uncorrelated with.
-- **Regime mismatch** — running an "uptrend" model in a "chop" regime.
-- **Infrastructure** — node down, data lag, RPC degraded.
+### Cross-strategy correlation matrix (UNIQUE)
 
-Each alert routed to severity (info / warn / critical) with paging rules. Critical alerts auto-pause the strategy by default.
-
-### Cross-strategy view
-
-- **Correlation matrix** — rolling 30d correlation between every pair of strategies.
-- **Aggregate Greeks** — net delta, gamma, vega across the entire fleet.
-- **Net exposure to common factors** — BTC beta, ETH beta, vol factor, momentum factor.
-- **Concentration check** — top-N strategies by risk contribution.
+Rolling 30d correlation between every pair of strategies in PnL space, with a **drift detector** that alerts when a previously uncorrelated pair starts correlating beyond threshold (often signals a shared latent factor newly active). Adjacent: **aggregate Greeks** (net delta, gamma, vega across the fleet — overlaps with [#10 Risk](common-tools.md#10-risk-panel-multi-axis) but rolled up by strategy contribution), **net factor exposure** (BTC beta, ETH beta, vol, momentum), and **concentration check** (top-N strategies by risk contribution).
 
 ### Capacity & allocation
 
-- **Optimal allocation suggestion** — model-driven (Markowitz / Kelly / risk-parity), updated nightly.
-- **Drift from optimal** — by how much current allocation deviates.
-- **Capacity headroom** — how much more capital each strategy could absorb based on slippage curves.
+Model-driven optimal allocation (Markowitz / Kelly / risk-parity) updated nightly, drift from optimal, capacity headroom by strategy.
 
 ### Kill switches
 
-- **Per-strategy kill** — stops one strategy.
-- **Group kill** — all strategies in a tier, or all on a venue.
-- **Fleet kill** — stop everything. Big red. Multi-confirmation.
+See [#19 Kill Switches](common-tools.md#19-kill-switches-granular). **Quinn-specific levels:** per-strategy kill, group kill (all strategies in a tier, or all on a venue), fleet kill (everything; multi-confirmation, big red).
 
 ### Trade journal — research notes form
 
-Quinn's "journal" is more like research notes attached to events. Every intervention, every alert acted on, every promotion is logged with rationale.
+See [#15 Trade Journal](common-tools.md#15-trade-journal). **Quinn-specific:** her journal is research notes attached to events, not per-trade. Every intervention, every alert acted on, every promotion is logged with rationale, attached to the strategy ID and (where applicable) the model version.
 
 **Layout principle for Hold:** anomaly-driven. The fleet dashboard is **green by default** when she walks in. Anything yellow or red gets her attention. She should never be reading numbers that look fine.
 
@@ -232,46 +153,31 @@ This is where Quinn lives most of her cognitive depth.
 
 ### Strategy retrospectives
 
-Per strategy, automatically generated weekly/monthly:
-
-- Performance vs expectation (out-of-sample distribution from research).
-- Drawdown decomposition — what went wrong, when.
-- Regime fit — % of period in favorable regime, performance per regime.
-- Capacity realized vs assumed.
-- Slippage realized vs assumed.
+Per strategy, automatically generated weekly/monthly: performance vs expectation (out-of-sample distribution from research), drawdown decomposition, regime fit (% of period in favorable regime, performance per regime), capacity realized vs assumed, slippage realized vs assumed. Distributed via [#27 Reports](common-tools.md#27-reports).
 
 ### Fleet attribution
 
-- **Total PnL decomposition** by strategy, by regime, by venue, by underlying.
-- **Risk-adjusted contribution** — which strategies actually contribute Sharpe vs which dilute.
-- **Marginal contribution** — what would the fleet Sharpe be without strategy X.
+See [#22 PnL Attribution](common-tools.md#22-pnl-attribution-multi-axis). **Quinn-specific axes:** by strategy, by regime, by venue, by underlying. **Risk-adjusted contribution** — which strategies actually contribute Sharpe vs which dilute. **Marginal contribution** — what would the fleet Sharpe be without strategy X.
 
 ### Model decay analysis
 
-- **Sharpe over time** per strategy with confidence intervals — is decay statistically significant?
-- **Half-life estimates** — how long does this alpha persist before halving.
-- **Feature importance over time** — features whose importance is shifting.
+Sharpe over time per strategy with confidence intervals (is decay statistically significant?), alpha half-life estimates, feature importance shifting over time.
 
-### Backtest vs live divergence
+### Backtest-vs-live divergence tracker (UNIQUE)
 
-- For every live strategy, the live performance vs the backtest expectation (point estimate + distribution).
-- Strategies tracking expectation: green.
-- Strategies underperforming: investigated.
-- Strategies overperforming: also investigated (look-ahead leak suspected).
+For every live strategy, live performance is continuously tracked against the backtest expectation. The walk-forward Sharpe distribution becomes the **tracking band**: green within expectation, amber below 1σ, red below 2σ. **Underperformers** are investigated for regime mismatch, capacity issues, execution degradation, or alpha decay. **Overperformers** are also investigated — suspected look-ahead leak, fortunate regime, or genuinely under-budgeted in research. **Divergence decomposition:** slippage vs assumed, fill rate vs assumed, signal hit rate vs assumed. The most important feedback loop into research priorities.
+
+### Strategy retire/promote decision log (UNIQUE)
+
+Append-only log of every promotion, demotion, and retire decision. Per entry: strategy ID + version, from-stage → to-stage, decision date, mandatory rationale + linked evidence (retrospective report, backtest comparison, decay analysis), decision-makers (Quinn + risk + any other approver per gate policy), capital impact and reallocation target, **post-decision tracking** (did the retired strategy keep decaying? did the promoted strategy perform as expected?). **Calibration metric over time** — when Quinn retired a strategy, how often was she right? — drives meta-improvement of the promotion gates.
 
 ### Research velocity metrics
 
-- Strategies promoted per quarter.
-- Average time research → live.
-- Hit rate of promoted strategies (still alive after 6 / 12 months).
-- Cost per researched-strategy (to manage research ROI).
+Strategies promoted per quarter, average time research → live, hit rate of promoted strategies (still alive after 6 / 12 months), cost per researched-strategy. ROI on research itself.
 
 ### Reports
 
-- **Weekly fleet review** for risk committee.
-- **Monthly performance and capacity report.**
-- **Strategy retire / promote decisions** with rationale.
-- **Research pipeline status.**
+See [#27 Reports](common-tools.md#27-reports). **Quinn-specific:** weekly fleet review for risk committee, monthly performance and capacity report, retire/promote decision log export, research pipeline status.
 
 **Layout principle for Learn:** workspace + drilldowns. Research mode is fundamentally different from live mode — different monitor, different mental state.
 
@@ -299,5 +205,6 @@ When evaluating any quant-supervision surface (including our own), walk through 
 - Can she trace any live trade to a strategy ID, model version, and feature snapshot?
 - Are her interventions friction-y enough that she defaults to letting the system run?
 - Is post-trade attribution multi-axis (strategy / regime / venue / underlying)?
+- Is backtest-vs-live divergence tracked continuously, not just at retro time?
 
 Gaps are not necessarily defects — they may be deliberate scope decisions — but they should be **known** gaps, not **accidental** ones.
