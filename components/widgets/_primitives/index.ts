@@ -25,6 +25,7 @@ export { CategoricalMatrix, type CategoricalMatrixProps, type CategoricalMatrixC
 export { ContinuousHeatmap, type ContinuousHeatmapProps, type ContinuousHeatmapPoint } from "./continuous-heatmap";
 export { FlowChart, type FlowChartProps, type FlowChartBucket } from "./flow-chart";
 export { DepthAreaChart, type DepthAreaChartProps, type DepthLevel } from "./depth-area-chart";
+export { MetricGauge, type MetricGaugeProps } from "./metric-gauge";
 export {
   RankingListPreset,
   type RankingListPresetProps,
