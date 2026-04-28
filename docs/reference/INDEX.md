@@ -33,6 +33,16 @@ Concise, link-driven indexes that synthesize across all 15 archetypes — useful
 
 ---
 
+## Automation Foundation
+
+The same trader, after their daily edge is encoded into models and rules running at scale. Where the manual archetype docs describe a senior trader at a desk; this doc describes the same trader as a hybrid domain-expert + ML-practitioner + portfolio-manager-of-their-own-edge.
+
+| Doc                                                  | What it covers                                                                                                                                                                                                                                                                                                                      |
+| ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [automation-foundation.md](automation-foundation.md) | The universal automated-trading platform — data layer, feature library, research workspace, model registry, strategy composition, lifecycle, capital allocation, fleet supervision, decay tracking, daily rhythm, what-stays-human. Per-archetype variations live in the "Automated mode" appendix of each `trader-archetype-*.md`. |
+
+---
+
 ## Crypto Desk
 
 | Persona           | Role                                                                                    | Doc                                                                                  |
@@ -119,4 +129,4 @@ Several principles show up in nearly every doc and are worth calling out at the 
 
 ## Status
 
-All 15 archetype docs + workflow doc are complete as of writing. They are **reference material** — they don't change as the platform evolves. When the platform evolves, **comparison docs** (still to be written) will sit alongside these to record gaps, plans, and progress against the ideal.
+All 15 archetype docs + the manual workflow doc + the automation foundation are complete as of writing. Per-archetype "Automated mode" appendices are being added next. These are **reference material** — they don't change as the platform evolves. When the platform evolves, **comparison docs** will sit alongside these to record gaps, plans, and progress against the ideal.
