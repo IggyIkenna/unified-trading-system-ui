@@ -266,8 +266,17 @@ export const DATA_TABS: ServiceTab[] = [
 ];
 
 // ── Build (Quant Developer) ──────────────────────────────────────────────────
+// 2026-04-28 DART tile-split: BUILD_TABS = chip set for the new DART Research
+// dashboard tile (DART-Full + admin only; padlocked-visible "locked" for
+// Signals-In). Lifecycle-stage grouping in service-tabs.tsx's TabRow renderer
+// uses the order below: Overview → Develop (Features / Feature ETL / Quant /
+// Strategies) → Train (Models) → Validate (Execution / Signals — surfaced
+// from previously-orphan path) → Allocate (Allocate Research) → Promote
+// chip lives separately under BUILD_TABS->Promote in the dashboard tile.
+// SSOT: codex/14-playbooks/dart/dart-terminal-vs-research.md.
 export const BUILD_TABS: ServiceTab[] = [
   { label: "Overview", href: "/services/research/overview" },
+  // ── Develop ─────────────────────────────────────────────────────────────
   {
     label: "Features",
     href: "/services/research/features",
@@ -278,22 +287,36 @@ export const BUILD_TABS: ServiceTab[] = [
     href: "/services/research/feature-etl",
     matchPrefix: "/services/research/feature-etl",
   },
-  {
-    label: "Models",
-    href: "/services/research/ml",
-    matchPrefix: "/services/research/ml",
-  },
+  { label: "Quant Workspace", href: "/services/research/quant" },
   {
     label: "Strategies",
     href: "/services/research/strategies",
     matchPrefix: "/services/research/strategies",
   },
+  // ── Train ───────────────────────────────────────────────────────────────
+  {
+    label: "Models",
+    href: "/services/research/ml",
+    matchPrefix: "/services/research/ml",
+  },
+  // ── Validate ────────────────────────────────────────────────────────────
   {
     label: "Execution",
     href: "/services/research/execution",
     matchPrefix: "/services/research/execution",
   },
-  { label: "Quant Workspace", href: "/services/research/quant" },
+  // 2026-04-28: surfaced /services/research/signals (previously orphan — page
+  // existed on disk but wasn't in any nav export; the only actual orphan per
+  // the codex SSOT audit, vs the wishlist 14 named in archived plans).
+  {
+    label: "Signals",
+    href: "/services/research/signals",
+    matchPrefix: "/services/research/signals",
+  },
+  // ── Allocate (Research) ────────────────────────────────────────────────
+  // Reserved for the restored allocator workbench (separate commit recovers
+  // _components/allocator-research-dashboard.tsx from dfc8c5ba^).
+  { label: "Allocate", href: "/services/research/allocate", matchPrefix: "/services/research/allocate" },
 ];
 
 /** ML Models — second row under Build, same visual style as Strategy sub-tabs */
