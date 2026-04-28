@@ -1,11 +1,15 @@
-import { Activity, BarChart3, Flame, Grid3x3, TrendingUp } from "lucide-react";
+import { Activity, BarChart3, Coins, Flame, Grid3x3, PieChart, Sparkles, TrendingDown, TrendingUp } from "lucide-react";
 import { registerPresets } from "../preset-registry";
 import { registerWidget } from "../widget-registry";
 import { BasisCurveWidget } from "./basis-curve-widget";
 import { FundingRateMatrixWidget } from "./funding-rate-matrix-widget";
+import { GainersLosersWidget } from "./gainers-losers-widget";
 import { LiquidationHeatmapWidget } from "./liquidation-heatmap-widget";
 import { LongShortRatioWidget } from "./long-short-ratio-widget";
+import { MarketCapRankingWidget } from "./market-cap-ranking-widget";
 import { OpenInterestRankingWidget } from "./open-interest-ranking-widget";
+import { TrendingTokensWidget } from "./trending-tokens-widget";
+import { VolumeDominanceWidget } from "./volume-dominance-widget";
 
 /**
  * CeFi widget registry — Coinglass / CoinMarketCap style cross-venue
@@ -125,4 +129,91 @@ registerWidget({
   availableOn: ["overview", "terminal", "markets"],
   singleton: false,
   component: BasisCurveWidget,
+});
+
+// ─── CoinMarketCap-style market discovery (P3 of DART terminal plan) ───────
+
+registerPresets("markets", [
+  {
+    id: "markets-cmc-discovery",
+    name: "Market discovery",
+    tab: "markets",
+    isPreset: true,
+    layouts: [
+      { widgetId: "cefi-market-cap-ranking", instanceId: "cefi-market-cap-ranking-1", x: 0, y: 0, w: 16, h: 10 },
+      { widgetId: "cefi-volume-dominance", instanceId: "cefi-volume-dominance-1", x: 16, y: 0, w: 8, h: 5 },
+      { widgetId: "cefi-trending-tokens", instanceId: "cefi-trending-tokens-1", x: 16, y: 5, w: 8, h: 5 },
+      { widgetId: "cefi-gainers-losers", instanceId: "cefi-gainers-losers-1", x: 0, y: 10, w: 24, h: 7 },
+    ],
+    createdAt: "2026-04-28T00:00:00Z",
+    updatedAt: "2026-04-28T00:00:00Z",
+  },
+]);
+
+registerWidget({
+  id: "cefi-market-cap-ranking",
+  label: "Market cap ranking",
+  description: "CoinMarketCap-style ranking with market cap, dominance, 24h volume, sparkline.",
+  icon: Coins,
+  minW: 8,
+  minH: 6,
+  defaultW: 16,
+  defaultH: 10,
+  requiredEntitlements: [{ domain: "trading-common", tier: "basic" }],
+  assetGroup: "CEFI",
+  catalogGroup: "Markets",
+  availableOn: ["overview", "terminal", "markets"],
+  singleton: false,
+  component: MarketCapRankingWidget,
+});
+
+registerWidget({
+  id: "cefi-gainers-losers",
+  label: "Gainers / Losers",
+  description: "Top 50 24h gainers + losers with two-tab toggle.",
+  icon: TrendingDown,
+  minW: 8,
+  minH: 5,
+  defaultW: 24,
+  defaultH: 7,
+  requiredEntitlements: [{ domain: "trading-common", tier: "basic" }],
+  assetGroup: "CEFI",
+  catalogGroup: "Markets",
+  availableOn: ["overview", "terminal", "markets"],
+  singleton: false,
+  component: GainersLosersWidget,
+});
+
+registerWidget({
+  id: "cefi-volume-dominance",
+  label: "Volume dominance",
+  description: "24h volume share by exchange + by chain (donut charts).",
+  icon: PieChart,
+  minW: 4,
+  minH: 4,
+  defaultW: 8,
+  defaultH: 5,
+  requiredEntitlements: [{ domain: "trading-common", tier: "basic" }],
+  assetGroup: "CEFI",
+  catalogGroup: "Markets",
+  availableOn: ["overview", "terminal", "markets"],
+  singleton: false,
+  component: VolumeDominanceWidget,
+});
+
+registerWidget({
+  id: "cefi-trending-tokens",
+  label: "Trending tokens",
+  description: "Ranked by 24h volume %change vs 7d average — early-mover signal.",
+  icon: Sparkles,
+  minW: 4,
+  minH: 4,
+  defaultW: 8,
+  defaultH: 5,
+  requiredEntitlements: [{ domain: "trading-common", tier: "basic" }],
+  assetGroup: "CEFI",
+  catalogGroup: "Markets",
+  availableOn: ["overview", "terminal", "markets"],
+  singleton: false,
+  component: TrendingTokensWidget,
 });

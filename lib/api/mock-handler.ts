@@ -6221,6 +6221,129 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       history,
     });
   }
+  if (route.startsWith("/api/market-data/market-cap-ranking")) {
+    const tokens: Array<[string, string]> = [
+      ["BTC", "Bitcoin"],
+      ["ETH", "Ethereum"],
+      ["USDT", "Tether"],
+      ["BNB", "BNB"],
+      ["SOL", "Solana"],
+      ["USDC", "USD Coin"],
+      ["XRP", "XRP"],
+      ["DOGE", "Dogecoin"],
+      ["ADA", "Cardano"],
+      ["TRX", "TRON"],
+      ["AVAX", "Avalanche"],
+      ["LINK", "Chainlink"],
+      ["TON", "Toncoin"],
+      ["DOT", "Polkadot"],
+      ["MATIC", "Polygon"],
+      ["NEAR", "NEAR Protocol"],
+      ["ATOM", "Cosmos"],
+      ["LTC", "Litecoin"],
+      ["UNI", "Uniswap"],
+      ["ARB", "Arbitrum"],
+    ];
+    let totalMcap = 0;
+    const raw = tokens.map(([sym, name], i) => {
+      const mcap = Math.round((1_400_000_000_000 - i * 50_000_000_000) * (0.6 + Math.random() * 0.6));
+      totalMcap += mcap;
+      return { sym, name, mcap, volume: mcap * (0.02 + Math.random() * 0.08) };
+    });
+    const items = raw.map(({ sym, name, mcap, volume }) => ({
+      symbol: sym,
+      name,
+      market_cap_usd: mcap,
+      volume_24h_usd: Math.round(volume),
+      change_24h: (Math.random() - 0.4) * 0.12,
+      change_7d: (Math.random() - 0.45) * 0.3,
+      dominance_pct: (mcap / totalMcap) * 100,
+      sparkline_7d: Array.from({ length: 28 }, () => mcap * (0.92 + Math.random() * 0.16)),
+    }));
+    return json({ items });
+  }
+  if (route.startsWith("/api/market-data/gainers-losers")) {
+    const universe: Array<[string, string]> = [
+      ["BTC", "Bitcoin"],
+      ["ETH", "Ethereum"],
+      ["SOL", "Solana"],
+      ["DOGE", "Dogecoin"],
+      ["AVAX", "Avalanche"],
+      ["ARB", "Arbitrum"],
+      ["MATIC", "Polygon"],
+      ["LINK", "Chainlink"],
+      ["UNI", "Uniswap"],
+      ["LTC", "Litecoin"],
+      ["INJ", "Injective"],
+      ["TIA", "Celestia"],
+      ["SUI", "Sui"],
+      ["APT", "Aptos"],
+      ["RNDR", "Render"],
+      ["SEI", "Sei"],
+      ["WLD", "Worldcoin"],
+      ["JUP", "Jupiter"],
+      ["PYTH", "Pyth"],
+      ["BONK", "Bonk"],
+    ];
+    const enriched = universe.map(([sym, name]) => {
+      const change = (Math.random() - 0.5) * 0.4;
+      const price = 50 + Math.random() * 5000;
+      return {
+        symbol: sym,
+        name,
+        price_usd: price,
+        change_24h: change,
+        sparkline_24h: Array.from({ length: 24 }, () => price * (1 + (Math.random() - 0.5) * Math.abs(change))),
+      };
+    });
+    enriched.sort((a, b) => b.change_24h - a.change_24h);
+    return json({ gainers: enriched.slice(0, 10), losers: enriched.slice(-10).reverse() });
+  }
+  if (route.startsWith("/api/market-data/volume-dominance")) {
+    const exchanges = ["Binance", "Coinbase", "OKX", "Bybit", "Upbit", "Kraken"];
+    const chains = ["Ethereum", "BSC", "Solana", "Tron", "Arbitrum", "Base"];
+    const sumTo100 = (n: number): number[] => {
+      const raw = Array.from({ length: n }, () => 0.5 + Math.random());
+      const sum = raw.reduce((a, b) => a + b, 0);
+      return raw.map((v) => (v / sum) * 100);
+    };
+    const ePct = sumTo100(exchanges.length);
+    const cPct = sumTo100(chains.length);
+    return json({
+      by_exchange: exchanges.map((name, i) => ({ name, volume_24h_usd: ePct[i] * 1_000_000_000, pct: ePct[i] })),
+      by_chain: chains.map((name, i) => ({ name, volume_24h_usd: cPct[i] * 1_000_000_000, pct: cPct[i] })),
+    });
+  }
+  if (route.startsWith("/api/market-data/trending-tokens")) {
+    const tokens: Array<[string, string]> = [
+      ["WIF", "Dogwifhat"],
+      ["JUP", "Jupiter"],
+      ["PYTH", "Pyth"],
+      ["TIA", "Celestia"],
+      ["INJ", "Injective"],
+      ["RNDR", "Render"],
+      ["SEI", "Sei"],
+      ["BONK", "Bonk"],
+      ["APT", "Aptos"],
+      ["SUI", "Sui"],
+      ["WLD", "Worldcoin"],
+      ["ARB", "Arbitrum"],
+    ];
+    const items = tokens.map(([sym, name]) => {
+      const avg7d = 100_000_000 + Math.random() * 500_000_000;
+      const today = avg7d * (1 + Math.random() * 4);
+      return {
+        symbol: sym,
+        name,
+        volume_24h_usd: Math.round(today),
+        volume_7d_avg_usd: Math.round(avg7d),
+        volume_change_pct: (today - avg7d) / avg7d,
+        sparkline_7d: Array.from({ length: 7 }, () => today * (0.5 + Math.random())),
+      };
+    });
+    items.sort((a, b) => b.volume_change_pct - a.volume_change_pct);
+    return json({ items: items.slice(0, 15) });
+  }
   if (route.startsWith("/api/market-data/tvl-by-chain")) {
     const chains = ["Ethereum", "Tron", "Solana", "BSC", "Arbitrum", "Base", "Optimism", "Polygon", "Avalanche", "Sui"];
     const items = chains.map((chain, i) => {
