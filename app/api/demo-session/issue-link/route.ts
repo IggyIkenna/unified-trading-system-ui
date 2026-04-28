@@ -154,13 +154,13 @@ export async function POST(request: Request) {
         paragraph(
           `${greeting ? `${greeting}, ` : ""}we've prepared a controlled demo session scoped to ${escapeHtml(
             personaLabel,
-          )}. The link below opens our platform in demo / UAT mode &mdash; mock data, scoped entitlements, mutating actions disabled, with a persistent &ldquo;Demo / UAT&rdquo; banner on every surface.`,
+          )}. The link below opens our platform in demo / UAT mode: mock data, scoped entitlements, mutating actions disabled, with a persistent &ldquo;Demo / UAT&rdquo; banner on every surface.`,
         ),
         primaryButton({ href: link, label: "Open your demo session" }),
         fallbackLink({ href: link }),
         callout({
           title: "What this is and isn't",
-          body: `<p style="margin:0 0 6px">It IS: the same surfaces our production clients use, configured for your evaluation. You can click around freely &mdash; no real client data is loaded.</p><p style="margin:0">It is NOT: production. No real account credentials, no withdrawal or destructive actions, no silent transition to production. Sign-up + onboarding happen separately after we agree the shape.</p>`,
+          body: `<p style="margin:0 0 6px">It IS: the same surfaces our production clients use, configured for your evaluation. You can click around freely: no real client data is loaded.</p><p style="margin:0">It is NOT: production. No real account credentials, no withdrawal or destructive actions, no silent transition to production. Sign-up + onboarding happen separately after we agree the shape.</p>`,
         }),
         paragraph(
           `The link expires in ${expiresInDays} days for your security. If you'd like us to share with a colleague, reply to this email and we'll issue another link.`,

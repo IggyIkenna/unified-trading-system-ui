@@ -23,26 +23,26 @@ export default function MarketingFaqPage() {
                 </Link>
                 <span className="text-muted-foreground">
                   {" "}
-                  &mdash; the founder&apos;s first-person take on why Odum exists.
+                  : the founder&apos;s first-person take on why Odum exists.
                 </span>
               </li>
               <li>
                 <Link href="/story" className="font-medium text-foreground underline-offset-4 hover:underline">
                   Timeline
                 </Link>
-                <span className="text-muted-foreground"> &mdash; dated milestones from 2011 to today.</span>
+                <span className="text-muted-foreground">: dated milestones from 2011 to today.</span>
               </li>
               <li>
                 <Link href="/briefings" className="font-medium text-foreground underline-offset-4 hover:underline">
                   Briefings hub
                 </Link>
-                <span className="text-muted-foreground"> &mdash; per-path briefings (access-code gated).</span>
+                <span className="text-muted-foreground">: per-path briefings (access-code gated).</span>
               </li>
               <li>
                 <Link href="/docs" className="font-medium text-foreground underline-offset-4 hover:underline">
                   Developer docs
                 </Link>
-                <span className="text-muted-foreground"> &mdash; UAC contracts, integration paths, API reference.</span>
+                <span className="text-muted-foreground">: UAC contracts, integration paths, API reference.</span>
               </li>
             </ul>
           </div>

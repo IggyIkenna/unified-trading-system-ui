@@ -233,7 +233,7 @@ export default function InvestmentManagementPage() {
               <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">What we&rsquo;ll ask you about</h2>
               <p className="mt-3 text-sm leading-relaxed text-muted-foreground md:text-base">
                 The Strategy Evaluation for allocators is preference-shaped, not strategy-shaped. We don&rsquo;t ask for
-                your methodology or track record &mdash; we ask what fits your mandate.
+                your methodology or track record: we ask what fits your mandate.
               </p>
             </div>
             <ul className="grid gap-x-8 gap-y-3 text-sm leading-relaxed text-foreground/85 md:grid-cols-2 md:text-[15px]">

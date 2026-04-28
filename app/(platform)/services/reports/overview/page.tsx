@@ -325,8 +325,8 @@ export default function ReportsPage() {
         {/* Narrative summary — investor-grade framing */}
         <div className="px-5 py-4 rounded-lg border border-border/20 bg-gradient-to-r from-muted/5 to-transparent">
           <p className="text-[11px] text-muted-foreground leading-[1.8] tracking-wide">
-            <span className="font-semibold text-foreground/80 tracking-normal">Period Summary</span> &mdash; Total
-            assets under management of{" "}
+            <span className="font-semibold text-foreground/80 tracking-normal">Period Summary</span>: Total assets under
+            management of{" "}
             <span className="font-mono font-medium text-foreground/70">${formatNumber(totalAum / 1_000_000, 1)}m</span>{" "}
             across {portfolioSummary.length} client mandate{portfolioSummary.length !== 1 ? "s" : ""}
             {avgMtdReturn >= 0 ? (

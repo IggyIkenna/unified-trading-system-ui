@@ -43,8 +43,8 @@ export default function PreStepGate({ onPickAllocator, onPickBuilder }: PreStepG
           </p>
           <p className="mt-4 text-sm leading-relaxed text-muted-foreground md:text-[15px]">
             Preference-shaped intake (~5 min): investor profile, risk appetite, venue + leverage constraints, capital
-            scaling, structure preferences. We don&rsquo;t ask for methodology or track record &mdash; you&rsquo;re
-            evaluating us, not the other way around.
+            scaling, structure preferences. We don&rsquo;t ask for methodology or track record: you&rsquo;re evaluating
+            us, not the other way around.
           </p>
           <button
             type="button"

@@ -352,7 +352,7 @@ export default function ModelPortfoliosPage() {
         {/* Target vs Actual allocation */}
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-base">Target vs Actual Allocation &mdash; {portfolio.name}</CardTitle>
+            <CardTitle className="text-base">Target vs Actual Allocation: {portfolio.name}</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>

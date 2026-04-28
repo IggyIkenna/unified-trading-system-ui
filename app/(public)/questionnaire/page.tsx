@@ -516,7 +516,7 @@ function QuestionnaireForm() {
           <span className="text-rose-500" aria-hidden>
             *
           </span>{" "}
-          are required. The &ldquo;Strategy preferences&rdquo; section (Q7&ndash;Q11) is optional.
+          are required. The &ldquo;Strategy preferences&rdquo; section (Q7-Q11) is optional.
         </p>
 
         {/* Top-of-form error banner — visible right after we scrollIntoView the

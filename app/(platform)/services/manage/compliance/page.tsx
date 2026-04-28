@@ -258,7 +258,7 @@ export default function CompliancePage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <Shield className="size-5 text-primary" />
-                  <CardTitle className="text-base">FCA Authorisation &mdash; Odum Research Ltd</CardTitle>
+                  <CardTitle className="text-base">FCA Authorisation: Odum Research Ltd</CardTitle>
                   <Badge className="bg-emerald-500/20 text-emerald-400">Active</Badge>
                 </div>
                 <ChevronDown

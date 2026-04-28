@@ -154,9 +154,8 @@ export function GenericSignup() {
           {isPostDemoPath && (
             <p className="mx-auto max-w-md text-xs text-muted-foreground leading-relaxed">
               Account provisioning for DART and Odum Signals happens
-              <strong className="text-foreground"> post-demo</strong>. Start with a demo call &mdash;
-              we&apos;ll provision the right platform surfaces, keys, and rate limits for you after we
-              understand your setup.
+              <strong className="text-foreground"> post-demo</strong>. Start with a demo call: we&apos;ll provision the
+              right platform surfaces, keys, and rate limits for you after we understand your setup.
             </p>
           )}
         </div>

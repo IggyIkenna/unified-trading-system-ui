@@ -560,8 +560,8 @@ export default function StrategyReviewClient({ review }: { review: StrategyRevie
       </Card>
 
       <p className="text-xs text-muted-foreground">
-        This page is private to you. The link in your email is the only way back to it &mdash; please don&rsquo;t share
-        it. Briefings on{" "}
+        This page is private to you. The link in your email is the only way back to it: please don&rsquo;t share it.
+        Briefings on{" "}
         <Link href="/briefings" className="underline">
           /briefings
         </Link>{" "}

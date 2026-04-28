@@ -264,7 +264,7 @@ export function FundSmaHierarchyDiagram(): React.JSX.Element {
               textAnchor="middle"
               className="fill-zinc-900 text-[12px] font-medium dark:fill-zinc-100"
             >
-              SMA &mdash; Client 4
+              SMA: Client 4
             </text>
             <text x="660" y="278" textAnchor="middle" className="fill-zinc-600 text-[10.5px] dark:fill-zinc-400">
               Own book only
@@ -296,7 +296,7 @@ export function FundSmaHierarchyDiagram(): React.JSX.Element {
               textAnchor="middle"
               className="fill-zinc-900 text-[12px] font-medium dark:fill-zinc-100"
             >
-              SMA &mdash; Client 5
+              SMA: Client 5
             </text>
             <text x="820" y="278" textAnchor="middle" className="fill-zinc-600 text-[10.5px] dark:fill-zinc-400">
               Own book only

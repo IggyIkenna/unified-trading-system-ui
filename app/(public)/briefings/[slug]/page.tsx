@@ -225,9 +225,9 @@ function BriefingNextSteps({ slug }: { slug: string }) {
       <h2 className="text-base font-semibold tracking-tight text-foreground">{copy.heading}</h2>
       <p className="text-sm text-foreground/85 leading-relaxed max-w-2xl">
         You&apos;ve already shared the basics in the questionnaire (that&rsquo;s how you got here). The natural next
-        step is a 30-minute initial call &mdash; targeted now that you have the deep-dive context, focused on which
-        products actually fit rather than what Odum does. If you&rsquo;re ready to be specific on the record, you can
-        skip ahead to the deeper Strategy Evaluation.
+        step is a 30-minute initial call: targeted now that you have the deep-dive context, focused on which products
+        actually fit rather than what Odum does. If you&rsquo;re ready to be specific on the record, you can skip ahead
+        to the deeper Strategy Evaluation.
       </p>
       <div className="flex flex-wrap gap-3 pt-1">
         <a
@@ -409,8 +409,8 @@ export default async function BriefingPillarPage({ params }: PageProps) {
                 <Link href="/docs" className="font-medium text-primary hover:underline">
                   /docs
                 </Link>{" "}
-                &mdash; API and integration reference for teams who want to scan the schema before the fit call. Only
-                relevant if you&rsquo;re going to integrate against DART; allocators can skip.
+                : API and integration reference for teams who want to scan the schema before the fit call. Only relevant
+                if you&rsquo;re going to integrate against DART; allocators can skip.
               </p>
             </section>
           )}

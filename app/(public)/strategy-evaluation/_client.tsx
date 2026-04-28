@@ -835,7 +835,7 @@ export default function StrategyEvaluationFormClient({
                 <p className="font-medium">Your status page</p>
                 <p className="text-muted-foreground">
                   Use the magic link in your original confirmation email to view or edit the submission again. It
-                  remains valid &mdash; we don&rsquo;t re-send a new link on every edit.
+                  remains valid: we don&rsquo;t re-send a new link on every edit.
                 </p>
               </>
             ) : (
@@ -1438,8 +1438,8 @@ export default function StrategyEvaluationFormClient({
             <section className="space-y-4 pt-0 first:pt-0">
               <SectionHeading letter="B" title="What are you trying to do?" />
               <p className="text-xs text-muted-foreground -mt-2">
-                Choose the closest fit. You can add context later, and you can keep answers high-level &mdash; we use
-                this to prepare the right review, not to make a final decision from the form alone.
+                Choose the closest fit. You can add context later, and you can keep answers high-level: we use this to
+                prepare the right review, not to make a final decision from the form alone.
               </p>
               {getError("commercialPath") && <FieldError message={getError("commercialPath")!} />}
 
@@ -1520,8 +1520,7 @@ export default function StrategyEvaluationFormClient({
                     <div>
                       <p className="text-sm font-medium md:text-base">Evaluate Odum-managed strategies</p>
                       <p className="mt-1 text-xs leading-relaxed text-muted-foreground md:text-sm">
-                        You are allocating to selected strategies managed by Odum &mdash; this is the wrong form for
-                        you.
+                        You are allocating to selected strategies managed by Odum: this is the wrong form for you.
                       </p>
                     </div>
                   </div>
@@ -1781,7 +1780,7 @@ export default function StrategyEvaluationFormClient({
             <section className="space-y-4 pt-0 first:pt-0">
               <SectionHeading letter="E" title="Evidence" />
               <p className="text-xs text-muted-foreground -mt-2">
-                What evidence exists today that the strategy works? It&rsquo;s fine if there&rsquo;s very little &mdash;
+                What evidence exists today that the strategy works? It&rsquo;s fine if there&rsquo;s very little:
                 early-stage strategies are why we have a research environment. Be honest, not perfect.
               </p>
 

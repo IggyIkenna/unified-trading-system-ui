@@ -386,7 +386,7 @@ export default function ManageMandatesPage() {
                     <div key={cls} className="flex items-center justify-between text-sm">
                       <span>{cls}</span>
                       <span className="font-mono text-muted-foreground">
-                        {range.min}% &ndash; {range.max}%
+                        {range.min}%-{range.max}%
                       </span>
                     </div>
                   ))}

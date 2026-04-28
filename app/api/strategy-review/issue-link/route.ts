@@ -226,13 +226,13 @@ export async function POST(req: NextRequest) {
     body: [
       heading("Your tailored Strategy Review is ready", "Odum Research"),
       paragraph(
-        `${greeting ? `${greeting}, ` : ""}we've prepared a tailored review of your strategy &mdash; the proposed operating model, DART configuration choices, regulatory pathway, and what we'd set up for the demo. The link below is private to you.`,
+        `${greeting ? `${greeting}, ` : ""}we've prepared a tailored review of your strategy: the proposed operating model, DART configuration choices, regulatory pathway, and what we'd set up for the demo. The link below is private to you.`,
       ),
       primaryButton({ href: reviewUrl, label: "Open your Strategy Review" }),
       fallbackLink({ href: reviewUrl }),
       callout({
         title: "Why this is gated",
-        body: `<p style="margin:0">This review is specific to your strategy and submission. The link expires in ${ttl_days} days for your security. Please don't forward it &mdash; reply to this email if you'd like us to share with a colleague.</p>`,
+        body: `<p style="margin:0">This review is specific to your strategy and submission. The link expires in ${ttl_days} days for your security. Please don't forward it: reply to this email if you'd like us to share with a colleague.</p>`,
       }),
       paragraph(
         `Questions? Reply to this email or reach us at <a href="mailto:info@odum-research.com" style="color:#0891b2;text-decoration:none">info@odum-research.com</a>.`,

@@ -77,7 +77,7 @@ export function FuturesSpreadsTab({ onSelectInstrument }: { onSelectInstrument: 
                           key={shortIdx}
                           className={cn("py-2 px-2 text-center", shortIdx === longIdx ? "bg-muted/40" : "bg-muted/15")}
                         >
-                          {shortIdx === longIdx ? <span className="text-muted-foreground/40">&mdash;</span> : null}
+                          {shortIdx === longIdx ? <span className="text-muted-foreground/40">-</span> : null}
                         </td>
                       );
                     }

@@ -100,7 +100,7 @@ function QuestionnairePrompt({ service }: { service?: string }) {
         </Link>
       </div>
       <p className="text-xs text-muted-foreground/80">
-        If you filled it in on another device or browser, use the &ldquo;continue&rdquo; option &mdash; we&apos;ll
+        If you filled it in on another device or browser, use the &ldquo;continue&rdquo; option: we&apos;ll
         cross-reference your email when you submit the signup.
       </p>
     </div>
@@ -113,11 +113,11 @@ function QuestionnaireAttachedBanner({ email }: { email: string | null }) {
     <div className="mx-auto mb-6 max-w-3xl rounded-md border border-border/40 bg-muted/20 px-4 py-2.5 text-xs text-muted-foreground">
       {email !== null ? (
         <>
-          Questionnaire on file for <span className="font-medium text-foreground">{email}</span> &mdash; we&apos;ll
-          attach your answers to this signup.
+          Questionnaire on file for <span className="font-medium text-foreground">{email}</span>: we&apos;ll attach your
+          answers to this signup.
         </>
       ) : (
-        <>Questionnaire on file &mdash; we&apos;ll attach your answers once you provide an email below.</>
+        <>Questionnaire on file: we&apos;ll attach your answers once you provide an email below.</>
       )}
     </div>
   );

@@ -98,8 +98,8 @@ export default function MarketingStoryPage() {
                 Before founding Odum, Ikenna Igboaka traded at IMC in Amsterdam and Mako in London, working across
                 volatility arbitrage, systematic market-making, and electronic trading. That experience shaped the
                 original view behind Odum: serious trading is not just about a signal. It is about the operating system
-                around the signal &mdash; data, research, execution, risk, reconciliation, reporting, and governance
-                working together.
+                around the signal: data, research, execution, risk, reconciliation, reporting, and governance working
+                together.
               </p>
               <p>
                 Odum Research Ltd was founded in 2021 and later authorised by the Financial Conduct Authority. The firm
@@ -199,10 +199,7 @@ export default function MarketingStoryPage() {
                 <Link href="/our-story" className="font-medium text-foreground underline-offset-4 hover:underline">
                   Our Story (long form)
                 </Link>
-                <span className="text-muted-foreground">
-                  {" "}
-                  &mdash; the founder&rsquo;s first-person narrative (gated).
-                </span>
+                <span className="text-muted-foreground"> : the founder&rsquo;s first-person narrative (gated).</span>
               </li>
               <li>
                 <Link
@@ -211,7 +208,7 @@ export default function MarketingStoryPage() {
                 >
                   Who We Are
                 </Link>
-                <span className="text-muted-foreground"> &mdash; firm identity, team, and engagement routes.</span>
+                <span className="text-muted-foreground">: firm identity, team, and engagement routes.</span>
               </li>
               <li>
                 <Link
@@ -220,7 +217,7 @@ export default function MarketingStoryPage() {
                 >
                   {SERVICE_LABELS.dart.marketing}
                 </Link>
-                <span className="text-muted-foreground"> &mdash; the operating system behind the journey.</span>
+                <span className="text-muted-foreground">: the operating system behind the journey.</span>
               </li>
               <li>
                 <Link
@@ -229,10 +226,7 @@ export default function MarketingStoryPage() {
                 >
                   {SERVICE_LABELS.regulatory.marketing}
                 </Link>
-                <span className="text-muted-foreground">
-                  {" "}
-                  &mdash; structure regulated engagements where appropriate.
-                </span>
+                <span className="text-muted-foreground"> : structure regulated engagements where appropriate.</span>
               </li>
             </ul>
           </div>

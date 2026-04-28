@@ -249,7 +249,7 @@ export default function LoginPage() {
                     <p className="mt-1 text-xs text-amber-300/80">
                       This account is set up for our secure demo environment at{" "}
                       <span className="font-mono">uat.odum-research.com</span>. You&rsquo;re being redirected there now.
-                      Once you&rsquo;re in, a banner at the top links back to the main site &mdash; though your sign-in
+                      Once you&rsquo;re in, a banner at the top links back to the main site: though your sign-in
                       won&rsquo;t transfer across.
                     </p>
                   </div>

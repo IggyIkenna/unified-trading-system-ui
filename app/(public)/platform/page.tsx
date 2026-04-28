@@ -224,8 +224,8 @@ export default function MarketingPlatformPage() {
                   <h2 className="mt-3 text-xl font-semibold tracking-tight md:text-2xl">When to choose Full</h2>
                   <p className="mt-3 text-sm leading-relaxed text-muted-foreground md:text-base">
                     Signals-In handles execution, post-trade, and reporting against your strategy. Full opens the
-                    research and operational stack we run on our own capital &mdash; useful when the prospect&rsquo;s
-                    signals are still being shaped or when execution-quality alone isn&rsquo;t the answer.
+                    research and operational stack we run on our own capital: useful when the prospect&rsquo;s signals
+                    are still being shaped or when execution-quality alone isn&rsquo;t the answer.
                   </p>
                 </div>
                 <div>
@@ -334,7 +334,7 @@ export default function MarketingPlatformPage() {
           <section className="mt-32 rounded-lg border border-border/80 bg-gradient-to-b from-card/60 to-card/30 p-10 text-center md:mt-36 md:p-14">
             <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">Ready to understand the right route?</h2>
             <p className="mx-auto mt-4 max-w-xl text-sm text-muted-foreground md:text-base">
-              Start with a short review. We&rsquo;ll route you to the relevant briefing and next step &mdash; DART, an
+              Start with a short review. We&rsquo;ll route you to the relevant briefing and next step: DART, an
               Odum-managed strategy, or a regulated operating model.
             </p>
             <div className="mt-7 flex flex-wrap justify-center gap-3">

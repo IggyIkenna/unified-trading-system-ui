@@ -27,7 +27,7 @@ export default function MarketingWhoWeArePage() {
                 </Link>
                 <span className="text-muted-foreground">
                   {" "}
-                  &mdash; short fit-review questionnaire, then routed to the relevant briefing.
+                  : short fit-review questionnaire, then routed to the relevant briefing.
                 </span>
               </li>
               <li>
@@ -36,7 +36,7 @@ export default function MarketingWhoWeArePage() {
                 </Link>
                 <span className="text-muted-foreground">
                   {" "}
-                  &mdash; per-route deep-dive briefings behind the light-auth gate.
+                  : per-route deep-dive briefings behind the light-auth gate.
                 </span>
               </li>
               <li>
@@ -48,7 +48,7 @@ export default function MarketingWhoWeArePage() {
                 </Link>
                 <span className="text-muted-foreground">
                   {" "}
-                  &mdash; allocate capital to selected systematic strategies managed by Odum.
+                  : allocate capital to selected systematic strategies managed by Odum.
                 </span>
               </li>
               <li>
@@ -57,7 +57,7 @@ export default function MarketingWhoWeArePage() {
                 </Link>
                 <span className="text-muted-foreground">
                   {" "}
-                  &mdash; the research-to-execution stack we use ourselves, available to clients.
+                  : the research-to-execution stack we use ourselves, available to clients.
                 </span>
               </li>
               <li>
@@ -66,7 +66,7 @@ export default function MarketingWhoWeArePage() {
                 </Link>
                 <span className="text-muted-foreground">
                   {" "}
-                  &mdash; structure regulated engagements where appropriate; FCA-regulated.
+                  : structure regulated engagements where appropriate; FCA-regulated.
                 </span>
               </li>
               <li>
@@ -75,7 +75,7 @@ export default function MarketingWhoWeArePage() {
                 </Link>
                 <span className="text-muted-foreground">
                   {" "}
-                  &mdash; general enquiries, press / partnerships, advisor / referral.
+                  : general enquiries, press / partnerships, advisor / referral.
                 </span>
               </li>
             </ul>

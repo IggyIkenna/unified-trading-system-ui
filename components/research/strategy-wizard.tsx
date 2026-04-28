@@ -625,7 +625,7 @@ export function StrategyWizard({ open, onOpenChange }: StrategyWizardProps) {
         <DialogHeader>
           <DialogTitle>New Strategy</DialogTitle>
           <DialogDescription>
-            Step {currentStep + 1} of {STEPS.length} &mdash; {STEPS[currentStep].description}
+            Step {currentStep + 1} of {STEPS.length}: {STEPS[currentStep].description}
           </DialogDescription>
         </DialogHeader>
 

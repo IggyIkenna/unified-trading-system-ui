@@ -73,7 +73,7 @@ export async function sendEmail(params: ResendEmailParams): Promise<SendResult> 
   const bccList = sandbox ? [] : originalBccList;
   const html = sandbox
     ? `<div style="background:#fef3c7;border:1px solid #f59e0b;border-radius:6px;padding:10px 12px;font-family:sans-serif;font-size:12px;color:#78350f;margin-bottom:16px">
-         <strong>Sandbox routing</strong> &mdash; this email was redirected from
+         <strong>Sandbox routing</strong>: this email was redirected from
          <code>${escapeHtml(originalToList.join(", "))}</code>${
            originalBccList.length ? ` (bcc <code>${escapeHtml(originalBccList.join(", "))}</code>)` : ""
          } to <code>${escapeHtml(getSandboxRecipient())}</code> because Resend's free-tier sandbox only allows sending to the registered test account.

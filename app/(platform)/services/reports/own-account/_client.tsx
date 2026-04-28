@@ -174,8 +174,8 @@ export default function OwnAccountClient() {
         <div className="rounded-md border border-amber-500/30 bg-amber-500/5 p-4 text-sm">
           <p className="font-semibold">Security model</p>
           <p className="mt-1.5 text-muted-foreground">
-            This form captures <strong>metadata only</strong> &mdash; venue, account type, intended scope, contact note.
-            No API key, no secret. After you submit, an admin reaches out to coordinate the actual key handover via the
+            This form captures <strong>metadata only</strong>: venue, account type, intended scope, contact note. No API
+            key, no secret. After you submit, an admin reaches out to coordinate the actual key handover via the
             approved secure credential path (Secret Manager). Raw secrets never touch Firestore.
           </p>
         </div>

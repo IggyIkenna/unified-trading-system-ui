@@ -174,8 +174,8 @@ export default function ApiKeysSettingsPage() {
               <p className="font-medium text-amber-400">Security Notice</p>
               <p className="text-muted-foreground">
                 API keys are encrypted at rest and never displayed in full after submission. We only require{" "}
-                <strong>read-only</strong> and <strong>trade</strong> permissions &mdash; never withdrawal permissions.
-                You can revoke access at any time.
+                <strong>read-only</strong> and <strong>trade</strong> permissions: never withdrawal permissions. You can
+                revoke access at any time.
               </p>
             </div>
           </div>
@@ -280,7 +280,7 @@ export default function ApiKeysSettingsPage() {
                         </Badge>
                       </div>
                       <div className="text-xs text-muted-foreground mt-0.5">
-                        Key: <code className="bg-muted px-1 rounded">{key.api_key_masked}</code> &mdash; Added{" "}
+                        Key: <code className="bg-muted px-1 rounded">{key.api_key_masked}</code>: Added{" "}
                         {new Date(key.added_at).toLocaleDateString("en-GB", {
                           day: "numeric",
                           month: "short",

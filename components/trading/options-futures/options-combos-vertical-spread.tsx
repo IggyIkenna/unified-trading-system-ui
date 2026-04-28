@@ -44,7 +44,7 @@ export function VerticalSpreadMatrix({ asset, strikes, chainMap, onSelectInstrum
                         key={sIdx}
                         className={cn("py-1.5 px-1 text-center", sIdx === lIdx ? "bg-muted/40" : "bg-muted/15")}
                       >
-                        {sIdx === lIdx ? <span className="text-muted-foreground/40">&mdash;</span> : null}
+                        {sIdx === lIdx ? <span className="text-muted-foreground/40">-</span> : null}
                       </td>
                     );
                   }

@@ -35,13 +35,13 @@ export default function MarketingOurStoryPage() {
                 >
                   Book a call
                 </a>
-                <span className="text-muted-foreground"> &mdash; schedule a first call on Calendly.</span>
+                <span className="text-muted-foreground">: schedule a first call on Calendly.</span>
               </li>
               <li>
                 <Link href="/who-we-are" className="font-medium text-foreground underline-offset-4 hover:underline">
                   Who We Are
                 </Link>
-                <span className="text-muted-foreground"> &mdash; the firm, the team, and what&apos;s live today.</span>
+                <span className="text-muted-foreground">: the firm, the team, and what&apos;s live today.</span>
               </li>
               <li>
                 <Link
@@ -50,10 +50,7 @@ export default function MarketingOurStoryPage() {
                 >
                   Investment Management
                 </Link>
-                <span className="text-muted-foreground">
-                  {" "}
-                  &mdash; allocate capital to Odum-run systematic strategies.
-                </span>
+                <span className="text-muted-foreground"> : allocate capital to Odum-run systematic strategies.</span>
               </li>
               <li>
                 <Link href="/platform" className="font-medium text-foreground underline-offset-4 hover:underline">
@@ -61,14 +58,14 @@ export default function MarketingOurStoryPage() {
                 </Link>
                 <span className="text-muted-foreground">
                   {" "}
-                  &mdash; the operating system, available to clients in Signals-In or Full mode.
+                  : the operating system, available to clients in Signals-In or Full mode.
                 </span>
               </li>
               <li>
                 <Link href="/signals" className="font-medium text-foreground underline-offset-4 hover:underline">
                   Odum Signals
                 </Link>
-                <span className="text-muted-foreground"> &mdash; our signals, your execution stack.</span>
+                <span className="text-muted-foreground">: our signals, your execution stack.</span>
               </li>
               <li>
                 <Link href="/regulatory" className="font-medium text-foreground underline-offset-4 hover:underline">
@@ -76,7 +73,7 @@ export default function MarketingOurStoryPage() {
                 </Link>
                 <span className="text-muted-foreground">
                   {" "}
-                  &mdash; operate regulated activity under Odum&apos;s FCA permissions.
+                  : operate regulated activity under Odum&apos;s FCA permissions.
                 </span>
               </li>
             </ul>

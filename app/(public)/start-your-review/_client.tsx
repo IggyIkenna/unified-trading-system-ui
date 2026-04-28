@@ -27,7 +27,7 @@ export function StartYourReviewClient() {
             </h1>
             <p className="mt-5 text-base leading-relaxed text-muted-foreground md:text-lg">
               A short review helps us understand whether you are allocating capital, operating a strategy, or exploring
-              a regulated structure &mdash; then point you to the relevant briefing and next step.
+              a regulated structure: then point you to the relevant briefing and next step.
             </p>
           </div>
 
