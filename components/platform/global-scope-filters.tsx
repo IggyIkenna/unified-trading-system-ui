@@ -21,7 +21,12 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { useAuth } from "@/hooks/use-auth";
 import { ARCHETYPE_TO_FAMILY, FAMILY_METADATA, STRATEGY_FAMILIES_V2 } from "@/lib/architecture-v2";
 import type { StrategyArchetype, StrategyFamily } from "@/lib/architecture-v2";
-import { checkTradingEntitlement } from "@/lib/config/auth";
+import {
+  checkTradingEntitlement,
+  type EntitlementOrWildcard,
+  type StrategyFamilyEntitlement,
+  type TradingEntitlement,
+} from "@/lib/config/auth";
 import {
   CLIENTS as TRADING_CLIENTS,
   ORGANIZATIONS as TRADING_ORGS,
@@ -501,13 +506,14 @@ function FamilyArchetypeMultiSelect({
 // ─────────────────────────────────────────────────────────────────────────────
 
 /** Asset classes a user is entitled to see, derived from their entitlements. */
-function entitlementAssetClasses(userEnts: readonly (string | { domain: string; tier: string })[]): Set<string> {
+function entitlementAssetClasses(
+  userEnts: readonly (EntitlementOrWildcard | TradingEntitlement | StrategyFamilyEntitlement)[],
+): Set<string> {
   const allowed = new Set<string>();
-  if (checkTradingEntitlement(userEnts as never, { domain: "trading-defi", tier: "basic" })) allowed.add("DeFi");
-  if (checkTradingEntitlement(userEnts as never, { domain: "trading-sports", tier: "basic" })) allowed.add("Sports");
-  if (checkTradingEntitlement(userEnts as never, { domain: "trading-predictions", tier: "basic" }))
-    allowed.add("Prediction");
-  if (checkTradingEntitlement(userEnts as never, { domain: "trading-common", tier: "basic" })) {
+  if (checkTradingEntitlement(userEnts, { domain: "trading-defi", tier: "basic" })) allowed.add("DeFi");
+  if (checkTradingEntitlement(userEnts, { domain: "trading-sports", tier: "basic" })) allowed.add("Sports");
+  if (checkTradingEntitlement(userEnts, { domain: "trading-predictions", tier: "basic" })) allowed.add("Prediction");
+  if (checkTradingEntitlement(userEnts, { domain: "trading-common", tier: "basic" })) {
     allowed.add("CeFi");
     allowed.add("TradFi");
   }

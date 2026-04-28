@@ -10,7 +10,13 @@ import type { ReactNode } from "react";
 
 import { TabSectionHelp } from "@/components/shell/tab-section-help";
 import { DATA_SERVICE_SECTION_LABELS } from "@/lib/config/services/data-service.config";
-import { checkTradingEntitlement, isTradingEntitlement, type TradingEntitlement } from "@/lib/config/auth";
+import {
+  checkTradingEntitlement,
+  isTradingEntitlement,
+  type EntitlementOrWildcard,
+  type StrategyFamilyEntitlement,
+  type TradingEntitlement,
+} from "@/lib/config/auth";
 import { type Phase } from "@/lib/phase/types";
 import { cn } from "@/lib/utils";
 import { isServiceTabActive } from "@/lib/utils/nav-helpers";
@@ -76,8 +82,10 @@ interface ServiceTabsProps {
   tabs: ServiceTab[];
   /** Optional right-side slot for Live/As-Of toggle or other controls */
   rightSlot?: React.ReactNode;
-  /** User's current entitlements — used for FOMO locking */
-  entitlements?: readonly (string | TradingEntitlement)[];
+  /** User's current entitlements — used for FOMO locking. Accepts the full
+   * union written to `AuthPersona.entitlements` so callers can pass
+   * `user.entitlements` directly without filtering. */
+  entitlements?: readonly (EntitlementOrWildcard | TradingEntitlement | StrategyFamilyEntitlement)[];
   className?: string;
   /** When `"end"`, tab links align to the right (e.g. promote detail toolbar). */
   tabsAlign?: "start" | "end";
