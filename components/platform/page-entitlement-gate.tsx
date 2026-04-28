@@ -7,6 +7,14 @@
  * this component renders children behind a frosted-glass overlay so the user
  * can see what they're missing — the FOMO lock pattern.
  *
+ * 2026-04-28 (DART tile-split SSOT): added `requiredInstrumentTypes`,
+ * `requiredAssetGroups`, and `derivationMode` props. When set, the gate
+ * resolves the user's effective instrument types via
+ * `instrumentTypesForUser(user, mode)` (lib/architecture-v2/user-instrument-
+ * types.ts) and unlocks the page iff the user's set intersects the required
+ * set. Default mode is "fomo" — non-DART-Full users see views matching their
+ * teaser strategies too. Admin (`["*"]`) bypasses (already in place).
+ *
  * Usage:
  *   <PageEntitlementGate
  *     entitlement={{ domain: "trading-defi", tier: "basic" }}
@@ -14,8 +22,17 @@
  *   >
  *     <DeFiPage />
  *   </PageEntitlementGate>
+ *
+ *   <PageEntitlementGate
+ *     requiredAssetGroups={["SPORTS"]}
+ *     featureName="Sports Trading"
+ *     description="Subscribe to a sports strategy to unlock this view."
+ *   >
+ *     <SportsPage />
+ *   </PageEntitlementGate>
  */
 
+import * as React from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { hasAnyEntitlement } from "./entitlement-gate";
 import {
@@ -25,6 +42,11 @@ import {
   type StrategyFamilyKey,
   type TradingEntitlement,
 } from "@/lib/config/auth";
+import {
+  type AssetGroup,
+  type DerivationMode,
+  instrumentTypesForUser,
+} from "@/lib/architecture-v2/user-instrument-types";
 import { Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -50,6 +72,26 @@ interface PageEntitlementGateProps {
    * a CARRY_BASIS_PERP slot even without `trading-defi` domain entitlement).
    */
   acceptArchetypes?: string[];
+  /**
+   * If set, the user must have at least one entitled (or teaser, in FOMO mode)
+   * strategy whose `instrument_type` is in this list. Drives view-gating for
+   * /services/trading/options (["option", "future"]) etc. Resolved via
+   * `instrumentTypesForUser(user, derivationMode)`.
+   */
+  requiredInstrumentTypes?: string[];
+  /**
+   * If set, the user must have at least one entitled (or teaser) strategy
+   * whose `category` (asset_group) is in this list. Drives view-gating for
+   * /services/trading/sports (["SPORTS"]), /services/trading/defi (["DEFI"]),
+   * /services/trading/predictions (["PREDICTION"]).
+   */
+  requiredAssetGroups?: AssetGroup[];
+  /**
+   * Derivation mode for `instrumentTypesForUser`. Default "fomo" — non-DART-
+   * Full users see views matching their teaser strategies too, driving upsell
+   * exposure. Set "reality" for strict entitled-only gating.
+   */
+  derivationMode?: DerivationMode;
   /** Human-readable feature name for the lock message */
   featureName: string;
   /** Optional description below the lock title */
@@ -62,20 +104,78 @@ export function PageEntitlementGate({
   entitlements,
   acceptFamilies,
   acceptArchetypes,
+  requiredInstrumentTypes,
+  requiredAssetGroups,
+  derivationMode = "fomo",
   featureName,
   description,
   children,
 }: PageEntitlementGateProps) {
   const { hasEntitlement, isAdmin, isInternal, user } = useAuth();
 
+  // Async-resolved instrument-type / asset-group sets for the user. Initial
+  // value `null` means "not yet resolved" — we render children optimistically
+  // until the lookup completes (avoids a content flash on every navigation).
+  // Once resolved, the gate-decision logic below checks intersection.
+  const [resolvedInstrumentTypes, setResolvedInstrumentTypes] = React.useState<Set<string> | null>(null);
+  const [resolvedAssetGroups, setResolvedAssetGroups] = React.useState<Set<AssetGroup> | null>(null);
+
+  const wantsInstrumentGate =
+    (requiredInstrumentTypes && requiredInstrumentTypes.length > 0) ||
+    (requiredAssetGroups && requiredAssetGroups.length > 0);
+
+  React.useEffect(() => {
+    if (!wantsInstrumentGate) return;
+    let cancelled = false;
+    void instrumentTypesForUser(user ?? null, derivationMode)
+      .then((derived) => {
+        if (cancelled) return;
+        setResolvedInstrumentTypes(derived.instrumentTypes);
+        setResolvedAssetGroups(derived.assetGroups);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        // On lookup failure, default to empty sets — the gate falls through
+        // to the FOMO overlay rather than silently unlocking.
+        setResolvedInstrumentTypes(new Set<string>());
+        setResolvedAssetGroups(new Set<AssetGroup>());
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [user, derivationMode, wantsInstrumentGate]);
+
   // Admins and internal users always pass
   if (isAdmin() || isInternal()) return <>{children}</>;
 
   const requiredList = entitlements ?? (entitlement ? [entitlement] : []);
-  if (requiredList.length === 0) return <>{children}</>;
-
   const userEnts = user?.entitlements ?? [];
-  if (hasAnyEntitlement(requiredList, hasEntitlement, userEnts)) return <>{children}</>;
+
+  // If the caller declared instrument-type / asset-group requirements, those
+  // are the primary gate. Resolve them first; fall through to entitlement-
+  // based gating only when both checks fail.
+  if (wantsInstrumentGate) {
+    // While the async lookup is in-flight, optimistic render — a flash of
+    // content is preferable to a flash of FOMO overlay.
+    if (resolvedInstrumentTypes === null || resolvedAssetGroups === null) {
+      return <>{children}</>;
+    }
+    const instrumentTypeMatch =
+      !requiredInstrumentTypes ||
+      requiredInstrumentTypes.length === 0 ||
+      requiredInstrumentTypes.some((t) => resolvedInstrumentTypes.has(t));
+    const assetGroupMatch =
+      !requiredAssetGroups ||
+      requiredAssetGroups.length === 0 ||
+      requiredAssetGroups.some((g) => resolvedAssetGroups.has(g));
+    if (instrumentTypeMatch && assetGroupMatch) return <>{children}</>;
+    // Instrument-type / asset-group gate failed — fall through to FOMO overlay
+    // (skipping the entitlement-list short-circuit since the caller has opted
+    // into instrument-type-driven gating).
+  } else {
+    if (requiredList.length === 0) return <>{children}</>;
+    if (hasAnyEntitlement(requiredList, hasEntitlement, userEnts)) return <>{children}</>;
+  }
 
   // Family-axis fallback: if the page declares family fallbacks and the user
   // holds an entitlement for any of them, let the page render. Inner widget
