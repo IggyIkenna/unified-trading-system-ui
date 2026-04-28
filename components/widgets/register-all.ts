@@ -6,6 +6,7 @@ import "./accounts/register";
 import "./alerts/register";
 import "./book/register";
 import "./bundles/register";
+import "./cefi/register";
 import "./defi/register";
 import "./instructions/register";
 import "./markets/register";

@@ -26,6 +26,7 @@ export { ContinuousHeatmap, type ContinuousHeatmapProps, type ContinuousHeatmapP
 export { FlowChart, type FlowChartProps, type FlowChartBucket } from "./flow-chart";
 export { DepthAreaChart, type DepthAreaChartProps, type DepthLevel } from "./depth-area-chart";
 export { MetricGauge, type MetricGaugeProps } from "./metric-gauge";
+export { OptionsChainPreset, type OptionsChainPresetProps } from "./options-chain-preset";
 export {
   RankingListPreset,
   type RankingListPresetProps,

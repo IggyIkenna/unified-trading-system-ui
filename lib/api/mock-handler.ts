@@ -6141,6 +6141,26 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   )
     return json({ data: [], total: 0 });
   if (route.startsWith("/api/analytics/")) return json({ data: [], total: 0 });
+
+  // DART cross-asset-group market-data endpoints (P1+ of the terminal plan).
+  // Per-view mock fixtures so widgets render in tier-0 dev mode without a
+  // backend gateway. Real endpoints land per phase as the views ship.
+  if (route.startsWith("/api/market-data/funding-rate-matrix")) {
+    const assets = ["BTC", "ETH", "SOL", "AVAX", "ARB", "OP", "MATIC", "DOGE"];
+    const venues = ["Binance", "OKX", "Bybit", "Deribit", "Hyperliquid"];
+    const cells: Record<string, Record<string, number>> = {};
+    for (const a of assets) {
+      cells[a] = {};
+      for (const v of venues) {
+        // Funding rates as decimals (e.g. 0.0001 = 1bp). Slight venue + asset
+        // bias so the diverging colour scale exercises both signs.
+        const venueBias = (venues.indexOf(v) - 2) * 0.00005;
+        const assetBias = (assets.indexOf(a) - 4) * 0.00003;
+        cells[a][v] = venueBias + assetBias + (Math.random() - 0.5) * 0.0002;
+      }
+    }
+    return json({ assets, venues, cells });
+  }
   if (route.startsWith("/api/market-data/")) return json({ data: [], total: 0 });
 
   return null;
