@@ -70,8 +70,8 @@ export function CookieConsentBanner(): React.ReactElement | null {
     >
       <div className="container mx-auto flex flex-col gap-3 px-4 py-4 md:flex-row md:items-center md:justify-between md:px-6">
         <div className="text-xs text-muted-foreground md:max-w-3xl">
-          We store a small flag in your browser (localStorage) to remember that you&apos;ve unlocked the Deep Dive
-          briefings hub and to autosave any questionnaire you start. No third-party analytics, no ad tracking. See our{" "}
+          We use a small browser flag so you don&apos;t have to re-enter your access code on every visit, and we
+          autosave any questionnaire you start. No third-party analytics, no ad tracking. See our{" "}
           <a href="/privacy" className="font-medium text-foreground underline-offset-4 hover:underline">
             privacy notice
           </a>{" "}
