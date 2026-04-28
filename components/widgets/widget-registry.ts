@@ -2,6 +2,7 @@ import type { LucideIcon } from "lucide-react";
 import type { ComponentType } from "react";
 import type { StrategyArchetype, StrategyFamily, VenueAssetGroupV2 } from "@/lib/architecture-v2";
 import type { StrategyFamilyEntitlement, TradingEntitlement } from "@/lib/config/auth";
+import { type WidgetAssetGroup, WIDGET_ASSET_GROUPS } from "@/lib/types/asset-group";
 
 export interface WidgetComponentProps {
   instanceId: string;
@@ -20,8 +21,19 @@ export interface WidgetDefinition {
   label: string;
   description: string;
   icon: LucideIcon;
-  /** Display category for grouping in the widget catalogue (e.g. "Positions", "Risk") */
-  category: string;
+  /**
+   * Asset-group axis (SSOT for the venue dimension). Replaces the legacy
+   * `category` field's overloaded use for asset_groups. Use "PLATFORM" for
+   * cross-asset-group widgets (Risk / Positions / P&L / Orders / etc.).
+   */
+  assetGroup: WidgetAssetGroup;
+  /**
+   * Display label for grouping in the widget catalogue Finder. Free-form
+   * string ("Risk", "Positions", "Lending supply", "Sports"). Was previously
+   * named `category` but renamed to remove the asset-group / display-group
+   * overload.
+   */
+  catalogGroup: string;
 
   minW: number;
   minH: number;
@@ -92,11 +104,40 @@ export function getAllWidgets(): WidgetDefinition[] {
   return Array.from(registry.values());
 }
 
-/** Returns all widgets grouped by their category field, sorted alphabetically by category. */
-export function getAllWidgetsByCategory(): Record<string, WidgetDefinition[]> {
+/** Returns all widgets grouped by their `catalogGroup` field, for the catalogue Finder UI. */
+export function getAllWidgetsByCatalogGroup(): Record<string, WidgetDefinition[]> {
   const grouped: Record<string, WidgetDefinition[]> = {};
   for (const w of registry.values()) {
-    (grouped[w.category] ??= []).push(w);
+    (grouped[w.catalogGroup] ??= []).push(w);
   }
   return grouped;
 }
+
+/** Returns all widgets grouped by their `assetGroup` axis (SSOT for venue dimension). */
+export function getAllWidgetsByAssetGroup(): Record<WidgetAssetGroup, WidgetDefinition[]> {
+  const grouped: Record<WidgetAssetGroup, WidgetDefinition[]> = {
+    CEFI: [],
+    DEFI: [],
+    TRADFI: [],
+    SPORTS: [],
+    PREDICTION: [],
+    PLATFORM: [],
+  };
+  for (const w of registry.values()) {
+    grouped[w.assetGroup].push(w);
+  }
+  return grouped;
+}
+
+/** All widgets relevant to a single asset_group. Cross-asset (`PLATFORM`) widgets are included for non-platform queries when relevant. */
+export function getWidgetsForAssetGroup(
+  assetGroup: WidgetAssetGroup,
+  options: { includePlatform?: boolean } = {},
+): WidgetDefinition[] {
+  const includePlatform = options.includePlatform ?? assetGroup !== "PLATFORM";
+  return Array.from(registry.values()).filter(
+    (w) => w.assetGroup === assetGroup || (includePlatform && w.assetGroup === "PLATFORM"),
+  );
+}
+
+export { WIDGET_ASSET_GROUPS };

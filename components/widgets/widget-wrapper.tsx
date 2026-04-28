@@ -126,21 +126,21 @@ function AddWidgetPickerContent({
   const addWidget = useWorkspaceStore((s) => s.addWidget);
 
   const grouped = available.reduce<Record<string, WidgetDefinition[]>>((acc, w) => {
-    (acc[w.category] ??= []).push(w);
+    (acc[w.catalogGroup] ??= []).push(w);
     return acc;
   }, {});
-  const categories = Object.keys(grouped).sort();
+  const catalogGroups = Object.keys(grouped).sort();
 
   return (
     <Command className="rounded-lg border-0 shadow-none" shouldFilter>
       <CommandInput placeholder="Search widgets…" className="h-9 text-xs" />
       <CommandList className="max-h-72">
         <CommandEmpty className="py-6 text-xs text-muted-foreground">No widgets match your search.</CommandEmpty>
-        {categories.map((cat) => (
+        {catalogGroups.map((cat) => (
           <CommandGroup key={cat} heading={cat} className="overflow-hidden p-1">
             {grouped[cat].map((w) => {
               const alreadyOnScreen = currentAllWidgetIds.includes(w.id);
-              const searchBlob = `${w.id} ${w.label} ${w.description} ${w.category}`;
+              const searchBlob = `${w.id} ${w.label} ${w.description} ${w.catalogGroup}`;
               return (
                 <CommandItem
                   key={w.id}
