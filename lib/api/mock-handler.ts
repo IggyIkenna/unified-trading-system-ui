@@ -6152,14 +6152,88 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     for (const a of assets) {
       cells[a] = {};
       for (const v of venues) {
-        // Funding rates as decimals (e.g. 0.0001 = 1bp). Slight venue + asset
-        // bias so the diverging colour scale exercises both signs.
         const venueBias = (venues.indexOf(v) - 2) * 0.00005;
         const assetBias = (assets.indexOf(a) - 4) * 0.00003;
         cells[a][v] = venueBias + assetBias + (Math.random() - 0.5) * 0.0002;
       }
     }
     return json({ assets, venues, cells });
+  }
+  if (route.startsWith("/api/market-data/open-interest-ranking")) {
+    const assets = ["BTC", "ETH", "SOL", "AVAX", "ARB", "OP", "MATIC", "DOGE", "LINK", "ADA"];
+    const venues = ["Binance", "OKX", "Bybit", "Deribit"];
+    const items: Array<{
+      symbol: string;
+      venue: string;
+      oi_usd: number;
+      change_24h: number;
+      change_7d: number;
+      sparkline_7d: number[];
+    }> = [];
+    for (const a of assets) {
+      for (const v of venues) {
+        const baseOI = (assets.length - assets.indexOf(a)) * 1_500_000_000;
+        const venueScale = 1 - venues.indexOf(v) * 0.18;
+        const oi = baseOI * venueScale * (0.7 + Math.random() * 0.6);
+        const sparkline = Array.from(
+          { length: 24 },
+          (_, i) => oi * (0.95 + Math.sin(i / 4) * 0.05 + Math.random() * 0.02),
+        );
+        items.push({
+          symbol: a,
+          venue: v,
+          oi_usd: Math.round(oi),
+          change_24h: (Math.random() - 0.5) * 0.18,
+          change_7d: (Math.random() - 0.4) * 0.4,
+          sparkline_7d: sparkline,
+        });
+      }
+    }
+    items.sort((a, b) => b.oi_usd - a.oi_usd);
+    return json({ items: items.slice(0, 30) });
+  }
+  if (route.startsWith("/api/market-data/liquidation-heatmap")) {
+    const now = Date.now();
+    const points: Array<{ t: number; price: number; notional: number; side: "long" | "short" }> = [];
+    const basePrice = 64_000;
+    for (let i = 0; i < 240; i++) {
+      const tOffset = -((23 - Math.floor(i / 10)) * 60 * 60 * 1000 + (i % 10) * 6 * 60 * 1000);
+      const priceOffset = (Math.random() - 0.5) * 8000;
+      const isLong = Math.random() > 0.5;
+      points.push({
+        t: now + tOffset,
+        price: basePrice + priceOffset,
+        notional: 50_000 + Math.random() ** 3 * 5_000_000,
+        side: isLong ? "long" : "short",
+      });
+    }
+    return json({ asset: "BTC", bucket_minutes: 60, points });
+  }
+  if (route.startsWith("/api/market-data/long-short-ratio")) {
+    const longPct = 0.55 + Math.random() * 0.1;
+    const history = Array.from({ length: 48 }, () => 50 + (Math.random() - 0.5) * 20);
+    return json({
+      asset: "BTC",
+      ratio: longPct / (1 - longPct),
+      long_pct: longPct,
+      short_pct: 1 - longPct,
+      change_24h: (Math.random() - 0.5) * 5,
+      history,
+    });
+  }
+  if (route.startsWith("/api/market-data/basis-curve")) {
+    const venues = ["Binance", "OKX", "Bybit", "Deribit"];
+    const expiriesDays = [7, 14, 30, 60, 90, 180, 365];
+    const series = venues.map((venue, vi) => ({
+      venue,
+      points: expiriesDays.map((days) => ({
+        days_to_expiry: days,
+        // Contango — basis grows roughly with sqrt(time-to-expiry); add per-venue spread.
+        basis_bp: Math.sqrt(days) * 6 + vi * 4 + (Math.random() - 0.5) * 5,
+        expiry: new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+      })),
+    }));
+    return json({ asset: "BTC", series });
   }
   if (route.startsWith("/api/market-data/")) return json({ data: [], total: 0 });
 
