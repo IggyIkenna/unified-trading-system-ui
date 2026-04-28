@@ -78,6 +78,56 @@ export default function LoginPage() {
   const [resetSent, setResetSent] = React.useState(false);
   const [uatRedirecting, setUatRedirecting] = React.useState(false);
 
+  // Demo-persona handoff from prod login. The prod /login page packs the
+  // user's typed email (?email=) and password (#pwd=) into the redirect
+  // when it sends a demo persona to uat.odum-research.com (see the
+  // setTimeout in handleLogin further down). On the UAT side we read
+  // them on mount, prefill the form, and auto-submit so the user sees
+  // one continuous "redirecting..." state instead of a second sign-in
+  // prompt. Email lives in the query (visible in URL bar / history);
+  // password lives in the URL fragment (client-side only - never
+  // reaches server logs / Referer headers). Strip from URL after
+  // consumption so refresh doesn't re-trigger and a screen-share doesn't
+  // show the password fragment.
+  const [autoSubmitting, setAutoSubmitting] = React.useState(false);
+  const handoffRanRef = React.useRef(false);
+  const formRef = React.useRef<HTMLFormElement | null>(null);
+  React.useEffect(() => {
+    if (handoffRanRef.current) return;
+    handoffRanRef.current = true;
+    if (typeof window === "undefined") return;
+    const sp = new URLSearchParams(window.location.search);
+    const handoffEmail = sp.get("email") ?? "";
+    const fragment = window.location.hash.startsWith("#") ? window.location.hash.slice(1) : "";
+    const fp = new URLSearchParams(fragment);
+    const handoffPwd = fp.get("pwd") ?? "";
+    if (handoffEmail) setEmail(decodeURIComponent(handoffEmail));
+    if (handoffPwd) {
+      setPassword(decodeURIComponent(handoffPwd));
+      setAutoSubmitting(true);
+    }
+    if (handoffEmail || handoffPwd) {
+      const cleanQuery = new URLSearchParams(window.location.search);
+      cleanQuery.delete("email");
+      const qs = cleanQuery.toString();
+      const cleanUrl = `${window.location.pathname}${qs ? `?${qs}` : ""}`;
+      window.history.replaceState({}, "", cleanUrl);
+    }
+  }, []);
+
+  // Auto-submit the form once the handoff fields have populated state.
+  // formRef.requestSubmit() routes through the existing handleLogin path
+  // so the auth flow has a single source of truth.
+  React.useEffect(() => {
+    if (!autoSubmitting) return;
+    if (!email || !password) return;
+    const t = setTimeout(() => {
+      formRef.current?.requestSubmit();
+      setAutoSubmitting(false);
+    }, 0);
+    return () => clearTimeout(t);
+  }, [autoSubmitting, email, password]);
+
   async function handleForgotPassword() {
     if (!email) {
       setError("Enter your email address first.");
@@ -139,8 +189,19 @@ export default function LoginPage() {
       // platform shell and the DemoPlanToggle is in scope.
       const fallback = isStandingInternalEmail ? "/investor-relations" : "/dashboard";
       const target = encodeURIComponent(redirectTo || fallback);
+      // Hand off the credentials the user just typed so they don't have to
+      // sign in twice. Email goes via query string (low risk; many sites
+      // do this with email-magic-link patterns). Password goes via the
+      // URL fragment (#pwd=...) — fragments are client-side only and
+      // never hit server logs or Referer headers, so this is the safest
+      // place to ferry a one-shot demo password across the redirect.
+      // The demo personas all use shared, well-known passwords; the
+      // handoff is an ergonomic win, not a secret. UAT login page reads
+      // both, prefills, and auto-submits on mount.
+      const emailParam = encodeURIComponent(email);
+      const pwdFragment = encodeURIComponent(password);
       setTimeout(() => {
-        window.location.href = `https://uat.odum-research.com/login?redirect=${target}`;
+        window.location.href = `https://uat.odum-research.com/login?redirect=${target}&email=${emailParam}#pwd=${pwdFragment}`;
       }, 2800);
       return;
     }
@@ -192,7 +253,7 @@ export default function LoginPage() {
               <CardDescription>Sign in to access your dashboard</CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleLogin} className="space-y-4">
+              <form ref={formRef} onSubmit={handleLogin} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
                   <div className="relative">
@@ -248,9 +309,16 @@ export default function LoginPage() {
                     <p className="font-medium">Taking you to the demo environment&hellip;</p>
                     <p className="mt-1 text-xs text-amber-300/80">
                       This account is set up for our secure demo environment at{" "}
-                      <span className="font-mono">uat.odum-research.com</span>. You&rsquo;re being redirected there now.
-                      Once you&rsquo;re in, a banner at the top links back to the main site: though your sign-in
-                      won&rsquo;t transfer across.
+                      <span className="font-mono">uat.odum-research.com</span>. You&rsquo;re being redirected there now
+                      and signed in automatically &mdash; you won&rsquo;t need to re-enter your password.
+                    </p>
+                  </div>
+                )}
+                {autoSubmitting && (
+                  <div className="rounded-md border border-emerald-500/30 bg-emerald-500/10 px-3 py-3 text-sm text-emerald-200">
+                    <p className="font-medium">Completing your sign-in&hellip;</p>
+                    <p className="mt-1 text-xs text-emerald-300/80">
+                      Carrying your credentials across from the main site so you don&rsquo;t have to type them again.
                     </p>
                   </div>
                 )}
@@ -259,8 +327,8 @@ export default function LoginPage() {
                     {loginError || error}
                   </p>
                 )}
-                <Button type="submit" className="w-full" disabled={isLoading || uatRedirecting}>
-                  {isLoading ? "Signing in..." : "Sign In"}
+                <Button type="submit" className="w-full" disabled={isLoading || uatRedirecting || autoSubmitting}>
+                  {isLoading || autoSubmitting ? "Signing in..." : "Sign In"}
                   <ArrowRight className="ml-2 size-4" />
                 </Button>
               </form>
