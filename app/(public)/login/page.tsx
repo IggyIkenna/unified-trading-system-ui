@@ -15,7 +15,7 @@ import Link from "next/link";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { user, loading, loginByEmail, loginError, hasEntitlement } = useAuth();
+  const { user, loading, loginByEmail, loginError, hasEntitlement, isAdmin, isInternal } = useAuth();
   const [redirectTo, setRedirectTo] = React.useState<string | null>(null);
 
   React.useEffect(() => {
@@ -32,8 +32,16 @@ export default function LoginPage() {
    * entitlements when the user-management-api has returned them, (b) a hardcoded email
    * fallback for the canonical advisor account so the redirect also works when the
    * authz backend is slow or momentarily unreachable.
+   *
+   * Admin / internal users land on /dashboard regardless of entitlements. Their
+   * wildcard `["*"]` entitlement set would otherwise make `hasEntitlement(...)`
+   * return true for every entitlement (including investor-board / archive) and
+   * route them to the IR hub on every login.
    */
   const defaultLanding = React.useCallback((): string => {
+    if (isAdmin() || isInternal()) {
+      return "/dashboard";
+    }
     if (hasEntitlement("investor-board") || hasEntitlement("investor-archive")) {
       return "/investor-relations";
     }
@@ -41,7 +49,7 @@ export default function LoginPage() {
       return "/investor-relations";
     }
     return "/dashboard";
-  }, [hasEntitlement, user?.email]);
+  }, [hasEntitlement, isAdmin, isInternal, user?.email]);
 
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
