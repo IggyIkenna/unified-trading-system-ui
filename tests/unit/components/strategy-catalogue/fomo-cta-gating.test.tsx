@@ -69,7 +69,11 @@ function baseSummary(
 }
 
 describe("allowsAllocationCta (Plan B p5-fomo-cta-gating-test)", () => {
-  const enabled: StrategyMaturityPhase[] = ["paper_stable", "live_early", "live_stable"];
+  // 2026-04-29 (Phase 1B per dart_ux_cockpit_refactor §4.8.7): pilot + monitor
+  // joined the allocatable set — pilot is capped real-money execution,
+  // monitor is live with capacity decay measurement; both serve real
+  // positions, so both permit incoming allocations.
+  const enabled: StrategyMaturityPhase[] = ["paper_stable", "pilot", "live_early", "live_stable", "monitor"];
   const disabled: StrategyMaturityPhase[] = [
     "smoke",
     "backtest_minimal",
@@ -80,7 +84,7 @@ describe("allowsAllocationCta (Plan B p5-fomo-cta-gating-test)", () => {
     "retired",
   ];
 
-  it("enables allocation only for paper_stable / live_early / live_stable", () => {
+  it("enables allocation for paper_stable / pilot / live_early / live_stable / monitor", () => {
     for (const phase of enabled) expect(allowsAllocationCta(phase)).toBe(true);
     for (const phase of disabled) expect(allowsAllocationCta(phase)).toBe(false);
   });
