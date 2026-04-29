@@ -50,11 +50,99 @@ describe("persona-dashboard-shape registration", () => {
       const subRoutes = personaDashboardSubRoutes(p);
       expect(shape).toBeDefined();
       expect(subRoutes).toBeDefined();
-      // Every shape must declare at least one of the 5 tiles as "visible" or
-      // "locked" — a persona with all 5 tiles hidden would never have a
+      // Every shape must declare at least one of the 6 tiles as "visible" or
+      // "locked" — a persona with all 6 tiles hidden would never have a
       // dashboard to render. (Even reports-only personas have reports="visible".)
       const hasAtLeastOneSurfacedTile = Object.values(shape).some((v) => v === "visible" || v === "locked");
       expect(hasAtLeastOneSurfacedTile, `persona ${p.id} has all tiles hidden`).toBe(true);
     }
+  });
+});
+
+/**
+ * 2026-04-28 DART tile-split contract — persona shapes must carry both new
+ * tile keys (dart-terminal + dart-research) and never the legacy "dart" key.
+ * SSOT: codex/14-playbooks/dart/dart-terminal-vs-research.md.
+ */
+describe("DART tile-split contract", () => {
+  it("every registered persona's tile shape has dart-terminal AND dart-research keys (no legacy 'dart')", () => {
+    for (const personaId of REGISTERED_TILE_SHAPE_IDS) {
+      const shape = personaDashboardShape({ id: personaId });
+      expect(shape, `${personaId}: missing dart-terminal`).toHaveProperty("dart-terminal");
+      expect(shape, `${personaId}: missing dart-research`).toHaveProperty("dart-research");
+      expect(Object.keys(shape), `${personaId}: still has legacy "dart" key`).not.toContain("dart");
+    }
+  });
+
+  it("every registered persona's sub-route shape has dart-terminal + dart-research entries", () => {
+    for (const personaId of REGISTERED_SUBROUTE_SHAPE_IDS) {
+      const subs = personaDashboardSubRoutes({ id: personaId });
+      expect(subs, `${personaId}: missing dart-terminal sub-routes`).toHaveProperty("dart-terminal");
+      expect(subs, `${personaId}: missing dart-research sub-routes`).toHaveProperty("dart-research");
+      expect(Object.keys(subs), `${personaId}: still has legacy "dart" sub-route key`).not.toContain("dart");
+    }
+  });
+
+  it("admin (wildcard) sees both DART tiles visible", () => {
+    const shape = personaDashboardShape({ id: "admin" });
+    expect(shape["dart-terminal"]).toBe("visible");
+    expect(shape["dart-research"]).toBe("visible");
+  });
+
+  it("client-full (DART-Full) gets dart-research visible", () => {
+    const shape = personaDashboardShape({ id: "client-full" });
+    expect(shape["dart-research"]).toBe("visible");
+  });
+
+  it("desmond-signals-in (Signals-In) gets dart-research locked (padlocked-visible)", () => {
+    const shape = personaDashboardShape({ id: "desmond-signals-in" });
+    expect(shape["dart-terminal"]).toBe("visible");
+    expect(shape["dart-research"]).toBe("locked");
+  });
+
+  it("client-data-only gets dart-research hidden (no DART research access)", () => {
+    const shape = personaDashboardShape({ id: "client-data-only" });
+    expect(shape["dart-terminal"]).toBe("visible");
+    expect(shape["dart-research"]).toBe("hidden");
+  });
+
+  it("client-regulatory (reg-only) gets both DART tiles hidden", () => {
+    const shape = personaDashboardShape({ id: "client-regulatory" });
+    expect(shape["dart-terminal"]).toBe("hidden");
+    expect(shape["dart-research"]).toBe("hidden");
+  });
+
+  it("entitlement-derived: DART user with ml-full + strategy-full gets research visible", () => {
+    const shape = personaDashboardShape({
+      id: "ad-hoc-full",
+      entitlements: ["data-pro", "execution-full", "ml-full", "strategy-full"],
+    });
+    expect(shape["dart-terminal"]).toBe("visible");
+    expect(shape["dart-research"]).toBe("visible");
+  });
+
+  it("entitlement-derived: DART user without ml-full gets research locked", () => {
+    const shape = personaDashboardShape({
+      id: "ad-hoc-signals-in",
+      entitlements: ["data-pro", "execution-full"],
+    });
+    expect(shape["dart-terminal"]).toBe("visible");
+    expect(shape["dart-research"]).toBe("locked");
+  });
+
+  it("entitlement-derived: reporting-only inherits the conservative default (terminal locked, research hidden)", () => {
+    // The IM-allocator branch in entitlementDerivedShape() applies
+    // tileOverride({ reports: "visible" }) which leaves the DART tiles at
+    // their DEFAULT_TILE_SHAPE values: terminal=locked (padlocked-visible
+    // upsell tile), research=hidden (no DART research access). This is the
+    // intentional default for personas with reporting-only entitlements that
+    // aren't explicitly registered.
+    const shape = personaDashboardShape({
+      id: "ad-hoc-im",
+      entitlements: ["reporting"],
+    });
+    expect(shape["dart-terminal"]).toBe("locked");
+    expect(shape["dart-research"]).toBe("hidden");
+    expect(shape.reports).toBe("visible");
   });
 });
