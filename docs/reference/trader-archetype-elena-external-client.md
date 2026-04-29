@@ -284,3 +284,96 @@ When evaluating any client-facing surface (including our own), walk through Elen
 - Is the experience usable on mobile and exportable into her own workflow?
 
 Gaps are not necessarily defects — they may be deliberate scope decisions — but they should be **known** gaps, not **accidental** ones.
+
+---
+
+# Automated Mode (Short Note)
+
+This is intentionally a **short note**, not a full appendix. Elena is not a trader; she does not run strategies, does not operate a research workspace, does not promote models, does not size a fleet, does not intervene on running strategies, and does not place manual orders. The 18-section automated-mode appendix that other archetypes carry — see Marcus as the worked example in [trader-archetype-marcus-cefi.md](trader-archetype-marcus-cefi.md) — almost entirely does not apply to her.
+
+What changes for Elena when the firm she allocates to runs more of its book systematically is **what she can be told about how that systematic side is governed**, plus a small set of new line items inside reports she already receives. Her four phases (Decide / Enter / Hold / Learn) keep their existing shape from the manual sections above.
+
+For the universal automated-platform concepts that her firm now operates against, see [automation-foundation.md](automation-foundation.md). The relevant part for Elena is not the trader's research workspace or model registry — it is the **governance surface that wraps them**.
+
+> _Throughout this note, examples are illustrative — actual disclosure shapes, committee cadences, and report fields will differ per share class, jurisdiction, and contract. The platform's real client-tier catalog will differ._
+
+## What Elena's Experience Becomes
+
+The four phases do not change. The content inside them changes only in narrow, specific ways.
+
+- **Decide stays Decide.** She still allocates, rebalances, subscribes, redeems. Her decisions are still about managers and share classes, not strategies. The performance-summary view, the institutional metrics, the strategy-level (not trade-level) attribution, and the risk-overview slice from her existing Phase 1 sections remain the surfaces she lives in.
+- **Enter stays Enter.** Subscription / redemption / share-class switch flows are unchanged. Capital actions are still the only "orders" she places.
+- **Hold stays Hold.** Daily-glance, weekly, monthly, quarterly cadence is unchanged. She is still summoned by NAV / drawdown / operational alerts, never by strategy-level events.
+- **Learn stays Learn.** The reporting suite is the same multi-modal product (web view + branded PDF + Excel + email digest), with the same tiered access controls and the same audit trail of her own actions.
+
+What is genuinely **new** in the automated world fits into Hold and Learn as additional content, not as new phases or new surfaces.
+
+## What Stays Human for Elena
+
+Automation on the firm side does not move any of her judgment surfaces.
+
+- **Every redemption / subscription decision** — still hers. The platform never proposes a capital action on her behalf.
+- **Every manager-evaluation call** — still hers. Style-consistency reads, regime-fit interpretation, "do we still believe in this manager" — these are not delegated to a model on her end.
+- **Her own portfolio construction across 20+ external managers** — still hers. The platform shows her this firm's slice; her cross-manager allocation is her CIO's process, not the firm's.
+- **Board narrative.** Translating "the systematic book had a 4% drawdown in Q3" into a board-suitable explanation is her work. The platform supplies the narrative inputs (see below); the framing for her own committee stays her.
+
+## What's Added: Transparency Into Systematic Governance
+
+The new content Elena gets, on top of her existing reports, is **disclosure into the governance machinery the firm now runs internally**. This is a client-tier slice, not the firm's internal version.
+
+- **Model-risk governance summary.** A periodic disclosure (typically quarterly, attached to her quarterly letter) describing how the firm sanctions strategy classes, gates promotion from paper → pilot → live, monitors decay, and retires strategies. Plain-language; no model code, no feature names, no per-strategy detail. Names the committee, the cadence, and the firm officers accountable.
+- **Kill-switch and circuit-breaker policy.** A written description of what kill-switches exist, at what scope (strategy / class / venue / fleet / firm), who can pull them, and under what conditions they are pulled automatically. She wants to know: in a Binance-style incident or a stablecoin depeg, what does the firm do, in what order, and who decides. Operational outcomes, not implementation.
+- **Model-version registry disclosure.** Not the registry itself — she does not browse models. A periodic summary: "this share class's capital is exposed to N strategy classes across M model versions; in Q3, K models were retrained, J were retired, P new classes were sanctioned, Q sanctioning votes were declined." Aggregate counts with narrative. Tied to her share-class entitlement.
+- **Fail-over and recovery policy.** Disclosure of what happens when the firm loses a venue connection, a market-data feed, or a co-located process. What is the recovery time objective; what is the policy if recovery exceeds it; how does the firm communicate to clients during an incident.
+
+Every disclosure is **outcomes and policy**, never implementation detail. Elena does not see model code, feature definitions, strategy parameters, training data, experiment-tracker entries, or live fleet state. Her view of governance is the same shape as her view of compliance (see Phase 4 above): she sees that it is happening and that it is correct, never the firm's internal machinery.
+
+## What's Added: Reports Describing How Her Capital Is Risk-Managed
+
+Inside her existing monthly and quarterly reports, the systematic side gets new line items.
+
+- **Systematic-side risk decomposition.** Within her existing risk overview, the systematic book is broken out as its own column: gross / net / leverage / vol target / max drawdown contribution / stress-test result. Comparable shape to the discretionary side, so a board member can read both at a glance.
+- **Strategy-class-level attribution.** Her existing strategy-level attribution (directional / basis arb / vol short / yield) gains a row for each systematic strategy class her share class is exposed to, with the same plain-language explanation generated by the firm's PM team. Not per-strategy-instance — per-class.
+- **Counterparty / venue / protocol risk reporting (expanded).** Her existing counterparty list expands. The firm now interacts with more venues (each automated execution adapter is a counterparty), more data providers (each licensed feed is a vendor relationship), and — for hybrid funds — more on-chain protocols (each DeFi integration is a smart-contract counterparty). The expanded report names the venues, anonymizes or names per agreement, and surfaces venue-health indicators (custody concerns, regulatory state, recent incidents) as the firm sees them.
+- **Backtest-vs-live divergence at fund level.** The firm tracks whether deployed strategies are tracking their backtested expectations (see Marcus's section 11.6 for the trader-side surface). At fund level, this becomes a simple disclosure: "% of deployed strategies tracking within tolerance of their backtest." A leading indicator of regime drift, written in narrative form.
+
+These additions are inside her existing reports. They do not create new screens, new alerts, or new cadences for her.
+
+## Periodic Model-Risk Committee Deliverables
+
+A new artifact in Elena's document vault: the firm's **model-risk committee summary**, typically quarterly, signed by the committee chair.
+
+- **Cadence:** quarterly by default; ad hoc after material incidents.
+- **Contents:** sanctioning decisions made in the period, retirements executed, material model changes, incidents and root-cause summaries, policy changes adopted, forward-looking watchpoints.
+- **Format:** branded PDF in her vault, summarized in her quarterly letter, with the full document accessible per her share-class entitlement. Multi-modal delivery (web view + PDF + email digest) on the same channel as her existing letters.
+- **Audit posture:** treated like her audited annual report — once published, immutable in her vault, full access history recorded.
+
+She will rarely read it cover-to-cover. She needs to be able to **hand it to her own auditor or board on demand**, and she needs to know it exists. That is the bar.
+
+## What Does Not Change
+
+Reiterating, because the negative space is the point.
+
+- **Same multi-modal report delivery.** Web + PDF + Excel + email digest. See Phase 4.
+- **Same tiered access controls.** Share class, sub-agreement, and entity scope determine every number she sees, including every governance disclosure listed above. See [#28 Compliance & Audit Trail](common-tools.md#28-compliance--audit-trail).
+- **Same audit trail of her own actions.** Every disclosure she views, every report she downloads, every committee summary she opens — recorded, with her existing audit trail (Phase 2) extended over the new content.
+- **Same alert discipline.** No new alert categories. Governance disclosures are scheduled artifacts, not paged events. If a firm-wide kill-switch fires in a way that affects her share class, that is an **operational alert** under her existing policy — not a new "model-risk alert."
+- **Manual trading section: does not apply.** Elena has no order ticket. The trader-side intervention console (see Marcus's section 12) is invisible to her by design.
+- **Strategy state inspection: does not apply.** The trader-side internal-state surface (see Marcus's section 11.6) is invisible to her by design. Her view of strategies stops at strategy-class attribution.
+
+## Daily Rhythm
+
+Unchanged from her existing manual sections (Phase 3 — daily glance, weekly, monthly, quarterly). The new governance content surfaces in the **monthly** and **quarterly** ribbons, not in the daily-glance ribbon. A quarter end is when the model-risk-committee summary lands; a month end is when systematic-side decomposition is refreshed inside her standard report. Daily is still NAV / change / drawdown / operational alerts.
+
+## Coordination
+
+- **With David's office.** Transparency disclosures originate from David's firm-level supervisor surfaces (see [trader-archetype-david-pm-risk.md](trader-archetype-david-pm-risk.md), section 17 of his appendix where applicable). Elena's quarterly model-risk-committee summary is, in effect, a client-tier projection of David's committee deck. The platform must enforce that the projection is **outcomes only** — names of strategy classes, aggregate counts, incident summaries — never the firm's internal risk decompositions, internal attribution splits, or other clients' exposures.
+- **With investor relations.** IR is still her primary point of contact. The schedule-a-call / submit-a-question / request-a-custom-report flows from her existing Phase 2 absorb the new content (she may now ask: "walk me through the model-risk summary" or "explain the Q3 backtest-vs-live number"). IR coordinates with the PM and David's office on the response; Elena sees a single contact surface.
+- **With her own CIO and board.** Outside the platform. The platform's job is to make the governance content **forwardable** (PDF, Excel, email digest) into her own committee process. Same principle as her existing reporting: the fund's reporting is part of _her_ reporting.
+
+## Why This Matters
+
+- **Trust.** The single most important currency in Elena's relationship with the firm. Disclosing the governance surface — even at a coarse, outcomes-level grain — converts "trust the manager" into "trust the manager and verify the policy." Allocators with serious internal risk processes increasingly require this.
+- **Risk discipline she can defend.** Her board will ask "how is the firm preventing a runaway algo?" once they know the firm runs algorithms. The kill-switch policy disclosure and model-risk committee summary are her board answer. Without them, she has only the PM's voice.
+- **Operational integrity at the new attack surface.** The systematic side has more counterparties (venues, data vendors, protocols). Her counterparty / venue / protocol risk report expanding is not cosmetic — it tracks the actual surface area of the operation she has capital in.
+- **No new operational burden.** None of this adds a new screen, a new alert, a new cadence, or a new login step for her. The principle that the platform should feel **quiet by default** is preserved. The new content rides inside the existing reports and the existing vault.
