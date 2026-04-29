@@ -1,7 +1,7 @@
 /**
  * Family / archetype filter predicate used by trading surfaces
  * (orders / positions / P&L) to narrow a generic strategy dimension via
- * `FamilyArchetypePicker` selection persisted in `useGlobalScope`.
+ * `FamilyArchetypePicker` selection persisted in `useWorkspaceScope`.
  *
  * Matching strategy (tolerant of heterogeneous seed/mock/real-API data):
  *   1. If both `family` and `archetype` are undefined → always match.
@@ -20,11 +20,22 @@
  * empty tables during early seed-coverage work. Hard filtering should
  * kick in when real strategy-service wiring lands.
  *
- * Plan SSOT: ui_unification_v2_sanitisation_2026_04_20.plan.md § p3.
+ * For full WorkspaceScope filtering (asset_group / instrument_type /
+ * share_class / venue / strategy_id), see {@link matchesScope} in
+ * ./workspace-scope.ts. This file's predicate covers the narrow
+ * family/archetype axis used by legacy trading surfaces.
+ *
+ * Plan SSOT: dart_ux_cockpit_refactor_2026_04_29.plan.md §17 Phase 1.
  */
 import { ARCHETYPE_TO_FAMILY } from "./enums";
 import { FAMILY_METADATA } from "./families";
 import type { StrategyArchetype, StrategyFamily } from "./enums";
+
+// Re-export the canonical scope predicate so callers that only need the
+// generalised matcher can import it from this file (avoids deep imports
+// chasing).
+export { matchesScope, matchesScopeStrict } from "./workspace-scope";
+export type { ScopeMatchableRow } from "./workspace-scope";
 
 export interface FamilyFilterRow {
   readonly strategy_id?: string;
@@ -35,10 +46,7 @@ function normalise(value: string | undefined): string {
   return (value ?? "").trim().toUpperCase();
 }
 
-function familyMatchesLabelOrKey(
-  rowFamily: string | undefined,
-  family: StrategyFamily,
-): boolean {
+function familyMatchesLabelOrKey(rowFamily: string | undefined, family: StrategyFamily): boolean {
   if (rowFamily === undefined || rowFamily === "") return false;
   const up = normalise(rowFamily);
   if (up === family) return true; // enum key ("CARRY_AND_YIELD")
