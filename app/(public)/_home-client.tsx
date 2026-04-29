@@ -1,7 +1,9 @@
 "use client";
 
+import * as React from "react";
 import { ArrowRight, Globe } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 import { ArbitrageGalaxy } from "@/components/marketing/arbitrage-galaxy";
 import { renderWithTerms } from "@/components/marketing/render-with-terms";
@@ -9,6 +11,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { trackEvent } from "@/lib/analytics/track";
 import { SERVICE_LABELS } from "@/lib/copy/service-labels";
+import { useAuth } from "@/hooks/use-auth";
+import { useDefaultLanding } from "@/lib/auth/default-landing";
 
 // Three buckets, ordered by familiarity for an institutional reader.
 // Digital assets folds Crypto + DeFi; sports & prediction markets read
@@ -18,8 +22,24 @@ const ASSET_CLASSES = ["Digital assets", "Traditional markets", "Sports & predic
 /**
  * Homepage React composition. See `app/(public)/page.tsx` for the metadata,
  * word-budget, and CTA-discipline contracts this file implements.
+ *
+ * 2026-04-29: already-authenticated visitors are auto-redirected to their
+ * default landing (/dashboard for most, /investor-relations for IR
+ * personas) — they shouldn't re-land on the marketing homepage every time
+ * they visit the root URL. Anonymous prospects keep seeing the marketing
+ * page. SSOT: lib/auth/default-landing.ts.
  */
 export function HomePageClient() {
+  const router = useRouter();
+  const { user, loading } = useAuth();
+  const defaultLanding = useDefaultLanding();
+
+  React.useEffect(() => {
+    if (loading) return;
+    if (!user) return;
+    router.replace(defaultLanding());
+  }, [loading, user, defaultLanding, router]);
+
   return (
     <div className="min-h-screen bg-background">
       <main>

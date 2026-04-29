@@ -8,30 +8,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowRight, Mail, Lock, KeyRound } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
+import { useDefaultLanding } from "@/lib/auth/default-landing";
 import { toast } from "@/hooks/use-toast";
 import { isDemoPersonaEmail } from "@/lib/auth/personas";
 import { isMockDataMode } from "@/lib/runtime/data-mode";
 import Link from "next/link";
 
-/**
- * Emails that land on /investor-relations after login when the entitlement
- * check (investor-board / investor-archive) doesn't catch them — used as a
- * belt-and-suspenders fallback when the authz backend is slow or returns
- * an empty entitlements set. Module-scope so the Set isn't recreated on
- * every render. See `defaultLanding()` in LoginPage below.
- */
-const IR_EMAILS: ReadonlySet<string> = new Set([
-  // Canonical IR distribution aliases (com + co.uk).
-  "investors@odum-research.com",
-  "investors@odum-research.co.uk",
-  // Seeded singular personas (legacy demo accounts).
-  "investor@odum-research.co.uk",
-  "advisor@odum-research.co.uk",
-]);
-
 export default function LoginPage() {
   const router = useRouter();
-  const { user, loading, loginByEmail, loginError, hasEntitlement, isAdmin, isInternal } = useAuth();
+  const { user, loading, loginByEmail, loginError } = useAuth();
   const [redirectTo, setRedirectTo] = React.useState<string | null>(null);
 
   React.useEffect(() => {
@@ -45,6 +30,9 @@ export default function LoginPage() {
    * personas (Desmond, Patrick, etc.) and admin / internal accounts land on
    * /dashboard. An explicit `?redirect=` query param always wins.
    *
+   * Shared with the public homepage's logged-in-user auto-redirect — see
+   * `lib/auth/default-landing.ts` for the canonical resolution rules.
+   *
    * Detection is belt-and-suspenders: (a) the `investor-board` / `investor-archive`
    * entitlements when the user-management-api has returned them, (b) a hardcoded
    * email fallback (IR_EMAILS, module-scope) covering both the canonical IR
@@ -57,18 +45,7 @@ export default function LoginPage() {
    * return true for every entitlement (including investor-board / archive) and
    * route them to the IR hub on every login.
    */
-  const defaultLanding = React.useCallback((): string => {
-    if (isAdmin() || isInternal()) {
-      return "/dashboard";
-    }
-    if (hasEntitlement("investor-board") || hasEntitlement("investor-archive")) {
-      return "/investor-relations";
-    }
-    if (user?.email && IR_EMAILS.has(user.email.toLowerCase())) {
-      return "/investor-relations";
-    }
-    return "/dashboard";
-  }, [hasEntitlement, isAdmin, isInternal, user?.email]);
+  const defaultLanding = useDefaultLanding();
 
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
