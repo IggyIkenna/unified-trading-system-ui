@@ -41,7 +41,7 @@ The terminal must serve all of these:
 6. **DeFi-native event trades** — token unlocks, governance votes, protocol launches, restaking epoch boundaries, MEV opportunities around large pending swaps.
 7. **Stablecoin arbitrage and depeg trades** — UST, USDC, FDUSD, crvUSD events. Multi-venue, multi-pool.
 8. **Cross-chain arbitrage** — same asset priced differently on Ethereum vs Arbitrum vs Solana, requires bridging or atomic-swap infrastructure.
-9. **Liquidation hunting / opportunistic lending** — providing liquidity right before known stress events on Aave/Compound.
+9. **Liquidation capture** — monitor under-collateralized positions on Aave / Compound / Morpho / Euler / Kamino in real time; when a position's health factor drops below 1.0, atomically repay the debt + seize the collateral at a 5–10% bonus via flash-loan multicall, submitted as a Flashbots bundle to avoid front-runners. Zero directional risk; the edge is the protocol-paid bonus. Adjacent: opportunistic lending — supplying capital to a stressed market right before a known stress event so liquidations hit his book.
 10. **MEV-aware execution** — understanding when his own swaps will be sandwiched and routing accordingly (private mempools, MEV-share, CoW Protocol).
 
 ---
@@ -126,6 +126,17 @@ Protocol-layer overlay on [Catalyst / Event Calendar](common-tools.md#12-catalys
 - **Validator / staking events** — withdrawal queue lengths, slashing events.
 - Every event auto-cross-references current positions ("you have $4.2M exposed to this protocol").
 
+### Liquidation opportunity feed
+
+A real-time scanner over every lending market Julius is licensed to liquidate on. Every outstanding position on Aave V3 (six chains), Compound V3, Euler, Morpho, and Kamino is streamed in; the scanner computes `health_factor = (collateral × liq_threshold) / debt` per position and surfaces the ones nearest the threshold.
+
+- **Position-by-position health-factor distribution** per protocol per chain — a histogram of all live positions with the bucket below 1.05 highlighted; click-through to the underwater address, debt asset, collateral asset, and protocol.
+- **Liquidatable now panel** — positions with `health_factor < 1.0` ranked by expected net profit (`seized_collateral × (1 + liq_bonus) − debt_repaid − gas_at_current_priority − dex_slippage`). Stale entries auto-evicted within one block.
+- **Pre-liquidatable watch panel** — positions with `1.0 ≤ health_factor < 1.05` and a leading-indicator score (oracle drift, collateral-asset move in last N seconds, mempool-priced impact). These are the opportunities he warms up for.
+- **Per-protocol liquidation-bonus table** — current bonus per (protocol, collateral asset). Bonus changes with governance; the table shows last-changed-at.
+- **Competitor leaderboard** — recent liquidations on each protocol with caller address, profit, gas paid. Tells him which competitors are aggressive on which chains.
+- **Oracle-update tracking** — for protocols using push oracles (Chainlink), the next expected update for each collateral asset; for pull oracles (Pyth, RedStone), live deviation. Many liquidations become available the instant an oracle prints; this surface is leading-edge.
+
 ### Sentiment & narrative
 
 Layer on top of [News & Research Feed](common-tools.md#13-news--research-feed).
@@ -187,6 +198,19 @@ Real-time scanner showing the same asset priced differently across Ethereum / L2
 - **Cross-venue triggers** — "if Binance perp funding > X, send order to short on Binance and simultaneously borrow on Aave." Trader-configured glue logic, executed by the platform.
 - **Limit orders on-chain** — via CoW or 1inch fusion, with off-chain order monitoring on his terminal.
 - **TWAP/VWAP for on-chain** — split a large swap across blocks/hours; see [Execution Algos Library](common-tools.md#4-execution-algos-library).
+
+### Liquidation execution ticket
+
+A specialized ticket type for liquidation capture. Most trades on Julius's desk start with a thesis; liquidations start with a _target position_ — different ergonomics.
+
+- **Target position panel** — pre-filled from the opportunity feed. Shows: protocol, chain, underwater address, collateral asset + amount, debt asset + amount, current health factor, current liquidation bonus.
+- **Atomic bundle preview** — the multicall in plain English with each leg laid out: flash-loan → repay → seize collateral → DEX-swap collateral to debt asset → repay flash loan. Per-leg gas estimate and sub-tx revert reason if any.
+- **DEX route for the unwind leg** — same aggregator-aware preview as the on-chain ticket, but constrained to the collateral-asset → debt-asset pair with the flash-loan size as input. Slippage tolerance defaults to a tighter band than discretionary swaps because the bundle reverts atomically on shortfall.
+- **Profit calculator (live)** — `gross_seized − debt_repaid − flash_loan_fee − gas_at_priority − expected_swap_slippage = net`, recomputed every block. A red banner when net drops below the configured `min_profit_usd`.
+- **Submission mode toggle** — Flashbots bundle (Ethereum, Base) / equivalent bundlers per chain (Solana = Jito) / public mempool with aggressive priority fee. Default = bundle. Public-mempool requires explicit confirmation because of front-run risk.
+- **Priority-fee strategy** — auction-aware tip suggestion based on recent bundle-inclusion data for the target block. Shows historical win-rate at each tip level.
+- **Auto-repeat policy** — for unattended operation: configure a profit-floor + protocol-allowlist + chain-allowlist, and the platform fires bundles automatically as opportunities pass the floor. Rate-limited per minute. The discretionary trader still sees every fire in the audit feed.
+- **Failure-mode display** — bundle not included / included but reverted / partial fill / oracle moved against during simulation. Each failure mode logs gas burned for post-mortem.
 
 ### Pre-trade risk preview — unified across CeFi + DeFi
 
@@ -288,6 +312,17 @@ See [Alerts Engine](common-tools.md#14-alerts-engine).
 - **Exploit / incident alerts** — protocol he's in just had a security incident.
 - **Bridge / RPC alerts** — endpoint degraded, switch nodes.
 - **Whale-wallet alerts** — tracked wallet just made a large move in his exposure.
+
+### Liquidation-bot fleet monitor
+
+When liquidation capture runs as an unattended fleet (one bot per protocol-chain combo), Julius needs a single panel showing every bot's state without drilling in.
+
+- **Per-bot row** — protocol × chain × strategy slot. Columns: opportunities seen (24h), bundles submitted, bundles included, bundles reverted, net P&L, gas burned, hit rate, last-fire timestamp.
+- **Why-no-fire feed** — for opportunities the bot saw but didn't act on: profit-below-floor / lost-the-auction / simulation-reverted / capital-cap-hit / kill-switch-engaged. This is the diagnostic surface — silent bots are usually misconfigured, not "no opportunities."
+- **Capital-at-risk per bot** — flash-loan capacity used vs. cap, plus any wallet-balance prerequisites (gas float, base-asset for non-flash protocols).
+- **Inclusion-quality tracker** — bundle inclusion rate per builder/relay over the last N blocks; auto-fallback when a relay degrades.
+- **Per-chain gas budget** — daily gas spend per chain with budget bar; auto-throttles or pauses on overspend.
+- **Kill switch (per-protocol)** — pause this protocol's bot independent of others; required during oracle incidents, governance pauses, or audit-finding announcements.
 
 ### Trade journal & heatmap
 
@@ -448,7 +483,8 @@ His manual edge encoded as automated **strategy classes**, each spawning many **
 
 - **Cross-chain arb (same asset).** ETH or stable priced differently on Ethereum vs Arbitrum vs Base vs Solana. Bridges + destination-side swap + return path priced as a unit; only triggers when net spread > all-in cost (bridge fee + slippage + gas + time-VaR). ~15–25 instances per (asset × chain pair).
 - **Stablecoin-peg arb.** Multi-pool, multi-venue stablecoin arb when peg deviates beyond a z-score threshold (USDC on Curve vs USDC on Uniswap vs USDC on Binance). Sub-classes for "small deviation, mean-revert" vs "large deviation, crisis posture." ~10–20 instances; classes auto-dial-down sizing during depeg suspicion.
-- **Liquidation hunting / opportunistic lending.** Provide liquidity to Aave / Compound / Morpho immediately before known stress events; auto-claim from liquidations as a third party. ~5–10 instances.
+- **Liquidation capture (DeFi).** Atomic flash-loan liquidator that monitors all outstanding positions on Aave V3 (six chains), Compound V3, Euler, Morpho, and Kamino, fires a Flashbots-bundled multicall (flash-loan → repay → seize → DEX-swap → repay flash loan) the moment a position drops below `health_factor = 1.0`, and captures the protocol's 5–10% liquidation bonus. Zero directional risk; alpha is the structural bonus. ~6–12 instances per (protocol × chain) combination, sharing a common engine.
+- **Opportunistic lending supply.** Pre-positions lending capital into stressed markets just before known stress events so that subsequent liquidations against under-collateralized positions hit Julius's supply rather than a competitor's. ~5–10 instances. Distinct from liquidation capture (this is supply-side; the other is liquidator-side).
 - **MEV-aware execution as a class.** Not a strategy that generates alpha but a class of execution wrappers — every on-chain swap above $X gets routed through MEV-Share / Flashbots Protect / CoW with policy chosen by trade size, mempool toxicity, and slippage tolerance. Counts toward the fleet because each wrapper has its own state, retry logic, and audit.
 - **Restaking-epoch / unlock / governance event scaffolds.** Pre-positioned models that wake up around scheduled on-chain events (token unlocks, governance vote endings, restaking epoch boundaries, Pendle market expirations, Ethereum hard-forks). Each scaffold is a parameterized strategy class that runs only inside its event window. ~10–20 instances per quarter, mostly dormant most of the time.
 
@@ -510,7 +546,9 @@ Examples of what Julius's catalog tier likely contains. Marcus's CeFi datasets a
 
 - **Mempool archive (selective)** — Blocknative / Flashbots / per-chain equivalents; not full mempool (too much volume to retain), but classified subsets (large pending swaps, sandwich attempts, MEV bot activity).
 - **MEV-Share archive** — historical MEV-Share inclusion data; useful for measuring realized MEV cost on his own swaps and for benchmarking private-vs-public routing decisions.
-- **Liquidation event feeds (on-chain)** — every Aave / Compound / Morpho liquidation with size, asset, caller, profit. Useful for liquidation-hunting strategy research.
+- **Liquidation event archive** — every Aave V3 / Compound V3 / Euler / Morpho / Kamino liquidation across all supported chains with timestamp, block, underwater address, debt-asset + amount, collateral-asset + seized amount, liquidator address, gas paid, priority fee, bundle relay, net profit, oracle price at liquidation, oracle price one block prior. Used for strategy research, competitor benchmarking, and post-trade attribution on every liquidation Julius's bots win or lose.
+- **Health-factor history archive** — block-by-block health-factor of every position on supported lending protocols, indexed by underwater address. Used for backtesting the liquidation-capture strategy at full realism (every fired bundle replays against the real chain state at the historical block).
+- **Liquidator-leaderboard archive** — derived view of the liquidation event archive: per-liquidator rolling P&L, win-rate per protocol, gas-bid-distribution, bundle-relay preference. Tells Julius's strategies which competitors are aggressive on which markets and how they bid.
 - **Decoded swap tape** — every swap on every major DEX, decoded to (caller, pool, in-token, out-token, in-amount, out-amount, gas, MEV). Routed via aggregator → annotated with route.
 
 **Bridge and cross-chain:**
@@ -624,6 +662,18 @@ Marcus's full CeFi feature set is present in Julius's library by inheritance (he
 - `aave_supply_rate_zscore` — supply rate z-scored.
 - `lending_protocol_top_borrower_health_distribution` — health-factor distribution of top borrowers; signal for cascade risk.
 - `lending_market_concentration_per_protocol` — concentration of borrows on top-N borrowers.
+
+**Liquidation-capture features:**
+
+- `position_health_factor_live` — per outstanding position on supported lending protocols; streamed.
+- `position_health_factor_decay_velocity` — first derivative of health factor over a rolling N-block window; identifies positions trending toward 1.0.
+- `liquidatable_now_count_per_protocol` — count of currently-liquidatable positions per protocol, useful for capacity planning.
+- `expected_liquidation_profit_distribution` — for the set of currently-liquidatable opportunities, distribution of expected net profit; drives gas-bid sizing.
+- `liquidation_competitor_concentration` — Herfindahl over the historical liquidator-leaderboard archive per protocol; tells the bot how contested a market is.
+- `bundle_inclusion_rate_per_relay_recent` — recent inclusion rate per Flashbots relay / per-chain bundler; drives relay selection.
+- `priority_fee_winning_distribution` — distribution of winning priority fees on recent liquidation bundles per chain.
+- `oracle_price_drift_to_collateral_value` — collateral-asset spot drift vs last oracle update; predicts which positions will be liquidatable on next oracle print.
+- `protocol_liquidation_bonus_current` — current bonus per (protocol × collateral asset); auto-tracks governance changes.
 
 **LST / staking / restaking features:**
 
@@ -776,7 +826,8 @@ Pre-built cross-domain strategy compositions Julius starts from. Reduces time-to
 - **Cross-chain arb template.** Same asset on chain A vs chain B. Inputs: asset, chain pair, bridge route, all-in-cost threshold, max in-flight at once. Built-in: bridge-health gate; abort-if-bridge-degrades; persistence-aware sizing.
 - **Stablecoin-peg arb template.** Multi-pool, multi-venue. Inputs: stablecoin, deviation-z threshold, max position, crisis-suspicion gate (auto-down-size if peg-deviation persists past threshold). Built-in: depeg-pattern recognition; auto-flatten if deviation exceeds catastrophe threshold.
 - **Restaking-epoch / unlock event scaffold.** Pre-positioned model that wakes up around scheduled events. Inputs: target event class (restaking epoch / token unlock / governance vote / Pendle maturity), time-window, pre-event positioning rules, post-event exit rules. Built-in: event-window awareness; dormant-by-default with wake-on-proximity.
-- **Liquidation-hunting template.** Provide liquidity / capital to lending protocol immediately before known stress events; auto-bid on liquidations. Inputs: protocol, asset, capital cap, stress-trigger features (oracle-deviation, top-borrower-health-distribution shift). Built-in: auto-cool-down post stress.
+- **Liquidation-capture template.** Atomic flash-loan liquidator over a configurable set of lending protocols and chains. Inputs: protocol allowlist (Aave V3 per chain, Compound V3, Euler, Morpho, Kamino), debt-asset and collateral-asset filters, `min_profit_usd` floor, max debt repayed per opp, priority-fee strategy (`AGGRESSIVE` / `BALANCED` / `CONSERVATIVE`), submission mode (`FLASHBOTS_BUNDLE` / public mempool / chain-equivalent bundler), DEX route preference for the unwind leg, per-protocol kill-switch hooks. Built-in: health-factor watcher subscribing to on-chain state of all outstanding positions; pre-fail simulation of every bundle; auto-revert on profit shortfall mid-bundle; gas-budget cap per chain per day; auto-pause on protocol oracle-failure / governance-pause / abnormal bundle-fail rate. Handles 6 EVM chains (Ethereum, Arbitrum, Optimism, Polygon, Avalanche, Base) plus Solana (Kamino) under a unified config. _Maps to codex `LIQUIDATION_CAPTURE` archetype under `ARBITRAGE_STRUCTURAL`._
+- **Opportunistic-supply template.** The other side of liquidation capture: pre-position lending capital into a stressed market just before a known stress event so that liquidations against under-collateralized positions on that market hit Julius's supply rather than a competitor's. Inputs: protocol, asset, capital cap, stress-trigger features (oracle-deviation, top-borrower-health-distribution shift, large-wallet movement), auto-withdraw policy post-stress. Built-in: auto-cool-down post stress.
 - **MEV-aware swap wrapper.** Not a strategy per se; a wrapper for any other strategy's on-chain swap leg. Inputs: swap-size threshold for private routing, route allowlist, slippage tolerance, retry policy.
 
 Julius's day starts at a template and customizes from there. Many of his ~250 live strategies are instances of one of ~12 templates with parameter profiles tuned per (asset × venue × chain × protocol).
@@ -1120,6 +1171,7 @@ Distinct from Marcus's "Multi-Venue Capital + Balance Live State" — Julius's e
 - **Per chain wallet:** wallet identifier, native asset balance, token balances summarized, currently-pending tx count, gas balance.
 - **Per chain:** chain health (block production, reorg activity, sequencer status for L2s, RPC reachability across providers).
 - **Per protocol exposure summary:** Aave / Lido / Pendle / Uniswap / etc. — current $-exposure, current health (audit recency, recent incidents, governance state).
+- **Liquidation-bot fleet strip:** one row per (protocol × chain) liquidator instance with last-fire timestamp, opportunities seen / acted-on (24h), gas burned today vs cap, inclusion-rate vs target, kill-switch state. Foveal whenever a stress event is unfolding because liquidation supply must scale up while everyone else's risk is firing kill switches.
 - **In-flight bridges:** every capital movement currently traversing a bridge.
 - **Stablecoin peg strip:** every stablecoin Julius is exposed to with current peg status.
 - **Oracle health strip:** every oracle his strategies depend on with staleness / deviation status.

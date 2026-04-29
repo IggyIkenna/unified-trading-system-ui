@@ -24,7 +24,7 @@ External Data Sources (Tardis, Databento, IBKR, CCXT, on-chain RPCs, sports APIs
 │  symbols on      │    │  ticks, trades,  │    │  into canonical  │
 │  which venues,   │    │  events, odds,   │    │  OHLCV candles,  │
 │  since when?     │    │  match data      │    │  multi-timeframe │
-│                  │    │  from providers   │    │  aggregations    │
+│                  │    │  from providers  │    │  aggregations    │
 └──────────────────┘    └──────────────────┘    └──────────────────┘
    instruments-service   market-tick-data-svc    market-data-processing-svc
    corporate-actions     (Tardis, Databento)     (1m→5m→15m→1H→4H→1D)
@@ -85,7 +85,7 @@ Sources: Tardis (CeFi), CCXT, Databento/IBKR (TradFi), on-chain (DeFi)
 | **Instrument Catalogue**      | Browsable registry grouped by asset class → venue → instrument | EXISTS — Instrument Catalogue tab on overview page. Shows categories (Crypto CeFi, TradFi, DeFi, Onchain Perps, Predictions, Sports), venues within each, instrument types (spot, perpetuals, options, futures), coverage % and "since" date. |
 | **Instrument Count / Growth** | How many instruments exist, growth over time                   | PARTIAL — KPI card shows "23 Instruments" but this is mock data. Should show real counts per category.                                                                                                                                        |
 | **New Instruments Detection** | Alert when new instruments appear on a venue                   | MISSING                                                                                                                                                                                                                                       |
-| **Corporate Actions**         | Stock splits, delistings, symbol changes (TradFi)              | MISSING from UI (service exists: `corporate-actions`)                                                                                                                                                                                         |
+| **Corporate Actions**         | Stock splits, delistings, symbol changes (TradFi)              | MISSING from UI (service exists:`corporate-actions`)                                                                                                                                                                                          |
 
 ### Venue Registry
 
@@ -495,14 +495,14 @@ the downstream step has been completed, but it's not managed from here.
 
 All pipeline services run on GCP or AWS (cloud-agnostic via `unified-cloud-interface`):
 
-| Concern             | Details                                                                                                                                                        |
-| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Cloud Providers** | GCP (primary), AWS (secondary). Azure planned for future.                                                                                                      |
-| **Compute**         | Cloud Run (serverless) or VM instances (for heavy downloads)                                                                                                   |
-| **Storage**         | GCS (GCP) or S3 (AWS). Parquet format. Hive-style partitioning.                                                                                                |
-| **Regions**         | Asia-northeast1 (Tokyo) primary. Auto-zone rotation within region.                                                                                             |
-| **Buckets**         | Category-scoped: `market-data-tick-cefi-{project}`, `instruments-store-tradfi-{project}`, etc. Shared: `ml-models-store-{project}`, `strategy-store-{project}` |
-| **Data Format**     | Apache Parquet with Hive-style partition keys (`day=YYYY-MM-DD/venue=X/`)                                                                                      |
+| Concern             | Details                                                                                                                                                       |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Cloud Providers** | GCP (primary), AWS (secondary). Azure planned for future.                                                                                                     |
+| **Compute**         | Cloud Run (serverless) or VM instances (for heavy downloads)                                                                                                  |
+| **Storage**         | GCS (GCP) or S3 (AWS). Parquet format. Hive-style partitioning.                                                                                               |
+| **Regions**         | Asia-northeast1 (Tokyo) primary. Auto-zone rotation within region.                                                                                            |
+| **Buckets**         | Category-scoped:`market-data-tick-cefi-{project}`, `instruments-store-tradfi-{project}`, etc. Shared: `ml-models-store-{project}`, `strategy-store-{project}` |
+| **Data Format**     | Apache Parquet with Hive-style partition keys (`day=YYYY-MM-DD/venue=X/`)                                                                                     |
 
 ---
 

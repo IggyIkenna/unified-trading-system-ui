@@ -45,6 +45,9 @@ Detail in [trader-archetype-julius-hybrid.md](trader-archetype-julius-hybrid.md)
 - **Unified CeFi+DeFi positions blotter** — by underlying → by role → by venue/protocol, with on-chain-specific fields (LP range, health factor, PT YTM, points accrued).
 - **Multi-stage kill switch** — flatten CeFi instant, unwind on-chain to exit-mode, bridge to safety wallet.
 - **Synchronized CeFi+DeFi replay** — see Binance and Uniswap state at the same instant.
+- **Liquidation opportunity feed** — every outstanding position on Aave V3 (six chains) / Compound V3 / Euler / Morpho / Kamino with live `health_factor`, ranked liquidatable-now panel, pre-liquidatable watch panel, per-protocol bonus table, competitor leaderboard, oracle-update tracking.
+- **Liquidation execution ticket** — atomic flash-loan multicall (flash-loan → repay → seize → DEX-swap → repay flash loan) with bundle preview, live profit calculator, Flashbots / public-mempool toggle, priority-fee auction strategy, auto-repeat policy with profit floor, failure-mode display.
+- **Liquidation-bot fleet monitor** — per-(protocol × chain) bot row with opportunities seen / bundles submitted / included / reverted / net P&L / gas burned / hit rate, why-no-fire diagnostic feed, inclusion-quality tracker per builder/relay, per-chain gas budget bars, per-protocol kill switch.
 
 ### Quinn Park — Quant Overseer
 
