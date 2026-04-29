@@ -113,7 +113,7 @@ source "$SCRIPT_DIR/load-dev-secrets.sh" || true
 #   next — next dev with NEXT_PUBLIC_MOCK_API=true so client-side fetches
 #          go through lib/api/mock-handler.ts instead of trying to proxy
 #          to localhost:8030 (which doesn't exist in T0)
-if $FIREBASE_LOCAL; then
+if $FIREBASE_LOCAL && [ "$TIER" != "1" ] && [ "$TIER" != "2" ]; then
   cd "$UI_ROOT"
   echo "Starting Firebase Emulator Suite + Next.js dev server (T0 + emulators)…"
   echo "  Auth      → http://localhost:9099"
@@ -145,6 +145,16 @@ next dev --webpack"
   exec npx --yes concurrently --kill-others-on-fail \
     -n emu,seed,next -c green,yellow,cyan \
     "$EMU_CMD" "$SEED_CMD" "$NEXT_CMD"
+fi
+
+# When tier is 1 or 2 AND firebase emulator is requested, start the emulator
+# + seeder as background processes managed by start_process so the tier
+# dispatch below can still launch the API + UI. UI must be configured to
+# point at the emulator for auth (NEXT_PUBLIC_USE_FIREBASE_EMULATOR=true)
+# while still calling the real backend for data.
+EMULATOR_ON=false
+if $FIREBASE_LOCAL && ([ "$TIER" = "1" ] || [ "$TIER" = "2" ]); then
+  EMULATOR_ON=true
 fi
 
 MOCK_MODE="true"
@@ -288,9 +298,32 @@ stop_all
 
 echo ""
 echo "═══════════════════════════════════════════════════════════"
-echo "  Starting Tier $TIER ($(if $REAL_MODE; then echo 'REAL'; else echo 'MOCK'; fi) mode)"
+echo "  Starting Tier $TIER ($(if $REAL_MODE; then echo 'REAL'; else echo 'MOCK'; fi) mode)$(if $EMULATOR_ON; then echo ' + Firebase emulator'; fi)"
 echo "═══════════════════════════════════════════════════════════"
 echo ""
+
+# ─── Firebase emulators (when tier 1/2 + --firebase-local) ───────────────────
+
+if $EMULATOR_ON; then
+  echo "[FIREBASE] Starting emulator suite (auth/firestore/storage)…"
+  start_process "firebase-emulators" "$UI_ROOT" \
+    firebase emulators:start --only auth,firestore,storage \
+    --project=odum-local-dev \
+    --import=.local-dev-cache/emulator-state \
+    --export-on-exit=.local-dev-cache/emulator-state
+  echo "  Waiting for auth emulator…"
+  wait_for_port 9099 "firebase-auth" || true
+
+  echo "[FIREBASE] Seeding demo personas (idempotent)…"
+  start_process "firebase-seeder" "$UI_ROOT" \
+    env FIRESTORE_EMULATOR_HOST=localhost:8080 \
+        FIREBASE_AUTH_EMULATOR_HOST=localhost:9099 \
+        FIREBASE_STORAGE_EMULATOR_HOST=localhost:9199 \
+        FIREBASE_STAGING_PROJECT=odum-local-dev \
+    node scripts/admin/wait-and-seed-emulator.mjs
+  # Seeder runs and exits; not a blocker for downstream services.
+  echo ""
+fi
 
 # ─── Tier 0: UI only ─────────────────────────────────────────────────────────
 
@@ -311,22 +344,55 @@ if [ "$TIER" = "1" ] || [ "$TIER" = "2" ]; then
   echo "[T1] Starting API gateways..."
 
   # unified-trading-api (port 8030)
+  # In --real mode the backend reads GCS — needs GCP_PROJECT_ID + cloud
+  # provider gcp. In mock mode CLOUD_PROVIDER=local + no project_id.
+  # GCP_PROJECT_ID can be overridden at the shell level; default is the
+  # central-element-323112 dev project where TRADFI candles live.
+  if $REAL_MODE; then
+    UTAPI_CLOUD_PROVIDER="gcp"
+    UTAPI_PROJECT_ID="${GCP_PROJECT_ID:-central-element-323112}"
+  else
+    UTAPI_CLOUD_PROVIDER="local"
+    UTAPI_PROJECT_ID="mock-project"
+  fi
+  # Prefer the workspace venv when the repo-local one is missing — the
+  # workspace venv is what setup-workspace.sh builds for cross-repo dev.
+  UTAPI_PY="$WORKSPACE/unified-trading-api/.venv/bin/python"
+  if [ ! -x "$UTAPI_PY" ]; then
+    UTAPI_PY="$WORKSPACE/.venv-workspace/bin/python"
+  fi
   start_process "unified-trading-api" "$WORKSPACE/unified-trading-api" \
-    env CLOUD_MOCK_MODE="$MOCK_MODE" CLOUD_PROVIDER=local DISABLE_AUTH=true \
-    .venv/bin/python -m uvicorn "unified_trading_api.main:create_app" \
+    env CLOUD_MOCK_MODE="$MOCK_MODE" \
+        CLOUD_PROVIDER="$UTAPI_CLOUD_PROVIDER" \
+        GCP_PROJECT_ID="$UTAPI_PROJECT_ID" \
+        GOOGLE_CLOUD_PROJECT="$UTAPI_PROJECT_ID" \
+        DISABLE_AUTH=true \
+        ENVIRONMENT=development \
+        MARKET_DATA_BUCKET_VARIANT="${MARKET_DATA_BUCKET_VARIANT:-prod}" \
+    "$UTAPI_PY" -m uvicorn "unified_trading_api.main:create_app" \
     --factory --host 0.0.0.0 --port 8030
 
   # Auth is Firebase-based (VITE_SKIP_AUTH=true in mock mode) — no auth-api process.
 
-  # client-reporting-api (port 8014)
-  start_process "client-reporting-api" "$WORKSPACE/client-reporting-api" \
-    env CLOUD_MOCK_MODE="$MOCK_MODE" CLOUD_PROVIDER=local DISABLE_AUTH=true \
-    .venv/bin/python -m uvicorn client_reporting_api.api.main:app --host 0.0.0.0 --port 8014
+  # client-reporting-api (port 8014) — optional, skip if its venv isn't built
+  if [ -x "$WORKSPACE/client-reporting-api/.venv/bin/python" ]; then
+    start_process "client-reporting-api" "$WORKSPACE/client-reporting-api" \
+      env CLOUD_MOCK_MODE="$MOCK_MODE" CLOUD_PROVIDER=local DISABLE_AUTH=true \
+      .venv/bin/python -m uvicorn client_reporting_api.api.main:app --host 0.0.0.0 --port 8014
+    REPORTING_STARTED=true
+  else
+    echo "  Skipping client-reporting-api — .venv not built (reports tab will be unavailable)"
+    REPORTING_STARTED=false
+  fi
 
   echo ""
   echo "  Waiting for APIs..."
   wait_for_port 8030 "unified-trading-api"
-  wait_for_port 8014 "client-reporting-api"
+  # Only wait on reporting if we actually started it.
+  if [ "${REPORTING_STARTED:-false}" = "true" ]; then
+    wait_for_port 8014 "client-reporting-api" || \
+      echo "    ⚠️  client-reporting-api didn't come up in time — reports tab may be unavailable"
+  fi
 fi
 
 # ─── Tier 2: + downstream services ───────────────────────────────────────────
@@ -426,9 +492,33 @@ if [ "$TIER" = "2" ]; then INTEGRATION="full_mesh"; fi
 # intentionally unset here so the admin catalogue falls back to mock seed
 # data — dev-tiers is mock-only. Set these in `.env.local` to exercise the
 # live-mode adapter against a real strategy-service + features-* mesh.
-start_process "ui" "$UI_ROOT" \
-  env NEXT_PUBLIC_MOCK_API=true NEXT_PUBLIC_UI_INTEGRATION="$INTEGRATION" \
-  npx next dev
+# UI mock mode follows --real: in --real the UI calls the backend
+# (NEXT_PUBLIC_MOCK_API=false), in mock the UI uses in-browser fixtures.
+UI_MOCK="true"
+if $REAL_MODE; then UI_MOCK="false"; fi
+
+# When the Firebase emulator is up, route auth/firestore/storage SDK calls
+# at it. Otherwise the UI falls through to whatever NEXT_PUBLIC_FIREBASE_*
+# is configured (real Firebase project from .env.local).
+if $EMULATOR_ON; then
+  start_process "ui" "$UI_ROOT" \
+    env NEXT_PUBLIC_MOCK_API="$UI_MOCK" \
+        NEXT_PUBLIC_UNIFIED_API_URL="${NEXT_PUBLIC_UNIFIED_API_URL:-http://localhost:8030}" \
+        NEXT_PUBLIC_UI_INTEGRATION="$INTEGRATION" \
+        NEXT_PUBLIC_USE_FIREBASE_EMULATOR=true \
+        NEXT_PUBLIC_AUTH_PROVIDER=firebase \
+        NEXT_PUBLIC_FIREBASE_PROJECT_ID=odum-local-dev \
+        FIRESTORE_EMULATOR_HOST=localhost:8080 \
+        FIREBASE_AUTH_EMULATOR_HOST=localhost:9099 \
+        FIREBASE_STORAGE_EMULATOR_HOST=localhost:9199 \
+    npx next dev
+else
+  start_process "ui" "$UI_ROOT" \
+    env NEXT_PUBLIC_MOCK_API="$UI_MOCK" \
+        NEXT_PUBLIC_UNIFIED_API_URL="${NEXT_PUBLIC_UNIFIED_API_URL:-http://localhost:8030}" \
+        NEXT_PUBLIC_UI_INTEGRATION="$INTEGRATION" \
+    npx next dev
+fi
 
 echo ""
 echo "  Waiting for UI..."

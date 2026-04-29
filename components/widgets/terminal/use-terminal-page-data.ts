@@ -23,8 +23,14 @@ import * as React from "react";
 import type { TerminalData, TerminalInstrument } from "./terminal-data-context";
 
 // Hard cap on scroll-back history to keep memory bounded and avoid hammering
-// GCS with consecutive empty-day fetches. 30 days back from the initial as_of.
-const MAX_HISTORY_DAYS = 30;
+// GCS with consecutive empty-day fetches. 90 days back from the initial as_of.
+const MAX_HISTORY_DAYS = 90;
+
+// Scroll-back fetches a window of days at once instead of one day at a time.
+// One round-trip with parallel GCS reads on the backend beats N sequential
+// per-day round-trips through the proxy. Tune up if user reports still feels
+// slow; tune down if a window often returns mostly empty days.
+const SCROLLBACK_WINDOW_DAYS = 7;
 
 interface RawCandle {
   time: number;
@@ -402,14 +408,19 @@ export function useTerminalPageData(): TerminalPageResult {
     const earliest = earliestLoadedRef.current;
     if (!earliest) return;
 
+    // Fetch a window of N days at once. Backend does parallel GCS reads —
+    // one wider call beats N sequential per-day proxies through the gateway.
     const earliestDate = new Date(`${earliest}T00:00:00Z`);
-    const targetDate = new Date(earliestDate);
-    targetDate.setUTCDate(targetDate.getUTCDate() - 1);
-    const targetStr = targetDate.toISOString().slice(0, 10);
+    const toDate = new Date(earliestDate);
+    toDate.setUTCDate(toDate.getUTCDate() - 1);
+    const fromDate = new Date(toDate);
+    fromDate.setUTCDate(fromDate.getUTCDate() - (SCROLLBACK_WINDOW_DAYS - 1));
+    const fromStr = fromDate.toISOString().slice(0, 10);
+    const toStr = toDate.toISOString().slice(0, 10);
 
     const initialAsOf = initialAsOfRef.current ?? earliest;
     const initialDate = new Date(`${initialAsOf}T00:00:00Z`);
-    const daysBack = Math.floor((initialDate.getTime() - targetDate.getTime()) / (1000 * 60 * 60 * 24));
+    const daysBack = Math.floor((initialDate.getTime() - fromDate.getTime()) / (1000 * 60 * 60 * 24));
     if (daysBack > MAX_HISTORY_DAYS) {
       noMoreHistoryRef.current = true;
       return;
@@ -421,16 +432,25 @@ export function useTerminalPageData(): TerminalPageResult {
       venue: selectedInstrument.venue,
       instrument: selectedInstrument.symbol,
       timeframe,
-      count: "500",
+      count: "5000",
       mode: "batch",
-      from_date: targetStr,
-      to_date: targetStr,
+      from_date: fromStr,
+      to_date: toStr,
     });
     typedFetch<CandlesApiResponse>(`/api/market-data/candles?${params.toString()}`, token)
       .then((result) => {
-        const rows = ((result as Record<string, unknown>).candles as Array<Record<string, unknown>> | undefined) ?? [];
-        // Always advance the pointer so consecutive empty days don't stall scroll-back.
-        earliestLoadedRef.current = targetStr;
+        // Backend wraps the candle list in `data` (single_response). Older mock
+        // paths used `candles` — accept either so the hook keeps working through
+        // schema drift. (Same fallback as the initial fetch at line ~690.)
+        const raw = result as Record<string, unknown>;
+        const rows =
+          (raw.data as Array<Record<string, unknown>> | undefined) ??
+          (raw.candles as Array<Record<string, unknown>> | undefined) ??
+          [];
+        // Always advance the pointer to the *start* of the window so the next
+        // scroll-back fetches the next window backward — even if this window
+        // had only weekend/holiday empty days.
+        earliestLoadedRef.current = fromStr;
         if (rows.length > 0) {
           const mapped: RawCandle[] = rows.map((c) => ({
             time: c.time as number,
