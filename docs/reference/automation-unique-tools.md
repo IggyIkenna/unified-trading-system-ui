@@ -88,6 +88,9 @@ Detail in [trader-archetype-julius-hybrid.md](trader-archetype-julius-hybrid.md)
 - Oracle-deviation history (Chainlink / Pyth / UMA dispute history).
 - Mempool stream archive.
 - Reorg-sensitive raw-events vs decoded-contract-calls (decoder versioning).
+- Liquidation event archive (every Aave V3 / Compound V3 / Euler / Morpho / Kamino liquidation with caller, profit, gas, relay, oracle context).
+- Health-factor history archive (block-by-block per-position, indexed by underwater address).
+- Liquidator-leaderboard archive (derived per-competitor P&L, win-rate, gas-bid distribution per protocol).
 
 **Feature library extensions:**
 
@@ -99,6 +102,7 @@ Detail in [trader-archetype-julius-hybrid.md](trader-archetype-julius-hybrid.md)
 - Bridge-flow imbalance.
 - MEV exposure / sandwich-risk score.
 - Smart-contract age-since-deployment.
+- Position health-factor live + decay velocity; liquidatable-now count per protocol; expected-liquidation-profit distribution; bundle-inclusion-rate per relay; priority-fee winning distribution; oracle-price-drift to collateral value; current liquidation bonus per (protocol × collateral); liquidator-competitor concentration.
 
 **Strategy template library:**
 
@@ -111,6 +115,8 @@ Detail in [trader-archetype-julius-hybrid.md](trader-archetype-julius-hybrid.md)
 - Stablecoin arbitrage / depeg trades.
 - Cross-chain arbitrage.
 - MEV-aware execution.
+- Liquidation capture (atomic flash-loan multicall over Aave V3 six chains + Compound V3 + Euler + Morpho + Kamino; submission via Flashbots bundle / chain-equivalent bundler; per-protocol kill-switch hooks). _Maps to codex `LIQUIDATION_CAPTURE` archetype._
+- Opportunistic-supply (pre-position lending capital into stressed markets so liquidations hit Julius's supply rather than a competitor's; auto-withdraw post-stress).
 
 **Distinct surfaces (most-unique on the floor):**
 
@@ -122,6 +128,7 @@ Detail in [trader-archetype-julius-hybrid.md](trader-archetype-julius-hybrid.md)
 - **Protocol-trust-call as a first-class lifecycle event** — adding / pulling exposure to a protocol requires David sign-off similar to strategy promotion.
 - **Bridge ticket + bridge state monitor** — LayerZero / Across / Stargate / native compared with TVL / incident health.
 - **DEX aggregator route preview** — 1inch / CoW / Jupiter / Odos / Bebop quotes side-by-side with MEV exposure rating.
+- **Liquidation-bot fleet panel** — per-(protocol × chain) bot row in the live-state surface with last-fire timestamp, opportunities-seen vs acted-on, gas-burned-today vs cap, inclusion-rate vs target, kill-switch state. Foveal during stress events because liquidation supply must scale up while everyone else's risk is firing kill switches. Fleet is supervised, not discretionary — but inclusion-quality and gas-budget anomalies route to Julius for judgment.
 
 ### Quinn Park — Quant Overseer
 
