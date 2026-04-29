@@ -963,6 +963,100 @@ Efficiency / risk / PnL.
 
 ---
 
+## 10.5 Treasury — Policy and Operational Layers
+
+### What it is
+
+Treasury is the layer below capital allocation. Allocation decides _how much_ capital each strategy gets. Treasury decides _where that capital lives, how it moves, and under what policy_. Most automation docs collapse treasury into "operations" or treat it as a DeFi-only concern; in reality every fund-running shop — TradFi or digital-asset — has a treasury layer with two genuinely different sub-surfaces that must not be confused.
+
+### Why it matters
+
+Treasury sits at the seam between strategy logic and operational reality. Mix the two layers and bad things happen:
+
+- An ops engineer rotates a wallet address in an emergency and accidentally creates a new "strategy version" in the registry, breaking attribution.
+- A research promotion changes collateral policy from USDC to USDT and the bundle silently inherits a wallet address from the prior version, routing fills to the wrong account.
+- An audit asks "what was the active hedge ratio on Tuesday?" and the answer can't be reconstructed because the hedge ratio was treated as operational config and overwritten in place.
+
+The discipline below prevents all three.
+
+### Two layers
+
+#### Treasury Policy Config (strategy-attached, versioned)
+
+Decisions that are part of the strategy's economic logic. Travel inside the release artifact (see cross-cutting principle #11). Material changes require a new release bundle; bounded changes are runtime overrides within bundle-declared guardrails.
+
+- Collateral asset (USDC / USDT / BTC / ETH / fiat).
+- Hedge asset and target hedge ratio.
+- Rebalance threshold and frequency (with a min/max range declared on the bundle).
+- Target LTV / leverage cap (DeFi).
+- Stablecoin preference and depeg-tolerance band.
+- Share class (BTC-neutral / ETH-native / USD-USDT / fund-class).
+- Yield rotation policy (which lending markets, which staked-yield instruments, what minimum APR threshold).
+- Treasury allocation policy (idle-cash deployment rules — T-bills / money market / on-chain yield).
+
+A trader proposing a change here goes through Research / Allocate, validates execution-aware, and ships a new bundle.
+
+#### Treasury Operational Config (audited, NOT strategy-versioned)
+
+Plumbing that delivers the policy. Audited and versioned in its own right, but never causes a strategy version bump.
+
+- Wallet address(es).
+- Custody account (Fireblocks / Copper / BitGo / Anchorage / cold-storage policy).
+- Exchange account / sub-account assignment.
+- Signer policy (who must approve a withdrawal, M-of-N quorum, hardware-key requirements).
+- Withdrawal / transfer limits per period.
+- Settlement account routing.
+- API keys for treasury-relevant services (custody, banking, wallet providers).
+
+A trader rotating a wallet under an exploit response, an ops engineer rotating an API key, the firm's CFO changing the settlement bank — all these flow through this surface. Audited, time-stamped, never silently mutating strategy lineage.
+
+### What the trader needs to see
+
+**Treasury policy view (per strategy / per bundle):**
+
+- Active collateral, hedge, share class, LTV, rebalance threshold.
+- Source bundle ID + bundle version (so the policy is traceable).
+- Active runtime overrides on top of bundle policy (e.g. _"hedge ratio temporarily widened to 1.2x; expires Friday 17:00; reason: pre-FOMC volatility"_).
+- Historical policy changes — when each version was promoted, what changed, what bundle replaced what.
+
+**Treasury operations view (per account / per wallet / per signer):**
+
+- Active wallet addresses, custody accounts, exchange accounts, API keys (last-rotated, rotation cadence).
+- Signer roster + quorum requirements.
+- Withdrawal limits and period-to-date utilisation.
+- Recent operational changes — every wallet rotation, signer add/remove, API-key rotation, custody migration. Audit log with timestamp + actor + reason + pre/post state.
+- Pending operational changes (signer-quorum approvals in flight).
+
+**Cross-layer reconciliation view:**
+
+- "Show me every strategy whose treasury policy depends on the wallet address I'm about to rotate."
+- "Show me every running bundle whose hedge asset is USDC, with P&L impact if USDC depegs 1%."
+- "Show me the audit chain for every fill on Tuesday — bundle policy + active overrides + operational wallet routing — reconciled into one trail."
+
+### Design principles
+
+- **Policy and operations are distinct objects.** A treasury policy field that uses an operational identifier (e.g. policy says _"hedge into wallet 0xABC..."_) is a category error. Policy says _"hedge to my designated hedge wallet"_; operations resolves which wallet that is.
+- **Operations changes are audited, but never silently bump strategy versions.** Rotating a wallet should be invisible to strategy attribution as long as the new wallet honours the same policy.
+- **Bundle guardrails declare what runtime treasury overrides are allowed.** A bundle can say _"rebalance threshold may be tuned in [0.5%, 5.0%]; route may switch to any approved hedge wallet; LTV may be tightened but never loosened."_ Outside-guardrail changes require a new bundle.
+- **Reconciliation is end-of-day mandatory.** A daily automated reconciliation pass verifies: every fill matches a bundle, every bundle's treasury policy was honoured by the operational layer, no untagged movements occurred.
+- **DeFi treasury inherits this shape.** Wallet addresses, signer policies, gas budgets, bridge routes, MEV protection settings — all operational. Collateral asset, target LTV, liquidation buffer, restaking policy — all policy.
+
+### Archetype variations
+
+- **Marcus / Mira / Sasha** — exchange accounts + sub-account assignment dominate the operational layer; spot/perp/option settlement reconciliation dominates the cross-layer view. Policy is mostly collateral asset + share class.
+- **Julius** — DeFi-native; the operational layer carries the wallet roster, signer quorum, bridge routing; the policy layer carries collateral / LTV / restaking / yield-rotation rules. The most demanding archetype for this surface — every strategy touches both layers continuously.
+- **Henry / Ingrid / Yuki / Theo / Naomi / Rafael** — TradFi prime-broker custody dominates the operational layer; share class + hedge currency + collateral type dominate the policy layer.
+- **Diego / Aria** — exchange / sportsbook account assignment + KYC compliance dominate the operational layer; stake-sizing-as-policy is treasury-adjacent but more naturally lives in the strategy composition layer.
+- **Quinn** — supervises treasury at fleet level; flags when a strategy's bundle declares treasury policy out of step with firm-level treasury defaults.
+- **David** — owns the firm-level treasury operational policy (signer quorum minimums, custody concentration limits, total wallet exposure caps); reviews every release bundle's treasury policy before approving for live.
+- **Elena** — does not see operational treasury; sees policy-level treasury only insofar as her share class and collateral type are reported.
+
+### Used by
+
+All 15 archetypes touch treasury one way or the other. **Foveal for:** Julius, David. **Active daily for:** Marcus, Mira, Sasha, Ingrid, Yuki, Theo (managing settlement / collateral / hedge currency at scale). **Read-only / report-only for:** Elena. The platform's Operations Lead (a 17th archetype, see [trader-archetype-priya-platform-ops-lead.md](trader-archetype-priya-platform-ops-lead.md)) is the primary owner of the operational sub-layer.
+
+---
+
 ## 11. The Live Fleet Supervision Console
 
 ### What it is

@@ -14,6 +14,12 @@ These docs deliberately **avoid any reference to the current platform**. They de
 
 ---
 
+## Platform Comparison
+
+These docs deliberately avoid platform specifics. The translation between this ideal-world reference and the current Odum platform lives in `unified-trading-pm/plans/active/dart_ux_cockpit_refactor_2026_04_29.plan.md` — see specifically §4.5 (Strategy Availability Resolver), §4.8 (Configuration Lifecycle: `StrategyReleaseBundle` / `RuntimeOverride` / `ExternalSignalStrategyVersion`), §4.9 (Widget Vocabulary SSOT mapping plan widgets to canonical surface names from `common-tools.md` and `automation-common-tools.md`), §4.10 (v2 archetype-expansion roadmap), and §4.11 (cross-cutting widget conventions). When the platform evolves, those sections record gaps, plans, and progress against the ideal described here. Comparison-doc drafts per archetype cluster (DART-as-it-is vs Marcus-ideal-world etc.) sit alongside the plan as a follow-up evaluation track.
+
+---
+
 ## Foundation
 
 | Doc                                                    | What it covers                                                                                                                                      |
@@ -82,34 +88,45 @@ The same trader, after their daily edge is encoded into models and rules running
 
 ## Supervision & Client Side
 
-| Persona         | Role                                                                                                                | Doc                                                                                    |
-| --------------- | ------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| **David Reyes** | Portfolio Manager / Head of Risk — sits above the desk, allocates capital, sets limits, monitors aggregate exposure | [trader-archetype-david-pm-risk.md](trader-archetype-david-pm-risk.md)                 |
-| **Elena Costa** | External client / institutional allocator — the opposite end of the platform from the traders                       | [trader-archetype-elena-external-client.md](trader-archetype-elena-external-client.md) |
+| Persona             | Role                                                                                                                                                            | Doc                                                                                                              |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| **David Reyes**     | Portfolio Manager / Head of Risk — sits above the desk, allocates capital, sets limits, monitors aggregate exposure                                             | [trader-archetype-david-pm-risk.md](trader-archetype-david-pm-risk.md)                                           |
+| **Elena Costa**     | External client / institutional allocator — the opposite end of the platform from the traders                                                                   | [trader-archetype-elena-external-client.md](trader-archetype-elena-external-client.md)                           |
+| **Sebastian Kovac** | External signal provider — brings own research and signal logic; uses the platform for execution, risk gating, reporting, and versioned performance attribution | [trader-archetype-sebastian-external-signal-provider.md](trader-archetype-sebastian-external-signal-provider.md) |
+
+---
+
+## Platform Operations
+
+| Persona         | Role                                                                                                                                                                                                     | Doc                                                                                        |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| **Priya Anand** | Platform Operations Lead — manages the venue / protocol / data registry, account & connectivity setup, entitlement administration, release-bundle approval queue, and platform-level audit & permissions | [trader-archetype-priya-platform-ops-lead.md](trader-archetype-priya-platform-ops-lead.md) |
 
 ---
 
 ## Quick Lookup — "Who do I read for…?"
 
-| If you're designing…                              | Read primarily | Plus                                                                           |
-| ------------------------------------------------- | -------------- | ------------------------------------------------------------------------------ |
-| A spot / perp execution surface                   | Marcus         | Mira (microstructure), Yuki (multi-LP)                                         |
-| An options / vol surface                          | Sasha          | Marcus (delta hedging)                                                         |
-| A multi-leg / cross-domain ticket                 | Julius         | Rafael (multi-asset), Naomi (pair)                                             |
-| A positions blotter                               | Marcus         | Julius (unified CeFi+DeFi), Ingrid (DV01-bucketed), Yuki (currency-decomposed) |
-| A risk panel                                      | David          | Marcus (per-trader), Sasha (greek-decomposed)                                  |
-| A research / strategy lifecycle UI                | Quinn          | David (promotion gate)                                                         |
-| A market-making / latency-critical UI             | Mira           | —                                                                              |
-| Earnings / catalyst tooling                       | Henry          | Naomi (regulatory catalysts)                                                   |
-| Yield-curve / spread visualization                | Ingrid         | Theo (forward curves)                                                          |
-| Themes / cross-asset tracking                     | Rafael         | David (firm-level aggregation)                                                 |
-| FX matrix / currency decomposition                | Yuki           | —                                                                              |
-| Forward curves / inventory-driven flows           | Theo           | Ingrid (curve thinking)                                                        |
-| Deal pipeline / regulatory tracking               | Naomi          | —                                                                              |
-| Capital allocation / limits / firm-wide oversight | David          | Quinn (strategy-level)                                                         |
-| In-play / live event trading (sports, racing)     | Diego          | Mira (microstructure parallel)                                                 |
-| Prediction markets / event research / multi-venue | Aria           | Naomi (deal-as-object), Rafael (themes)                                        |
-| Client-facing reporting & access                  | Elena          | David (institutional reports)                                                  |
+| If you're designing…                                                                                        | Read primarily | Plus                                                                           |
+| ----------------------------------------------------------------------------------------------------------- | -------------- | ------------------------------------------------------------------------------ |
+| A spot / perp execution surface                                                                             | Marcus         | Mira (microstructure), Yuki (multi-LP)                                         |
+| An options / vol surface                                                                                    | Sasha          | Marcus (delta hedging)                                                         |
+| A multi-leg / cross-domain ticket                                                                           | Julius         | Rafael (multi-asset), Naomi (pair)                                             |
+| A positions blotter                                                                                         | Marcus         | Julius (unified CeFi+DeFi), Ingrid (DV01-bucketed), Yuki (currency-decomposed) |
+| A risk panel                                                                                                | David          | Marcus (per-trader), Sasha (greek-decomposed)                                  |
+| A research / strategy lifecycle UI                                                                          | Quinn          | David (promotion gate)                                                         |
+| A market-making / latency-critical UI                                                                       | Mira           | —                                                                              |
+| Earnings / catalyst tooling                                                                                 | Henry          | Naomi (regulatory catalysts)                                                   |
+| Yield-curve / spread visualization                                                                          | Ingrid         | Theo (forward curves)                                                          |
+| Themes / cross-asset tracking                                                                               | Rafael         | David (firm-level aggregation)                                                 |
+| FX matrix / currency decomposition                                                                          | Yuki           | —                                                                              |
+| Forward curves / inventory-driven flows                                                                     | Theo           | Ingrid (curve thinking)                                                        |
+| Deal pipeline / regulatory tracking                                                                         | Naomi          | —                                                                              |
+| Capital allocation / limits / firm-wide oversight                                                           | David          | Quinn (strategy-level)                                                         |
+| In-play / live event trading (sports, racing)                                                               | Diego          | Mira (microstructure parallel)                                                 |
+| Prediction markets / event research / multi-venue                                                           | Aria           | Naomi (deal-as-object), Rafael (themes)                                        |
+| Client-facing reporting & access                                                                            | Elena          | David (institutional reports)                                                  |
+| External signal intake / instruction mapping / versioned external strategies                                | Sebastian      | David (firm-aggregate risk over external + internal strategies)                |
+| Venue & protocol registry / account setup / API keys / entitlements / release-bundle approval queue / audit | Priya          | David (sees the audit, doesn't author it)                                      |
 
 ---
 
@@ -127,6 +144,7 @@ Several principles show up in nearly every doc and are worth calling out at the 
 8. **Audit trails are non-negotiable.** Every parameter change, override, allocation, intervention, RFQ acceptance — timestamped and reasoned.
 9. **Aggregation must drill down.** Every rolled-up number should be drillable to the source, with no loss of fidelity.
 10. **Compliance / counterparty / venue / borrow are inline, not separate workflows.** The friction of pre-trade checks belongs in the ticket, not a sidecar tool.
+11. **Release artifact as system-of-record.** Promoting a strategy to live produces an immutable release bundle that pins every version dimension that affects behaviour — strategy version, model version, feature-set version, execution config, risk config, treasury policy, venue set, instrument universe, signal/instruction schemas, validation evidence. Live runtime mutations (size multiplier, venue disable, execution preset switch, treasury route, pause / exit-only / kill-switch) are an audited additive layer that never rewrites the release bundle. This is what makes the platform a system of record rather than a control panel where live behaviour silently drifts from research provenance.
 
 ---
 
