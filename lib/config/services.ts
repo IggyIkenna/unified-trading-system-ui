@@ -48,68 +48,14 @@ export interface ServiceDefinition {
 }
 
 export const SERVICE_REGISTRY: readonly ServiceDefinition[] = [
-  // ─── DART Terminal (Signals-In + DART-Full visible) ────────────────────────
-  // SSOT: unified-trading-pm/codex/14-playbooks/dart/dart-terminal-vs-research.md
-  // Trading-day surfaces: terminal, observe, catalogue, signal-intake, data.
-  // Visible to anyone with execution-basic / execution-full.
-  {
-    key: "dart-terminal",
-    label: "DART Terminal",
-    description:
-      "Live trading surfaces — terminal, positions, orders, P&L, observe, strategy catalogue, signal intake.",
-    href: "/services/trading/overview",
-    lifecycleStage: "run",
-    requiredEntitlements: ["execution-basic", "execution-full", "data-basic", "data-pro"] as readonly Entitlement[],
-    icon: "TrendingUp",
-    internalOnly: false,
-    subRoutes: [
-      {
-        key: "terminal",
-        label: "Terminal",
-        href: "/services/trading/terminal",
-        icon: "Activity",
-        requiredEntitlements: ["execution-basic", "execution-full"] as readonly Entitlement[],
-        description: "Positions, orders, P&L, emergency manual intervention.",
-      },
-      {
-        key: "observe",
-        label: "Observe",
-        href: "/services/observe/risk",
-        icon: "Eye",
-        requiredEntitlements: ["execution-basic", "execution-full"] as readonly Entitlement[],
-        description: "Risk, alerts, strategy health, system health.",
-      },
-      {
-        key: "strategy-catalogue",
-        label: "Catalogue",
-        href: "/services/strategy-catalogue",
-        icon: "Layers",
-        requiredEntitlements: ["strategy-full", "execution-full"] as readonly Entitlement[],
-        description: "Reality + FOMO view of the shared Tier-3 strategy catalogue primitive.",
-      },
-      {
-        key: "signal-intake",
-        label: "Signal Intake",
-        href: "/services/signals/dashboard",
-        icon: "Radio",
-        requiredEntitlements: ["execution-full"] as readonly Entitlement[],
-        description: "Inbound webhooks for DART Signals-In clients.",
-      },
-      {
-        key: "data",
-        label: "Data",
-        href: "/services/data/overview",
-        icon: "Database",
-        requiredEntitlements: ["*"],
-        description: "Instrument catalogue + data freshness (admin/internal only).",
-      },
-    ],
-  },
-
   // ─── DART Research (DART-Full only — padlocked-visible for Signals-In) ─────
   // SSOT: unified-trading-pm/codex/14-playbooks/dart/dart-terminal-vs-research.md
   // Lifecycle stages: Develop / Train / Validate / Allocate / Promote.
   // Strategy lists within each stage use family → archetype → asset_group.
+  // 2026-04-29: Research listed BEFORE Terminal so the dashboard renders the
+  // research workbench tile to the LEFT of the live-trading tile (research
+  // comes first in the build → run → observe lifecycle, and that ordering
+  // matches the user's mental model).
   {
     key: "dart-research",
     label: "DART Research",
@@ -214,6 +160,65 @@ export const SERVICE_REGISTRY: readonly ServiceDefinition[] = [
         icon: "ArrowUpCircle",
         requiredEntitlements: ["strategy-full", "ml-full"] as readonly Entitlement[],
         description: "Candidate review + approval queue + handoff to live (Promote).",
+      },
+    ],
+  },
+
+  // ─── DART Terminal (Signals-In + DART-Full visible) ────────────────────────
+  // SSOT: unified-trading-pm/codex/14-playbooks/dart/dart-terminal-vs-research.md
+  // Trading-day surfaces: terminal, observe, catalogue, signal-intake, data.
+  // Visible to anyone with execution-basic / execution-full. Listed AFTER
+  // Research so the dashboard renders research-first (left) → terminal (right).
+  {
+    key: "dart-terminal",
+    label: "DART Terminal",
+    description:
+      "Live trading surfaces — terminal, positions, orders, P&L, observe, strategy catalogue, signal intake.",
+    href: "/services/trading/overview",
+    lifecycleStage: "run",
+    requiredEntitlements: ["execution-basic", "execution-full", "data-basic", "data-pro"] as readonly Entitlement[],
+    icon: "TrendingUp",
+    internalOnly: false,
+    subRoutes: [
+      {
+        key: "terminal",
+        label: "Terminal",
+        href: "/services/trading/terminal",
+        icon: "Activity",
+        requiredEntitlements: ["execution-basic", "execution-full"] as readonly Entitlement[],
+        description: "Positions, orders, P&L, emergency manual intervention.",
+      },
+      {
+        key: "observe",
+        label: "Observe",
+        href: "/services/observe/risk",
+        icon: "Eye",
+        requiredEntitlements: ["execution-basic", "execution-full"] as readonly Entitlement[],
+        description: "Risk, alerts, strategy health, system health.",
+      },
+      {
+        key: "strategy-catalogue",
+        label: "Catalogue",
+        href: "/services/strategy-catalogue",
+        icon: "Layers",
+        requiredEntitlements: ["strategy-full", "execution-full"] as readonly Entitlement[],
+        description: "Reality + FOMO view of the shared Tier-3 strategy catalogue primitive.",
+      },
+      {
+        key: "signal-intake",
+        label: "Signal Intake",
+        href: "/services/signals/dashboard",
+        icon: "Radio",
+        requiredEntitlements: ["execution-full"] as readonly Entitlement[],
+        description: "Inbound webhooks for DART Signals-In clients.",
+      },
+      {
+        key: "data",
+        label: "Data",
+        href: "/services/data/overview",
+        icon: "Database",
+        requiredEntitlements: ["*"],
+        description: "Instrument catalogue + data freshness (admin/internal only).",
       },
     ],
   },
