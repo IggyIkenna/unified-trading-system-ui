@@ -2,7 +2,7 @@
 
 import { useAuth } from "@/hooks/use-auth";
 import { checkTradingEntitlement, type TradingEntitlement } from "@/lib/config/auth";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScopeStore } from "@/lib/stores/workspace-scope-store";
 import { ASSET_GROUP_LABELS, ASSET_GROUP_ROUTE_TAB, type WidgetAssetGroup } from "@/lib/types/asset-group";
 import { cn } from "@/lib/utils";
 import { Lock } from "lucide-react";
@@ -57,8 +57,8 @@ export function AssetGroupPill({ className }: { className?: string }) {
   const router = useRouter();
   const pathname = usePathname() || "";
   const { user } = useAuth();
-  const assetGroupIds = useGlobalScope((s) => s.scope.assetGroupIds);
-  const setAssetGroupIds = useGlobalScope((s) => s.setAssetGroupIds);
+  const assetGroups = useWorkspaceScopeStore((s) => s.scope.assetGroups);
+  const setAssetGroups = useWorkspaceScopeStore((s) => s.setAssetGroups);
 
   const userEnts = React.useMemo(() => user?.entitlements ?? [], [user?.entitlements]);
   const hasWildcard = (userEnts as readonly unknown[]).includes("*");
@@ -76,13 +76,14 @@ export function AssetGroupPill({ className }: { className?: string }) {
   const handleClick = React.useCallback(
     (group: WidgetAssetGroup) => {
       if (!isUnlocked(group)) return;
-      setAssetGroupIds([group]);
+      // PLATFORM is never in the pill list, so the cast is safe.
+      setAssetGroups([group as Exclude<WidgetAssetGroup, "PLATFORM">]);
       const tab = ASSET_GROUP_ROUTE_TAB[group];
       if (tab && !pathname.includes(`/services/trading/${tab}`)) {
         router.push(`/services/trading/${tab}`);
       }
     },
-    [pathname, router, setAssetGroupIds, isUnlocked],
+    [pathname, router, setAssetGroups, isUnlocked],
   );
 
   return (
@@ -92,7 +93,7 @@ export function AssetGroupPill({ className }: { className?: string }) {
       aria-label="Asset group"
     >
       {PILL_GROUPS.map((group) => {
-        const isActive = assetGroupIds.includes(group);
+        const isActive = (assetGroups as readonly string[]).includes(group);
         const unlocked = isUnlocked(group);
         const requiredDomain = PILL_ENTITLEMENT[group]?.domain ?? "";
         return (

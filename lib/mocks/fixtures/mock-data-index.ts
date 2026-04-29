@@ -26,9 +26,9 @@ import {
 // ── Scope resolution ─────────────────────────────────────────────────────────
 
 /** Resolve strategy IDs from org/client/strategy scope cascade */
-function resolveStrategyIds(orgIds: string[], clientIds: string[], strategyIds: string[]): string[] | null {
+function resolveStrategyIds(orgIds: readonly string[], clientIds: readonly string[], strategyIds: readonly string[]): string[] | null {
   // Explicit strategy filter takes priority
-  if (strategyIds.length > 0) return strategyIds;
+  if (strategyIds.length > 0) return [...strategyIds];
 
   // Client filter → get strategies for those clients
   if (clientIds.length > 0) {
@@ -48,19 +48,19 @@ function resolveStrategyIds(orgIds: string[], clientIds: string[], strategyIds: 
 
 // ── Filtered accessors ───────────────────────────────────────────────────────
 
-export function getPositionsForScope(orgIds: string[], clientIds: string[], strategyIds: string[]): SeedPosition[] {
+export function getPositionsForScope(orgIds: readonly string[], clientIds: readonly string[], strategyIds: readonly string[]): SeedPosition[] {
   const resolved = resolveStrategyIds(orgIds, clientIds, strategyIds);
   if (!resolved) return SEED_POSITIONS;
   return SEED_POSITIONS.filter((p) => resolved.includes(p.strategyId));
 }
 
-export function getOrdersForScope(orgIds: string[], clientIds: string[], strategyIds: string[]): SeedOrder[] {
+export function getOrdersForScope(orgIds: readonly string[], clientIds: readonly string[], strategyIds: readonly string[]): SeedOrder[] {
   const resolved = resolveStrategyIds(orgIds, clientIds, strategyIds);
   if (!resolved) return SEED_ORDERS;
   return SEED_ORDERS.filter((o) => resolved.includes(o.strategyId));
 }
 
-export function getTradesForScope(orgIds: string[], clientIds: string[], strategyIds: string[]): SeedTrade[] {
+export function getTradesForScope(orgIds: readonly string[], clientIds: readonly string[], strategyIds: readonly string[]): SeedTrade[] {
   const resolved = resolveStrategyIds(orgIds, clientIds, strategyIds);
   if (!resolved) return SEED_TRADES;
   return SEED_TRADES.filter((t) => resolved.includes(t.strategyId));
@@ -71,22 +71,22 @@ export function getTradesForPosition(positionId: string): SeedTrade[] {
   return SEED_TRADES.filter((t) => t.positionId === positionId);
 }
 
-export function getAlertsForScope(orgIds: string[], clientIds: string[], strategyIds: string[]): SeedAlert[] {
+export function getAlertsForScope(orgIds: readonly string[], clientIds: readonly string[], strategyIds: readonly string[]): SeedAlert[] {
   const resolved = resolveStrategyIds(orgIds, clientIds, strategyIds);
   if (!resolved) return SEED_ALERTS;
   return SEED_ALERTS.filter((a) => resolved.includes(a.strategyId));
 }
 
-export function getStrategiesForScope(orgIds: string[], clientIds: string[], strategyIds: string[]): SeedStrategy[] {
+export function getStrategiesForScope(orgIds: readonly string[], clientIds: readonly string[], strategyIds: readonly string[]): SeedStrategy[] {
   const resolved = resolveStrategyIds(orgIds, clientIds, strategyIds);
   if (!resolved) return SEED_STRATEGIES;
   return SEED_STRATEGIES.filter((s) => resolved.includes(s.id));
 }
 
 export function getPnlForScope(
-  orgIds: string[],
-  clientIds: string[],
-  strategyIds: string[],
+  orgIds: readonly string[],
+  clientIds: readonly string[],
+  strategyIds: readonly string[],
 ): Record<string, SeedPnlDay[]> {
   const resolved = resolveStrategyIds(orgIds, clientIds, strategyIds);
   if (!resolved) return SEED_PNL_DAILY;
@@ -98,7 +98,7 @@ export function getPnlForScope(
 }
 
 /** Aggregate daily P&L across all in-scope strategies */
-export function getAggregatedPnlForScope(orgIds: string[], clientIds: string[], strategyIds: string[]): SeedPnlDay[] {
+export function getAggregatedPnlForScope(orgIds: readonly string[], clientIds: readonly string[], strategyIds: readonly string[]): SeedPnlDay[] {
   const pnlMap = getPnlForScope(orgIds, clientIds, strategyIds);
   const daily = new Map<string, number>();
   for (const days of Object.values(pnlMap)) {

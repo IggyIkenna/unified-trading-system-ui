@@ -8,7 +8,7 @@ import { useAcknowledgeAlert, useAlerts, useEscalateAlert, useResolveAlert } fro
 import { getAlertsForScope } from "@/lib/mocks/fixtures/mock-data-index";
 import type { AlertType } from "@/lib/config/services/alerts.config";
 export type { AlertType };
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 import { getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
 import { toast } from "sonner";
 import { getFilledDefiOrders } from "@/lib/api/mock-trade-ledger";
@@ -82,7 +82,7 @@ const AlertsDataContext = React.createContext<AlertsDataContextValue | null>(nul
 
 export function AlertsDataProvider({ children }: { children: React.ReactNode }) {
   const { data: alertsData, isLoading, isError, refetch } = useAlerts();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
   const isBatchMode = scope.mode === "batch";
   const [ledgerVersion, setLedgerVersion] = React.useState(0);
 

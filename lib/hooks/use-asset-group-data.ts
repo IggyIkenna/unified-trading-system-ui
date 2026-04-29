@@ -3,7 +3,7 @@
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api/fetch";
 import { useAuth } from "@/hooks/use-auth";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScopeStore } from "@/lib/stores/workspace-scope-store";
 import type { WidgetAssetGroup } from "@/lib/types/asset-group";
 
 /**
@@ -108,7 +108,7 @@ export function useAssetGroupData<TResponse, TParams extends Record<string, stri
   options: UseAssetGroupDataOptions<TParams> = {},
 ): UseQueryResult<TResponse> {
   const { token, user } = useAuth();
-  const activeAssetGroups = useGlobalScope((s) => s.scope.assetGroupIds);
+  const activeAssetGroups = useWorkspaceScopeStore((s) => s.scope.assetGroups);
   const resolvedAssetGroup = options.assetGroup ?? (activeAssetGroups[0] as WidgetAssetGroup | undefined) ?? undefined;
 
   const { params, disabled, staleTime = 60_000 } = options;

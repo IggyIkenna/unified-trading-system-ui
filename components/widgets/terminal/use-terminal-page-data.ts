@@ -17,7 +17,7 @@ import { mock01, mockRange } from "@/lib/mocks/generators/deterministic";
 import { generateMockOrderBook } from "@/lib/mocks/generators/order-book";
 import { useStrategyScopedInstruments } from "@/lib/architecture-v2/use-strategy-scoped-instruments";
 import { isMockDataMode } from "@/lib/runtime/data-mode";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 import { bollingerBands, ema, sma } from "@/lib/utils/indicators";
 import * as React from "react";
 import type { TerminalData, TerminalInstrument } from "./terminal-data-context";
@@ -160,10 +160,10 @@ export interface TerminalPageResult {
  * Extracted from terminal/page.tsx — all data construction logic for the Terminal tab.
  */
 export function useTerminalPageData(): TerminalPageResult {
-  const { scope: context } = useGlobalScope();
+  const context = useWorkspaceScope();
   const { data: tickersData, error: tickersError } = useTickers();
   const modeParam = context.mode === "batch" ? "batch" : "live";
-  const asOfParam = context.mode === "batch" ? context.asOfDatetime?.split("T")[0] : undefined;
+  const asOfParam = context.mode === "batch" ? context.asOfTs?.split("T")[0] : undefined;
   const { error: positionsError } = usePositions(modeParam, asOfParam);
   const { error: alertsError } = useAlerts();
   const { data: strategiesApiData } = useStrategyPerformance();

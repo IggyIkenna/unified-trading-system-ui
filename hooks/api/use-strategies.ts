@@ -4,7 +4,7 @@ import { apiFetch } from "@/lib/api/fetch";
 import { typedFetch, type GatewayApiResponse } from "@/lib/api/typed-fetch";
 import { SEED_STRATEGIES, type StrategyHealth } from "@/lib/mocks/fixtures/strategies-seed";
 import { isMockDataMode } from "@/lib/runtime/data-mode";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 
 export type { PnlDrift, SignalFreshness, ExecutionQuality, StrategyHealth } from "@/lib/mocks/fixtures/strategies-seed";
 
@@ -21,7 +21,7 @@ function withMode(base: string, mode: string): string {
 
 export function useStrategyBacktests() {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery<BacktestsResponse>({
     queryKey: ["strategy-backtests", user?.id, scope.mode],
@@ -68,7 +68,7 @@ export function useGridConfigs(domain?: string) {
 
 export function useStrategyPerformance() {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery<PerformanceResponse>({
     queryKey: ["strategy-performance", user?.id, scope.mode],
@@ -83,7 +83,7 @@ export function useStrategyPerformance() {
 
 export function useStrategyTemplates() {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery<StrategyConfigsResponse>({
     queryKey: ["strategy-templates", user?.id, scope.mode],
@@ -98,7 +98,7 @@ export function useStrategyTemplates() {
 
 export function useStrategyCandidates() {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery<StrategiesResponse>({
     queryKey: ["strategy-candidates", user?.id, scope.mode],
@@ -143,7 +143,7 @@ export function useRejectStrategy() {
 
 export function useStrategyHandoffs() {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery({
     queryKey: ["strategy-handoffs", user?.id, scope.mode],
@@ -158,7 +158,7 @@ export function useStrategyHandoffs() {
 
 export function useBacktestDetail(id: string) {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery({
     queryKey: ["backtest-detail", id, user?.id, scope.mode],

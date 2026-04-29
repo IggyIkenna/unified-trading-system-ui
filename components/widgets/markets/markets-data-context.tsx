@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useExecutionMode } from "@/lib/execution-mode-context";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 import { getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
 import { generateLiveBookUpdates, generateOrderFlowData } from "@/lib/mocks/generators/order-flow-generators";
 import { MOCK_RECON_RUNS } from "@/lib/mocks/fixtures/recon-runs";
@@ -51,7 +51,7 @@ const MarketsDataContext = React.createContext<MarketsDataContextValue | null>(n
 
 export function MarketsDataProvider({ children }: { children: React.ReactNode }) {
   const { isPaper, isBatch, mode } = useExecutionMode();
-  const { scope: globalScope } = useGlobalScope();
+  const globalScope = useWorkspaceScope();
   const scopeStrategyIds = React.useMemo(() => getStrategyIdsForScope({ organizationIds: globalScope.organizationIds, clientIds: globalScope.clientIds, strategyIds: globalScope.strategyIds }), [globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds]);
   const [viewMode, setViewMode] = React.useState<"cross-section" | "time-series">("cross-section");
   const [dataMode, setDataMode] = React.useState<"live" | "batch">("live");

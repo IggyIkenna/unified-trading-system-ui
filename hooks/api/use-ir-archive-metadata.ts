@@ -4,12 +4,12 @@ import { useAuth } from "@/hooks/use-auth";
 import { apiFetch } from "@/lib/api/fetch";
 import { withMode } from "@/lib/api/with-mode";
 import type { IrArchiveMetadataResponse } from "@/lib/investor-relations/merge-deck-metadata";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 import { useQuery } from "@tanstack/react-query";
 
 export function useIrArchiveMetadata() {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery<IrArchiveMetadataResponse>({
     queryKey: ["ir-archive-metadata", user?.id, scope.mode],
@@ -17,7 +17,7 @@ export function useIrArchiveMetadata() {
       const url = withMode(
         "/api/reporting/investor-relations/archive-metadata",
         scope.mode,
-        scope.asOfDatetime,
+        scope.asOfTs ?? undefined,
       );
       return apiFetch(url, token) as Promise<IrArchiveMetadataResponse>;
     },

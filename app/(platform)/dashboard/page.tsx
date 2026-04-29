@@ -7,13 +7,13 @@ import { ServiceTile, mockServiceDegraded, type ServiceTileSubRouteChip } from "
 import { PageHeader } from "@/components/shared/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
-import { useDashboardFilter } from "@/hooks/use-dashboard-filter";
-import { useFilteredDashboardQuickStats } from "@/hooks/api/use-filtered-dashboard-quick-stats";
+import { fiveDimFilterFromScope, useFilteredDashboardQuickStats } from "@/hooks/api/use-filtered-dashboard-quick-stats";
+import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 import type { Entitlement } from "@/lib/config/auth";
 import type { DashboardTileId, ServiceDefinition } from "@/lib/config/services";
 import { SERVICE_REGISTRY, getAccessibleSubRoutes, getVisibleServices } from "@/lib/config/services";
 import { personaDashboardShape, personaDashboardSubRoutes } from "@/lib/auth/persona-dashboard-shape";
-import { appendFilterToHref } from "@/lib/context/dashboard-filter-context";
+import { linkWithScope } from "@/lib/utils/nav-helpers";
 import { useExecutionMode } from "@/lib/execution-mode-context";
 import { PLATFORM_LIFECYCLE_CONFIG, PLATFORM_LIFECYCLE_STAGES, type PlatformLifecycleStage } from "@/lib/taxonomy";
 import { cn } from "@/lib/utils";
@@ -153,7 +153,8 @@ function useRoleKPIs(hasEntitlement: (e: Entitlement) => boolean, isLive: boolea
 export default function DashboardPage() {
   const { user, hasEntitlement, isAdmin, isInternal } = useAuth();
   const { isLive } = useExecutionMode();
-  const { filter } = useDashboardFilter();
+  const scope = useWorkspaceScope();
+  const filter = React.useMemo(() => fiveDimFilterFromScope(scope), [scope]);
   const filteredQuickStats = useFilteredDashboardQuickStats(filter, isLive);
 
   // Resolve per-persona tile visibility from the dashboard shape. Tiles marked
@@ -269,7 +270,7 @@ export default function DashboardPage() {
                     // parses ?family= / ?archetype= / ?venue_set_variant= /
                     // ?share_class= / ?instrument_type= via
                     // FamilyArchetypePicker).
-                    href: appendFilterToHref(sub.href, filter),
+                    href: linkWithScope(sub.href, scope),
                     icon: sub.icon,
                     locked: sub.locked || chipVis[sub.key] === "locked",
                   }));

@@ -26,8 +26,12 @@ import { useQuery } from "@tanstack/react-query";
 
 import { useAuth } from "@/hooks/use-auth";
 import { typedFetch } from "@/lib/api/typed-fetch";
-import { filterHashBucket, type DashboardFilterState } from "@/lib/context/dashboard-filter-context";
+import type { InstrumentTypeV2 } from "@/lib/architecture-v2/coverage";
+import type { ShareClass, StrategyArchetype, StrategyFamily } from "@/lib/architecture-v2/enums";
+import type { VenueSetVariantId } from "@/lib/architecture-v2/lifecycle";
+import type { WorkspaceScope } from "@/lib/architecture-v2/workspace-scope";
 import { isMockDataMode } from "@/lib/runtime/data-mode";
+import { filterHashBucket, type FiveDimFilter } from "@/lib/utils/filter-hash";
 
 export interface DashboardQuickStats {
   readonly dart: string | null;
@@ -51,7 +55,7 @@ interface FilteredQuickStatsResponse {
   };
 }
 
-function mockFilteredStats(filter: DashboardFilterState, isLive: boolean): DashboardQuickStats {
+function mockFilteredStats(filter: FiveDimFilter, isLive: boolean): DashboardQuickStats {
   const bucket = filterHashBucket(filter);
   const pnl = 20 + (bucket % 80);
   const positions = 3 + (bucket % 18);
@@ -89,11 +93,28 @@ function renderResponse(payload: FilteredQuickStatsResponse, isLive: boolean): D
 }
 
 /**
+ * Derive the 5-dim filter slice from the unified WorkspaceScope.
+ *
+ * Each dimension is multi-select on the scope; for the dashboard tile
+ * quick-stats we collapse to "first selected value or null" since the
+ * tile-grid is single-pick by design.
+ */
+export function fiveDimFilterFromScope(scope: WorkspaceScope): FiveDimFilter {
+  return {
+    family: (scope.families[0] as StrategyFamily | undefined) ?? null,
+    archetype: (scope.archetypes[0] as StrategyArchetype | undefined) ?? null,
+    venueSetVariant: (scope.venueSetVariants[0] as VenueSetVariantId | undefined) ?? null,
+    shareClass: (scope.shareClasses[0] as ShareClass | undefined) ?? null,
+    instrumentType: (scope.instrumentTypes[0] as InstrumentTypeV2 | undefined) ?? null,
+  };
+}
+
+/**
  * Fetch per-tile filtered quick-stats. Returns `EMPTY_QUICK_STATS` when no
  * family is selected so callers can fall back to their default per-tile
  * copy.
  */
-export function useFilteredDashboardQuickStats(filter: DashboardFilterState, isLive: boolean): DashboardQuickStats {
+export function useFilteredDashboardQuickStats(filter: FiveDimFilter, isLive: boolean): DashboardQuickStats {
   const { user, token } = useAuth();
   const active = filter.family !== null;
   const mock = isMockDataMode();

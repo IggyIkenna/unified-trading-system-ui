@@ -7,7 +7,7 @@ import { WidgetScroll } from "@/components/shared/widget-scroll";
 
 /**
  * Orders page. Wraps the widget grid with a FamilyArchetypePicker banner
- * (Phase 3 p3-wire-picker-orders-positions) that writes to `useGlobalScope`
+ * (Phase 3 p3-wire-picker-orders-positions) that writes to `useWorkspaceScope`
  * — the data-context post-filters orders by the selected (family, archetype).
  */
 function OrdersFilterBanner() {

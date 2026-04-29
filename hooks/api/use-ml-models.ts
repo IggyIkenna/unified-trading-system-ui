@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiFetch } from "@/lib/api/fetch";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 import type { RunComparison, MLGridConfig, FeatureGroupsResponse, GridConfigAssetGroup } from "@/lib/types/ml";
 
 function withMode(base: string, mode: string): string {
@@ -11,7 +11,7 @@ function withMode(base: string, mode: string): string {
 
 export function useModelFamilies() {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery({
     queryKey: ["model-families", user?.id, scope.mode],
@@ -22,7 +22,7 @@ export function useModelFamilies() {
 
 export function useExperiments() {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery({
     queryKey: ["experiments", user?.id, scope.mode],
@@ -33,7 +33,7 @@ export function useExperiments() {
 
 export function useExperimentDetail(id: string) {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery({
     queryKey: ["experiment-detail", id, user?.id, scope.mode],
@@ -44,7 +44,7 @@ export function useExperimentDetail(id: string) {
 
 export function useTrainingRuns() {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery({
     queryKey: ["training-runs", user?.id, scope.mode],
@@ -72,7 +72,7 @@ export function useCreateTrainingJob() {
 
 export function useModelVersions() {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery({
     queryKey: ["model-versions", user?.id, scope.mode],
@@ -96,7 +96,7 @@ export function usePromoteModel() {
 
 export function useMLDeployments() {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery({
     queryKey: ["ml-deployments", user?.id, scope.mode],
@@ -107,7 +107,7 @@ export function useMLDeployments() {
 
 export function useFeatureProvenance() {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery({
     queryKey: ["feature-provenance", user?.id, scope.mode],
@@ -118,7 +118,7 @@ export function useFeatureProvenance() {
 
 export function useDatasets() {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery({
     queryKey: ["datasets", user?.id, scope.mode],
@@ -129,7 +129,7 @@ export function useDatasets() {
 
 export function useValidationResults() {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery({
     queryKey: ["validation-results", user?.id, scope.mode],
@@ -140,7 +140,7 @@ export function useValidationResults() {
 
 export function useMLMonitoring() {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery({
     queryKey: ["ml-monitoring", user?.id, scope.mode],
@@ -151,7 +151,7 @@ export function useMLMonitoring() {
 
 export function useMLGovernance() {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery({
     queryKey: ["ml-governance", user?.id, scope.mode],
@@ -162,7 +162,7 @@ export function useMLGovernance() {
 
 export function useMLConfig() {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery({
     queryKey: ["ml-config", user?.id, scope.mode],
@@ -174,7 +174,7 @@ export function useMLConfig() {
 /** Unified training runs (4-page ML architecture). GET /api/ml/training-runs */
 export function useUnifiedTrainingRuns(filters?: { status?: string; family?: string }) {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
   const qs = new URLSearchParams();
   if (filters?.status) qs.set("status", filters.status);
   if (filters?.family) qs.set("family", filters.family);
@@ -190,7 +190,7 @@ export function useUnifiedTrainingRuns(filters?: { status?: string; family?: str
 /** GET /api/ml/training-runs/:id */
 export function useUnifiedTrainingRunDetail(id: string | null) {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery({
     queryKey: ["ml-unified-run", id, user?.id, scope.mode],
@@ -202,7 +202,7 @@ export function useUnifiedTrainingRunDetail(id: string | null) {
 /** GET /api/ml/training/queue */
 export function useTrainingQueue() {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery({
     queryKey: ["ml-training-queue", user?.id, scope.mode],
@@ -214,7 +214,7 @@ export function useTrainingQueue() {
 /** GET /api/ml/pipeline/status — overview KPIs */
 export function useMLPipelineStatus() {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery({
     queryKey: ["ml-pipeline-status", user?.id, scope.mode],
@@ -226,7 +226,7 @@ export function useMLPipelineStatus() {
 /** GET /api/ml/alerts */
 export function useMLAlerts() {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery({
     queryKey: ["ml-alerts", user?.id, scope.mode],
@@ -238,7 +238,7 @@ export function useMLAlerts() {
 /** GET /api/ml/analysis/runs/:id — RunAnalysis bundle */
 export function useRunAnalysisBundle(runId: string | null) {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery({
     queryKey: ["ml-run-analysis", runId, user?.id, scope.mode],
@@ -250,7 +250,7 @@ export function useRunAnalysisBundle(runId: string | null) {
 /** POST /api/ml/analysis/compare — baseline vs up to 3 other runs */
 export function useMLRunComparison(baselineId: string | null, compareIds: string[]) {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   const uniqueCompare = Array.from(new Set(compareIds.filter((id) => id && id !== baselineId)))
     .sort()
@@ -275,7 +275,7 @@ export function useMLRunComparison(baselineId: string | null, compareIds: string
 /** POST /api/ml/training-runs — create and queue */
 export function useCreateUnifiedTrainingRun() {
   const { token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -296,7 +296,7 @@ export function useCreateUnifiedTrainingRun() {
 /** POST /api/ml/training-runs/:id/cancel */
 export function useCancelUnifiedTrainingRun() {
   const { token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -312,7 +312,7 @@ export function useCancelUnifiedTrainingRun() {
 /** GET /api/ml/registry/models — same shape as model versions list */
 export function useRegistryModels() {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery({
     queryKey: ["ml-registry-models", user?.id, scope.mode],
@@ -328,7 +328,7 @@ export function useRegistryModels() {
 /** GET /api/ml/grid-configs — list saved grid configs */
 export function useMLGridConfigs(category?: GridConfigAssetGroup) {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
   const qs = category ? `?category=${category}` : "";
 
   return useQuery<{ data: MLGridConfig[]; total: number; page: number; page_size: number }>({
@@ -347,7 +347,7 @@ export function useMLGridConfigs(category?: GridConfigAssetGroup) {
 /** GET /api/ml/grid-configs/:name — single config */
 export function useMLGridConfig(name: string | null) {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery<{ data: MLGridConfig }>({
     queryKey: ["ml-grid-config", name, user?.id, scope.mode],
@@ -362,7 +362,7 @@ export function useMLGridConfig(name: string | null) {
 /** GET /api/ml/feature-groups?category=X — available feature groups for a category */
 export function useFeatureGroups(category: GridConfigAssetGroup) {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery<{ data: FeatureGroupsResponse }>({
     queryKey: ["ml-feature-groups", category, user?.id, scope.mode],

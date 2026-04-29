@@ -43,14 +43,12 @@ vi.mock("@/hooks/api/use-kill-switch", () => ({
   useKillSwitch: () => mockKillSwitch,
 }));
 
-vi.mock("@/lib/stores/global-scope-store", () => ({
-  useGlobalScope: () => ({
-    scope: {
-      mode: "live",
-      organizationIds: [],
-      clientIds: ["client-a", "client-b"],
-      strategyIds: [],
-    },
+vi.mock("@/lib/stores/workspace-scope-store", () => ({
+  useWorkspaceScope: () => ({
+    mode: "live",
+    organizationIds: [],
+    clientIds: ["client-a", "client-b"],
+    strategyIds: [],
   }),
 }));
 

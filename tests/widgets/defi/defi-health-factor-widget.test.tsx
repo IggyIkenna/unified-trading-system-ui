@@ -77,8 +77,8 @@ const mockScope = {
   },
 };
 
-vi.mock("@/lib/stores/global-scope-store", () => ({
-  useGlobalScope: () => mockScope,
+vi.mock("@/lib/stores/workspace-scope-store", () => ({
+  useWorkspaceScope: () => mockScope.scope, useWorkspaceScopeStore: (selector?: (s: typeof mockScope) => unknown) => (selector ? selector(mockScope) : mockScope), useWorkspaceScopeActions: () => mockScope,
 }));
 
 const mockDeFiData = {

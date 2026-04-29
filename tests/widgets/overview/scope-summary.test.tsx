@@ -24,8 +24,8 @@ vi.mock("@/components/widgets/overview/overview-data-context", () => ({
   useOverviewDataSafe: () => mockData,
 }));
 
-vi.mock("@/lib/stores/global-scope-store", () => ({
-  useGlobalScope: () => mockScope,
+vi.mock("@/lib/stores/workspace-scope-store", () => ({
+  useWorkspaceScope: () => mockScope.scope, useWorkspaceScopeStore: (selector?: (s: typeof mockScope) => unknown) => (selector ? selector(mockScope) : mockScope), useWorkspaceScopeActions: () => mockScope,
 }));
 
 // Stub the nested trading surfaces — they have their own tests elsewhere.
@@ -119,13 +119,13 @@ describe("scope-summary — L1.5 harness", () => {
     vi.doMock("@/components/widgets/overview/overview-data-context", () => ({
       useOverviewDataSafe: () => null,
     }));
-    vi.doMock("@/lib/stores/global-scope-store", () => ({
-      useGlobalScope: () => mockScope,
+    vi.doMock("@/lib/stores/workspace-scope-store", () => ({
+      useWorkspaceScope: () => mockScope.scope, useWorkspaceScopeStore: (selector?: (s: typeof mockScope) => unknown) => (selector ? selector(mockScope) : mockScope), useWorkspaceScopeActions: () => mockScope,
     }));
     const mod = await import("@/components/widgets/overview/scope-summary-widget");
     render(<mod.ScopeSummaryWidget {...({} as never)} />);
     expect(screen.getByText(/Navigate to Overview tab/i)).toBeTruthy();
     vi.doUnmock("@/components/widgets/overview/overview-data-context");
-    vi.doUnmock("@/lib/stores/global-scope-store");
+    vi.doUnmock("@/lib/stores/workspace-scope-store");
   });
 });

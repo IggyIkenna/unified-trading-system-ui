@@ -15,7 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 import {
   useSignalStream,
   type SignalStreamEvent,
@@ -91,7 +91,7 @@ function confidenceColor(confidence: number): string {
 // ---------------------------------------------------------------------------
 
 export function LiveSignalFeed() {
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
   const isLive = scope.mode === "live";
 
   const [signalFeed, setSignalFeed] = useState<SignalStreamEvent[]>([]);

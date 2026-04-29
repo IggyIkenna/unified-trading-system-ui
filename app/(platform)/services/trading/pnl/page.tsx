@@ -8,7 +8,7 @@ import { WidgetScroll } from "@/components/shared/widget-scroll";
 
 /**
  * P&L page. Exposes a FamilyArchetypePicker banner that writes to
- * `useGlobalScope` (Phase 3 p3-wire-picker-orders-positions). P&L surfaces
+ * `useWorkspaceScope` (Phase 3 p3-wire-picker-orders-positions). P&L surfaces
  * are aggregated — strategy-level rows are filtered via the global
  * `strategyFamily` / `strategyArchetype` state when the data-context
  * derives strategy-scoped rows via `getStrategyIdsForScope`.

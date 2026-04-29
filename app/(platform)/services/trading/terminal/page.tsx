@@ -9,14 +9,14 @@ import { FamilyArchetypePicker } from "@/components/architecture-v2";
 import { HealthBar } from "@/components/platform/health-bar";
 import { WidgetScroll } from "@/components/shared/widget-scroll";
 import type { StrategyArchetype, StrategyFamily } from "@/lib/architecture-v2";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScopeStore } from "@/lib/stores/workspace-scope-store";
 
 export default function TradingPage() {
   const { terminalData, errors } = useTerminalPageData();
-  const strategyFamily = useGlobalScope((s) => s.scope.strategyFamily);
-  const strategyArchetype = useGlobalScope((s) => s.scope.strategyArchetype);
-  const setStrategyFamily = useGlobalScope((s) => s.setStrategyFamily);
-  const setStrategyArchetype = useGlobalScope((s) => s.setStrategyArchetype);
+  const strategyFamily = useWorkspaceScopeStore((s) => s.scope.families[0]);
+  const strategyArchetype = useWorkspaceScopeStore((s) => s.scope.archetypes[0]);
+  const setFamilies = useWorkspaceScopeStore((s) => s.setFamilies);
+  const setArchetypes = useWorkspaceScopeStore((s) => s.setArchetypes);
 
   return (
     <div className="h-full bg-background flex flex-col">
@@ -68,8 +68,8 @@ export default function TradingPage() {
             archetype: strategyArchetype as StrategyArchetype | undefined,
           }}
           onChange={(next) => {
-            setStrategyFamily(next.family);
-            setStrategyArchetype(next.archetype);
+            setFamilies(next.family ? [next.family] : []);
+            setArchetypes(next.archetype ? [next.archetype] : []);
           }}
         />
       </div>

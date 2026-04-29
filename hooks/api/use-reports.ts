@@ -1,16 +1,16 @@
 import { useAuth } from "@/hooks/use-auth";
 import { apiFetch } from "@/lib/api/fetch";
 import { withMode } from "@/lib/api/with-mode";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function useReports() {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery({
     queryKey: ["reports", user?.id ?? "anon", scope.mode],
-    queryFn: () => apiFetch(withMode("/api/reporting/reports", scope.mode, scope.asOfDatetime), token),
+    queryFn: () => apiFetch(withMode("/api/reporting/reports", scope.mode, scope.asOfTs ?? undefined), token),
     enabled: !!user,
     refetchInterval: scope.mode === "batch" ? false : undefined,
   });
@@ -18,11 +18,11 @@ export function useReports() {
 
 export function useSettlements() {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery({
     queryKey: ["settlements", user?.id ?? "anon", scope.mode],
-    queryFn: () => apiFetch(withMode("/api/reporting/settlements", scope.mode, scope.asOfDatetime), token),
+    queryFn: () => apiFetch(withMode("/api/reporting/settlements", scope.mode, scope.asOfTs ?? undefined), token),
     enabled: !!user,
     refetchInterval: scope.mode === "batch" ? false : undefined,
   });
@@ -30,11 +30,11 @@ export function useSettlements() {
 
 export function useReconciliation() {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery({
     queryKey: ["reconciliation", user?.id, scope.mode],
-    queryFn: () => apiFetch(withMode("/api/reporting/reconciliation", scope.mode, scope.asOfDatetime), token),
+    queryFn: () => apiFetch(withMode("/api/reporting/reconciliation", scope.mode, scope.asOfTs ?? undefined), token),
     enabled: !!user,
     refetchInterval: scope.mode === "batch" ? false : undefined,
   });
@@ -42,11 +42,11 @@ export function useReconciliation() {
 
 export function useRegulatoryReports() {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery({
     queryKey: ["regulatory-reports", user?.id ?? "anon", scope.mode],
-    queryFn: () => apiFetch(withMode("/api/reporting/regulatory", scope.mode, scope.asOfDatetime), token),
+    queryFn: () => apiFetch(withMode("/api/reporting/regulatory", scope.mode, scope.asOfTs ?? undefined), token),
     enabled: !!user,
     refetchInterval: scope.mode === "batch" ? false : undefined,
   });
@@ -54,11 +54,11 @@ export function useRegulatoryReports() {
 
 export function usePnlAttribution() {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery({
     queryKey: ["pnl-attribution", user?.id ?? "anon", scope.mode],
-    queryFn: () => apiFetch(withMode("/api/reporting/pnl-attribution", scope.mode, scope.asOfDatetime), token),
+    queryFn: () => apiFetch(withMode("/api/reporting/pnl-attribution", scope.mode, scope.asOfTs ?? undefined), token),
     enabled: !!user,
     refetchInterval: scope.mode === "batch" ? false : undefined,
   });
@@ -66,11 +66,11 @@ export function usePnlAttribution() {
 
 export function useExecutiveSummary() {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery({
     queryKey: ["executive-summary", user?.id ?? "anon", scope.mode],
-    queryFn: () => apiFetch(withMode("/api/reporting/executive-summary", scope.mode, scope.asOfDatetime), token),
+    queryFn: () => apiFetch(withMode("/api/reporting/executive-summary", scope.mode, scope.asOfTs ?? undefined), token),
     enabled: !!user,
     refetchInterval: scope.mode === "batch" ? false : undefined,
   });
@@ -78,11 +78,11 @@ export function useExecutiveSummary() {
 
 export function useInvoices() {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery({
     queryKey: ["invoices", user?.id ?? "anon", scope.mode],
-    queryFn: () => apiFetch(withMode("/api/reporting/invoices", scope.mode, scope.asOfDatetime), token),
+    queryFn: () => apiFetch(withMode("/api/reporting/invoices", scope.mode, scope.asOfTs ?? undefined), token),
     enabled: !!user,
     refetchInterval: scope.mode === "batch" ? false : undefined,
   });
@@ -100,7 +100,7 @@ export interface ReconciliationBreaksParams {
 
 export function useReconciliationBreaks(params?: ReconciliationBreaksParams) {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   const queryString = params
     ? "?" +
@@ -116,7 +116,7 @@ export function useReconciliationBreaks(params?: ReconciliationBreaksParams) {
   return useQuery({
     queryKey: ["reconciliation-breaks", params, user?.id, scope.mode],
     queryFn: () =>
-      apiFetch(withMode(`/api/reporting/reconciliation/breaks${queryString}`, scope.mode, scope.asOfDatetime), token),
+      apiFetch(withMode(`/api/reporting/reconciliation/breaks${queryString}`, scope.mode, scope.asOfTs ?? undefined), token),
     enabled: !!user,
     refetchInterval: scope.mode === "batch" ? false : undefined,
   });
@@ -173,13 +173,13 @@ export function useBookCorrection() {
 
 export function useReconciliationDeviations(status?: string) {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
   const qs = status ? `?status=${encodeURIComponent(status)}` : "";
 
   return useQuery({
     queryKey: ["recon-deviations", status, user?.id, scope.mode],
     queryFn: () =>
-      apiFetch(withMode(`/api/positions/reconciliation/deviations${qs}`, scope.mode, scope.asOfDatetime), token),
+      apiFetch(withMode(`/api/positions/reconciliation/deviations${qs}`, scope.mode, scope.asOfTs ?? undefined), token),
     enabled: !!user,
     refetchInterval: scope.mode === "batch" ? false : 30_000,
   });
@@ -187,13 +187,13 @@ export function useReconciliationDeviations(status?: string) {
 
 export function useReconciliationBalances(venue?: string) {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
   const qs = venue ? `?venue=${encodeURIComponent(venue)}` : "";
 
   return useQuery({
     queryKey: ["recon-balances", venue, user?.id, scope.mode],
     queryFn: () =>
-      apiFetch(withMode(`/api/positions/reconciliation/balances${qs}`, scope.mode, scope.asOfDatetime), token),
+      apiFetch(withMode(`/api/positions/reconciliation/balances${qs}`, scope.mode, scope.asOfTs ?? undefined), token),
     enabled: !!user,
     refetchInterval: scope.mode === "batch" ? false : 30_000,
   });
@@ -201,12 +201,12 @@ export function useReconciliationBalances(venue?: string) {
 
 export function useReconciliationPnL(venue?: string) {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
   const qs = venue ? `?venue=${encodeURIComponent(venue)}` : "";
 
   return useQuery({
     queryKey: ["recon-pnl", venue, user?.id, scope.mode],
-    queryFn: () => apiFetch(withMode(`/api/positions/reconciliation/pnl${qs}`, scope.mode, scope.asOfDatetime), token),
+    queryFn: () => apiFetch(withMode(`/api/positions/reconciliation/pnl${qs}`, scope.mode, scope.asOfTs ?? undefined), token),
     enabled: !!user,
     refetchInterval: scope.mode === "batch" ? false : 30_000,
   });
@@ -214,11 +214,11 @@ export function useReconciliationPnL(venue?: string) {
 
 export function useReconciliationSummary() {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery({
     queryKey: ["recon-summary", user?.id, scope.mode],
-    queryFn: () => apiFetch(withMode("/api/positions/reconciliation/summary", scope.mode, scope.asOfDatetime), token),
+    queryFn: () => apiFetch(withMode("/api/positions/reconciliation/summary", scope.mode, scope.asOfTs ?? undefined), token),
     enabled: !!user,
     refetchInterval: scope.mode === "batch" ? false : 15_000,
   });
@@ -251,12 +251,12 @@ export function useResolveDeviation() {
 
 export function useAutoReconHistory() {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery({
     queryKey: ["recon-auto-history", user?.id, scope.mode],
     queryFn: () =>
-      apiFetch(withMode("/api/positions/reconciliation/auto-recon/history", scope.mode, scope.asOfDatetime), token),
+      apiFetch(withMode("/api/positions/reconciliation/auto-recon/history", scope.mode, scope.asOfTs ?? undefined), token),
     enabled: !!user,
     refetchInterval: scope.mode === "batch" ? false : undefined,
   });
@@ -266,12 +266,12 @@ export function useAutoReconHistory() {
 
 export function useFundOperations(clientIds?: string) {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
   const qs = clientIds ? `?client_ids=${encodeURIComponent(clientIds)}` : "";
 
   return useQuery({
     queryKey: ["fund-operations", clientIds, user?.id ?? "anon", scope.mode],
-    queryFn: () => apiFetch(withMode(`/api/reporting/fund-operations${qs}`, scope.mode, scope.asOfDatetime), token),
+    queryFn: () => apiFetch(withMode(`/api/reporting/fund-operations${qs}`, scope.mode, scope.asOfTs ?? undefined), token),
     enabled: !!user,
     refetchInterval: scope.mode === "batch" ? false : undefined,
   });
@@ -279,12 +279,12 @@ export function useFundOperations(clientIds?: string) {
 
 export function useNAV(clientIds?: string) {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
   const qs = clientIds ? `?client_ids=${encodeURIComponent(clientIds)}` : "";
 
   return useQuery({
     queryKey: ["nav", clientIds, user?.id ?? "anon", scope.mode],
-    queryFn: () => apiFetch(withMode(`/api/reporting/nav${qs}`, scope.mode, scope.asOfDatetime), token),
+    queryFn: () => apiFetch(withMode(`/api/reporting/nav${qs}`, scope.mode, scope.asOfTs ?? undefined), token),
     enabled: !!user,
     refetchInterval: scope.mode === "batch" ? false : undefined,
   });

@@ -9,7 +9,7 @@ import type { WidgetComponentProps } from "@/components/widgets/widget-registry"
 import { useStrategyHealth } from "@/hooks/api/use-strategies";
 import { useKillSwitch, type KillSwitchActionType } from "@/hooks/api/use-kill-switch";
 import { useAlertsData } from "./alerts-data-context";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 import { Pause, Power, Square, XCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
@@ -81,7 +81,7 @@ const VENUE_OPTIONS: ReadonlyArray<{ id: string; name: string }> = [
 export function AlertsKillSwitchWidget(_props: WidgetComponentProps) {
   const { filteredAlerts, isLoading: alertsLoading, isBatchMode } = useAlertsData();
   const { data: strategies = [], isLoading: strategiesLoading } = useStrategyHealth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
   const killSwitch = useKillSwitch();
   const isLoading = alertsLoading || strategiesLoading;
   const [scopeType, setScopeType] = React.useState<KillSwitchScope>("strategy");

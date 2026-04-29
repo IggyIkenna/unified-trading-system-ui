@@ -5,7 +5,7 @@ import type { WidgetComponentProps } from "../widget-registry";
 import { CandlestickChart, type IndicatorOverlay } from "@/components/trading/candlestick-chart";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScopeStore } from "@/lib/stores/workspace-scope-store";
 import { useTerminalData } from "./terminal-data-context";
 
 const TIMEFRAMES = ["1m", "5m", "15m", "1H", "4H", "1D"];
@@ -43,9 +43,9 @@ export function PriceChartWidget(_props: WidgetComponentProps) {
   // The chart is always "historical-up-to-a-point" — there is no Live vs As-Of
   // distinction here. The date picker just selects which point to anchor on.
   // Mode is forced to "batch" so the candles route reads from GCS.
-  const asOfDatetime = useGlobalScope((s) => s.scope.asOfDatetime);
-  const setMode = useGlobalScope((s) => s.setMode);
-  const setAsOfDatetime = useGlobalScope((s) => s.setAsOfDatetime);
+  const asOfDatetime = useWorkspaceScopeStore((s) => s.scope.asOfTs);
+  const setMode = useWorkspaceScopeStore((s) => s.setMode);
+  const setAsOfDatetime = useWorkspaceScopeStore((s) => s.setAsOfTs);
 
   const dateInputValue = asOfDatetime ? asOfDatetime.slice(0, 10) : new Date().toISOString().slice(0, 10);
 

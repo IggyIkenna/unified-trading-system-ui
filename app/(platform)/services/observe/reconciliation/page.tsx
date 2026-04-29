@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { KillSwitchPanel } from "@/components/trading/kill-switch-panel";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 import { useReconciliationSnapshot } from "@/hooks/api/use-reconciliation";
 import type { StrategyAllocation, DriftTimePoint } from "@/lib/mocks/fixtures/position-recon";
 import { cn } from "@/lib/utils";
@@ -356,7 +356,7 @@ function BatchModeBanner() {
 // ── Main Page ───────────────────────────────────────────────────────────────
 
 export default function PositionReconPage() {
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
   const isBatchMode = scope.mode === "batch";
   const { data: snapshot, isLoading } = useReconciliationSnapshot();
 

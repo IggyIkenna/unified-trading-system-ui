@@ -4,12 +4,12 @@ import * as React from "react";
 import { KpiSummaryWidget, type KpiMetric } from "@/components/shared";
 import type { WidgetComponentProps } from "../widget-registry";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 import { useOverviewDataSafe } from "./overview-data-context";
 
 export function KPIStripWidget(_props: WidgetComponentProps) {
   const ctx = useOverviewDataSafe();
-  const { scope: context } = useGlobalScope();
+  const context = useWorkspaceScope();
 
   const metrics = React.useMemo<KpiMetric[]>(() => {
     if (!ctx) return [];

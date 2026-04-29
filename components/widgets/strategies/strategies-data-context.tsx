@@ -3,7 +3,7 @@
 import { useStrategyPerformance } from "@/hooks/api/use-strategies";
 import { useExecutionMode } from "@/lib/execution-mode-context";
 import { getStrategiesForScope, type SeedStrategy } from "@/lib/mocks/fixtures/mock-data-index";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 import { getClientIdsForOrgs, getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
 import {
   STRATEGIES as DEFAULT_STRATEGIES,
@@ -321,7 +321,7 @@ const StrategiesDataContext = React.createContext<StrategiesData | null>(null);
 export function StrategiesDataProvider({ children }: { children: React.ReactNode }) {
   const { mode, isLive } = useExecutionMode();
   const { data: perfData, isLoading } = useStrategyPerformance();
-  const { scope: globalScope } = useGlobalScope();
+  const globalScope = useWorkspaceScope();
 
   const perfRaw: unknown[] = React.useMemo(() => {
     const rawPayload =

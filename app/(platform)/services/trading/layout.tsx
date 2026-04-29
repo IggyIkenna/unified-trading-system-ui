@@ -18,7 +18,7 @@ import { useOrders } from "@/hooks/api/use-orders";
 import { usePositionsSummary } from "@/hooks/api/use-positions";
 import { useServiceHealth } from "@/hooks/api/use-service-status";
 import { useAuth } from "@/hooks/use-auth";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScope, useWorkspaceScopeStore } from "@/lib/stores/workspace-scope-store";
 import { useWorkspaceSync } from "@/lib/stores/workspace-sync";
 import { cn } from "@/lib/utils";
 import { formatNumber } from "@/lib/utils/formatters";
@@ -332,7 +332,8 @@ function useFilteredTradingTabs(user: ReturnType<typeof useAuth>["user"], baseTa
 
 export default function TradingServiceLayout({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
-  const { scope, setMode } = useGlobalScope();
+  const scope = useWorkspaceScope();
+  const setMode = useWorkspaceScopeStore((s) => s.setMode);
   const [quickViewCollapsed, setQuickViewCollapsed] = useState(true);
   const widgetTab = useWidgetTab();
   const filteredTabs = useFilteredTradingTabs(user, TRADING_TABS);

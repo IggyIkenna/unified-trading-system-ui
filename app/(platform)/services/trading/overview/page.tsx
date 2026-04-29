@@ -16,7 +16,7 @@ import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { OverviewDataProvider } from "@/components/widgets/overview/overview-data-context";
 import { WidgetGrid } from "@/components/widgets/widget-grid";
 import { useOverviewPageData } from "@/components/widgets/overview/use-overview-page-data";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 import { formatNumber } from "@/lib/utils/formatters";
 
 function getToday(): string {
@@ -41,7 +41,7 @@ export default function OverviewPage() {
     batchTimeSeries,
   } = useOverviewPageData();
 
-  const { scope: context } = useGlobalScope();
+  const context = useWorkspaceScope();
 
   const dataSources: DataSource[] = React.useMemo(() => {
     const now = new Date().toISOString();

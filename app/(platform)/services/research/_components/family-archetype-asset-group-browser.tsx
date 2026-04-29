@@ -32,6 +32,8 @@ import {
   type StrategyInstrumentsSlot,
   instancesByFamilyArchetypeAssetGroup,
 } from "@/lib/architecture-v2/envelope-loader";
+import type { StrategyArchetype, StrategyFamily } from "@/lib/architecture-v2/enums";
+import { useWorkspaceScope, useWorkspaceScopeStore } from "@/lib/stores/workspace-scope-store";
 
 interface FamilyArchetypeAssetGroupBrowserProps {
   /** When set, restricts the top-level family list to this family only —
@@ -52,8 +54,17 @@ export function FamilyArchetypeAssetGroupBrowser({
 }: FamilyArchetypeAssetGroupBrowserProps) {
   const [hierarchy, setHierarchy] = React.useState<FamilyHierarchy | null>(null);
   const [error, setError] = React.useState<string | null>(null);
-  const [activeFamily, setActiveFamily] = React.useState<string | null>(scopeFamily ?? null);
-  const [activeArchetype, setActiveArchetype] = React.useState<string | null>(null);
+
+  // Phase 1 of dart_ux_cockpit_refactor_2026_04_29.plan.md §17:
+  // lift family/archetype state out of local React state into the unified
+  // WorkspaceScope so a selection on `/services/research/strategies` follows
+  // the user into `/services/research/strategy/families/{family}` etc.
+  const scope = useWorkspaceScope();
+  const setFamilies = useWorkspaceScopeStore((s) => s.setFamilies);
+  const setArchetypes = useWorkspaceScopeStore((s) => s.setArchetypes);
+
+  const activeFamily = scopeFamily ?? scope.families[0] ?? null;
+  const activeArchetype = scope.archetypes[0] ?? null;
 
   React.useEffect(() => {
     let cancelled = false;
@@ -62,9 +73,9 @@ export function FamilyArchetypeAssetGroupBrowser({
         if (cancelled) return;
         setHierarchy(h);
         // Default-select the first family if no scope and none selected
-        if (!scopeFamily && !activeFamily) {
+        if (!scopeFamily && scope.families.length === 0) {
           const first = h.keys().next().value;
-          if (typeof first === "string") setActiveFamily(first);
+          if (typeof first === "string") setFamilies([first as StrategyFamily]);
         }
       })
       .catch((err: unknown) => {
@@ -74,8 +85,8 @@ export function FamilyArchetypeAssetGroupBrowser({
     return () => {
       cancelled = true;
     };
-    // scopeFamily is allowed to drive a re-fetch; activeFamily intentionally
-    // not in deps (it's a downstream state, not a re-fetch trigger).
+    // scopeFamily is allowed to drive a re-fetch; scope.families is intentionally
+    // not in deps to prevent loops (the default-select happens once per mount).
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scopeFamily]);
 
@@ -126,8 +137,8 @@ export function FamilyArchetypeAssetGroupBrowser({
                   key={family}
                   type="button"
                   onClick={() => {
-                    setActiveFamily(family);
-                    setActiveArchetype(null);
+                    setFamilies([family as StrategyFamily]);
+                    setArchetypes([]);
                   }}
                   data-testid={`family-chip-${family}`}
                   className={cn(
@@ -165,7 +176,7 @@ export function FamilyArchetypeAssetGroupBrowser({
                     <button
                       key={archetype}
                       type="button"
-                      onClick={() => setActiveArchetype(archetype)}
+                      onClick={() => setArchetypes([archetype as StrategyArchetype])}
                       data-testid={`archetype-chip-${archetype}`}
                       className={cn(
                         "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-mono transition-colors",

@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useExecutionMode } from "@/lib/execution-mode-context";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 import { CLIENTS } from "@/lib/mocks/fixtures/trading-data";
 import {
   ALL_OPERATION_TYPES,
@@ -43,7 +43,7 @@ const BundlesDataContext = React.createContext<BundlesDataContextValue | null>(n
 
 export function BundlesDataProvider({ children }: { children: React.ReactNode }) {
   const { isPaper, isBatch, mode } = useExecutionMode();
-  const { scope: globalScope } = useGlobalScope();
+  const globalScope = useWorkspaceScope();
 
   // DeFi bundles only make sense for orgs with a DeFi desk
   const hasDefiDesk = React.useMemo(() => {

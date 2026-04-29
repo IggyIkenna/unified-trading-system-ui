@@ -5,9 +5,9 @@ import { UnifiedShell } from "@/components/shell/unified-shell";
 import { PersonaGate } from "@/components/platform/persona-gate";
 import { DemoBanner } from "@/components/platform/DemoBanner";
 import { RuntimeModeBadge } from "@/components/runtime-mode-badge";
+import { WorkspaceScopeProvider } from "@/components/scope/workspace-scope-provider";
 import { useAuth } from "@/hooks/use-auth";
 import { useRiskAlertNotifications } from "@/hooks/api/use-risk-alert-notifications";
-import { DashboardFilterProvider } from "@/lib/context/dashboard-filter-context";
 
 /**
  * Platform shell — THE product. Auth required.
@@ -31,7 +31,7 @@ function PlatformShellInner({ children }: { children: React.ReactNode }) {
   useRiskAlertNotifications();
 
   return (
-    <DashboardFilterProvider userId={user?.id ?? null}>
+    <WorkspaceScopeProvider>
       <UnifiedShell
         orgName={user?.org?.name ?? "Odum Internal"}
         orgId={user?.org?.id ?? "odum-internal"}
@@ -40,6 +40,6 @@ function PlatformShellInner({ children }: { children: React.ReactNode }) {
       >
         <PersonaGate>{children}</PersonaGate>
       </UnifiedShell>
-    </DashboardFilterProvider>
+    </WorkspaceScopeProvider>
   );
 }

@@ -17,7 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 import { cn } from "@/lib/utils";
 import { formatNumber } from "@/lib/utils/formatters";
 import {
@@ -982,7 +982,7 @@ function ReconciliationStatus({ disabled }: { disabled: boolean }) {
 // ── Main Page ──────────────────────────────────────────────────────────────
 
 export default function RecoveryControlsPage() {
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
   const isBatchMode = scope.mode === "batch";
 
   return (
