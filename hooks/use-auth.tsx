@@ -16,7 +16,7 @@ export interface AuthState {
   token: string | null;
   loading: boolean;
   loginError: string | null;
-  loginByEmail: (email: string, password: string) => Promise<boolean>;
+  loginByEmail: (email: string, password: string) => Promise<AuthUser | null>;
   logout: () => Promise<void>;
   hasEntitlement: (entitlement: Entitlement) => boolean;
   isAdmin: () => boolean;
@@ -79,36 +79,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [provider, syncZustand]);
 
   const loginByEmail = React.useCallback(
-    async (email: string, password: string): Promise<boolean> => {
+    async (email: string, password: string): Promise<AuthUser | null> => {
       setLoginError(null);
       const result = await provider.login(email, password);
 
       if (!result) {
-        if (
-          provider instanceof FirebaseAuthProvider &&
-          provider.getLastLoginError() === "user-disabled"
-        ) {
-          setLoginError(
-            "Your account is currently under review. You will receive an email once it has been approved.",
-          );
+        if (provider instanceof FirebaseAuthProvider && provider.getLastLoginError() === "user-disabled") {
+          setLoginError("Your account is currently under review. You will receive an email once it has been approved.");
         }
-        return false;
+        return null;
       }
 
-      if (
-        result.status === "pending_approval" ||
-        (result.authorized === false && result.status !== "active")
-      ) {
+      if (result.status === "pending_approval" || (result.authorized === false && result.status !== "active")) {
         setRawUser(result);
         router.push("/pending");
-        return true;
+        return result;
       }
 
       setRawUser(result);
       const newToken = await provider.getToken();
       setToken(newToken);
       syncZustand(result.id);
-      return true;
+      return result;
     },
     [provider, syncZustand, router],
   );
@@ -149,17 +141,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       isAdmin,
       isInternal,
     }),
-    [
-      user,
-      token,
-      loading,
-      loginError,
-      loginByEmail,
-      logout,
-      hasEntitlement,
-      isAdmin,
-      isInternal,
-    ],
+    [user, token, loading, loginError, loginByEmail, logout, hasEntitlement, isAdmin, isInternal],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -183,8 +183,8 @@ export default function LoginPage() {
       return;
     }
 
-    const success = await loginByEmail(email, password);
-    if (success) {
+    const loggedInUser = await loginByEmail(email, password);
+    if (loggedInUser) {
       // Check if user has a pending application to resume
       const draft = localStorage.getItem("onboarding-draft");
       if (draft) {
@@ -213,7 +213,7 @@ export default function LoginPage() {
       } catch {
         /* no backend, continue */
       }
-      router.push(redirectTo || defaultLanding());
+      router.push(redirectTo || defaultLanding(loggedInUser));
     } else if (!loginError) {
       setError("Invalid credentials. Check your email and password.");
     }

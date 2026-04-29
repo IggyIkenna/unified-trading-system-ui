@@ -21,7 +21,7 @@
  */
 
 import * as React from "react";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth, type AuthUser } from "@/hooks/use-auth";
 
 /**
  * Hardcoded IR-recipient email fallback. Module-scope so the Set isn't
@@ -40,24 +40,35 @@ const IR_EMAILS: ReadonlySet<string> = new Set([
  * Resolve the default post-auth landing path for the current user.
  * Returns "/dashboard" until auth has loaded — callers should defer the
  * redirect until `useAuth().loading === false`.
+ *
+ * The returned resolver accepts an optional `override` AuthUser. The login
+ * page passes the freshly-authenticated user from `loginByEmail` here:
+ * immediately after that resolves, the React `user` state hasn't committed
+ * yet, so role-based checks (`isAdmin()` / `isInternal()`) would read stale
+ * state and let wildcard `["*"]` admins fall through to the entitlement
+ * branch (which DOES see fresh provider state) — routing them incorrectly
+ * to /investor-relations. The homepage caller doesn't need an override
+ * (its effect only runs once `user` is in React state).
  */
-export function useDefaultLanding(): () => string {
-  const { user, hasEntitlement, isAdmin, isInternal } = useAuth();
+export function useDefaultLanding(): (override?: AuthUser | null) => string {
+  const { user, hasEntitlement } = useAuth();
 
-  return React.useCallback((): string => {
-    if (isAdmin() || isInternal()) {
+  return React.useCallback(
+    (override?: AuthUser | null): string => {
+      const effective = override ?? user;
+      const role = effective?.role;
+      if (role === "admin" || role === "internal") {
+        return "/dashboard";
+      }
+      if (hasEntitlement("investor-board") || hasEntitlement("investor-archive")) {
+        return "/investor-relations";
+      }
+      const email = effective?.email;
+      if (email && IR_EMAILS.has(email.toLowerCase())) {
+        return "/investor-relations";
+      }
       return "/dashboard";
-    }
-    if (hasEntitlement("investor-board") || hasEntitlement("investor-archive")) {
-      return "/investor-relations";
-    }
-    if (user?.email && IR_EMAILS.has(user.email.toLowerCase())) {
-      return "/investor-relations";
-    }
-    return "/dashboard";
-    // user dep is the whole object — React Compiler can't preserve a more
-    // specific `user?.email` source dep without diverging from inferred,
-    // and the email check is the only field accessed from `user`. Stable
-    // identity from useAuth keeps re-renders quiet.
-  }, [hasEntitlement, isAdmin, isInternal, user]);
+    },
+    [hasEntitlement, user],
+  );
 }
