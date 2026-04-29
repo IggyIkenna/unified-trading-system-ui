@@ -23,3 +23,4 @@ import "./terminal/register";
 import "./tradfi/register";
 import "./trades/register";
 import "./_screeners/register";
+import "./data-quality/register";
