@@ -76,11 +76,12 @@ test.describe("DART tile split — persona × tile matrix", () => {
     test(matrix.description, async ({ page }) => {
       await seedPersona(page, matrix.persona);
       await page.goto("/dashboard");
-      // The dashboard tile renderer reads `tile.key as DashboardTileId` and
-      // attaches `data-tile-id` attributes. Match by key — the new tile keys
-      // are dart-terminal + dart-research per services.ts SERVICE_REGISTRY.
-      const terminalTile = page.locator('[data-tile-id="dart-terminal"]');
-      const researchTile = page.locator('[data-tile-id="dart-research"]');
+      // The dashboard tile renderer is `<ServiceTile>` (components/services/ServiceTile.tsx),
+      // which emits `data-testid="service-tile-${service.key}"`. Match by key —
+      // the new tile keys are dart-terminal + dart-research per services.ts
+      // SERVICE_REGISTRY.
+      const terminalTile = page.locator('[data-testid="service-tile-dart-terminal"]');
+      const researchTile = page.locator('[data-testid="service-tile-dart-research"]');
 
       // The dashboard renderer drops "hidden" tiles entirely (filtered out
       // before rendering) — so for a hidden expectation we assert the tile
