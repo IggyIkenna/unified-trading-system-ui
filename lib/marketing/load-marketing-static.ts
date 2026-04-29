@@ -13,7 +13,6 @@ export const MARKETING_STATIC_FILES = [
   "regulatory.html",
   "who-we-are.html",
   "our-story.html",
-  "story.html",
   "faq.html",
 ] as const;
 

@@ -84,11 +84,11 @@ describe("positions-kpi-strip — L1.5 harness", () => {
   });
 
   describe("loading state", () => {
-    it("renders em-dash for all six metrics when isLoading", () => {
+    it("renders dash for all six metrics when isLoading", () => {
       Object.assign(mockData, buildMockPositionsData({ isLoading: true }));
       render(<PositionsKpiWidget {...WIDGET_PROPS} />);
-      const dashes = screen.getAllByText("—");
-      // 6 KPI values should all be em-dash while loading
+      // Widget renders ASCII hyphen "-" as the loading placeholder.
+      const dashes = screen.getAllByText("-");
       expect(dashes.length).toBeGreaterThanOrEqual(6);
     });
   });

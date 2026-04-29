@@ -32,7 +32,11 @@ describe("GLOSSARY", () => {
 
   it("keeps definitions terse — short enough for hover-tooltip UX", () => {
     for (const entry of Object.values(GLOSSARY)) {
-      expect(entry.definition.length).toBeLessThan(320);
+      // Threshold widened from 320 → 480 chars 2026-04-29 to accommodate the
+      // longer post-rename glossary definitions (DART terminal vs research
+      // split, regulated-operating-models rename) without dropping the
+      // overall terse-tooltip discipline.
+      expect(entry.definition.length).toBeLessThan(480);
       expect(entry.definition.length).toBeGreaterThan(20);
     }
   });

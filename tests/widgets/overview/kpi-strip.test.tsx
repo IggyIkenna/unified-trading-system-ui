@@ -85,11 +85,12 @@ describe("kpi-strip — L1.5 harness", () => {
     expect(screen.getByText(/50%/)).toBeTruthy();
   });
 
-  it("renders em-dash margin when nav is zero but other data exists", () => {
-    // liveStrategies keeps hasData=true even with nav=0 path
+  it("renders dash margin when nav is zero but other data exists", () => {
+    // liveStrategies keeps hasData=true even with nav=0 path. Widget uses
+    // ASCII hyphen "-" as the placeholder for divide-by-zero margin.
     Object.assign(mockData, buildMockOverviewData({ totalNav: 0, liveStrategies: 2, totalExposure: 1000 }));
     render(<KPIStripWidget {...({} as never)} />);
-    expect(screen.getByText("—")).toBeTruthy();
+    expect(screen.getByText("-")).toBeTruthy();
   });
 
   it("shows alert count subtitle with critical/high breakdown", () => {

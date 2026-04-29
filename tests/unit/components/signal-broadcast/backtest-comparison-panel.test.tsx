@@ -8,17 +8,13 @@ import { MOCK_BACKTEST_PAPER_LIVE } from "@/lib/signal-broadcast";
 describe("BacktestComparisonPanel (backtest / paper / live)", () => {
   it("renders the container with the canonical data-testid", () => {
     render(<BacktestComparisonPanel rows={MOCK_BACKTEST_PAPER_LIVE} />);
-    expect(
-      screen.getByTestId("signal-broadcast-backtest-comparison-panel"),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("signal-broadcast-backtest-comparison-panel")).toBeInTheDocument();
   });
 
   it("renders one row per fixture slot", () => {
     render(<BacktestComparisonPanel rows={MOCK_BACKTEST_PAPER_LIVE} />);
     for (const row of MOCK_BACKTEST_PAPER_LIVE) {
-      expect(
-        screen.getByTestId(`backtest-row-${row.slot_label}`),
-      ).toBeInTheDocument();
+      expect(screen.getByTestId(`backtest-row-${row.slot_label}`)).toBeInTheDocument();
     }
   });
 
@@ -37,21 +33,19 @@ describe("BacktestComparisonPanel (backtest / paper / live)", () => {
     expect(screen.getByText("108")).toBeInTheDocument();
   });
 
-  it("renders em-dash for null paper metrics on BACKTESTED-only slots", () => {
+  it("renders dash for null paper metrics on BACKTESTED-only slots", () => {
     render(<BacktestComparisonPanel rows={MOCK_BACKTEST_PAPER_LIVE} />);
-    // Slot 2 has paper_* null — the component renders "—" for each null cell.
-    // With 3 null paper cells per BACKTESTED-only slot + 1 null live_return cell,
-    // expect at least 4 em-dashes visible.
-    const dashes = screen.getAllByText("—");
+    // Component renders ASCII hyphen "-" for each null cell. With 3 null
+    // paper cells per BACKTESTED-only slot + 1 null live_return cell,
+    // expect at least 4 dashes visible.
+    const dashes = screen.getAllByText("-");
     expect(dashes.length).toBeGreaterThanOrEqual(4);
   });
 
   it("shows the shared period window", () => {
     render(<BacktestComparisonPanel rows={MOCK_BACKTEST_PAPER_LIVE} />);
     const windowEl = screen.getByTestId("backtest-comparison-window");
-    expect(windowEl.textContent).toMatch(
-      /Window: \d{4}-\d{2}-\d{2} → \d{4}-\d{2}-\d{2}/,
-    );
+    expect(windowEl.textContent).toMatch(/Window: \d{4}-\d{2}-\d{2} → \d{4}-\d{2}-\d{2}/);
   });
 
   it("renders the three-way section headings", () => {
