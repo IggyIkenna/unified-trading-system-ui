@@ -5,6 +5,7 @@ import { LiveAsOfToggle } from "@/components/platform/live-asof-toggle";
 import { ErrorBoundary } from "@/components/shared/error-boundary";
 import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { TRADING_TABS, type ServiceTab } from "@/components/shell/service-tabs";
+import { TerminalModeTabs } from "@/components/cockpit/terminal-mode-tabs";
 import { DartScopeBar } from "@/components/shell/dart-scope-bar";
 import { TradingVerticalNav } from "@/components/shell/trading-vertical-nav";
 import { type AssetGroup, instrumentTypesForUser } from "@/lib/architecture-v2/user-instrument-types";
@@ -380,6 +381,12 @@ export default function TradingServiceLayout({ children }: { children: React.Rea
       <div className="border-b border-border/40 px-4 py-2.5">
         <DartScopeBar />
       </div>
+      {/* TerminalModeTabs — Phase 3 of dart_ux_cockpit_refactor §5.2 + §17.
+          5-mode primary nav (Command · Markets · Strategies · Explain · Ops)
+          collapses the legacy 24-tab TRADING_TABS sprawl into a buyer-facing
+          summary. Old per-route pages stay as deep links (the
+          TradingVerticalNav below); Phase 9 retires those. */}
+      <TerminalModeTabs />
       {/* Main area: vertical nav + resizable content/quick-view */}
       <div className="flex flex-1 min-h-0 overflow-hidden">
         <TradingVerticalNav tabs={filteredTabs} entitlements={user?.entitlements} bottomSlot={<LiveAsOfToggle />} />

@@ -1,5 +1,6 @@
 "use client";
 
+import { TerminalModeTabs } from "@/components/cockpit/terminal-mode-tabs";
 import { DartScopeBar } from "@/components/shell/dart-scope-bar";
 import { ServiceTabs, OBSERVE_TABS, LIVE_ASOF_VISIBLE } from "@/components/shell/service-tabs";
 import { LiveAsOfToggle } from "@/components/platform/live-asof-toggle";
@@ -15,6 +16,10 @@ export default function ObserveServiceLayout({ children }: { children: React.Rea
       <div className="px-4 pt-3">
         <DartScopeBar />
       </div>
+      {/* TerminalModeTabs — Observe routes anchor the Explain + Ops modes
+          per dart_ux_cockpit_refactor §5.2 + §17 Phase 3. Active-mode
+          resolution is route-driven (terminalModeForPath). */}
+      <TerminalModeTabs />
       <ServiceTabs
         tabs={OBSERVE_TABS}
         entitlements={user?.entitlements}

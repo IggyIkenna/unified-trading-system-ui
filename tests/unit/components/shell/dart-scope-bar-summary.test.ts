@@ -45,7 +45,11 @@ describe("compactScopeSegments", () => {
   });
 
   it("collapses multiple archetypes to a count", () => {
-    const segs = compactScopeSegments(scope({ archetypes: ["A", "B", "C", "D"] }));
+    const segs = compactScopeSegments(
+      scope({
+        archetypes: ["CARRY_BASIS_PERP", "ARBITRAGE_PRICE_DISPERSION", "LIQUIDATION_CAPTURE", "VOL_TRADING_OPTIONS"],
+      }),
+    );
     expect(segs).toContain("4 archetypes");
   });
 
