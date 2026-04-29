@@ -5,6 +5,7 @@ import { LiveAsOfToggle } from "@/components/platform/live-asof-toggle";
 import { ErrorBoundary } from "@/components/shared/error-boundary";
 import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { TRADING_TABS, type ServiceTab } from "@/components/shell/service-tabs";
+import { DartScopeBar } from "@/components/shell/dart-scope-bar";
 import { TradingVerticalNav } from "@/components/shell/trading-vertical-nav";
 import { type AssetGroup, instrumentTypesForUser } from "@/lib/architecture-v2/user-instrument-types";
 import { Card, CardContent } from "@/components/ui/card";
@@ -371,6 +372,14 @@ export default function TradingServiceLayout({ children }: { children: React.Rea
 
   return (
     <div className="flex flex-col h-full">
+      {/* DartScopeBar — Phase 2 of dart_ux_cockpit_refactor §6 + §17. Global
+          scope summary + chip dials, mounted across every cockpit-tier
+          surface (Dashboard / Terminal / Research / Catalogue / Reports /
+          Signals). The §4.3 Live confirm dialog + entitlement gate live
+          inside the bar component itself. */}
+      <div className="border-b border-border/40 px-4 py-2.5">
+        <DartScopeBar />
+      </div>
       {/* Main area: vertical nav + resizable content/quick-view */}
       <div className="flex flex-1 min-h-0 overflow-hidden">
         <TradingVerticalNav tabs={filteredTabs} entitlements={user?.entitlements} bottomSlot={<LiveAsOfToggle />} />

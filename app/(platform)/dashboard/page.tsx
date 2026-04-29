@@ -1,5 +1,6 @@
 "use client";
 
+import { DartScopeBar } from "@/components/shell/dart-scope-bar";
 import { DashboardFilterStrip } from "@/components/services/DashboardFilterStrip";
 import { QuickActions } from "@/components/platform/quick-actions";
 import { StatusDot } from "@/components/shared/status-badge";
@@ -240,6 +241,12 @@ export default function DashboardPage() {
               noise on the services hub, and duplicates what the top-nav
               already exposes. */}
           <div className="space-y-4">
+            {/* DartScopeBar — Phase 2 of dart_ux_cockpit_refactor §6 + §17. The
+                compact line answers "what am I looking at?"; expand for chip
+                controls + Surface / Engagement / Stream dials. §4.3 Live
+                confirm + entitlement gate enforced inside. */}
+            <DartScopeBar />
+
             {/* Filter strip — family/archetype/venue-set/share-class/instrument-type
                 picker, collapsed-by-default. Selections persist per-user in
                 localStorage and get threaded as URL query params onto every

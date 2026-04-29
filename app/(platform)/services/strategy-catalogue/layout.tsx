@@ -1,5 +1,6 @@
 "use client";
 
+import { DartScopeBar } from "@/components/shell/dart-scope-bar";
 import {
   ServiceTabs,
   STRATEGY_CATALOGUE_SUB_TABS,
@@ -26,6 +27,9 @@ export default function StrategyCatalogueLayout({
   return (
     <AvailabilityStoreProvider adminBypass={adminBypass}>
       <div className="flex flex-col h-full">
+        <div className="px-4 pt-3 bg-muted/20">
+          <DartScopeBar />
+        </div>
         <ServiceTabs
           tabs={STRATEGY_CATALOGUE_SUB_TABS}
           className="bg-muted/20 border-b-0"
