@@ -376,6 +376,54 @@ const nextConfig = {
         destination: "/services/observe/health",
         permanent: false,
       },
+      // Phase 9 (dart_ux_cockpit_refactor_2026_04_29) — collapse single-widget
+      // observe pages into the unified workspace cockpit. Each page maps to
+      // the terminal mode that owns the concept per §15 ownership rules:
+      //   risk / scenarios / position-recon → Explain (attribution + drift)
+      //   alerts                            → Command (live exceptions)
+      //   strategy-health                   → Strategies
+      //   system-health / event-audit / recovery → Ops
+      // Strategy Catalogue stays distinct (§22) and is NOT redirected.
+      {
+        source: "/services/observe/risk",
+        destination: "/services/workspace?surface=terminal&tm=explain",
+        permanent: false,
+      },
+      {
+        source: "/services/observe/scenarios",
+        destination: "/services/workspace?surface=terminal&tm=explain",
+        permanent: false,
+      },
+      {
+        source: "/services/observe/position-recon",
+        destination: "/services/workspace?surface=terminal&tm=explain",
+        permanent: false,
+      },
+      {
+        source: "/services/observe/alerts",
+        destination: "/services/workspace?surface=terminal&tm=command",
+        permanent: false,
+      },
+      {
+        source: "/services/observe/strategy-health",
+        destination: "/services/workspace?surface=terminal&tm=strategies",
+        permanent: false,
+      },
+      {
+        source: "/services/observe/system-health",
+        destination: "/services/workspace?surface=terminal&tm=ops",
+        permanent: false,
+      },
+      {
+        source: "/services/observe/event-audit",
+        destination: "/services/workspace?surface=terminal&tm=ops",
+        permanent: false,
+      },
+      {
+        source: "/services/observe/recovery",
+        destination: "/services/workspace?surface=terminal&tm=ops",
+        permanent: false,
+      },
     ];
   },
 };

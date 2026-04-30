@@ -25,6 +25,7 @@ import { CockpitWidgetGrid } from "@/components/cockpit/cockpit-widget-grid";
 import { ContextualLockedPreview } from "@/components/cockpit/contextual-locked-preview";
 import { ReleaseBundlePanel } from "@/components/cockpit/release-bundle-panel";
 import { ResearchJourneyRail } from "@/components/cockpit/research-journey-rail";
+import { RuntimeOverrideAuthoring } from "@/components/cockpit/runtime-override-authoring";
 import { TerminalModeTabs } from "@/components/cockpit/terminal-mode-tabs";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -54,6 +55,12 @@ export default function WorkspaceShellPage() {
         {(scope.surface === "terminal" && (scope.terminalMode === "strategies" || scope.terminalMode === "explain")) ||
         (scope.surface === "research" && scope.researchStage === "promote") ? (
           <ReleaseBundlePanel bundle={DEMO_BUNDLE} activeOverrides={DEMO_OVERRIDES} />
+        ) : null}
+        {/* Runtime-override authoring — daily-trader configuration surface.
+            Renders on Terminal/Command + Strategies (where the user is
+            actively running the strategy and may need to override). */}
+        {scope.surface === "terminal" && (scope.terminalMode === "command" || scope.terminalMode === "strategies") ? (
+          <RuntimeOverrideAuthoring bundle={DEMO_BUNDLE} />
         ) : null}
         <ContextualLockedPreview />
       </main>
