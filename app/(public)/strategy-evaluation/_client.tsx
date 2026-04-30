@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Term } from "@/components/marketing/term";
 import { FileUploadField } from "@/components/strategy-evaluation/file-upload-field";
 import { isUploadedFileRef, type UploadedFileRef } from "@/lib/strategy-evaluation/upload";
+import { validateStrategyEvaluation } from "@/lib/strategy-evaluation/validate";
 import PreStepGate from "./_pre-step-gate";
 import AllocatorWizard, { type AllocatorFormState } from "./_allocator-wizard";
 import { persistSeed, seedFiltersFromQuestionnaire } from "@/lib/questionnaire/seed-catalogue-filters";
@@ -660,19 +661,7 @@ export default function StrategyEvaluationFormClient({
   }
 
   function validate(): FieldError[] {
-    const errs: FieldError[] = [];
-    if (!form.strategyName.trim()) errs.push({ field: "strategyName", message: "Strategy name is required." });
-    if (!form.leadResearcher.trim()) errs.push({ field: "leadResearcher", message: "Lead researcher is required." });
-    if (!form.email.trim()) errs.push({ field: "email", message: "Email is required." });
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
-      errs.push({ field: "email", message: "Enter a valid email address." });
-    if (!form.commercialPath) errs.push({ field: "commercialPath", message: "Select a commercial path." });
-    if (!form.understandFit) errs.push({ field: "understandFit", message: "You must acknowledge this statement." });
-    if (!form.understandIncubation)
-      errs.push({ field: "understandIncubation", message: "You must acknowledge this statement." });
-    if (!form.understandSignals)
-      errs.push({ field: "understandSignals", message: "You must acknowledge this statement." });
-    return errs;
+    return validateStrategyEvaluation(form).map((e) => ({ field: e.field, message: e.message }));
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -917,6 +906,7 @@ export default function StrategyEvaluationFormClient({
           submitting={submitting}
           submitted={submitted}
           submitError={submitError}
+          validationErrors={errors}
           onSubmit={async () => {
             // Synthesize a form-event-like submit through the existing
             // pipeline so we get the same persistence + email behaviour.
