@@ -20,8 +20,12 @@ interface Envelope<T> {
 export function useEconomicEvents() {
   const { user, token } = useAuth();
   return useQuery({
+    // Backend route is /calendar/economic-results (the canonical name —
+    // event "results" carries actuals + upcoming schedule). The UI calls
+    // them "events" colloquially. Path matches backend; queryKey + types
+    // unchanged.
     queryKey: ["calendar-economic-events", user?.id],
-    queryFn: () => apiFetch(`/api/calendar/economic-events`, token),
+    queryFn: () => apiFetch(`/api/calendar/economic-results`, token),
     enabled: !!user,
     refetchInterval: 60_000,
     select: (data: unknown) => (data as Envelope<EconomicEvent>).data ?? [],

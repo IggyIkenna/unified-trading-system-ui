@@ -50,6 +50,17 @@ import { LENDING_PROTOCOLS } from "@/lib/mocks/fixtures/defi-lending";
 import { LIQUIDITY_POOLS } from "@/lib/mocks/fixtures/defi-liquidity";
 import { STAKING_PROTOCOLS } from "@/lib/mocks/fixtures/defi-staking";
 import { MOCK_SWAP_ROUTE, SWAP_TOKENS } from "@/lib/mocks/fixtures/defi-swap";
+// Live-universe fixtures — small in-repo sample files (~30 KB each, ~60
+// instruments per group) sufficient for the system watchlists to resolve
+// out of the box on a fresh clone. The full GCS-downloaded payloads
+// (cefi.json / tradfi.json / defi.json — 3-15 MB each) are gitignored.
+// Devs who need the full ~21K-instrument universe locally run the
+// download script and the *.sample.json import is replaced via a local
+// file swap (or just keep using the sample — the watchlist still works).
+// See live-universe/README.md.
+import LIVE_UNIVERSE_CEFI_FIXTURE from "@/lib/mocks/fixtures/live-universe/cefi.sample.json";
+import LIVE_UNIVERSE_DEFI_FIXTURE from "@/lib/mocks/fixtures/live-universe/defi.sample.json";
+import LIVE_UNIVERSE_TRADFI_FIXTURE from "@/lib/mocks/fixtures/live-universe/tradfi.sample.json";
 import {
   MOCK_ALGO_BACKTESTS,
   MOCK_EXECUTION_ALGOS,
@@ -1024,6 +1035,19 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   }
 
   // --- Instruments ---
+  // Live-universe fixtures: real GCS payloads downloaded 2026-04-30 from the
+  // backend's /instruments/live-universe endpoint. Used by mock mode so the
+  // UI watchlist shows the actual instrument set without requiring the
+  // backend to be up. See unified-trading-pm/findings/instruments_tardis_*.md
+  // for context on the dedupe applied at the backend before snapshot.
+  if (route === "/api/instruments/live-universe") {
+    const url = new URL(path, "http://x");
+    const assetGroup = (url.searchParams.get("asset_group") ?? "").toLowerCase();
+    if (assetGroup === "cefi") return json(LIVE_UNIVERSE_CEFI_FIXTURE);
+    if (assetGroup === "tradfi") return json(LIVE_UNIVERSE_TRADFI_FIXTURE);
+    if (assetGroup === "defi") return json(LIVE_UNIVERSE_DEFI_FIXTURE);
+    return jsonStatus(400, { error: "asset_group must be cefi | tradfi | defi" });
+  }
   if (route === "/api/instruments/list") {
     const DEFI_CATEGORIES = ["defi"];
     const RESTRICTED_BASES = ["DOGE", "SHIB"];

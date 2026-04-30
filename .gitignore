@@ -1,3 +1,10 @@
+# Live-universe fixtures — large GCS-downloaded snapshots (3-15 MB each).
+# Tiny *.sample.json copies live in the repo (used by mock-handler).
+# Refresh full files with the script in lib/mocks/fixtures/live-universe/README.md.
+lib/mocks/fixtures/live-universe/cefi.json
+lib/mocks/fixtures/live-universe/tradfi.json
+lib/mocks/fixtures/live-universe/defi.json
+
 # v0 sandbox internal files
 __v0_runtime_loader.js
 __v0_devtools.tsx

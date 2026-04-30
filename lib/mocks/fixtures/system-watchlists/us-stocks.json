@@ -1,0 +1,19 @@
+{
+  "id": "us-stocks",
+  "label": "US Stocks",
+  "type": "system",
+  "asset_group": "tradfi",
+  "description": "Major US equities on NASDAQ/NYSE. Includes chart-tested AAPL/MSFT/GOOGL/JPM.",
+  "instrument_keys": [
+    "NASDAQ:SPOT_PAIR:AAPL",
+    "NASDAQ:SPOT_PAIR:MSFT",
+    "NASDAQ:SPOT_PAIR:GOOGL",
+    "NYSE:SPOT_PAIR:JPM",
+    "NASDAQ:SPOT_PAIR:NVDA",
+    "NASDAQ:SPOT_PAIR:TSLA",
+    "NASDAQ:SPOT_PAIR:META",
+    "NASDAQ:SPOT_PAIR:AMZN",
+    "NYSE:SPOT_PAIR:BAC",
+    "NYSE:SPOT_PAIR:V"
+  ]
+}

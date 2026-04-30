@@ -1,7 +1,7 @@
 "use client";
 
 import { useAlerts } from "@/hooks/api/use-alerts";
-import { useInstruments } from "@/hooks/api/use-instruments";
+import { useInstruments, useLiveUniverse, type LiveUniverseRecord } from "@/hooks/api/use-instruments";
 import { useCandles, useOrderBook, useTickers } from "@/hooks/api/use-market-data";
 import { useBalances, usePositions } from "@/hooks/api/use-positions";
 import { useStrategyPerformance } from "@/hooks/api/use-strategies";
@@ -176,83 +176,130 @@ export function useTerminalPageData(): TerminalPageResult {
   const { data: instrumentsApiData } = useInstruments();
   const { data: balancesApiData } = useBalances();
 
+  // Live universe per asset_group — three lazy fetches, localStorage-cached.
+  // Each returns the full live-tradeable list (spot, perp, option, future,
+  // pool, lending) for that group. UI builds an in-memory index from them.
+  //
+  // Enabled in BOTH modes — in mock mode the request hits
+  // `mock-handler.ts` which serves the static fixtures downloaded from a
+  // real backend run (lib/mocks/fixtures/live-universe/{group}.json). In
+  // real-API mode the request hits the backend's
+  // `/instruments/live-universe` route. Same hook, same shape, different
+  // source.
+  const { data: cefiLiveUniverse } = useLiveUniverse("cefi");
+  const { data: tradfiLiveUniverse } = useLiveUniverse("tradfi");
+  const { data: defiLiveUniverse } = useLiveUniverse("defi");
+
   const [wsBid, setWsBid] = React.useState<number | null>(null);
   const [wsAsk, setWsAsk] = React.useState<number | null>(null);
 
   const instruments = React.useMemo(() => {
-    if (isMockDataMode()) return DEFAULT_INSTRUMENTS.map((d) => ({ ...d }));
-
-    const instData = instrumentsApiData as Record<string, unknown> | undefined;
-    const instArr = (instData?.data ?? instData?.instruments ?? []) as Array<Record<string, unknown>>;
-
+    // Same path in both mock and real mode — `useLiveUniverse` resolves
+    // either to the mock-handler fixtures (lib/mocks/fixtures/live-universe/)
+    // or to the backend's /instruments/live-universe response, both with
+    // identical shape. Mock-mode no longer short-circuits to the legacy
+    // 9-entry DEFAULT_INSTRUMENTS list — that hardcoded list survives only
+    // as a tiny last-resort fallback when every other path is empty (see
+    // bottom of this memo) so the chart widget never crashes on
+    // `selectedInstrument.symbol` while the live-universe queries resolve.
     const tickersRaw: Record<string, unknown>[] =
       ((tickersData as Record<string, unknown>)?.data as Record<string, unknown>[]) ??
       ((tickersData as Record<string, unknown>)?.tickers as Record<string, unknown>[]) ??
       [];
+    const tickersBySymbol = new Map<string, Record<string, unknown>>();
+    for (const t of tickersRaw) {
+      const sym = (t.symbol as string) ?? "";
+      if (sym) tickersBySymbol.set(sym, t);
+    }
 
+    const map = (rec: LiveUniverseRecord, group: "CeFi" | "TradFi" | "DeFi"): TerminalInstrument => {
+      const sym = rec.symbol ?? rec.raw_symbol;
+      const ticker = tickersBySymbol.get(sym);
+      return {
+        symbol: sym,
+        name: sym,
+        venue: rec.venue,
+        category: group,
+        instrumentKey: rec.instrument_key,
+        midPrice: ((ticker?.midPrice as number) ?? (ticker?.price as number) ?? 0) || 0,
+        change: ((ticker?.change as number) ?? (ticker?.changePct as number) ?? 0) || 0,
+      };
+    };
+
+    const merged: TerminalInstrument[] = [];
+    if (cefiLiveUniverse?.data?.length) {
+      for (const r of cefiLiveUniverse.data) merged.push(map(r, "CeFi"));
+    }
+    if (tradfiLiveUniverse?.data?.length) {
+      for (const r of tradfiLiveUniverse.data) merged.push(map(r, "TradFi"));
+    }
+    if (defiLiveUniverse?.data?.length) {
+      for (const r of defiLiveUniverse.data) merged.push(map(r, "DeFi"));
+    }
+
+    // Real-API empty state: return [] rather than silently masking with
+    // DEFAULT_INSTRUMENTS. The watchlist/widget surfaces "no instruments
+    // available" — backend failures stop being invisible. This is the
+    // explicit fix from Unit B of price_chart_gcs_delivery's sibling plan.
+    if (merged.length > 0) return merged;
+
+    // Pre-load fallback: while the three live-universe queries are still
+    // resolving on first paint, fall back to the older /instruments/list
+    // path (mock-mode-shaped) or tickers so the chart agent's static
+    // DEFAULT_INSTRUMENTS keeps working until the watchlist plan ships
+    // in full. Once Unit C verifies all three load reliably, this branch
+    // can be removed.
+    const instData = instrumentsApiData as Record<string, unknown> | undefined;
+    const instArr = (instData?.data ?? instData?.instruments ?? []) as Array<Record<string, unknown>>;
     if (instArr.length > 0) {
-      const tickersBySymbol = new Map<string, Record<string, unknown>>();
-      for (const t of tickersRaw) {
-        const sym = (t.symbol as string) ?? "";
-        if (sym) tickersBySymbol.set(sym, t);
-      }
       return instArr.map((i) => {
         const sym = (i.symbol as string) ?? (i.instrumentKey as string) ?? "";
         const ven = (i.venue as string) ?? "";
         const iKey = (i.instrument_key as string) ?? (i.instrumentKey as string) ?? `${sym}@${ven}`;
         const ticker = tickersBySymbol.get(sym);
-        const defaultInst = DEFAULT_INSTRUMENTS.find((d) => d.symbol === sym);
-        const midPrice =
-          (i.midPrice as number) ||
-          (i.price as number) ||
-          (ticker?.midPrice as number) ||
-          (ticker?.price as number) ||
-          defaultInst?.midPrice ||
-          0;
-        const change =
-          (i.change as number) ||
-          (ticker?.change as number) ||
-          (ticker?.changePct as number) ||
-          defaultInst?.change ||
-          0;
         return {
           symbol: sym,
           name: sym,
           venue: ven,
           category: (i.category as string) ?? "Other",
           instrumentKey: iKey,
-          midPrice,
-          change,
+          midPrice: ((i.midPrice as number) ?? (ticker?.midPrice as number) ?? 0) || 0,
+          change: ((i.change as number) ?? (ticker?.change as number) ?? 0) || 0,
         };
       });
     }
-    if (tickersRaw.length > 0) {
-      return tickersRaw.map((t) => {
-        const sym = (t.symbol as string) ?? "";
-        const ven = (t.venue as string) ?? "";
-        return {
-          symbol: sym,
-          name: (t.name as string) ?? sym,
-          venue: ven,
-          category: (t.category as string) ?? "CeFi",
-          instrumentKey: (t.instrument_key as string) ?? (t.instrumentKey as string) ?? `${sym}@${ven}`,
-          midPrice: (t.midPrice as number) ?? (t.price as number) ?? 0,
-          change: (t.change as number) ?? (t.changePct as number) ?? 0,
-        };
-      });
-    }
-    return DEFAULT_INSTRUMENTS.map((d) => ({ ...d }));
-  }, [instrumentsApiData, tickersData]);
+    return [] as TerminalInstrument[];
+  }, [cefiLiveUniverse, tradfiLiveUniverse, defiLiveUniverse, instrumentsApiData, tickersData]);
 
-  const [selectedInstrument, setSelectedInstrument] = React.useState(instruments[0]);
-  const [livePrice, setLivePrice] = React.useState(instruments[0]?.midPrice ?? 0);
-  const [priceChange, setPriceChange] = React.useState(instruments[0]?.change ?? 0);
+  // First-paint fallback for an empty watchlist: keep the static
+  // DEFAULT_INSTRUMENTS[0] so the chart widget doesn't crash on
+  // `selectedInstrument.symbol` access while the live universe is loading.
+  // Once at least one live-universe payload arrives, the effect at
+  // line ~310 reconciles selectedInstrument to a real entry.
+  const [selectedInstrument, setSelectedInstrument] = React.useState<TerminalInstrument>(
+    instruments[0] ?? DEFAULT_INSTRUMENTS[0],
+  );
+  const [livePrice, setLivePrice] = React.useState(instruments[0]?.midPrice ?? DEFAULT_INSTRUMENTS[0].midPrice);
+  const [priceChange, setPriceChange] = React.useState(instruments[0]?.change ?? DEFAULT_INSTRUMENTS[0].change);
   const [selectedAccount, setSelectedAccount] = React.useState<{
     id: string;
     name: string;
     venueAccountId: string;
     marginType: string;
   } | null>(null);
+  // Reconcile the stub-initialised selectedInstrument once the real
+  // instrument list lands. Only fires when the current selection isn't
+  // present in the live list (e.g. first-paint stub from
+  // DEFAULT_INSTRUMENTS while the universe was loading) — avoids
+  // clobbering a user's deliberate selection.
+  React.useEffect(() => {
+    if (instruments.length === 0) return;
+    const present = instruments.some((i) => i.instrumentKey === selectedInstrument.instrumentKey);
+    if (!present) {
+      setSelectedInstrument(instruments[0]);
+    }
+  }, [instruments, selectedInstrument.instrumentKey]);
+
   const [orderType, setOrderType] = React.useState<"limit" | "market">("limit");
   const [orderSide, setOrderSide] = React.useState<"buy" | "sell">("buy");
   const [orderPrice, setOrderPrice] = React.useState("");

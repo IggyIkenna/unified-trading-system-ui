@@ -1,0 +1,19 @@
+{
+  "id": "defi-blue-chips",
+  "label": "DeFi Blue Chips",
+  "type": "system",
+  "asset_group": "defi",
+  "description": "Major Uniswap V3 pools, Aave V3 a-tokens, Lido stETH, Curve ETH-stETH on Ethereum.",
+  "instrument_keys": [
+    "UNISWAPV3-ETHEREUM:POOL:USDC-WETH:500",
+    "UNISWAPV3-ETHEREUM:POOL:USDC-WETH:3000",
+    "UNISWAPV3-ETHEREUM:POOL:WBTC-WETH:3000",
+    "UNISWAPV3-ETHEREUM:POOL:WBTC-WETH:500",
+    "AAVEV3-ETHEREUM:A_TOKEN:AWETH",
+    "AAVEV3-ETHEREUM:A_TOKEN:AUSDC",
+    "AAVEV3-ETHEREUM:A_TOKEN:AWBTC",
+    "AAVEV3-ETHEREUM:A_TOKEN:AUSDT",
+    "LIDO-ETHEREUM:LST:STETH",
+    "CURVE-ETHEREUM:POOL:ETH-STETH"
+  ]
+}

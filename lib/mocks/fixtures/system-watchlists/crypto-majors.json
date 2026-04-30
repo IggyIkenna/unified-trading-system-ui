@@ -1,0 +1,19 @@
+{
+  "id": "crypto-majors",
+  "label": "Crypto Majors",
+  "type": "system",
+  "asset_group": "cefi",
+  "description": "Top crypto perpetuals and spot pairs across major CeFi venues. Includes chart-tested BTC/ETH on BINANCE-FUTURES.",
+  "instrument_keys": [
+    "BINANCE-FUTURES:PERPETUAL:BTC-USDT",
+    "BINANCE-FUTURES:PERPETUAL:ETH-USDT",
+    "BINANCE-FUTURES:PERPETUAL:SOL-USDT",
+    "BINANCE-SPOT:SPOT_PAIR:BTC-USDT",
+    "BINANCE-SPOT:SPOT_PAIR:ETH-USDT",
+    "COINBASE-SPOT:SPOT_PAIR:BTC-USD",
+    "COINBASE-SPOT:SPOT_PAIR:ETH-USD",
+    "BYBIT:PERPETUAL:BTC-USDT",
+    "OKX-SWAP:PERPETUAL:BTC-USDT",
+    "HYPERLIQUID:PERP:BTC"
+  ]
+}

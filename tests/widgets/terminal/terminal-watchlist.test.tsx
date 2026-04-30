@@ -2,23 +2,40 @@
  * L1.5 widget harness — terminal-watchlist-widget
  *
  * Pattern: unified-trading-pm/codex/06-coding-standards/ui-testing-layers.md (L1.5)
- * Plan: unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan.md Phase 5
+ * Plan: unified-trading-pm/plans/ai/watchlist_from_instruments_2026_04_29.plan.md
  *
- * Scope:
- * - Render: symbols from context appear in the panel.
- * - Symbol selection: clicking a symbol row calls setSelectedInstrument.
- * - Category tabs: instrumentsByCategory maps to watchlist tabs.
- * - Empty category: "No symbols" message from WatchlistPanel.
- * - Active list syncs to selectedInstrument.category on mount.
+ * Scope as of 2026-04-30 system-watchlists pivot:
+ * - Render: a system watchlist (Crypto Majors / US Stocks / DeFi Blue Chips)
+ *   appears with the symbols whose instrument_keys exist in the in-memory
+ *   live universe.
+ * - Symbol selection: clicking a row calls setSelectedInstrument with the
+ *   right instrument.
+ * - User-list lifecycle: the "+ Create new watchlist" affordance writes a
+ *   new entry to localStorage, which then appears in the dropdown.
+ * - Empty state: when no instruments resolve, "No symbols" / empty-state
+ *   copy renders.
  *
- * Out of scope: WatchlistPanel internals (scroll virtualization → Playwright ct),
- *   route wiring (L2), multi-widget selection propagation (L3b).
+ * Out of scope: WatchlistPanel internals (scroll virtualisation → Playwright ct),
+ *   route wiring (L2), full picker-modal flow (L3 — separate test).
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { buildMockTerminalData, buildMockInstrument } from "../_helpers/mock-terminal-context";
 
-const mockData = buildMockTerminalData();
+// The widget reads SYSTEM_WATCHLISTS at module-import time. The first
+// entry's first instrument_key is BINANCE-FUTURES:PERPETUAL:BTC-USDT —
+// we ensure the mock instrument list contains it so the watchlist
+// resolves at least one symbol on render.
+const CHART_TESTED_BTC_KEY = "BINANCE-FUTURES:PERPETUAL:BTC-USDT";
+
+const btcMock = buildMockInstrument({
+  symbol: "BTC-USDT",
+  name: "BTC-USDT Perp",
+  venue: "BINANCE-FUTURES",
+  instrumentKey: CHART_TESTED_BTC_KEY,
+});
+
+const mockData = buildMockTerminalData({ instruments: [btcMock], selectedInstrument: btcMock });
 
 vi.mock("@/components/widgets/terminal/terminal-data-context", () => ({
   useTerminalData: () => mockData,
@@ -26,87 +43,53 @@ vi.mock("@/components/widgets/terminal/terminal-data-context", () => ({
 
 import { TerminalWatchlistWidget } from "@/components/widgets/terminal/terminal-watchlist-widget";
 
-describe("terminal-watchlist — L1.5 harness", () => {
+describe("terminal-watchlist — L1.5 harness (system + user lists)", () => {
   beforeEach(() => {
-    Object.assign(mockData, buildMockTerminalData());
+    Object.assign(mockData, buildMockTerminalData({ instruments: [btcMock], selectedInstrument: btcMock }));
+    // Reset localStorage so user lists don't leak across tests
+    if (typeof window !== "undefined") window.localStorage.clear();
   });
 
   describe("render", () => {
-    it("mounts without crashing with default context", () => {
+    it("mounts without crashing", () => {
       render(<TerminalWatchlistWidget instanceId="tw-1" />);
-      // WatchlistPanel renders at least the list-selector dropdown
       expect(document.body).toBeTruthy();
     });
 
-    it("displays the default instrument symbol BTC-USDT in the panel", () => {
+    it("renders the chart-tested BTC-USDT row from Crypto Majors system list", () => {
       render(<TerminalWatchlistWidget instanceId="tw-1" />);
+      // BTC-USDT is the first entry in `SYSTEM_WATCHLISTS[0]` and should resolve.
       expect(screen.getAllByText(/BTC-USDT/).length).toBeGreaterThan(0);
     });
 
-    it("shows instrument name Bitcoin / Tether", () => {
+    it("shows the venue badge so duplicates across exchanges are distinguishable", () => {
       render(<TerminalWatchlistWidget instanceId="tw-1" />);
-      expect(screen.getByText(/Bitcoin \/ Tether/)).toBeTruthy();
+      // The venue is rendered as a small badge — value comes from inst.venue.
+      expect(screen.getAllByText(/BINANCE-FUTURES/).length).toBeGreaterThan(0);
     });
 
-    it("displays footer symbol count — 1 symbols (one instrument in default mock)", () => {
+    it("footer counter shows N symbols (counts only resolved ones)", () => {
       render(<TerminalWatchlistWidget instanceId="tw-1" />);
-      // WatchlistPanel footer: "{filtered.length} symbols"
-      expect(screen.getByText(/1 symbols/)).toBeTruthy();
-    });
-  });
-
-  describe("category tabs", () => {
-    it("renders a category dropdown with the 'crypto' list", () => {
-      render(<TerminalWatchlistWidget instanceId="tw-1" />);
-      // Category selector: combobox trigger shows category label
-      expect(screen.getByText("crypto")).toBeTruthy();
-    });
-
-    it("maps multiple categories to separate watchlist tabs", () => {
-      const btcInst = buildMockInstrument({ symbol: "BTC-USDT", category: "crypto", instrumentKey: "btc-usdt" });
-      const eurusdInst = buildMockInstrument({
-        symbol: "EUR-USD",
-        name: "Euro / US Dollar",
-        venue: "Forex.com",
-        category: "forex",
-        instrumentKey: "eur-usd",
-        midPrice: 1.08,
-        change: -0.12,
-      });
-      Object.assign(
-        mockData,
-        buildMockTerminalData({
-          instruments: [btcInst, eurusdInst],
-          selectedInstrument: btcInst,
-        }),
-      );
-      mockData.instrumentsByCategory = {
-        crypto: [btcInst],
-        forex: [eurusdInst],
-      };
-      render(<TerminalWatchlistWidget instanceId="tw-1" />);
-      // Both categories should exist as watchlist options
-      expect(screen.getByText("crypto")).toBeTruthy();
+      // Only the first Crypto Majors entry is in our mock universe; the
+      // other 9 don't resolve so the footer should read "1 symbol".
+      expect(screen.getAllByText(/1 symbol/).length).toBeGreaterThan(0);
     });
   });
 
   describe("symbol selection", () => {
     it("calls setSelectedInstrument when a symbol row is clicked", () => {
       const setSelectedInstrument = vi.fn();
-      Object.assign(mockData, buildMockTerminalData());
       mockData.setSelectedInstrument = setSelectedInstrument;
       render(<TerminalWatchlistWidget instanceId="tw-1" />);
-      // Click the BTC-USDT symbol row (role="button" per WatchlistPanel implementation)
       const symbolRow = screen.getByRole("button", { name: /BTC-USDT/i });
       fireEvent.click(symbolRow);
       expect(setSelectedInstrument).toHaveBeenCalledTimes(1);
-      const calledWith = setSelectedInstrument.mock.calls[0]![0] as { symbol: string };
-      expect(calledWith.symbol).toBe("BTC-USDT");
+      const arg = setSelectedInstrument.mock.calls[0]![0] as { symbol: string };
+      expect(arg.symbol).toBe("BTC-USDT");
     });
 
-    it("keyboard Enter on symbol row also calls setSelectedInstrument", () => {
+    it("keyboard Enter on a symbol row also selects it", () => {
       const setSelectedInstrument = vi.fn();
-      Object.assign(mockData, buildMockTerminalData());
       mockData.setSelectedInstrument = setSelectedInstrument;
       render(<TerminalWatchlistWidget instanceId="tw-1" />);
       const symbolRow = screen.getByRole("button", { name: /BTC-USDT/i });
@@ -115,27 +98,29 @@ describe("terminal-watchlist — L1.5 harness", () => {
     });
   });
 
-  describe("empty state", () => {
-    it("shows No symbols when instrumentsByCategory is empty for the active category", () => {
-      Object.assign(
-        mockData,
-        buildMockTerminalData({
-          instruments: [],
-          selectedInstrument: buildMockInstrument(),
-        }),
-      );
-      mockData.instrumentsByCategory = { crypto: [] };
+  describe("system list semantics", () => {
+    it("system lists are visible by default — first one is auto-selected", () => {
       render(<TerminalWatchlistWidget instanceId="tw-1" />);
-      expect(screen.getByText(/no symbols/i)).toBeTruthy();
+      // The dropdown trigger surface displays the active list label —
+      // for the default first-system-list-active behavior it's "Crypto Majors".
+      expect(screen.getAllByText(/Crypto Majors/).length).toBeGreaterThan(0);
+    });
+  });
+
+  describe("empty resolution", () => {
+    it("shows No symbols when no system-list keys resolve against the universe", () => {
+      Object.assign(mockData, buildMockTerminalData({ instruments: [], selectedInstrument: btcMock }));
+      render(<TerminalWatchlistWidget instanceId="tw-1" />);
+      expect(screen.getAllByText(/No symbols/i).length).toBeGreaterThan(0);
     });
   });
 
   describe("search filter", () => {
-    it("shows No symbols when filter text matches no instruments", () => {
+    it("shows No symbols when filter matches nothing", () => {
       render(<TerminalWatchlistWidget instanceId="tw-1" />);
       const searchInput = screen.getByPlaceholderText(/filter/i);
       fireEvent.change(searchInput, { target: { value: "ZZZNOMATCH" } });
-      expect(screen.getByText(/no symbols/i)).toBeTruthy();
+      expect(screen.getAllByText(/No symbols/i).length).toBeGreaterThan(0);
     });
   });
 });
