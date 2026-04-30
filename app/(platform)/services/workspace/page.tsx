@@ -22,6 +22,8 @@
 import * as React from "react";
 
 import { AdminOperationalConfigPanel } from "@/components/cockpit/admin-operational-config-panel";
+import { AssumptionStackPanel } from "@/components/cockpit/assumption-stack-panel";
+import { BacktestVsOperatingPanel } from "@/components/cockpit/backtest-vs-operating-panel";
 import { CockpitWidgetGrid } from "@/components/cockpit/cockpit-widget-grid";
 import { ContextualLockedPreview } from "@/components/cockpit/contextual-locked-preview";
 import { ExplainAttributionPanel } from "@/components/cockpit/explain-attribution-panel";
@@ -36,7 +38,14 @@ import { AllWidgetProviders } from "@/components/widgets/all-widget-providers";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { DartScopeBar } from "@/components/shell/dart-scope-bar";
-import { DEMO_BUNDLE, DEMO_CONNECTIVITY, DEMO_OVERRIDES, DEMO_TREASURY_OPERATIONAL } from "@/lib/cockpit/demo-bundle";
+import {
+  DEMO_ASSUMPTION_STACK,
+  DEMO_BUNDLE,
+  DEMO_CONNECTIVITY,
+  DEMO_DRIFT_REPORT,
+  DEMO_OVERRIDES,
+  DEMO_TREASURY_OPERATIONAL,
+} from "@/lib/cockpit/demo-bundle";
 import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 
 export default function WorkspaceShellPage() {
@@ -70,6 +79,24 @@ export default function WorkspaceShellPage() {
             the buyer sees scope + persona + entitlement combined into a
             single visibility decision (not just scope filtering). */}
           <StrategyVisibilitySummary />
+          {/* Plan §4.9 — assumption-stack USP. Renders on every cockpit
+              surface where the buyer asks "what assumptions drive this?":
+              Research/Validate (author), Research/Promote (frozen),
+              Terminal/Strategies (active), Terminal/Explain (drift). */}
+          {scope.surface === "research" && (scope.researchStage === "validate" || scope.researchStage === "promote") ? (
+            <AssumptionStackPanel stack={DEMO_ASSUMPTION_STACK} />
+          ) : null}
+          {scope.surface === "terminal" && (scope.terminalMode === "strategies" || scope.terminalMode === "explain") ? (
+            <AssumptionStackPanel
+              stack={DEMO_ASSUMPTION_STACK}
+              drift={scope.terminalMode === "explain" ? DEMO_DRIFT_REPORT : undefined}
+            />
+          ) : null}
+          {/* Plan §4.9 — backtest vs operating-adjusted simulation. Lives on
+              Research/Validate alongside the assumption stack — answers
+              "would this signal still work after the operating costs are
+              applied?" */}
+          {scope.surface === "research" && scope.researchStage === "validate" ? <BacktestVsOperatingPanel /> : null}
           <CockpitWidgetGrid />
           {(scope.surface === "terminal" &&
             (scope.terminalMode === "strategies" || scope.terminalMode === "explain")) ||

@@ -43,14 +43,81 @@ import {
 import { useWorkspaceScope, useWorkspaceScopeStore } from "@/lib/stores/workspace-scope-store";
 import { cn } from "@/lib/utils";
 
-const STEPS = ["system-map", "preset", "scope", "engagement"] as const;
+const STEPS = ["system-map", "preset", "prove", "scope", "engagement"] as const;
 type Step = (typeof STEPS)[number];
 const STEP_LABEL: Record<Step, string> = {
   "system-map": "0. System map",
   preset: "1. Recommended starter",
-  scope: "2. Initial scope",
-  engagement: "3. Mode + engagement + stream",
+  prove: "2. What do you want to prove?",
+  scope: "3. Initial scope",
+  engagement: "4. Mode + engagement + stream",
 };
+
+/**
+ * Per plan §4.9 — proof-goal options. Each maps to which assumption-stack
+ * layers the simulator emphasises in the resulting workspace.
+ */
+const PROOF_GOALS = [
+  {
+    id: "signal",
+    label: "Signal performance",
+    description: "Pure signal P&L — no operating costs applied. The starting point.",
+    layers: ["execution"] as const,
+  },
+  {
+    id: "execution",
+    label: "Execution feasibility",
+    description: "Slippage, commission, latency, queue position — does the signal survive real fills?",
+    layers: ["execution", "venue_routing"] as const,
+  },
+  {
+    id: "gas",
+    label: "Gas / chain-cost sensitivity",
+    description: "Stress base + priority fee multipliers across the strategy's chains.",
+    layers: ["gas_fees", "execution"] as const,
+  },
+  {
+    id: "liquidation",
+    label: "Liquidation resilience",
+    description: "Adverse-shock pressure on margin + collateral haircuts + forced rebalance.",
+    layers: ["liquidation", "treasury"] as const,
+  },
+  {
+    id: "treasury",
+    label: "Treasury & collateral movement",
+    description: "Hedge ratio drift, leverage cap, auto-rebalance, wallet whitelist.",
+    layers: ["treasury", "venue_routing"] as const,
+  },
+  {
+    id: "portfolio",
+    label: "Portfolio allocation across strategies",
+    description: "Multi-strategy weighting, vol-target, drift-threshold rebalance.",
+    layers: ["portfolio_rebalance", "risk"] as const,
+  },
+  {
+    id: "client_flows",
+    label: "Client deposits / withdrawals",
+    description: "30% redemption-stress windows, notice periods, liquidity buffer.",
+    layers: ["client_flows", "treasury"] as const,
+  },
+  {
+    id: "promotion",
+    label: "Full promotion readiness",
+    description: "All 9 layers — the complete operating-environment simulation. Pre-Promote gate.",
+    layers: [
+      "execution",
+      "gas_fees",
+      "treasury",
+      "client_flows",
+      "liquidation",
+      "portfolio_rebalance",
+      "venue_routing",
+      "risk",
+      "reporting",
+    ] as const,
+  },
+] as const;
+type ProofGoalId = (typeof PROOF_GOALS)[number]["id"];
 
 const SHARE_CLASS_OPTIONS = ["USDT", "USDC", "USD", "GBP", "EUR", "BTC", "ETH"] as const;
 
@@ -75,6 +142,11 @@ export default function OnboardingCockpitPage() {
 
   const [presetId, setPresetId] = React.useState<string>(recommendation.presetId);
   const preset = React.useMemo(() => getPreset(presetId) ?? COCKPIT_PRESETS[0], [presetId]);
+
+  // Proof-goal step (plan §4.9). Drives the assumption-stack layer emphasis
+  // and the cockpit's initial widget bundle. Default = full promotion
+  // readiness so the buyer sees the whole story.
+  const [proofGoal, setProofGoal] = React.useState<ProofGoalId>("promotion");
 
   // Scope step state — start from the preset's defaults, mutate as the user edits.
   const [assetGroups, setAssetGroups] = React.useState<readonly string[]>(preset.defaultScope.assetGroups ?? []);
@@ -234,6 +306,54 @@ export default function OnboardingCockpitPage() {
                         <Badge variant="secondary" className="text-[9px] font-mono">
                           {p.defaultEngagement}
                         </Badge>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+          ) : null}
+
+          {step === "prove" ? (
+            <section className="space-y-3" data-testid="wizard-step-body-prove">
+              <h2 className="text-lg font-semibold tracking-tight">What do you want to prove?</h2>
+              <p className="text-sm text-muted-foreground">
+                DART does not just test signals. It simulates the operating system around the strategy. Pick the proof
+                you need — the cockpit emphasises those layers of the assumption stack.
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {PROOF_GOALS.map((goal) => {
+                  const selected = goal.id === proofGoal;
+                  return (
+                    <button
+                      key={goal.id}
+                      type="button"
+                      onClick={() => setProofGoal(goal.id)}
+                      data-testid={`wizard-prove-${goal.id}`}
+                      data-selected={selected}
+                      className={cn(
+                        "rounded border p-3 text-left transition-colors",
+                        selected ? "border-primary bg-primary/5" : "border-border/40 bg-card hover:border-border",
+                      )}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-sm font-semibold tracking-tight">{goal.label}</span>
+                        <Badge variant="secondary" className="text-[9px] font-mono">
+                          {goal.layers.length} layer{goal.layers.length === 1 ? "" : "s"}
+                        </Badge>
+                      </div>
+                      <p className="text-[11px] text-muted-foreground/80 leading-snug mt-1">{goal.description}</p>
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {goal.layers.slice(0, 4).map((layer) => (
+                          <Badge key={layer} variant="outline" className="text-[9px] font-mono">
+                            {layer}
+                          </Badge>
+                        ))}
+                        {goal.layers.length > 4 ? (
+                          <Badge variant="outline" className="text-[9px] font-mono">
+                            +{goal.layers.length - 4}
+                          </Badge>
+                        ) : null}
                       </div>
                     </button>
                   );

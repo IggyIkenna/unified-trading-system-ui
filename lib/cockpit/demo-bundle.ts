@@ -12,6 +12,7 @@
  */
 
 import type { AccountConnectivityConfig } from "@/lib/architecture-v2/account-connectivity-config";
+import type { AssumptionDriftReport, AssumptionStack } from "@/lib/architecture-v2/assumption-stack";
 import { DEFAULT_BUNDLE_GUARDRAILS, type StrategyReleaseBundle } from "@/lib/architecture-v2/strategy-release-bundle";
 import type { RuntimeOverride } from "@/lib/architecture-v2/runtime-override";
 import type { TreasuryOperationalConfig } from "@/lib/architecture-v2/treasury-config";
@@ -201,4 +202,120 @@ export const DEMO_CONNECTIVITY: AccountConnectivityConfig = {
   lastUpdatedBy: "ops-priya",
   lastUpdatedAt: "2026-04-29T22:15:00Z",
   lastAuditEventId: "evt-conn-001",
+};
+
+/**
+ * Demo AssumptionStack — the Odum USP made visible. Shows the 9-layer stack
+ * for the same arbitrage strategy DEMO_BUNDLE represents. Renders inside the
+ * cockpit on Research/Validate + Research/Promote + Terminal/Explain.
+ */
+export const DEMO_ASSUMPTION_STACK: AssumptionStack = {
+  id: "as-arbitrage-cefi-defi-v3.2.1",
+  version: "3.2.1",
+  hash: "sha256:a1s2s3u4m5p6t7i8o9n0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2",
+  strategyId: "ARBITRAGE_PRICE_DISPERSION",
+  strategyVersion: "3.2.1",
+  modelVersionIds: ["mdl-spread-classifier-v4"],
+  featureSetVersionIds: ["fs-cross-venue-spread-v7"],
+  executionAssumptions: {
+    slippageModel: "venue_book_replay",
+    slippageBps: 4.5,
+    commissionBps: 2.0,
+    latencyMs: 120,
+    makerRebateBps: -0.5,
+    queuePositionAware: true,
+    executionPresets: ["passive", "aggressive", "conservative"],
+  },
+  gasFeeAssumptions: {
+    chainIds: [1, 8453, 42161],
+    baseFeeGwei: 18,
+    priorityFeeGwei: 1.5,
+    stressMultipliers: [0.5, 4.0],
+    avgGasUnits: {
+      swap: 180_000,
+      lending_supply: 220_000,
+      lending_borrow: 280_000,
+      approve: 46_000,
+      claim: 95_000,
+      transfer: 21_000,
+    },
+    mevProtectionEnabled: true,
+  },
+  treasuryPolicy: {
+    shareClass: "USDT",
+    approvedCollateral: ["USDT", "USDC", "BTC", "ETH"],
+    hedgeRatioRange: [0.85, 1.05],
+    maxGrossLeverage: 3.0,
+    maxNetLeverage: 1.0,
+    autoRebalanceEnabled: true,
+    rebalanceThreshold: 0.05,
+  },
+  depositWithdrawalAssumptions: {
+    avgDailyDepositPct: 0.005,
+    avgDailyWithdrawalPct: 0.004,
+    redemptionStress: { pct: 0.3, days: 5 },
+    noticePeriodDays: 7,
+    liquidityBufferPct: 0.15,
+  },
+  liquidationAssumptions: {
+    initialMarginPct: 0.2,
+    maintenanceMarginPct: 0.1,
+    collateralHaircuts: { USDT: 0, USDC: 0, BTC: 0.1, ETH: 0.15 },
+    maxLtv: 0.7,
+    forceRebalanceLtv: 0.6,
+    priceShockPct: 0.2,
+  },
+  portfolioRebalanceAssumptions: {
+    method: "vol_target",
+    volTarget: 0.12,
+    cadence: "drift_threshold",
+    driftThreshold: 0.05,
+    maxSingleWeight: 0.4,
+  },
+  venueRoutingAssumptions: {
+    mode: "SOR_AT_EXECUTION",
+    approvedVenues: ["binance", "okx", "deribit", "aave_v3", "uniswap_v3"],
+    venueBias: { binance: 1.1, okx: 0.95, deribit: 1.0 },
+    preferSameVenueLeg: false,
+  },
+  riskAssumptions: {
+    maxDrawdownPct: 0.08,
+    maxConcentrationPct: 0.25,
+    maxGrossExposure: 3.0,
+    maxNetExposure: 1.0,
+    maxUnrealisedLossUsd: 250_000,
+    maxVenueConcentrationPct: 0.4,
+  },
+  reportingAssumptions: {
+    pnlBasis: "blended",
+    markSource: "weighted_average",
+    navFrequency: "intraday",
+    settlementLagDays: 1,
+    executionAttributionIncluded: true,
+  },
+  createdBy: "research-agent",
+  createdAt: "2026-04-25T10:00:00Z",
+  notes: "Production-grade stack — promotion-ready for paper + pilot.",
+};
+
+/**
+ * Demo drift report — shown in Explain mode. Adherence score 87/100; gas +
+ * client-flow layers are drifting beyond simulation (+9 bps and +4 bps
+ * respectively in adverse direction).
+ */
+export const DEMO_DRIFT_REPORT: AssumptionDriftReport = {
+  stackId: "as-arbitrage-cefi-defi-v3.2.1",
+  perLayerDrift: {
+    execution: 1.2,
+    gas_fees: 9.4,
+    treasury: 0.3,
+    client_flows: 3.8,
+    liquidation: -0.5,
+    portfolio_rebalance: 0.0,
+    venue_routing: 0.8,
+    risk: 0.0,
+    reporting: 0.0,
+  },
+  adherenceScore: 87,
+  alerts: ["gas_fees", "client_flows"],
 };
