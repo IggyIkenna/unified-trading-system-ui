@@ -33,10 +33,17 @@ import {
   parseCatalogueFilter,
   type StrategyCatalogueFilter,
 } from "@/lib/architecture-v2/catalogue-filter";
+import {
+  STRATEGY_ARCHETYPES_V2,
+  STRATEGY_FAMILIES_V2,
+  type StrategyArchetype,
+  type StrategyFamily,
+} from "@/lib/architecture-v2/enums";
 import { loadStrategyCatalogue } from "@/lib/architecture-v2/lifecycle";
 import { VENUE_ASSET_GROUPS_V2, type VenueAssetGroupV2 } from "@/lib/architecture-v2";
 import { listSubscriptionsForOrg } from "@/lib/api/strategy-subscriptions";
 import { useAuth } from "@/hooks/use-auth";
+import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 
 type CatalogueTab = "reality" | "explore";
 
@@ -140,6 +147,46 @@ export default function StrategyCataloguePage() {
 
   const fromQuestionnaire = fromParam === "questionnaire" || hydratedFromSeed;
 
+  // 2026-04-30 audit polish — Strategy Catalogue is now scope-aware
+  // BEHAVIOURALLY (not just visually). The active WorkspaceScope merges
+  // into the catalogue filter so toggling the asset-group / family /
+  // archetype / share-class chips on the DartScopeBar reshapes the list
+  // live. The catalogue's own filter is still authoritative for
+  // catalogue-only axes (maturity, allocation status, coverage); scope
+  // contributes asset_groups + families + archetypes + share_classes.
+  const scope = useWorkspaceScope();
+  const scopedFilter = useMemo<StrategyCatalogueFilter>(() => {
+    const merged: StrategyCatalogueFilter = { ...filter };
+    // Asset groups — narrow to v2-typed list.
+    if (!merged.venueAssetGroups || merged.venueAssetGroups.length === 0) {
+      const ags = scope.assetGroups
+        .map((g) => g.toUpperCase())
+        .filter((g): g is VenueAssetGroupV2 => VENUE_ASSET_GROUPS_V2.includes(g as VenueAssetGroupV2));
+      if (ags.length > 0) merged.venueAssetGroups = ags;
+    }
+    // Families — narrow to v2-typed list.
+    if (!merged.families || merged.families.length === 0) {
+      const fams = scope.families.filter((f): f is StrategyFamily =>
+        (STRATEGY_FAMILIES_V2 as readonly string[]).includes(f),
+      );
+      if (fams.length > 0) merged.families = fams;
+    }
+    // Single archetype — scope.archetypes is multi-valued; filter expects
+    // a single archetype, so we apply only when exactly one is selected.
+    if (!merged.archetype && scope.archetypes.length === 1) {
+      const a = scope.archetypes[0];
+      if (a && (STRATEGY_ARCHETYPES_V2 as readonly string[]).includes(a)) {
+        merged.archetype = a as StrategyArchetype;
+      }
+    }
+    // Share classes — pass through; the catalogue already supports the axis.
+    if ((!merged.shareClasses || merged.shareClasses.length === 0) && scope.shareClasses.length > 0) {
+      // ShareClass is a union literal; cast explicitly so the filter shape stays typed.
+      merged.shareClasses = scope.shareClasses as StrategyCatalogueFilter["shareClasses"];
+    }
+    return merged;
+  }, [filter, scope.assetGroups, scope.families, scope.archetypes, scope.shareClasses]);
+
   const viewModeFor = (t: CatalogueTab): StrategyCatalogueViewMode =>
     t === "reality" ? "client-reality" : "client-fomo";
 
@@ -190,7 +237,7 @@ export default function StrategyCataloguePage() {
           <TabsContent value="reality" className="pt-4">
             <StrategyCatalogueSurface
               viewMode={viewModeFor("reality")}
-              filter={filter}
+              filter={scopedFilter}
               onFilterChange={setFilter}
               subscribedInstanceIds={subscribedInstanceIds}
             />
@@ -198,7 +245,7 @@ export default function StrategyCataloguePage() {
           <TabsContent value="explore" className="pt-4">
             <StrategyCatalogueSurface
               viewMode={viewModeFor("explore")}
-              filter={filter}
+              filter={scopedFilter}
               onFilterChange={setFilter}
               subscribedInstanceIds={subscribedInstanceIds}
             />

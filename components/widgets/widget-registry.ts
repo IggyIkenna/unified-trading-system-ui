@@ -200,11 +200,80 @@ export function widgetsForScope(scope: WorkspaceScope): {
 }
 
 /**
+ * Resolver-aware variant of `widgetsForScope`. Per audit polish #3:
+ *
+ *   "No strategy-backed widget should appear just because scope matches.
+ *    It should appear because: scope match + resolver visibility +
+ *    entitlement + backing strategy exists."
+ *
+ * Filters: when the user has zero `owned` strategies AND the surface is one
+ * where operating data only makes sense for an owned strategy
+ * (Terminal/Command, Terminal/Strategies, Terminal/Explain), demote
+ * strategy-operating widgets (positions / orders / pnl / alerts / accounts /
+ * trade-history) from `primary` to `secondary`. Catalogue / market-data
+ * widgets are unaffected — they're meaningful even without subscriptions.
+ *
+ * The result keeps every widget reachable, but reorders priority so the
+ * cockpit doesn't render "live positions" tiles for a prospect with no
+ * subscribed strategy.
+ */
+export function widgetsForScopeWithVisibility(
+  scope: WorkspaceScope,
+  visibility: { readonly ownedCount: number; readonly readOnlyCount: number },
+): {
+  readonly primary: readonly WidgetDefinition[];
+  readonly secondary: readonly WidgetDefinition[];
+  readonly outOfScope: readonly WidgetDefinition[];
+} {
+  const buckets = widgetsForScope(scope);
+  const hasBackingStrategy = visibility.ownedCount + visibility.readOnlyCount > 0;
+  const requiresOwnedSurface =
+    scope.surface === "terminal" &&
+    (scope.terminalMode === "command" || scope.terminalMode === "strategies" || scope.terminalMode === "explain");
+
+  if (hasBackingStrategy || !requiresOwnedSurface) {
+    return buckets;
+  }
+
+  // No backing strategy on a surface that needs one — demote the
+  // strategy-operating widgets to secondary. The catalogue group
+  // identifiers are the SSOT for which widgets count as "operating".
+  const OPERATING_GROUPS = new Set([
+    "Positions",
+    "Orders",
+    "P&L",
+    "Risk",
+    "Alerts",
+    "Accounts",
+    "Trade History",
+    "Strategy",
+    "Strategies",
+    "Strategy Catalog",
+  ]);
+
+  const stillPrimary: WidgetDefinition[] = [];
+  const demoted: WidgetDefinition[] = [];
+  for (const w of buckets.primary) {
+    if (OPERATING_GROUPS.has(w.catalogGroup)) demoted.push(w);
+    else stillPrimary.push(w);
+  }
+
+  return {
+    primary: stillPrimary,
+    secondary: [...demoted, ...buckets.secondary],
+    outOfScope: buckets.outOfScope,
+  };
+}
+
+/**
  * Suggest widgets to add for the active scope: widgets that match the
  * scope AND aren't already on a workspace placement list. Used by the
  * Phase 6/7 "Add Widget" affordance + scope-aware next-actions.
  */
-export function suggestedWidgetsForScope(scope: WorkspaceScope, excludeIds: readonly string[] = []): readonly WidgetDefinition[] {
+export function suggestedWidgetsForScope(
+  scope: WorkspaceScope,
+  excludeIds: readonly string[] = [],
+): readonly WidgetDefinition[] {
   const exclude = new Set(excludeIds);
   return Array.from(registry.values()).filter((def) => {
     if (exclude.has(def.id)) return false;

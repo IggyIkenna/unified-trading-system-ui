@@ -20,7 +20,8 @@ import * as React from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { getWidget, widgetsForScope, type WidgetDefinition } from "@/components/widgets/widget-registry";
+import { getWidget, widgetsForScopeWithVisibility, type WidgetDefinition } from "@/components/widgets/widget-registry";
+import { useStrategyVisibility } from "@/lib/cockpit/use-strategy-visibility";
 import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 import "@/components/widgets/register-all";
 
@@ -38,6 +39,11 @@ interface CockpitWidgetGridProps {
 
 export function CockpitWidgetGrid({ className, widgetIds, maxPrimary = 12, maxSecondary = 6 }: CockpitWidgetGridProps) {
   const scope = useWorkspaceScope();
+  // Polish #3 (final pass) — resolver-driven gating on the actual widget
+  // grid, not just the summary strip. Strategy-operating widgets demote to
+  // secondary when the user has no backing strategy on a surface that
+  // requires one (Terminal/Command/Strategies/Explain).
+  const visibility = useStrategyVisibility();
 
   const buckets = React.useMemo(() => {
     if (widgetIds) {
@@ -45,8 +51,11 @@ export function CockpitWidgetGrid({ className, widgetIds, maxPrimary = 12, maxSe
       const explicit = widgetIds.map((id) => getWidget(id)).filter((w): w is WidgetDefinition => Boolean(w));
       return { primary: explicit.slice(0, maxPrimary), secondary: [] as readonly WidgetDefinition[], outOfScope: [] };
     }
-    return widgetsForScope(scope);
-  }, [scope, widgetIds, maxPrimary]);
+    return widgetsForScopeWithVisibility(scope, {
+      ownedCount: visibility.counts.owned,
+      readOnlyCount: visibility.counts.read_only,
+    });
+  }, [scope, widgetIds, maxPrimary, visibility.counts.owned, visibility.counts.read_only]);
 
   const primary = buckets.primary.slice(0, maxPrimary);
   const secondary = buckets.secondary.slice(0, maxSecondary);

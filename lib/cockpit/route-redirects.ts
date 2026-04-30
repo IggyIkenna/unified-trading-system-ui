@@ -50,61 +50,80 @@ export interface CockpitRouteRedirect {
  * catalogue stays as a distinct universe-discovery surface and is not
  * collapsed into the cockpit.
  */
+/**
+ * 2026-04-30 audit: per the second polish pass, `canonicalCockpitHref`
+ * values now point at the unified `/services/workspace?surface=...&tm=...`
+ * URL — NOT back at the legacy per-route page. Two mode mappings were
+ * also wrong vs the plan §15 ownership rules and have been corrected:
+ *   - `observe/strategy-health` was `explain`; correct mode is `strategies`.
+ *   - `observe/risk` was `ops`; correct mode is `explain` (risk is an
+ *     attribution surface, not service-health Ops).
+ */
+const HREF_FOR_MODE: Record<TerminalMode, string> = {
+  command: "/services/workspace?surface=terminal&tm=command",
+  markets: "/services/workspace?surface=terminal&tm=markets",
+  strategies: "/services/workspace?surface=terminal&tm=strategies",
+  explain: "/services/workspace?surface=terminal&tm=explain",
+  ops: "/services/workspace?surface=terminal&tm=ops",
+};
+
 export const COCKPIT_ROUTE_REDIRECTS: readonly CockpitRouteRedirect[] = [
   // ── Trading → Command ─────────────────────────────────────────────────
   {
     source: "/services/trading/overview",
     mode: "command",
     surface: "terminal",
-    canonicalCockpitHref: "/services/trading/overview",
+    canonicalCockpitHref: HREF_FOR_MODE.command,
   },
   {
     source: "/services/trading/positions",
     mode: "command",
     surface: "terminal",
-    canonicalCockpitHref: "/services/trading/positions",
+    canonicalCockpitHref: HREF_FOR_MODE.command,
   },
   {
     source: "/services/trading/orders",
     mode: "command",
     surface: "terminal",
-    canonicalCockpitHref: "/services/trading/orders",
+    canonicalCockpitHref: HREF_FOR_MODE.command,
   },
   {
     source: "/services/trading/alerts",
     mode: "command",
     surface: "terminal",
-    canonicalCockpitHref: "/services/trading/alerts",
-  },
-  {
-    source: "/services/trading/risk",
-    mode: "command",
-    surface: "terminal",
-    canonicalCockpitHref: "/services/trading/risk",
-  },
-  {
-    source: "/services/trading/pnl",
-    mode: "command",
-    surface: "terminal",
-    canonicalCockpitHref: "/services/trading/pnl",
+    canonicalCockpitHref: HREF_FOR_MODE.command,
   },
   {
     source: "/services/trading/accounts",
     mode: "command",
     surface: "terminal",
-    canonicalCockpitHref: "/services/trading/accounts",
+    canonicalCockpitHref: HREF_FOR_MODE.command,
   },
   {
     source: "/services/trading/instructions",
     mode: "command",
     surface: "terminal",
-    canonicalCockpitHref: "/services/trading/instructions",
+    canonicalCockpitHref: HREF_FOR_MODE.command,
   },
   {
     source: "/services/trading/book",
     mode: "command",
     surface: "terminal",
-    canonicalCockpitHref: "/services/trading/book",
+    canonicalCockpitHref: HREF_FOR_MODE.command,
+  },
+
+  // ── Trading → Explain (P&L attribution + risk are explain surfaces) ───
+  {
+    source: "/services/trading/risk",
+    mode: "explain",
+    surface: "terminal",
+    canonicalCockpitHref: HREF_FOR_MODE.explain,
+  },
+  {
+    source: "/services/trading/pnl",
+    mode: "explain",
+    surface: "terminal",
+    canonicalCockpitHref: HREF_FOR_MODE.explain,
   },
 
   // ── Trading → Markets ─────────────────────────────────────────────────
@@ -112,37 +131,37 @@ export const COCKPIT_ROUTE_REDIRECTS: readonly CockpitRouteRedirect[] = [
     source: "/services/trading/markets",
     mode: "markets",
     surface: "terminal",
-    canonicalCockpitHref: "/services/trading/markets",
+    canonicalCockpitHref: HREF_FOR_MODE.markets,
   },
   {
     source: "/services/trading/defi",
     mode: "markets",
     surface: "terminal",
-    canonicalCockpitHref: "/services/trading/defi",
+    canonicalCockpitHref: HREF_FOR_MODE.markets,
   },
   {
     source: "/services/trading/sports",
     mode: "markets",
     surface: "terminal",
-    canonicalCockpitHref: "/services/trading/sports",
+    canonicalCockpitHref: HREF_FOR_MODE.markets,
   },
   {
     source: "/services/trading/options",
     mode: "markets",
     surface: "terminal",
-    canonicalCockpitHref: "/services/trading/options",
+    canonicalCockpitHref: HREF_FOR_MODE.markets,
   },
   {
     source: "/services/trading/predictions",
     mode: "markets",
     surface: "terminal",
-    canonicalCockpitHref: "/services/trading/predictions",
+    canonicalCockpitHref: HREF_FOR_MODE.markets,
   },
   {
     source: "/services/trading/tradfi",
     mode: "markets",
     surface: "terminal",
-    canonicalCockpitHref: "/services/trading/tradfi",
+    canonicalCockpitHref: HREF_FOR_MODE.markets,
   },
 
   // ── Trading → Strategies ──────────────────────────────────────────────
@@ -150,72 +169,83 @@ export const COCKPIT_ROUTE_REDIRECTS: readonly CockpitRouteRedirect[] = [
     source: "/services/trading/strategies",
     mode: "strategies",
     surface: "terminal",
-    canonicalCockpitHref: "/services/trading/strategies",
+    canonicalCockpitHref: HREF_FOR_MODE.strategies,
   },
   {
     source: "/services/trading/strategy-config",
     mode: "strategies",
     surface: "terminal",
-    canonicalCockpitHref: "/services/trading/strategy-config",
+    canonicalCockpitHref: HREF_FOR_MODE.strategies,
   },
   {
     source: "/services/trading/deployment",
     mode: "strategies",
     surface: "terminal",
-    canonicalCockpitHref: "/services/trading/deployment",
+    canonicalCockpitHref: HREF_FOR_MODE.strategies,
   },
 
-  // ── Observe → Explain ─────────────────────────────────────────────────
+  // ── Observe → Explain (attribution, drift, recon, scenarios) ──────────
   {
     source: "/services/observe/reconciliation",
     mode: "explain",
     surface: "terminal",
-    canonicalCockpitHref: "/services/observe/reconciliation",
+    canonicalCockpitHref: HREF_FOR_MODE.explain,
   },
   {
     source: "/services/observe/scenarios",
     mode: "explain",
     surface: "terminal",
-    canonicalCockpitHref: "/services/observe/scenarios",
+    canonicalCockpitHref: HREF_FOR_MODE.explain,
   },
-  {
-    source: "/services/observe/strategy-health",
-    mode: "explain",
-    surface: "terminal",
-    canonicalCockpitHref: "/services/observe/strategy-health",
-  },
-
-  // ── Observe → Ops ─────────────────────────────────────────────────────
+  // 2026-04-30 audit fix: risk is attribution-flavoured, not service-health
+  // (Ops). Move from `ops` → `explain` per plan §15 ownership rules.
   {
     source: "/services/observe/risk",
-    mode: "ops",
+    mode: "explain",
     surface: "terminal",
-    canonicalCockpitHref: "/services/observe/risk",
+    canonicalCockpitHref: HREF_FOR_MODE.explain,
   },
   {
-    source: "/services/observe/health",
+    source: "/services/observe/position-recon",
+    mode: "explain",
+    surface: "terminal",
+    canonicalCockpitHref: HREF_FOR_MODE.explain,
+  },
+
+  // ── Observe → Strategies ──────────────────────────────────────────────
+  // 2026-04-30 audit fix: strategy-health is a strategy-running surface,
+  // not attribution. Move from `explain` → `strategies` per plan §15.
+  {
+    source: "/services/observe/strategy-health",
+    mode: "strategies",
+    surface: "terminal",
+    canonicalCockpitHref: HREF_FOR_MODE.strategies,
+  },
+
+  // ── Observe → Command (live exceptions) ───────────────────────────────
+  {
+    source: "/services/observe/alerts",
+    mode: "command",
+    surface: "terminal",
+    canonicalCockpitHref: HREF_FOR_MODE.command,
+  },
+
+  // ── Observe → Ops (service health, audit, recovery, news) ─────────────
+  { source: "/services/observe/health", mode: "ops", surface: "terminal", canonicalCockpitHref: HREF_FOR_MODE.ops },
+  {
+    source: "/services/observe/system-health",
     mode: "ops",
     surface: "terminal",
-    canonicalCockpitHref: "/services/observe/health",
+    canonicalCockpitHref: HREF_FOR_MODE.ops,
   },
   {
     source: "/services/observe/event-audit",
     mode: "ops",
     surface: "terminal",
-    canonicalCockpitHref: "/services/observe/event-audit",
+    canonicalCockpitHref: HREF_FOR_MODE.ops,
   },
-  {
-    source: "/services/observe/recovery",
-    mode: "ops",
-    surface: "terminal",
-    canonicalCockpitHref: "/services/observe/recovery",
-  },
-  {
-    source: "/services/observe/news",
-    mode: "ops",
-    surface: "terminal",
-    canonicalCockpitHref: "/services/observe/news",
-  },
+  { source: "/services/observe/recovery", mode: "ops", surface: "terminal", canonicalCockpitHref: HREF_FOR_MODE.ops },
+  { source: "/services/observe/news", mode: "ops", surface: "terminal", canonicalCockpitHref: HREF_FOR_MODE.ops },
 ];
 
 /**
