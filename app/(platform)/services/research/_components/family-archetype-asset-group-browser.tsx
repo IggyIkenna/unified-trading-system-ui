@@ -25,6 +25,7 @@
  */
 
 import * as React from "react";
+import { ChevronDown, ChevronRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -54,6 +55,7 @@ export function FamilyArchetypeAssetGroupBrowser({
 }: FamilyArchetypeAssetGroupBrowserProps) {
   const [hierarchy, setHierarchy] = React.useState<FamilyHierarchy | null>(null);
   const [error, setError] = React.useState<string | null>(null);
+  const [collapsed, setCollapsed] = React.useState(false);
 
   // Phase 1 of dart_ux_cockpit_refactor_2026_04_29.plan.md §17:
   // lift family/archetype state out of local React state into the unified
@@ -118,126 +120,153 @@ export function FamilyArchetypeAssetGroupBrowser({
 
   return (
     <Card className={className} data-testid="family-archetype-asset-group-browser">
-      <CardContent className="space-y-4 pt-5">
-        <div className="flex items-baseline justify-between">
-          <h3 className="text-sm font-semibold tracking-tight text-foreground">{title}</h3>
+      <CardContent className={cn("pt-5", collapsed ? "space-y-0" : "space-y-4")}>
+        <div className="flex items-center justify-between gap-3">
+          <button
+            type="button"
+            onClick={() => setCollapsed((c) => !c)}
+            data-testid="family-archetype-browser-toggle"
+            aria-expanded={!collapsed}
+            className="group flex min-w-0 items-center gap-1.5 text-left"
+          >
+            {collapsed ? (
+              <ChevronRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-foreground" />
+            ) : (
+              <ChevronDown className="h-3.5 w-3.5 text-muted-foreground group-hover:text-foreground" />
+            )}
+            <h3 className="text-sm font-semibold tracking-tight text-foreground">{title}</h3>
+            {collapsed && (activeFamily || activeArchetype) ? (
+              <span className="ml-2 truncate font-mono text-[10px] text-muted-foreground">
+                {activeFamily ?? "—"}
+                {activeArchetype ? ` · ${activeArchetype}` : ""}
+              </span>
+            ) : null}
+          </button>
           <span className="text-[10px] uppercase tracking-wider text-muted-foreground">research lens · family-led</span>
         </div>
 
-        {/* Level 1: family chips */}
-        <div className="space-y-1">
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Family</p>
-          <div className="flex flex-wrap gap-1.5">
-            {families.map((family) => {
-              const archetypeMap = hierarchy.get(family);
-              const archetypeCount = archetypeMap?.size ?? 0;
-              const isActive = family === activeFamily;
-              return (
-                <button
-                  key={family}
-                  type="button"
-                  onClick={() => {
-                    setFamilies([family as StrategyFamily]);
-                    setArchetypes([]);
-                  }}
-                  data-testid={`family-chip-${family}`}
-                  className={cn(
-                    "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-mono transition-colors",
-                    isActive
-                      ? "border-primary bg-primary/10 text-primary"
-                      : "border-border/50 text-muted-foreground hover:border-border hover:text-foreground",
-                  )}
-                >
-                  {family}
-                  <Badge variant="secondary" className="px-1 py-0 text-[9px]">
-                    {archetypeCount}
-                  </Badge>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Level 2: archetype chips for the selected family */}
-        {activeFamily ? (
-          <div className="space-y-1">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
-              Archetype <span className="text-muted-foreground/60">· in {activeFamily}</span>
-            </p>
-            <div className="flex flex-wrap gap-1.5">
-              {archetypes.length === 0 ? (
-                <p className="text-xs text-muted-foreground italic">No archetypes catalogued for this family.</p>
-              ) : (
-                archetypes.map((archetype) => {
-                  const agMap = familyArchetypes?.get(archetype);
-                  const totalSlots = agMap ? Array.from(agMap.values()).reduce((sum, s) => sum + s.length, 0) : 0;
-                  const isActive = archetype === activeArchetype;
+        {collapsed ? null : (
+          <>
+            {/* Level 1: family chips */}
+            <div className="space-y-1">
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Family</p>
+              <div className="flex flex-wrap gap-1.5">
+                {families.map((family) => {
+                  const archetypeMap = hierarchy.get(family);
+                  const archetypeCount = archetypeMap?.size ?? 0;
+                  const isActive = family === activeFamily;
                   return (
                     <button
-                      key={archetype}
+                      key={family}
                       type="button"
-                      onClick={() => setArchetypes([archetype as StrategyArchetype])}
-                      data-testid={`archetype-chip-${archetype}`}
+                      onClick={() => {
+                        setFamilies([family as StrategyFamily]);
+                        setArchetypes([]);
+                      }}
+                      data-testid={`family-chip-${family}`}
                       className={cn(
                         "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-mono transition-colors",
                         isActive
-                          ? "border-emerald-500 bg-emerald-500/10 text-emerald-400"
+                          ? "border-primary bg-primary/10 text-primary"
                           : "border-border/50 text-muted-foreground hover:border-border hover:text-foreground",
                       )}
                     >
-                      {archetype}
+                      {family}
                       <Badge variant="secondary" className="px-1 py-0 text-[9px]">
-                        {totalSlots}
+                        {archetypeCount}
                       </Badge>
                     </button>
                   );
-                })
-              )}
+                })}
+              </div>
             </div>
-          </div>
-        ) : null}
 
-        {/* Level 3: asset_group chips + instance counts for the selected archetype */}
-        {activeArchetype && archetypeAssetGroups ? (
-          <div className="space-y-1">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
-              Asset group <span className="text-muted-foreground/60">· in {activeArchetype}</span>
-            </p>
-            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-              {assetGroups.map((assetGroup) => {
-                const slots = archetypeAssetGroups.get(assetGroup) ?? [];
-                return (
-                  <Card key={assetGroup} className="border-border/40" data-testid={`asset-group-card-${assetGroup}`}>
-                    <CardContent className="space-y-2 pt-4">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-mono font-medium text-foreground">{assetGroup}</span>
-                        <Badge variant="outline" className="text-[10px]">
-                          {slots.length} {slots.length === 1 ? "instance" : "instances"}
-                        </Badge>
-                      </div>
-                      <div className="flex flex-wrap gap-1">
-                        {slots.slice(0, 6).map((slot, i) => (
-                          <Badge
-                            key={`${slot.archetype_id}-${slot.venue}-${i}`}
-                            variant="secondary"
-                            className="text-[9px] font-mono"
-                          >
-                            {slot.venue}/{slot.instrument_type}
+            {/* Level 2: archetype chips for the selected family */}
+            {activeFamily ? (
+              <div className="space-y-1">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                  Archetype <span className="text-muted-foreground/60">· in {activeFamily}</span>
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {archetypes.length === 0 ? (
+                    <p className="text-xs text-muted-foreground italic">No archetypes catalogued for this family.</p>
+                  ) : (
+                    archetypes.map((archetype) => {
+                      const agMap = familyArchetypes?.get(archetype);
+                      const totalSlots = agMap ? Array.from(agMap.values()).reduce((sum, s) => sum + s.length, 0) : 0;
+                      const isActive = archetype === activeArchetype;
+                      return (
+                        <button
+                          key={archetype}
+                          type="button"
+                          onClick={() => setArchetypes([archetype as StrategyArchetype])}
+                          data-testid={`archetype-chip-${archetype}`}
+                          className={cn(
+                            "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-mono transition-colors",
+                            isActive
+                              ? "border-emerald-500 bg-emerald-500/10 text-emerald-400"
+                              : "border-border/50 text-muted-foreground hover:border-border hover:text-foreground",
+                          )}
+                        >
+                          {archetype}
+                          <Badge variant="secondary" className="px-1 py-0 text-[9px]">
+                            {totalSlots}
                           </Badge>
-                        ))}
-                        {slots.length > 6 ? (
-                          <Badge variant="outline" className="text-[9px]">
-                            +{slots.length - 6} more
-                          </Badge>
-                        ) : null}
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-          </div>
-        ) : null}
+                        </button>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
+            ) : null}
+
+            {/* Level 3: asset_group chips + instance counts for the selected archetype */}
+            {activeArchetype && archetypeAssetGroups ? (
+              <div className="space-y-1">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                  Asset group <span className="text-muted-foreground/60">· in {activeArchetype}</span>
+                </p>
+                <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                  {assetGroups.map((assetGroup) => {
+                    const slots = archetypeAssetGroups.get(assetGroup) ?? [];
+                    return (
+                      <Card
+                        key={assetGroup}
+                        className="border-border/40"
+                        data-testid={`asset-group-card-${assetGroup}`}
+                      >
+                        <CardContent className="space-y-2 pt-4">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-mono font-medium text-foreground">{assetGroup}</span>
+                            <Badge variant="outline" className="text-[10px]">
+                              {slots.length} {slots.length === 1 ? "instance" : "instances"}
+                            </Badge>
+                          </div>
+                          <div className="flex flex-wrap gap-1">
+                            {slots.slice(0, 6).map((slot, i) => (
+                              <Badge
+                                key={`${slot.archetype_id}-${slot.venue}-${i}`}
+                                variant="secondary"
+                                className="text-[9px] font-mono"
+                              >
+                                {slot.venue}/{slot.instrument_type}
+                              </Badge>
+                            ))}
+                            {slots.length > 6 ? (
+                              <Badge variant="outline" className="text-[9px]">
+                                +{slots.length - 6} more
+                              </Badge>
+                            ) : null}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : null}
+          </>
+        )}
       </CardContent>
     </Card>
   );

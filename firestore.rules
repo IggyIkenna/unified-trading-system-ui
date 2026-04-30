@@ -99,6 +99,38 @@ service cloud.firestore {
     }
 
     // ------------------------------------------------------------------
+    // Per-user workspace layout (lib/stores/workspace-sync.ts).
+    // Doc id is the user's uid. Self read/write; admin full.
+    // ------------------------------------------------------------------
+    match /workspaces/{uid} {
+      allow read, write: if request.auth != null && (
+        request.auth.uid == uid ||
+        (request.auth.token.admin == true || request.auth.token.role == "admin")
+      );
+    }
+
+    // ------------------------------------------------------------------
+    // Per-user saved combos / bundles (lib/stores/combo-persistence.ts).
+    // Doc id is the user's uid. Self read/write; admin full.
+    // ------------------------------------------------------------------
+    match /combos/{uid} {
+      allow read, write: if request.auth != null && (
+        request.auth.uid == uid ||
+        (request.auth.token.admin == true || request.auth.token.role == "admin")
+      );
+    }
+
+    // ------------------------------------------------------------------
+    // Admin audit trail (lib/admin/audit.ts). Append-only by admins;
+    // reads admin-only.
+    // ------------------------------------------------------------------
+    match /admin_events/{doc} {
+      allow create, read: if request.auth != null
+                          && (request.auth.token.admin == true || request.auth.token.role == "admin");
+      allow update, delete: if false;
+    }
+
+    // ------------------------------------------------------------------
     // Deny everything else by default — add explicit rules above when
     // new collections are introduced.
     // ------------------------------------------------------------------
