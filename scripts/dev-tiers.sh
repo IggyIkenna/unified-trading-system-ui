@@ -89,6 +89,25 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+# ─── ADC pre-flight (--real only) ────────────────────────────────────────────
+# The backend reads GCS in --real mode via Application Default Credentials.
+# Without ADC the API boots, binds :8030, then fails on first GCS call —
+# which combined with the port-bind health check looks like "everything's
+# fine" until the UI hits an empty chart. Catch it here instead.
+if $REAL_MODE && ! $DO_STOP && ! $DO_STATUS; then
+  if ! command -v gcloud >/dev/null 2>&1; then
+    echo "ERROR: --real requires the gcloud CLI but it's not on PATH."
+    echo "       Install: https://cloud.google.com/sdk/docs/install"
+    exit 1
+  fi
+  if ! gcloud auth application-default print-access-token >/dev/null 2>&1; then
+    echo "ERROR: --real requires Application Default Credentials, but none are configured."
+    echo "       Run: gcloud auth application-default login"
+    echo "       (or set GOOGLE_APPLICATION_CREDENTIALS to a service-account JSON)"
+    exit 1
+  fi
+fi
+
 # ─── Pull local-dev secrets from GCS Secret Manager ──────────────────────────
 # Sourced before any tier-specific dispatch so every code path (firebase-local
 # handoff, T0/T1/T2, --stop, --status) sees the same env. Secrets in the
@@ -113,7 +132,7 @@ source "$SCRIPT_DIR/load-dev-secrets.sh" || true
 #   next — next dev with NEXT_PUBLIC_MOCK_API=true so client-side fetches
 #          go through lib/api/mock-handler.ts instead of trying to proxy
 #          to localhost:8030 (which doesn't exist in T0)
-if $FIREBASE_LOCAL && [ "$TIER" != "1" ] && [ "$TIER" != "2" ]; then
+if $FIREBASE_LOCAL && [ "$TIER" = "0" ]; then
   cd "$UI_ROOT"
   echo "Starting Firebase Emulator Suite + Next.js dev server (T0 + emulators)…"
   echo "  Auth      → http://localhost:9099"
@@ -162,7 +181,49 @@ if $REAL_MODE; then MOCK_MODE="false"; fi
 
 mkdir -p "$PID_DIR" "$LOG_DIR"
 
+# ─── Process-group launcher (cross-platform) ─────────────────────────────────
+# `setsid` ships with Linux's util-linux but is NOT on macOS by default.
+# We need it so that killing the recorded PGID also reaps the child's
+# descendants (e.g. firebase emulators:start spawning java workers).
+#
+# Resolution order:
+#   1. real setsid binary (Linux, or macOS with `brew install util-linux`)
+#   2. Python `os.setpgrp` polyfill — exec'd into the target so `$!` lines
+#      up with the new session leader. Python 3 is on every dev machine.
+#
+# Sets PGROUP_LAUNCHER to a command-line prefix that, when followed by a
+# command and its args, runs that command as a new process-group leader.
+if command -v setsid >/dev/null 2>&1; then
+  PGROUP_LAUNCHER=(setsid)
+elif command -v python3 >/dev/null 2>&1; then
+  # Python -c convention: with `python3 -c '<src>' tag a b c`, sys.argv is
+  # ['-c', 'tag', 'a', 'b', 'c']. We use 'setsid-poly' as the tag (sys.argv[1])
+  # and the real command starts at sys.argv[2]. os.setpgrp() detaches from
+  # the parent's group BEFORE exec so the new process becomes its own group
+  # leader — `$!` in bash is then a valid PGID for `kill -- -$pgid`.
+  PGROUP_LAUNCHER=(python3 -c 'import os,sys; os.setpgrp(); os.execvp(sys.argv[2], sys.argv[2:])' setsid-poly)
+else
+  echo "ERROR: neither setsid nor python3 available — cannot launch process groups."
+  echo "       On macOS: brew install util-linux  (provides setsid)"
+  exit 1
+fi
+
 # ─── Helpers ──────────────────────────────────────────────────────────────────
+
+# Ports we own across all tiers. Used by stop_all and show_status.
+#   3000/3100  Next.js dev/static
+#   8030       unified-trading-api
+#   8014       client-reporting-api
+#   8018-8025  T2 service mesh
+#   9099       firebase auth emulator
+#   8080       firebase firestore emulator
+#   9199       firebase storage emulator
+#   4000       firebase emulator UI
+#   4400 4500  firebase hub + reserved
+#   8085       pubsub emulator
+#   4443       gcs storage emulator
+DEV_TIER_PORTS=(3000 3100 8030 8014 8018 8019 8020 8021 8022 8023 8024 8025 \
+                9099 8080 9199 4000 4400 4500 8085 4443)
 
 stop_all() {
   echo "Stopping all dev-tier processes..."
@@ -172,23 +233,85 @@ stop_all() {
     pid=$(cat "$pidfile")
     local name
     name=$(basename "$pidfile" .pid)
+    # Stored value is a process-group ID (start_process uses setsid). Killing
+    # the negative PGID reaps the leader and all descendants (e.g. firebase
+    # emulators:start spawning java children). Fall back to plain pid kill if
+    # the stored value isn't a valid pgid (older runs / manual edits).
     if kill -0 "$pid" 2>/dev/null; then
-      echo "  Stopping $name (PID $pid)"
-      kill "$pid" 2>/dev/null || true
+      echo "  Stopping $name (PGID $pid)"
+      # List every process in the group: PID, parent PID, ports it's bound to,
+      # truncated command. `pgrep -g $pgid` finds members; for each we pull a
+      # one-line summary. Printed before kill so the user can see exactly what
+      # disappears. `|| true` everywhere — never block stop on a probe error.
+      local member
+      while IFS= read -r member; do
+        [ -n "$member" ] || continue
+        local pinfo cmd ports
+        pinfo=$(ps -o pid=,ppid= -p "$member" 2>/dev/null | awk '{print "PID="$1" PPID="$2}')
+        cmd=$(ps -o args= -p "$member" 2>/dev/null | cut -c1-120)
+        ports=$(lsof -Pan -p "$member" -i -sTCP:LISTEN 2>/dev/null \
+                | awk 'NR>1 {sub(".*:", "", $9); print $9}' \
+                | sort -u | paste -sd, -)
+        if [ -n "$ports" ]; then
+          echo "    └─ $pinfo ports=$ports  $cmd"
+        else
+          echo "    └─ $pinfo  $cmd"
+        fi
+      done < <(pgrep -g "$pid" 2>/dev/null || true)
+      kill -TERM "-$pid" 2>/dev/null || kill -TERM "$pid" 2>/dev/null || true
       sleep 1
-      kill -9 "$pid" 2>/dev/null || true
+      kill -KILL "-$pid" 2>/dev/null || kill -KILL "$pid" 2>/dev/null || true
     fi
     rm -f "$pidfile"
   done
-  # Also kill anything holding our ports (Tier 1 + Tier 2)
-  for port in 3000 3100 8030 8014 8018 8019 8020 8021 8022 8023 8024 8025; do
+  # Safety net — also kill anything holding our known ports. Catches orphans
+  # from prior crashes and any process that escaped the group kill above.
+  for port in "${DEV_TIER_PORTS[@]}"; do
     local holders
     holders=$(lsof -ti ":$port" 2>/dev/null || true)
     if [ -n "$holders" ]; then
-      echo "  Killing port :$port holders: $holders"
+      echo "  Killing port :$port holders:"
+      local h
+      for h in $holders; do
+        local pinfo cmd
+        pinfo=$(ps -o pid=,ppid= -p "$h" 2>/dev/null | awk '{print "PID="$1" PPID="$2}')
+        cmd=$(ps -o args= -p "$h" 2>/dev/null | cut -c1-120)
+        echo "    └─ $pinfo  $cmd"
+      done
       echo "$holders" | xargs kill -9 2>/dev/null || true
     fi
   done
+
+  # Archive panic-export dirs left behind by ungraceful emulator shutdowns.
+  # Firebase drops `firebase-export-<ms-ts><6 alnum>/` in its cwd when it's
+  # killed before --export-on-exit can fire. The clean state lives in
+  # .local-dev-cache/emulator-state/; these timestamped siblings are crash
+  # snapshots — useful for post-mortems, but shouldn't clutter the repo
+  # root. Move them to .local-dev-cache/emulator-state-archive/ and keep
+  # the 10 most recent. Glob matches the exact suffix shape (digits first)
+  # so anything a human hand-created (e.g. firebase-export-keepme-...) is
+  # left alone.
+  local archive_dir="$UI_ROOT/.local-dev-cache/emulator-state-archive"
+  local export_dir moved=0
+  for export_dir in "$UI_ROOT"/firebase-export-[0-9]*; do
+    [ -d "$export_dir" ] || continue
+    if [ "$moved" -eq 0 ]; then
+      mkdir -p "$archive_dir"
+    fi
+    echo "  Archiving emulator export: $(basename "$export_dir") → emulator-state-archive/"
+    mv "$export_dir" "$archive_dir/" 2>/dev/null || rm -rf "$export_dir"
+    moved=$((moved + 1))
+  done
+
+  # Prune archive to the 10 most recent. ls -t sorts by mtime newest-first;
+  # tail -n +11 yields entries from the 11th onward. `|| true` because the
+  # dir may not exist yet on first run.
+  if [ -d "$archive_dir" ]; then
+    (cd "$archive_dir" && ls -1t 2>/dev/null | tail -n +11 | while read -r old; do
+      [ -n "$old" ] && rm -rf "$old"
+    done) || true
+  fi
+
   sleep 1
   echo "All stopped."
 }
@@ -216,9 +339,11 @@ show_status() {
 
   echo ""
   echo "═══ Port Check ═══"
-  for port in 3000 3100 8030 8014 8018 8019 8020 8021 8022 8023 8024 8025; do
-    local result
-    result=$(lsof -i ":$port" -sTCP:LISTEN 2>/dev/null | tail -1)
+  for port in "${DEV_TIER_PORTS[@]}"; do
+    local result=""
+    # `|| true` so set -e doesn't abort when nothing's listening (common case).
+    # `pipefail` means lsof's non-zero would otherwise kill the whole pipeline.
+    result=$(lsof -i ":$port" -sTCP:LISTEN 2>/dev/null | tail -1 || true)
     if [ -n "$result" ]; then
       echo "  ✅ :$port — $(echo "$result" | awk '{print $1, $2}')"
     else
@@ -239,13 +364,58 @@ start_process() {
     exit 1
   fi
 
+  # Refuse to overwrite a live PID file. Normal flow calls stop_all first, so
+  # a leftover here means a previous launch survived stop — surface it loudly
+  # rather than silently orphaning the old process.
+  local pidfile="$PID_DIR/$name.pid"
+  if [ -f "$pidfile" ]; then
+    local prev
+    prev=$(cat "$pidfile" 2>/dev/null)
+    if [ -n "$prev" ] && kill -0 "$prev" 2>/dev/null; then
+      echo "  ERROR: $name — already running (PGID $prev). Run --stop first."
+      exit 1
+    fi
+    rm -f "$pidfile"
+  fi
+
   echo "  Starting $name..."
   cd "$dir"
-  "${cmd[@]}" > "$LOG_DIR/$name.log" 2>&1 &
+  # PGROUP_LAUNCHER puts the child in its own process group with itself as
+  # leader (setsid on Linux, python3 polyfill on macOS without util-linux).
+  # We record the PGID so stop_all can reap descendants (e.g. firebase
+  # emulators spawning java workers) via `kill -- -$PGID`.
+  "${PGROUP_LAUNCHER[@]}" "${cmd[@]}" > "$LOG_DIR/$name.log" 2>&1 < /dev/null &
   local pid=$!
-  echo "$pid" > "$PID_DIR/$name.pid"
-  echo "    PID $pid — log: $LOG_DIR/$name.log"
+  echo "$pid" > "$pidfile"
+  echo "    PGID $pid — log: $LOG_DIR/$name.log"
   cd "$WORKSPACE"
+}
+
+# Track service:port pairs we actually started, so the wait loop only polls
+# ports for processes that were launched. Skipped venvs don't get waited on.
+STARTED_SERVICE_PORTS=()
+
+# Wrapper around start_process that skips with a warning when the repo's
+# .venv is missing instead of stalling on a uvicorn import error. Use this
+# for any Python service launched via `.venv/bin/python -m uvicorn …`.
+#
+# Usage: start_if_venv <name> <repo-dir> <port> <cmd…>
+#   — <port> is recorded in STARTED_SERVICE_PORTS on success so the caller
+#     can pass it through wait_for_port without needing a separate flag.
+start_if_venv() {
+  local name="$1"
+  local dir="$2"
+  local port="$3"
+  shift 3
+  local cmd=("$@")
+
+  if [ ! -x "$dir/.venv/bin/python" ]; then
+    echo "  ⚠️  Skipping $name — .venv not built at $dir/.venv (run \`cd $dir && uv sync --frozen\`)"
+    return 0
+  fi
+
+  start_process "$name" "$dir" "${cmd[@]}"
+  STARTED_SERVICE_PORTS+=("$port:$name")
 }
 
 wait_for_port() {
@@ -262,6 +432,45 @@ wait_for_port() {
   done
   echo "    ⚠️  $name did not start on :$port within ${max_wait}s"
   echo "    Check log: $LOG_DIR/$name.log"
+  return 1
+}
+
+# Wait until a service answers HTTP 2xx/3xx on its health endpoint. uvicorn
+# binds the port before its app finishes startup, so a port-bind alone can
+# report "ready" while the service is still importing modules. Falls back
+# to wait_for_port when curl is missing or the service has no /health.
+wait_for_health() {
+  local port="$1"
+  local name="$2"
+  local path="${3:-/health}"
+  local max_wait=60
+  local i=0
+
+  if ! command -v curl >/dev/null 2>&1; then
+    wait_for_port "$port" "$name"
+    return $?
+  fi
+
+  # Bind first — if the port never opens, no point hammering /health.
+  wait_for_port "$port" "$name" || return 1
+
+  while [ $i -lt $max_wait ]; do
+    if curl -fsS -o /dev/null --max-time 2 "http://localhost:$port$path" 2>/dev/null; then
+      return 0
+    fi
+    sleep 1
+    i=$((i + 1))
+  done
+  echo "    ⚠️  $name bound :$port but $path didn't return 2xx within ${max_wait}s"
+  echo "    Check log: $LOG_DIR/$name.log"
+  # Tail the last few lines so the user gets the actual error without
+  # having to open another terminal. Most uvicorn / next.js failures show
+  # the import error or stack trace right at the tail.
+  if [ -f "$LOG_DIR/$name.log" ]; then
+    echo "    ─── last 10 lines of $name.log ───"
+    tail -n 10 "$LOG_DIR/$name.log" 2>/dev/null | sed 's/^/      /'
+    echo "    ──────────────────────────────────"
+  fi
   return 1
 }
 
@@ -357,42 +566,49 @@ if [ "$TIER" = "1" ] || [ "$TIER" = "2" ]; then
   fi
   # Prefer the workspace venv when the repo-local one is missing — the
   # workspace venv is what setup-workspace.sh builds for cross-repo dev.
+  # If neither exists, warn and skip; T1 is degraded but UI still boots.
   UTAPI_PY="$WORKSPACE/unified-trading-api/.venv/bin/python"
   if [ ! -x "$UTAPI_PY" ]; then
     UTAPI_PY="$WORKSPACE/.venv-workspace/bin/python"
   fi
-  start_process "unified-trading-api" "$WORKSPACE/unified-trading-api" \
-    env CLOUD_MOCK_MODE="$MOCK_MODE" \
-        CLOUD_PROVIDER="$UTAPI_CLOUD_PROVIDER" \
-        GCP_PROJECT_ID="$UTAPI_PROJECT_ID" \
-        GOOGLE_CLOUD_PROJECT="$UTAPI_PROJECT_ID" \
-        DISABLE_AUTH=true \
-        ENVIRONMENT=development \
-        MARKET_DATA_BUCKET_VARIANT="${MARKET_DATA_BUCKET_VARIANT:-prod}" \
-    "$UTAPI_PY" -m uvicorn "unified_trading_api.main:create_app" \
-    --factory --host 0.0.0.0 --port 8030
+  if [ ! -x "$UTAPI_PY" ]; then
+    echo "  ⚠️  Skipping unified-trading-api — no .venv at $WORKSPACE/unified-trading-api/.venv or $WORKSPACE/.venv-workspace"
+    echo "     Run: cd $WORKSPACE/unified-trading-api && uv sync --frozen"
+    UTAPI_STARTED=false
+  else
+    start_process "unified-trading-api" "$WORKSPACE/unified-trading-api" \
+      env CLOUD_MOCK_MODE="$MOCK_MODE" \
+          CLOUD_PROVIDER="$UTAPI_CLOUD_PROVIDER" \
+          GCP_PROJECT_ID="$UTAPI_PROJECT_ID" \
+          GOOGLE_CLOUD_PROJECT="$UTAPI_PROJECT_ID" \
+          DISABLE_AUTH=true \
+          ENVIRONMENT=development \
+          MARKET_DATA_BUCKET_VARIANT="${MARKET_DATA_BUCKET_VARIANT:-prod}" \
+      "$UTAPI_PY" -m uvicorn "unified_trading_api.main:create_app" \
+      --factory --host 0.0.0.0 --port 8030
+    UTAPI_STARTED=true
+  fi
 
   # Auth is Firebase-based (VITE_SKIP_AUTH=true in mock mode) — no auth-api process.
 
   # client-reporting-api (port 8014) — optional, skip if its venv isn't built
-  if [ -x "$WORKSPACE/client-reporting-api/.venv/bin/python" ]; then
-    start_process "client-reporting-api" "$WORKSPACE/client-reporting-api" \
-      env CLOUD_MOCK_MODE="$MOCK_MODE" CLOUD_PROVIDER=local DISABLE_AUTH=true \
-      .venv/bin/python -m uvicorn client_reporting_api.api.main:app --host 0.0.0.0 --port 8014
-    REPORTING_STARTED=true
-  else
-    echo "  Skipping client-reporting-api — .venv not built (reports tab will be unavailable)"
-    REPORTING_STARTED=false
-  fi
+  start_if_venv "client-reporting-api" "$WORKSPACE/client-reporting-api" 8014 \
+    env CLOUD_MOCK_MODE="$MOCK_MODE" CLOUD_PROVIDER=local DISABLE_AUTH=true \
+    .venv/bin/python -m uvicorn client_reporting_api.api.main:app --host 0.0.0.0 --port 8014
 
   echo ""
   echo "  Waiting for APIs..."
-  wait_for_port 8030 "unified-trading-api"
-  # Only wait on reporting if we actually started it.
-  if [ "${REPORTING_STARTED:-false}" = "true" ]; then
-    wait_for_port 8014 "client-reporting-api" || \
-      echo "    ⚠️  client-reporting-api didn't come up in time — reports tab may be unavailable"
+  if [ "${UTAPI_STARTED:-false}" = "true" ]; then
+    wait_for_health 8030 "unified-trading-api" /health || true
   fi
+  # client-reporting-api gets a port-only check — its /health path varies
+  # by version and isn't load-bearing for the chart flow.
+  for entry in "${STARTED_SERVICE_PORTS[@]}"; do
+    if [ "${entry##*:}" = "client-reporting-api" ]; then
+      wait_for_port "${entry%%:*}" "client-reporting-api" || \
+        echo "    ⚠️  client-reporting-api didn't come up — reports tab may be unavailable"
+    fi
+  done
 fi
 
 # ─── Tier 2: + downstream services ───────────────────────────────────────────
@@ -417,13 +633,17 @@ if [ "$TIER" = "2" ]; then
 
   echo "  [SEED] Running batch seed tasks..."
 
-  # Strategy mock data
+  # Strategy mock data — skip cleanly if strategy-service venv is missing
   SEED_DIR="$UI_ROOT/.local-dev-cache/mock-seed/strategy-service"
   if [ ! -f "$SEED_DIR/.seed-complete" ]; then
- "$WORKSPACE/strategy-service/.venv/bin/python" \
-      "$WORKSPACE/strategy-service/scripts/seed_mock_data.py" \
-      --scenario normal --seed 42 --env local 2>/dev/null \
-      && echo "    strategy seed: done" || echo "    strategy seed: failed (non-fatal)"
+    if [ -x "$WORKSPACE/strategy-service/.venv/bin/python" ]; then
+      "$WORKSPACE/strategy-service/.venv/bin/python" \
+        "$WORKSPACE/strategy-service/scripts/seed_mock_data.py" \
+        --scenario normal --seed 42 --env local 2>/dev/null \
+        && echo "    strategy seed: done" || echo "    strategy seed: failed (non-fatal)"
+    else
+      echo "    ⚠️  strategy seed: skipped — strategy-service/.venv not built"
+    fi
   else
     echo "    strategy seed: cached"
   fi
@@ -431,52 +651,54 @@ if [ "$TIER" = "2" ]; then
   echo ""
 
   # --- Resident services (stay alive with health API) ---
+  # Each uses start_if_venv so a missing repo .venv warns and skips instead
+  # of failing the whole tier. wait_for_port below only polls started ones.
 
-  # risk-and-exposure-service — live mode starts uvicorn on port 8019
-  start_process "risk-and-exposure-service" "$WORKSPACE/risk-and-exposure-service" \
+  start_if_venv "risk-and-exposure-service" "$WORKSPACE/risk-and-exposure-service" 8019 \
     .venv/bin/python -m uvicorn risk_and_exposure_service.api.main:app \
     --host 0.0.0.0 --port 8019
 
-  # position-balance-monitor-service — health API on port 8020
-  start_process "position-balance-monitor-service" "$WORKSPACE/position-balance-monitor-service" \
+  start_if_venv "position-balance-monitor-service" "$WORKSPACE/position-balance-monitor-service" 8020 \
     .venv/bin/python -m uvicorn position_balance_monitor_service.api.main:app \
     --host 0.0.0.0 --port 8020
 
-  # alerting-service — health API on port 8021
-  start_process "alerting-service" "$WORKSPACE/alerting-service" \
+  start_if_venv "alerting-service" "$WORKSPACE/alerting-service" 8021 \
     .venv/bin/python -m uvicorn alerting_service.api.main:app \
     --host 0.0.0.0 --port 8021
 
-  # pnl-attribution-service — health API on port 8022
-  start_process "pnl-attribution-service" "$WORKSPACE/pnl-attribution-service" \
+  start_if_venv "pnl-attribution-service" "$WORKSPACE/pnl-attribution-service" 8022 \
     .venv/bin/python -m uvicorn pnl_attribution_service.api.main:app \
     --host 0.0.0.0 --port 8022
 
-  # execution-service — health API on port 8018
-  start_process "execution-service" "$WORKSPACE/execution-service" \
+  start_if_venv "execution-service" "$WORKSPACE/execution-service" 8018 \
     .venv/bin/python -m uvicorn execution_service.api.app:app \
     --host 0.0.0.0 --port 8018
 
-  # strategy-service — health API on port 8025
-  start_process "strategy-service" "$WORKSPACE/strategy-service" \
+  start_if_venv "strategy-service" "$WORKSPACE/strategy-service" 8025 \
     .venv/bin/python -m uvicorn strategy_service.api.main:app \
     --host 0.0.0.0 --port 8025
 
-  # instruments-service — health API on port 8024
-  start_process "instruments-service" "$WORKSPACE/instruments-service" \
+  start_if_venv "instruments-service" "$WORKSPACE/instruments-service" 8024 \
     .venv/bin/python -m uvicorn instruments_service.api.main:app \
     --host 0.0.0.0 --port 8024
 
-  # market-tick-data-service — health API on port 8023
-  start_process "market-tick-data-service" "$WORKSPACE/market-tick-data-service" \
+  start_if_venv "market-tick-data-service" "$WORKSPACE/market-tick-data-service" 8023 \
     .venv/bin/python -m uvicorn market_tick_data_service.api.main:app \
     --host 0.0.0.0 --port 8023
 
   echo ""
-  echo "  Waiting for service health endpoints..."
-  for svc_port in 8018 8019 8020 8021 8022 8023 8024 8025; do
-    wait_for_port "$svc_port" "service:$svc_port" || true
-  done
+  if [ ${#STARTED_SERVICE_PORTS[@]} -eq 0 ]; then
+    echo "  ⚠️  No T2 services started — all venvs missing. UI will boot but full_mesh is degraded."
+  else
+    echo "  Waiting for service health endpoints (${#STARTED_SERVICE_PORTS[@]} started)..."
+    for entry in "${STARTED_SERVICE_PORTS[@]}"; do
+      svc_port="${entry%%:*}"
+      svc_name="${entry##*:}"
+      # Skip the T1 APIs already waited on in the T1 block above.
+      [ "$svc_name" = "client-reporting-api" ] && continue
+      wait_for_health "$svc_port" "$svc_name" /health || true
+    done
+  fi
 fi
 
 # ─── Start UI ────────────────────────────────────────────────────────────────
@@ -522,15 +744,21 @@ fi
 
 echo ""
 echo "  Waiting for UI..."
-wait_for_port 3000 "ui"
+# Next.js binds :3000 immediately but takes another second or two to compile
+# the first route. Hitting / waits for the actual response, so the user
+# doesn't see "ready" then a compile spinner. Path "/" returns 200 (HTML)
+# in both T0 (mock) and T1/T2 (real) modes.
+wait_for_health 3000 "ui" /
 
-# ─── Post-startup ────────────────────────────────────────────────────────────
-
+# Run --reset BEFORE the final banner so a failed reset doesn't print after
+# "Tier N running" — keeps the success line truthful.
 if $DO_RESET; then
   echo ""
   echo "[RESET] Re-seeding mock data..."
   curl -s -X POST http://localhost:8030/admin/reset > /dev/null 2>&1 && echo "  Done." || echo "  ⚠️  Reset failed."
 fi
+
+# ─── Post-startup ────────────────────────────────────────────────────────────
 
 echo ""
 echo "═══════════════════════════════════════════════════════════"
