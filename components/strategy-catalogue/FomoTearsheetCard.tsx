@@ -29,7 +29,10 @@ import type { ShareClass, StrategyArchetype, StrategyFamily } from "@/lib/archit
 import type { StrategyAccess } from "@/lib/entitlements/strategy-route";
 import { formatArchetype, formatFamily, getArchetypePlanTier } from "@/lib/strategy-display";
 
+import { ExclusiveLockBadge } from "./ExclusiveLockBadge";
 import { PerformanceOverlay } from "./PerformanceOverlay";
+import { SubscribeButton } from "./SubscribeButton";
+import { VersionLineageBadge } from "./VersionLineageBadge";
 import type { PerformanceSeriesResponse } from "@/lib/api/performance-overlay";
 
 export interface FomoInstanceSummary {
@@ -43,6 +46,15 @@ export interface FomoInstanceSummary {
   readonly sharpe: number | null;
   readonly maxDrawdownPct: number | null;
   readonly cagrPct: number | null;
+  /** Plan D — current version index (0 = genesis). Optional: omit to skip
+   * the lineage badge for callers that haven't wired version metadata. */
+  readonly versionIndex?: number;
+  /** Plan D — parent version index. `null` ⇒ this is the genesis. */
+  readonly parentVersionIndex?: number | null;
+  /** Plan D — current exclusive holder client_id. When set AND not equal to
+   * the caller's clientId, the SubscribeButton renders disabled and the
+   * <ExclusiveLockBadge> appears in the header. */
+  readonly existingExclusiveHolder?: string | null;
 }
 
 export interface FomoTearsheetCardProps {
@@ -58,8 +70,29 @@ export interface FomoTearsheetCardProps {
    * Subscribed instances render with a green checkmark badge instead of the
    * upgrade lock. */
   readonly isSubscribed?: boolean;
+  /** Plan D — caller's client_id (UAC `Org.id` / org slug). Required for the
+   * SubscribeButton CTA swap. When omitted, the legacy "Request allocation"
+   * CTA renders. */
+  readonly callerClientId?: string;
+  /** Plan D — caller's entitlements (already on `useAuth().user.entitlements`).
+   * The CTA swap requires `strategy-full` or `ml-full` (DART Full tier). */
+  readonly callerEntitlements?: readonly string[];
   /** Test-only: pre-computed series, bypasses the live fetch. */
   readonly performanceOverride?: PerformanceSeriesResponse;
+}
+
+/** Plan D — caller is on DART Full tier when they hold either the broad
+ * strategy-full entitlement or an ML wildcard. Wildcard entitlement (`*`)
+ * also qualifies for admin / odum-internal personas. */
+function hasDartFullEntitlement(entitlements: readonly string[] | undefined): boolean {
+  if (!entitlements) return false;
+  return entitlements.includes("*") || entitlements.includes("strategy-full") || entitlements.includes("ml-full");
+}
+
+/** Plan D — DART surface is reachable when the routing includes `dart_only`
+ * or `both`. `internal_only` and `im_only` do not qualify. */
+function isDartRouted(routing: ProductRouting): boolean {
+  return routing === "dart_only" || routing === "both";
 }
 
 function formatStat(value: number | null, suffix: string, digits = 2): string {
@@ -72,6 +105,8 @@ export function FomoTearsheetCard({
   onRequestAllocation,
   access = "terminal",
   isSubscribed = false,
+  callerClientId,
+  callerEntitlements,
   performanceOverride,
 }: FomoTearsheetCardProps) {
   const ctaEnabled = allowsAllocationCta(instance.maturityPhase);
@@ -80,12 +115,24 @@ export function FomoTearsheetCard({
   const isReportsOnly = access === "reports-only";
   const isLockedVisible = access === "locked-visible";
 
+  // Plan D — CTA swap gate: DART-routed instance + DART Full entitlements
+  // + caller clientId provided + maturity-allows-allocation. When all four
+  // hold, render <SubscribeButton>; otherwise fall back to the legacy
+  // "Request allocation" CTA so IM-only and pre-paper-stable strategies
+  // still surface their original flow.
+  const dartRouted = isDartRouted(instance.productRouting);
+  const hasDartFull = hasDartFullEntitlement(callerEntitlements);
+  const useSubscribeCta = dartRouted && hasDartFull && !!callerClientId && ctaEnabled && !isLockedVisible;
+  const heldByOther =
+    !!instance.existingExclusiveHolder && instance.existingExclusiveHolder !== callerClientId && !isSubscribed;
+
   return (
     <Card
       data-testid="fomo-tearsheet-card"
       data-instance-id={instance.instanceId}
       data-access={access}
       data-subscribed={isSubscribed ? "true" : "false"}
+      data-cta-mode={useSubscribeCta ? "subscribe" : "request-allocation"}
       className={`gap-4 py-4 ${isLockedVisible ? "opacity-60" : ""}`}
     >
       <CardHeader className="gap-2">
@@ -95,11 +142,23 @@ export function FomoTearsheetCard({
               {formatFamily(instance.family)} / {formatArchetype(instance.archetype)}
             </p>
             <p className="text-sm font-medium">{instance.venueSetLabel}</p>
+            {instance.versionIndex !== undefined ? (
+              <div className="pt-0.5">
+                <VersionLineageBadge
+                  versionIndex={instance.versionIndex}
+                  parentVersionIndex={instance.parentVersionIndex ?? null}
+                  compact
+                />
+              </div>
+            ) : null}
           </div>
           <div className="flex flex-col items-end gap-1">
             <Badge variant="outline" className="font-mono text-[10px]">
               {MATURITY_PHASE_LABEL[instance.maturityPhase]}
             </Badge>
+            {heldByOther && instance.existingExclusiveHolder ? (
+              <ExclusiveLockBadge holder={instance.existingExclusiveHolder} compact />
+            ) : null}
             {isSubscribed ? (
               <Badge className="gap-0.5 border-emerald-300 bg-emerald-100 text-[10px] text-emerald-800">
                 <CheckCircle2 className="size-2.5" aria-hidden />
@@ -171,6 +230,17 @@ export function FomoTearsheetCard({
                 <ArrowUpRight className="ml-1 size-3" aria-hidden />
               </Link>
             </Button>
+          ) : useSubscribeCta && callerClientId && callerEntitlements ? (
+            <div className="flex-1" data-testid="fomo-subscribe-cta-wrapper">
+              <SubscribeButton
+                instanceId={instance.instanceId}
+                productRouting={instance.productRouting === "both" ? ["DART", "IM"] : ["DART"]}
+                callerClientId={callerClientId}
+                callerEntitlements={callerEntitlements}
+                existingExclusiveHolder={instance.existingExclusiveHolder ?? null}
+                initiallySubscribed={isSubscribed}
+              />
+            </div>
           ) : (
             <Button
               size="sm"

@@ -275,6 +275,8 @@ export function StrategyCatalogueSurface({
             subscribedSet={subscribedSet}
             onInstanceSelect={onInstanceSelect}
             onRequestAllocation={onRequestAllocation}
+            callerClientId={user?.org?.id}
+            callerEntitlements={entitlements}
           />
         </>
       ) : null}
@@ -648,6 +650,13 @@ interface FomoGridProps {
   readonly subscribedSet: ReadonlySet<string>;
   readonly onInstanceSelect?: (instanceId: string) => void;
   readonly onRequestAllocation?: (instanceId: string) => void;
+  /** Plan D — caller's clientId (`user.org.id`) to thread into the
+   * SubscribeButton CTA-swap gate. Optional so legacy callers / mock-mode
+   * fallbacks (no auth user) keep the original Request-allocation flow. */
+  readonly callerClientId?: string;
+  /** Plan D — caller's entitlements; the CTA swap requires
+   * `strategy-full` / `ml-full` / `*`. */
+  readonly callerEntitlements?: readonly string[];
 }
 
 function FomoGrid({
@@ -656,6 +665,8 @@ function FomoGrid({
   subscribedSet,
   onInstanceSelect,
   onRequestAllocation,
+  callerClientId,
+  callerEntitlements,
 }: FomoGridProps) {
   if (instances.length === 0) {
     return (
@@ -699,6 +710,8 @@ function FomoGrid({
               instance={summary}
               access={access}
               isSubscribed={isSubscribed}
+              callerClientId={callerClientId}
+              callerEntitlements={callerEntitlements}
               onRequestAllocation={onRequestAllocation}
             />
           </div>
