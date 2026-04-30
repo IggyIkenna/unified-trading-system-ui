@@ -247,11 +247,18 @@ stop_all() {
       while IFS= read -r member; do
         [ -n "$member" ] || continue
         local pinfo cmd ports
-        pinfo=$(ps -o pid=,ppid= -p "$member" 2>/dev/null | awk '{print "PID="$1" PPID="$2}')
-        cmd=$(ps -o args= -p "$member" 2>/dev/null | cut -c1-120)
+        # NOTE: trailing `|| true` on each command-substitution. Without it,
+        # `lsof` returns non-zero when a process has no listening sockets
+        # (true for firebase-seeder, the java firestore child, any non-port
+        # process). Combined with `set -o pipefail` from the top of this
+        # script, the substitution fails, `set -e` aborts the whole stop_all
+        # mid-loop, and we leave dangling pidfiles + half-killed PGIDs.
+        # Symptom: --stop printed the first member's line then exited rc=1.
+        pinfo=$(ps -o pid=,ppid= -p "$member" 2>/dev/null | awk '{print "PID="$1" PPID="$2}' || true)
+        cmd=$(ps -o args= -p "$member" 2>/dev/null | cut -c1-120 || true)
         ports=$(lsof -Pan -p "$member" -i -sTCP:LISTEN 2>/dev/null \
                 | awk 'NR>1 {sub(".*:", "", $9); print $9}' \
-                | sort -u | paste -sd, -)
+                | sort -u | paste -sd, - || true)
         if [ -n "$ports" ]; then
           echo "    └─ $pinfo ports=$ports  $cmd"
         else
