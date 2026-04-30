@@ -61,7 +61,9 @@ export const SERVICE_REGISTRY: readonly ServiceDefinition[] = [
     label: "DART Research",
     description:
       "Research workbench — feature engineering, ML training, backtesting, validation, allocator research, candidate promotion.",
-    href: "/services/research/overview",
+    // 2026-04-30 (Phase 9): tile routes into the unified workspace shell with
+    // surface=research seeded so the journey rail anchors at "discover".
+    href: "/services/workspace?surface=research&rs=discover",
     lifecycleStage: "build",
     requiredEntitlements: ["strategy-full", "ml-full"] as readonly Entitlement[],
     icon: "FlaskConical",
@@ -174,7 +176,10 @@ export const SERVICE_REGISTRY: readonly ServiceDefinition[] = [
     label: "DART Terminal",
     description:
       "Live trading surfaces — terminal, positions, orders, P&L, observe, strategy catalogue, signal intake.",
-    href: "/services/trading/overview",
+    // 2026-04-30 (Phase 9): tile routes into the unified workspace shell with
+    // surface=terminal + tm=command so the cockpit lands on the live
+    // command mode by default.
+    href: "/services/workspace?surface=terminal&tm=command",
     lifecycleStage: "run",
     requiredEntitlements: ["execution-basic", "execution-full", "data-basic", "data-pro"] as readonly Entitlement[],
     icon: "TrendingUp",
