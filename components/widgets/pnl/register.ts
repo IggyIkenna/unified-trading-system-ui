@@ -69,6 +69,13 @@ registerWidget({
   availableOn: ["pnl"],
   singleton: true,
   component: PnlWaterfallWidget,
+  // Phase 5: P&L is meaningful in Command (live) and Explain (attribution).
+  // Reports surface also surfaces it — declared via the surface axis.
+  dartMeta: {
+    surfaces: ["terminal", "reports"],
+    terminalModes: ["command", "explain"],
+    importance: "primary",
+  },
 });
 
 registerWidget({

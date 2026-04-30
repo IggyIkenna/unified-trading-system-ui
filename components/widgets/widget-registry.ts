@@ -1,6 +1,13 @@
 import type { LucideIcon } from "lucide-react";
 import type { ComponentType } from "react";
 import type { StrategyArchetype, StrategyFamily, VenueAssetGroupV2 } from "@/lib/architecture-v2";
+import type { WorkspaceScope } from "@/lib/architecture-v2/workspace-scope";
+import {
+  matchWidgetToScope,
+  synthesiseDartMetaFromAssetGroup,
+  type DartWidgetMeta,
+  type WidgetScopeMatch,
+} from "@/lib/cockpit/widget-meta";
 import type { StrategyFamilyEntitlement, TradingEntitlement } from "@/lib/config/auth";
 import { type WidgetAssetGroup, WIDGET_ASSET_GROUPS } from "@/lib/types/asset-group";
 
@@ -70,6 +77,14 @@ export interface WidgetDefinition {
   archetypes?: StrategyArchetype[];
   /** Venue asset groups this widget is relevant to (CEFI / DEFI / SPORTS / TRADFI / PREDICTION). */
   assetGroups?: VenueAssetGroupV2[];
+
+  /**
+   * Cockpit-axis metadata (Phase 5 of dart_ux_cockpit_refactor §10).
+   * Controls which workspace surfaces / modes / stages / engagements /
+   * streams this widget is relevant to. Empty/undefined = legacy widget,
+   * always rendered primary.
+   */
+  dartMeta?: DartWidgetMeta;
 }
 
 export interface WidgetPlacement {
@@ -141,3 +156,58 @@ export function getWidgetsForAssetGroup(
 }
 
 export { WIDGET_ASSET_GROUPS };
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Scope-reactive selectors (Phase 5)
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Decide whether a widget matches the active WorkspaceScope. When the
+ * widget hasn't declared an explicit `dartMeta`, fall back to the asset-
+ * group-based synthesis (PLATFORM = always primary; per-group = primary
+ * iff scope.assetGroups is empty or includes the widget's group).
+ */
+export function widgetScopeMatch(def: WidgetDefinition, scope: WorkspaceScope): WidgetScopeMatch {
+  const meta = def.dartMeta ?? synthesiseDartMetaFromAssetGroup(def.assetGroup);
+  return matchWidgetToScope(meta, scope);
+}
+
+/**
+ * Bucket every registered widget by its match against the active scope.
+ * Used by the cockpit grid to:
+ *   - render `primary` widgets at full visual weight
+ *   - render `secondary` widgets in a sidebar / collapsed state
+ *   - render `outOfScope` widgets behind a greyed "out of scope" placeholder
+ *     (or hide them entirely for cleaner cockpits)
+ */
+export function widgetsForScope(scope: WorkspaceScope): {
+  readonly primary: readonly WidgetDefinition[];
+  readonly secondary: readonly WidgetDefinition[];
+  readonly outOfScope: readonly WidgetDefinition[];
+} {
+  const primary: WidgetDefinition[] = [];
+  const secondary: WidgetDefinition[] = [];
+  const outOfScope: WidgetDefinition[] = [];
+
+  for (const def of registry.values()) {
+    const match = widgetScopeMatch(def, scope);
+    if (match === "primary") primary.push(def);
+    else if (match === "secondary") secondary.push(def);
+    else outOfScope.push(def);
+  }
+
+  return { primary, secondary, outOfScope };
+}
+
+/**
+ * Suggest widgets to add for the active scope: widgets that match the
+ * scope AND aren't already on a workspace placement list. Used by the
+ * Phase 6/7 "Add Widget" affordance + scope-aware next-actions.
+ */
+export function suggestedWidgetsForScope(scope: WorkspaceScope, excludeIds: readonly string[] = []): readonly WidgetDefinition[] {
+  const exclude = new Set(excludeIds);
+  return Array.from(registry.values()).filter((def) => {
+    if (exclude.has(def.id)) return false;
+    return widgetScopeMatch(def, scope) === "primary";
+  });
+}

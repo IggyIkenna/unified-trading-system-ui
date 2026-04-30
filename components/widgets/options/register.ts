@@ -76,6 +76,16 @@ registerWidget({
   availableOn: ["options"],
   singleton: true,
   component: OptionsControlBarWidget,
+  // Phase 5 cockpit-axis metadata: scope-aware reshaping.
+  dartMeta: {
+    surfaces: ["terminal", "research"],
+    terminalModes: ["markets"],
+    importance: "primary",
+    scopePredicate: (scope) =>
+      scope.instrumentTypes.length === 0 ||
+      scope.instrumentTypes.includes("option") ||
+      scope.instrumentTypes.includes("future"),
+  },
 });
 
 registerWidget({
