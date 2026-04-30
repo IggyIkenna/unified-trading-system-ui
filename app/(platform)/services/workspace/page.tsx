@@ -37,6 +37,7 @@ import { PromoteBundleForm } from "@/components/cockpit/promote-bundle-form";
 import { ReleaseBundlePanel } from "@/components/cockpit/release-bundle-panel";
 import { ResearchJourneyRail } from "@/components/cockpit/research-journey-rail";
 import { RuntimeOverrideAuthoring } from "@/components/cockpit/runtime-override-authoring";
+import { StrategyScenarioTapePanel } from "@/components/cockpit/strategy-scenario-tape";
 import { StrategyVisibilitySummary } from "@/components/cockpit/strategy-visibility-summary";
 import { TerminalModeTabs } from "@/components/cockpit/terminal-mode-tabs";
 import { WorkspaceUrlSync } from "@/components/cockpit/workspace-url-sync";
@@ -113,6 +114,13 @@ export default function WorkspaceShellPage() {
           {/* Order ticket on Terminal/Command — Submit → pending → fill
               lands ~1s later with synthetic slippage. */}
           {scope.surface === "terminal" && scope.terminalMode === "command" ? <OrderTicketPanel /> : null}
+          {/* Strategy lifecycle replay — fires scripted scenarios end-to-end
+              across asset groups + archetypes. Renders on Terminal/Strategies
+              (where users are inspecting running strategies) and
+              Terminal/Explain (where users want to replay what happened). */}
+          {scope.surface === "terminal" && (scope.terminalMode === "strategies" || scope.terminalMode === "explain") ? (
+            <StrategyScenarioTapePanel />
+          ) : null}
           <CockpitWidgetGrid />
           {(scope.surface === "terminal" &&
             (scope.terminalMode === "strategies" || scope.terminalMode === "explain")) ||

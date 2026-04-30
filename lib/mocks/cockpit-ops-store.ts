@@ -89,6 +89,53 @@ export interface AuthoredBundleCandidate {
   readonly authoredAt: string;
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Strategy lifecycle e2e — events emitted by the scenario engine
+// ─────────────────────────────────────────────────────────────────────────────
+
+export type StrategyEventKind =
+  | "client_deposit"
+  | "client_withdrawal"
+  | "signal_fired"
+  | "entry_decision"
+  | "exit_decision"
+  | "rebalance"
+  | "alert"
+  | "kill_switch_trip"
+  | "venue_degraded"
+  | "drift_warning"
+  | "settlement";
+
+export type AssetGroup = "CEFI" | "DEFI" | "TRADFI" | "SPORTS" | "PREDICTION";
+
+export interface StrategyEvent {
+  readonly id: string;
+  readonly scenarioId: string;
+  readonly archetype: string;
+  readonly assetGroup: AssetGroup;
+  readonly venue: string;
+  readonly kind: StrategyEventKind;
+  readonly summary: string;
+  readonly detail?: string;
+  /** Signed P&L impact in USD (positive = gain). */
+  readonly pnlImpactUsd?: number;
+  readonly tone: "info" | "success" | "warn" | "error";
+  readonly timestamp: string;
+}
+
+export interface ActiveScenario {
+  readonly id: string;
+  readonly archetype: string;
+  readonly assetGroup: AssetGroup;
+  readonly label: string;
+  readonly startedAt: string;
+  /** Index into the scripted event list — tick increments. */
+  readonly cursor: number;
+  /** Total events in the script. */
+  readonly totalEvents: number;
+  readonly status: "running" | "completed";
+}
+
 export interface CockpitOpsState {
   readonly runtimeOverrides: readonly RuntimeOverride[];
   readonly bundleCandidates: readonly AuthoredBundleCandidate[];
@@ -96,6 +143,8 @@ export interface CockpitOpsState {
   readonly mlTrainingRuns: readonly MlTrainingRun[];
   readonly pendingOrders: readonly PendingOrder[];
   readonly recentFills: readonly RecentFill[];
+  readonly strategyEvents: readonly StrategyEvent[];
+  readonly activeScenarios: readonly ActiveScenario[];
   readonly toastMessages: readonly {
     readonly id: string;
     readonly message: string;
@@ -116,6 +165,14 @@ export interface CockpitOpsState {
     qty: number;
     priceLimit?: number;
   }) => string;
+  /** Append a strategy lifecycle event (called by the scenario engine). */
+  appendStrategyEvent: (event: Omit<StrategyEvent, "id" | "timestamp">) => void;
+  /** Register an in-flight scenario (engine starts script, ticker advances). */
+  registerActiveScenario: (scenario: Omit<ActiveScenario, "startedAt" | "cursor" | "status">) => void;
+  /** Advance scenario cursor; engine calls this after firing each event. */
+  advanceScenarioCursor: (scenarioId: string) => void;
+  /** Mark a scenario completed once cursor === totalEvents. */
+  completeScenario: (scenarioId: string) => void;
   pushToast: (message: string, tone?: "info" | "success" | "warn" | "error") => void;
   dismissToast: (id: string) => void;
   /** Called by the tick interval — progresses in-flight runs + simulates fills. */
@@ -153,7 +210,66 @@ export const useCockpitOpsStore = create<CockpitOpsState>((set, get) => ({
   mlTrainingRuns: [],
   pendingOrders: [],
   recentFills: [],
+  strategyEvents: [],
+  activeScenarios: [],
   toastMessages: [],
+
+  appendStrategyEvent: (event) => {
+    const fullEvent: StrategyEvent = {
+      ...event,
+      id: uid("evt"),
+      timestamp: now(),
+    };
+    set((s) => ({
+      strategyEvents: [fullEvent, ...s.strategyEvents].slice(0, 100),
+      // Surface only WARN / ERROR / SUCCESS events as toasts to avoid noise.
+      toastMessages:
+        event.tone === "info"
+          ? s.toastMessages
+          : [
+              ...s.toastMessages,
+              { id: uid("toast"), message: `${event.archetype}: ${event.summary}`, tone: event.tone },
+            ],
+    }));
+  },
+
+  registerActiveScenario: (scenario) => {
+    const active: ActiveScenario = {
+      ...scenario,
+      startedAt: now(),
+      cursor: 0,
+      status: "running",
+    };
+    set((s) => ({
+      activeScenarios: [...s.activeScenarios, active],
+      toastMessages: [
+        ...s.toastMessages,
+        { id: uid("toast"), message: `Scenario started: ${scenario.label}`, tone: "info" },
+      ],
+    }));
+  },
+
+  advanceScenarioCursor: (scenarioId) => {
+    set((s) => ({
+      activeScenarios: s.activeScenarios.map((sc) => (sc.id === scenarioId ? { ...sc, cursor: sc.cursor + 1 } : sc)),
+    }));
+  },
+
+  completeScenario: (scenarioId) => {
+    set((s) => ({
+      activeScenarios: s.activeScenarios.map((sc) =>
+        sc.id === scenarioId ? { ...sc, status: "completed" as const } : sc,
+      ),
+      toastMessages: [
+        ...s.toastMessages,
+        {
+          id: uid("toast"),
+          message: `Scenario ${scenarioId} completed`,
+          tone: "success",
+        },
+      ],
+    }));
+  },
 
   appendRuntimeOverride: (override) => {
     set((s) => ({
@@ -362,6 +478,8 @@ export const useCockpitOpsStore = create<CockpitOpsState>((set, get) => ({
       mlTrainingRuns: [],
       pendingOrders: [],
       recentFills: [],
+      strategyEvents: [],
+      activeScenarios: [],
       toastMessages: [],
     });
   },
