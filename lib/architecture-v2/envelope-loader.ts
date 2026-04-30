@@ -188,7 +188,13 @@ export async function instancesByFamilyArchetypeAssetGroup(): Promise<
   const { ARCHETYPE_TO_FAMILY } = await import("./enums");
   const data = await loadStrategyInstruments();
   const out = new Map<string, Map<string, Map<string, StrategyInstrumentsSlot[]>>>();
-  for (const slot of Object.values(data.slots)) {
+  // Defensive guard: if the catalogue response is missing or malformed
+  // (e.g. mock-handler short-circuit returning `{}`), treat as an empty
+  // hierarchy rather than throwing. The cockpit browser then renders an
+  // empty state instead of "Failed to load strategy hierarchy: Cannot
+  // convert undefined or null to object".
+  const allSlots = (data as { slots?: Record<string, StrategyInstrumentsSlot> } | null)?.slots ?? {};
+  for (const slot of Object.values(allSlots)) {
     const family = (ARCHETYPE_TO_FAMILY as Record<string, string | undefined>)[slot.archetype_id] ?? "OTHER";
     const archetype = slot.archetype_id;
     const assetGroup = slot.category.toUpperCase();

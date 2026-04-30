@@ -6781,6 +6781,13 @@ export function installMockHandler(): void {
         "/api/auth/",
         "/api/admin/",
         "/api/v1/",
+        // Catalogue GCS proxy — fetches envelope.json / availability.json /
+        // strategy_instruments.json from the real backend (or the catalogue
+        // route handler in dev). Mock-handler must NOT short-circuit this
+        // to `{}` because the strategy hierarchy on
+        // /services/research/strategies parses `data.slots` and crashes on
+        // an empty object.
+        "/api/catalogue/",
       ];
       if (realRoutePrefixes.some((prefix) => url.startsWith(prefix))) {
         return originalFetch(input, init);
