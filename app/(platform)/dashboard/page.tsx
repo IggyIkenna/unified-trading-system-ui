@@ -1,5 +1,7 @@
 "use client";
 
+import { ContextualLockedPreview } from "@/components/cockpit/contextual-locked-preview";
+import { PresetSelector } from "@/components/cockpit/preset-selector";
 import { DartScopeBar } from "@/components/shell/dart-scope-bar";
 import { DashboardFilterStrip } from "@/components/services/DashboardFilterStrip";
 import { QuickActions } from "@/components/platform/quick-actions";
@@ -246,6 +248,17 @@ export default function DashboardPage() {
                 controls + Surface / Engagement / Stream dials. §4.3 Live
                 confirm + entitlement gate enforced inside. */}
             <DartScopeBar />
+
+            {/* PresetSelector — Phase 6 of dart_ux_cockpit_refactor §8. Eight
+                starter cockpits with persona-recommended one badged + leading.
+                One click flips the active scope and routes to the preset's
+                primary surface. */}
+            <PresetSelector />
+
+            {/* ContextualLockedPreview — Phase 7 of §12 + §17. Scope-specific
+                FOMO cards that reflect what the user could unlock with their
+                current scope. Empty when no preview matches the scope. */}
+            <ContextualLockedPreview />
 
             {/* Filter strip — family/archetype/venue-set/share-class/instrument-type
                 picker, collapsed-by-default. Selections persist per-user in
