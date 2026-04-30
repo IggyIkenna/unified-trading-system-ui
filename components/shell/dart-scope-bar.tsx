@@ -28,7 +28,7 @@
  */
 
 import * as React from "react";
-import { ChevronDown, Filter, Info, Lock, RotateCcw, X } from "lucide-react";
+import { Check, ChevronDown, Filter, Lock, Plus, RotateCcw, X } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -41,8 +41,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/use-auth";
+import { STRATEGY_ARCHETYPES_V2, STRATEGY_FAMILIES_V2, VENUE_ASSET_GROUPS_V2 } from "@/lib/architecture-v2/enums";
 import {
   type ResearchStage,
   type TerminalMode,
@@ -55,6 +57,37 @@ import { useWorkspaceScope, useWorkspaceScopeStore } from "@/lib/stores/workspac
 import { cn } from "@/lib/utils";
 
 import { compactScopeSegments } from "./dart-scope-bar-summary";
+
+// Canonical option lists for each scope axis. Strings — workspace-scope.ts
+// keeps these as `readonly string[]` so the catalogue + scope can stay
+// loosely coupled; chip-multi-select normalises to upper-snake.
+const ASSET_GROUP_OPTIONS = VENUE_ASSET_GROUPS_V2;
+const FAMILY_OPTIONS = STRATEGY_FAMILIES_V2;
+const ARCHETYPE_OPTIONS = STRATEGY_ARCHETYPES_V2;
+const INSTRUMENT_TYPE_OPTIONS: readonly string[] = [
+  "spot",
+  "perp",
+  "future",
+  "option",
+  "lending_position",
+  "staked_position",
+  "liquidity_position",
+];
+const SHARE_CLASS_OPTIONS: readonly string[] = ["USDT", "USDC", "USD", "GBP", "EUR", "BTC", "ETH", "SOL"];
+const VENUE_OPTIONS: readonly string[] = [
+  "binance",
+  "okx",
+  "deribit",
+  "bybit",
+  "coinbase",
+  "kraken",
+  "aave_v3",
+  "uniswap_v3",
+  "morpho",
+  "lido",
+  "jito",
+  "hyperliquid",
+];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Surface / mode / stage / engagement / stream option lists
@@ -99,21 +132,24 @@ interface SegmentedToggleProps<T extends string> {
   readonly testIdPrefix: string;
   readonly label: string;
   readonly value: T;
-  readonly options: ReadonlyArray<{ readonly value: T; readonly label: string; readonly disabled?: boolean; readonly disabledReason?: string }>;
+  readonly options: ReadonlyArray<{
+    readonly value: T;
+    readonly label: string;
+    readonly disabled?: boolean;
+    readonly disabledReason?: string;
+  }>;
   readonly onChange: (next: T) => void;
 }
 
-function SegmentedToggle<T extends string>({
-  testIdPrefix,
-  label,
-  value,
-  options,
-  onChange,
-}: SegmentedToggleProps<T>) {
+function SegmentedToggle<T extends string>({ testIdPrefix, label, value, options, onChange }: SegmentedToggleProps<T>) {
   return (
     <div className="flex items-center gap-2">
       <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">{label}</span>
-      <div role="radiogroup" aria-label={label} className="flex items-center rounded-md border border-border/60 bg-muted/20 p-0.5">
+      <div
+        role="radiogroup"
+        aria-label={label}
+        className="flex items-center rounded-md border border-border/60 bg-muted/20 p-0.5"
+      >
         {options.map((opt) => {
           const isActive = opt.value === value;
           const isDisabled = opt.disabled === true;
@@ -152,6 +188,124 @@ function SegmentedToggle<T extends string>({
           }
           return button;
         })}
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ChipMultiSelect — editable chip row for one scope axis
+// ─────────────────────────────────────────────────────────────────────────────
+
+interface ChipMultiSelectProps {
+  readonly label: string;
+  readonly axisKey: string;
+  readonly options: readonly string[];
+  readonly values: readonly string[];
+  readonly onChange: (next: readonly string[]) => void;
+}
+
+function ChipMultiSelect({ label, axisKey, options, values, onChange }: ChipMultiSelectProps) {
+  const [open, setOpen] = React.useState(false);
+  const [filter, setFilter] = React.useState("");
+
+  const filtered = React.useMemo(() => {
+    if (filter.trim().length === 0) return options;
+    const f = filter.toLowerCase();
+    return options.filter((o) => o.toLowerCase().includes(f));
+  }, [options, filter]);
+
+  const toggleValue = React.useCallback(
+    (v: string) => {
+      if (values.includes(v)) {
+        onChange(values.filter((x) => x !== v));
+      } else {
+        onChange([...values, v]);
+      }
+    },
+    [values, onChange],
+  );
+
+  const removeValue = React.useCallback((v: string) => onChange(values.filter((x) => x !== v)), [values, onChange]);
+
+  return (
+    <div className="flex items-start gap-2 min-w-0" data-testid={`scope-chip-axis-${axisKey}`}>
+      <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/80 w-24 shrink-0 pt-1">
+        {label}
+      </span>
+      <div className="flex-1 flex flex-wrap items-center gap-1 min-w-0">
+        {values.length === 0 ? (
+          <span className="text-[10px] italic text-muted-foreground/50 pt-0.5">all</span>
+        ) : (
+          values.map((v) => (
+            <Badge
+              key={v}
+              variant="secondary"
+              className="font-mono text-[10px] gap-1 pl-2 pr-1 py-0 h-5"
+              data-testid={`scope-chip-${axisKey}-${v}`}
+            >
+              {v}
+              <button
+                type="button"
+                onClick={() => removeValue(v)}
+                aria-label={`remove ${v}`}
+                className="rounded hover:bg-muted/40"
+                data-testid={`scope-chip-remove-${axisKey}-${v}`}
+              >
+                <X className="size-2.5" aria-hidden />
+              </button>
+            </Badge>
+          ))
+        )}
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <button
+              type="button"
+              className="inline-flex items-center gap-0.5 text-[10px] font-mono px-1.5 h-5 rounded border border-border/40 text-muted-foreground hover:text-foreground hover:border-border bg-muted/10"
+              data-testid={`scope-chip-add-${axisKey}`}
+              aria-label={`Add ${label} chip`}
+            >
+              <Plus className="size-2.5" aria-hidden />
+              add
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="w-64 p-2" align="start">
+            <input
+              type="text"
+              autoFocus
+              placeholder={`Filter ${label.toLowerCase()}…`}
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              className="mb-2 w-full px-2 h-7 text-xs rounded border border-border/40 bg-muted/10 focus:outline-none focus:border-primary/50"
+              data-testid={`scope-chip-popover-filter-${axisKey}`}
+            />
+            <div className="max-h-56 overflow-auto space-y-0.5">
+              {filtered.length === 0 ? (
+                <p className="text-[11px] text-muted-foreground/60 px-2 py-1.5 italic">No matches.</p>
+              ) : (
+                filtered.map((opt) => {
+                  const selected = values.includes(opt);
+                  return (
+                    <button
+                      key={opt}
+                      type="button"
+                      onClick={() => toggleValue(opt)}
+                      className={cn(
+                        "flex items-center justify-between w-full px-2 py-1 rounded text-xs font-mono",
+                        selected ? "bg-primary/10 text-primary" : "text-foreground/80 hover:bg-secondary/50",
+                      )}
+                      data-testid={`scope-chip-popover-option-${axisKey}-${opt}`}
+                      data-selected={selected}
+                    >
+                      <span className="truncate">{opt}</span>
+                      {selected ? <Check className="size-3" aria-hidden /> : null}
+                    </button>
+                  );
+                })
+              )}
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
     </div>
   );
@@ -204,7 +358,15 @@ function LiveConfirmDialog({ open, onOpenChange, onConfirm }: LiveConfirmDialogP
 // Compact summary chip row
 // ─────────────────────────────────────────────────────────────────────────────
 
-function CompactSummary({ scope, expanded, onToggle }: { readonly scope: WorkspaceScope; readonly expanded: boolean; readonly onToggle: () => void }) {
+function CompactSummary({
+  scope,
+  expanded,
+  onToggle,
+}: {
+  readonly scope: WorkspaceScope;
+  readonly expanded: boolean;
+  readonly onToggle: () => void;
+}) {
   const segments = compactScopeSegments(scope);
   const isLive = scope.executionStream === "live";
   return (
@@ -220,7 +382,11 @@ function CompactSummary({ scope, expanded, onToggle }: { readonly scope: Workspa
       <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Scope</span>
       {segments.map((seg, i) => (
         <React.Fragment key={`${seg}-${i}`}>
-          {i > 0 ? <span className="text-muted-foreground/30 text-xs" aria-hidden>·</span> : null}
+          {i > 0 ? (
+            <span className="text-muted-foreground/30 text-xs" aria-hidden>
+              ·
+            </span>
+          ) : null}
           <span
             className={cn(
               "text-xs",
@@ -229,12 +395,17 @@ function CompactSummary({ scope, expanded, onToggle }: { readonly scope: Workspa
                 : "text-foreground",
             )}
           >
-            {i === segments.length - 1 && isLive ? <span aria-hidden className="size-1.5 rounded-full bg-rose-500" /> : null}
+            {i === segments.length - 1 && isLive ? (
+              <span aria-hidden className="size-1.5 rounded-full bg-rose-500" />
+            ) : null}
             {seg}
           </span>
         </React.Fragment>
       ))}
-      <ChevronDown className={cn("size-3 transition-transform text-muted-foreground", expanded && "rotate-180")} aria-hidden />
+      <ChevronDown
+        className={cn("size-3 transition-transform text-muted-foreground", expanded && "rotate-180")}
+        aria-hidden
+      />
     </button>
   );
 }
@@ -391,64 +562,55 @@ export function DartScopeBar({ className, defaultExpanded = false }: DartScopeBa
               ) : null}
             </div>
 
-            {/* Filter axes (chips) — read-only display in Phase 2; the
-                edit affordance for asset_group / family / archetype lives
-                in the existing `<GlobalScopeFilters>` toolbar component
-                that the platform shell still renders. The DartScopeBar
-                owns the *summary + dials*; chip-editing lands in Phase 5
-                when widget metadata + filter dropdowns wire through. */}
-            <div className="flex flex-wrap items-center gap-2 text-[10px] text-muted-foreground">
-              <span className="uppercase tracking-wider">Active filters:</span>
-              {scope.assetGroups.length === 0 &&
-              scope.families.length === 0 &&
-              scope.archetypes.length === 0 &&
-              scope.shareClasses.length === 0 &&
-              scope.instrumentTypes.length === 0 ? (
-                <span className="italic">none — viewing all strategies</span>
-              ) : (
-                <>
-                  {scope.assetGroups.map((g) => (
-                    <Badge key={`ag-${g}`} variant="secondary" className="text-[10px] font-mono">
-                      {g}
-                    </Badge>
-                  ))}
-                  {scope.families.map((f) => (
-                    <Badge key={`fam-${f}`} variant="secondary" className="text-[10px] font-mono">
-                      {f}
-                    </Badge>
-                  ))}
-                  {scope.archetypes.map((a) => (
-                    <Badge key={`arch-${a}`} variant="secondary" className="text-[10px] font-mono">
-                      {a}
-                    </Badge>
-                  ))}
-                  {scope.shareClasses.map((sc) => (
-                    <Badge key={`sc-${sc}`} variant="secondary" className="text-[10px] font-mono">
-                      {sc}
-                    </Badge>
-                  ))}
-                  {scope.instrumentTypes.map((it) => (
-                    <Badge key={`it-${it}`} variant="secondary" className="text-[10px] font-mono">
-                      {it}
-                    </Badge>
-                  ))}
-                  <button
-                    type="button"
-                    className="ml-1 inline-flex items-center gap-1 text-[10px] text-muted-foreground hover:text-foreground"
-                    onClick={() => reset("scope-bar")}
-                    data-testid="dart-scope-bar-clear-filters"
-                  >
-                    <X className="size-2.5" aria-hidden />
-                    Clear
-                  </button>
-                </>
-              )}
+            {/* Editable chip rows — the buyer changes scope by adding /
+                removing chips for each axis. Per audit polish #1: every
+                axis the buyer has a mental model for is editable inline.
+                Resolver-gated visibility (via StrategyVisibilitySummary
+                below) updates live as chips toggle. */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-2 pt-1">
+              <ChipMultiSelect
+                label="Asset group"
+                axisKey="ag"
+                options={ASSET_GROUP_OPTIONS}
+                values={scope.assetGroups}
+                onChange={(next) => useWorkspaceScopeStore.getState().setAssetGroups(next, "scope-bar")}
+              />
+              <ChipMultiSelect
+                label="Instrument type"
+                axisKey="it"
+                options={INSTRUMENT_TYPE_OPTIONS}
+                values={scope.instrumentTypes}
+                onChange={(next) => useWorkspaceScopeStore.getState().setInstrumentTypes(next, "scope-bar")}
+              />
+              <ChipMultiSelect
+                label="Strategy family"
+                axisKey="fam"
+                options={FAMILY_OPTIONS}
+                values={scope.families}
+                onChange={(next) => useWorkspaceScopeStore.getState().setFamilies(next, "scope-bar")}
+              />
+              <ChipMultiSelect
+                label="Archetype"
+                axisKey="arch"
+                options={ARCHETYPE_OPTIONS}
+                values={scope.archetypes}
+                onChange={(next) => useWorkspaceScopeStore.getState().setArchetypes(next, "scope-bar")}
+              />
+              <ChipMultiSelect
+                label="Share class"
+                axisKey="sc"
+                options={SHARE_CLASS_OPTIONS}
+                values={scope.shareClasses}
+                onChange={(next) => useWorkspaceScopeStore.getState().setShareClasses(next, "scope-bar")}
+              />
+              <ChipMultiSelect
+                label="Venue / protocol"
+                axisKey="venue"
+                options={VENUE_OPTIONS}
+                values={scope.venueOrProtocolIds ?? []}
+                onChange={(next) => useWorkspaceScopeStore.getState().setVenueOrProtocolIds(next, "scope-bar")}
+              />
             </div>
-
-            <p className="text-[10px] text-muted-foreground/70 inline-flex items-center gap-1">
-              <Info className="size-2.5" aria-hidden />
-              Chip editing for asset group / family / archetype lands in Phase 5. Use the toolbar's filter pill above for now.
-            </p>
           </div>
         ) : null}
       </div>

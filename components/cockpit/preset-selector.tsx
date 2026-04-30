@@ -20,6 +20,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
 import { COCKPIT_PRESETS, applyPresetToScope, getPreset } from "@/lib/cockpit/presets";
 import { recommendPresetForPersona } from "@/lib/cockpit/derive-preset-from-persona";
+import { useStrategyVisibility } from "@/lib/cockpit/use-strategy-visibility";
 import { useWorkspaceScope, useWorkspaceScopeStore } from "@/lib/stores/workspace-scope-store";
 import { cn } from "@/lib/utils";
 
@@ -45,6 +46,7 @@ export function PresetSelector({ className }: PresetSelectorProps) {
   const { user } = useAuth();
   const scope = useWorkspaceScope();
   const replaceScope = useWorkspaceScopeStore((s) => s.replaceScope);
+  const visibility = useStrategyVisibility();
 
   const recommendation = React.useMemo(
     () =>
@@ -116,6 +118,30 @@ export function PresetSelector({ className }: PresetSelectorProps) {
                     ) : null}
                   </div>
                   <p className="text-[11px] text-muted-foreground/80 leading-snug line-clamp-2">{preset.description}</p>
+                  {/* Polish #3 — resolver-driven visibility badge so the
+                      buyer sees how many strategies they can actually
+                      access for this preset without leaving the dashboard. */}
+                  <div
+                    className="text-[9px] font-mono text-muted-foreground/70 flex items-center gap-1"
+                    data-testid={`preset-card-${preset.id}-visibility`}
+                  >
+                    <span className="text-emerald-300/80">{visibility.counts.owned}</span>
+                    <span>owned</span>
+                    {visibility.counts.available_to_request > 0 ? (
+                      <>
+                        <span className="text-muted-foreground/30">·</span>
+                        <span className="text-cyan-300/80">{visibility.counts.available_to_request}</span>
+                        <span>available</span>
+                      </>
+                    ) : null}
+                    {visibility.counts.locked_by_tier > 0 ? (
+                      <>
+                        <span className="text-muted-foreground/30">·</span>
+                        <span className="text-amber-300/80">{visibility.counts.locked_by_tier}</span>
+                        <span>locked</span>
+                      </>
+                    ) : null}
+                  </div>
                   <div className="flex items-center justify-between gap-2 pt-1">
                     <div className="flex flex-wrap gap-1">
                       <Badge variant="secondary" className="text-[9px] font-mono">

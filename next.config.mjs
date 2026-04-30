@@ -424,6 +424,54 @@ const nextConfig = {
         destination: "/services/workspace?surface=terminal&tm=ops",
         permanent: false,
       },
+      // 2026-04-30 audit polish #5 — Trading shell-level routes redirect
+      // into the workspace cockpit. The cockpit owns positions / orders /
+      // risk / alerts / pnl / accounts as widgets. Per-widget pages stay
+      // for backwards compat as deep links, but the shell-level overview
+      // routes (the user-facing labels) lead users into the cockpit.
+      {
+        source: "/services/trading/overview",
+        destination: "/services/workspace?surface=terminal&tm=command",
+        permanent: false,
+      },
+      {
+        source: "/services/trading/positions",
+        destination: "/services/workspace?surface=terminal&tm=command",
+        permanent: false,
+      },
+      {
+        source: "/services/trading/orders",
+        destination: "/services/workspace?surface=terminal&tm=command",
+        permanent: false,
+      },
+      {
+        source: "/services/trading/risk",
+        destination: "/services/workspace?surface=terminal&tm=explain",
+        permanent: false,
+      },
+      {
+        source: "/services/trading/alerts",
+        destination: "/services/workspace?surface=terminal&tm=command",
+        permanent: false,
+      },
+      {
+        source: "/services/trading/pnl",
+        destination: "/services/workspace?surface=terminal&tm=explain",
+        permanent: false,
+      },
+      {
+        source: "/services/trading/accounts",
+        destination: "/services/workspace?surface=terminal&tm=command",
+        permanent: false,
+      },
+      // Research overview redirects into the workspace research-discover
+      // anchor. Heavy specialist pages (ml/, strategy/backtests/, allocate/)
+      // intentionally NOT redirected — they remain as deep links per plan §22.
+      {
+        source: "/services/research/overview",
+        destination: "/services/workspace?surface=research&rs=discover",
+        permanent: false,
+      },
     ];
   },
 };

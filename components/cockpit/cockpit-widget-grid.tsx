@@ -55,7 +55,7 @@ export function CockpitWidgetGrid({ className, widgetIds, maxPrimary = 12, maxSe
   return (
     <div className={cn("space-y-4", className)} data-testid="cockpit-widget-grid">
       <div className="flex items-center justify-between gap-2">
-        <h2 className="text-sm font-semibold tracking-tight">Active widgets</h2>
+        <h2 className="text-sm font-semibold tracking-tight">Live workspace</h2>
         <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
           <Badge variant="secondary" className="font-mono">
             {primary.length} primary
@@ -118,17 +118,34 @@ function PrimaryWidgetCard({ widget }: { readonly widget: WidgetDefinition }) {
   const instanceId = `cockpit-${widget.id}`;
   return (
     <Card
-      className="border-border/50 bg-card/40 overflow-hidden flex flex-col"
+      className={cn(
+        // Audit polish #2 — premium tile chrome:
+        //   - subtle gradient + ring instead of flat border
+        //   - hover lifts ring colour + drops a soft shadow
+        //   - rounded-md so the cockpit reads as one cohesive grid
+        //   - no horizontal padding overhead — widgets render edge-to-edge
+        //     under the header bar
+        "group relative overflow-hidden flex flex-col rounded-md",
+        "border border-border/40 bg-gradient-to-br from-background to-muted/5",
+        "shadow-[inset_0_1px_0_0_rgba(255,255,255,0.02)]",
+        "transition-all hover:border-primary/30 hover:shadow-md hover:shadow-primary/5",
+      )}
       data-testid={`cockpit-widget-tile-${widget.id}`}
       data-variant="primary"
       data-widget-id={widget.id}
     >
-      <header className="flex items-center justify-between gap-2 border-b border-border/40 px-3 py-1.5 bg-muted/10">
-        <span className="text-xs font-semibold tracking-tight truncate" title={widget.label}>
-          {widget.label}
-        </span>
+      <header className="flex items-center justify-between gap-2 border-b border-border/30 px-3 py-1.5 bg-gradient-to-r from-muted/15 to-transparent">
+        <div className="flex items-center gap-1.5 min-w-0">
+          <span
+            aria-hidden
+            className="size-1.5 rounded-full bg-emerald-400/70 shrink-0 group-hover:bg-emerald-400 transition-colors"
+          />
+          <span className="text-xs font-semibold tracking-tight truncate" title={widget.label}>
+            {widget.label}
+          </span>
+        </div>
         <div className="flex items-center gap-1 shrink-0">
-          <Badge variant="outline" className="text-[9px] font-mono">
+          <Badge variant="outline" className="text-[9px] font-mono border-border/40 bg-muted/10">
             {widget.catalogGroup}
           </Badge>
           <Badge variant="secondary" className="text-[9px] font-mono">
@@ -136,7 +153,7 @@ function PrimaryWidgetCard({ widget }: { readonly widget: WidgetDefinition }) {
           </Badge>
         </div>
       </header>
-      <div className="min-h-[180px] max-h-[460px] overflow-auto" data-testid={`cockpit-widget-render-${widget.id}`}>
+      <div className="min-h-[200px] max-h-[480px] overflow-auto" data-testid={`cockpit-widget-render-${widget.id}`}>
         <WidgetErrorBoundary widgetId={widget.id}>
           <WidgetComponent instanceId={instanceId} />
         </WidgetErrorBoundary>

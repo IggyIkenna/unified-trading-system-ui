@@ -5,18 +5,13 @@
  * a representative spread of strategy instances and surfaces the count per
  * visibility state in the cockpit shell.
  *
- * Per audit fix #5: the resolver exists but the workspace shell did not
- * visibly consume it. This component is the demonstration layer — it shows
- * the buyer "for YOU specifically (entitlements + role + subscriptions),
- * scope alone never decides what you see; the resolver does."
+ * Per audit fix #5 + polish #3: the resolver is the visibility gate.
+ * Reads from the shared `useStrategyVisibility` hook so this surface, the
+ * locked-preview hide-when-empty rule, and the per-preset visibility badge
+ * all read from one canonical decision pipeline.
  *
  * Per dart_ux_cockpit_refactor_2026_04_29.plan.md §4.5 + §4.6 four-state
  * taxonomy.
- *
- * Renders a strip in the workspace shell:
- *   [12 owned] [5 available-to-request] [8 locked-by-tier] [3 hidden]
- *
- * Each badge is clickable in production; this demo just shows the count.
  */
 
 import * as React from "react";
@@ -24,183 +19,10 @@ import { CheckCircle2, EyeOff, ExternalLink, Lock, ShieldQuestion } from "lucide
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  resolveVisibleStrategyInstances,
-  type AuthUserForResolver,
-  type StrategyInstanceForResolver,
-  type StrategyVisibilityState,
-} from "@/lib/architecture-v2/strategy-availability-resolver";
-import { useAuth } from "@/hooks/use-auth";
+import type { StrategyVisibilityState } from "@/lib/architecture-v2/strategy-availability-resolver";
+import { useStrategyVisibility } from "@/lib/cockpit/use-strategy-visibility";
 import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 import { cn } from "@/lib/utils";
-
-/**
- * Representative spread of strategy instances covering every combination of
- * (maturity × availability × routing × coverage) the resolver needs to
- * exercise. Used both by the visibility summary AND as the seed for any
- * future cockpit list that needs honest visibility decisions.
- */
-const DEMO_INSTANCES: readonly StrategyInstanceForResolver[] = [
-  // Mainstream owned (DART-Full subscription paths)
-  {
-    id: "arb-cefi-defi-spot",
-    maturityPhase: "live_stable",
-    coverageStatus: "SUPPORTED",
-    productRouting: "both",
-    availabilityState: "PUBLIC",
-    shareClass: "USDT",
-  },
-  {
-    id: "carry-basis-perp-cefi",
-    maturityPhase: "live_stable",
-    coverageStatus: "SUPPORTED",
-    productRouting: "both",
-    availabilityState: "PUBLIC",
-    shareClass: "USDT",
-  },
-  {
-    id: "yield-rotation-defi",
-    maturityPhase: "live_stable",
-    coverageStatus: "SUPPORTED",
-    productRouting: "both",
-    availabilityState: "PUBLIC",
-    shareClass: "USDT",
-  },
-  {
-    id: "stat-arb-pairs",
-    maturityPhase: "paper_14d",
-    coverageStatus: "SUPPORTED",
-    productRouting: "both",
-    availabilityState: "PUBLIC",
-    shareClass: "USDT",
-  },
-  {
-    id: "vol-deribit",
-    maturityPhase: "paper_1d",
-    coverageStatus: "PARTIAL",
-    productRouting: "both",
-    availabilityState: "PUBLIC",
-    shareClass: "USDT",
-  },
-  {
-    id: "ml-directional",
-    maturityPhase: "live_stable",
-    coverageStatus: "SUPPORTED",
-    productRouting: "both",
-    availabilityState: "PUBLIC",
-    shareClass: "BTC",
-  },
-
-  // Available-to-request (Tier-3 catalogue)
-  {
-    id: "carry-recursive-staked",
-    maturityPhase: "paper_14d",
-    coverageStatus: "SUPPORTED",
-    productRouting: "both",
-    availabilityState: "PUBLIC",
-    shareClass: "USDT",
-  },
-  {
-    id: "liquidation-capture-defi",
-    maturityPhase: "live_stable",
-    coverageStatus: "SUPPORTED",
-    productRouting: "both",
-    availabilityState: "PUBLIC",
-    shareClass: "USDT",
-  },
-  {
-    id: "event-driven-sports",
-    maturityPhase: "paper_14d",
-    coverageStatus: "PARTIAL",
-    productRouting: "both",
-    availabilityState: "PUBLIC",
-    shareClass: null,
-  },
-  {
-    id: "market-making-prediction",
-    maturityPhase: "paper_14d",
-    coverageStatus: "PARTIAL",
-    productRouting: "both",
-    availabilityState: "PUBLIC",
-    shareClass: null,
-  },
-
-  // IM-reserved (visible to IM-desk-operator as read-only; hidden from clients without im-fund mandate)
-  {
-    id: "im-reserved-mandate-a",
-    maturityPhase: "live_stable",
-    coverageStatus: "SUPPORTED",
-    productRouting: "im_only",
-    availabilityState: "INVESTMENT_MANAGEMENT_RESERVED",
-    shareClass: "USDT",
-  },
-  {
-    id: "im-reserved-mandate-b",
-    maturityPhase: "live_stable",
-    coverageStatus: "SUPPORTED",
-    productRouting: "im_only",
-    availabilityState: "INVESTMENT_MANAGEMENT_RESERVED",
-    shareClass: "BTC",
-  },
-
-  // Pre-maturity (hidden for client tier; visible for admin)
-  {
-    id: "smoke-experimental",
-    maturityPhase: "smoke",
-    coverageStatus: "SUPPORTED",
-    productRouting: "both",
-    availabilityState: "PUBLIC",
-    shareClass: "USDT",
-  },
-  {
-    id: "backtest-only",
-    maturityPhase: "backtest_30d",
-    coverageStatus: "SUPPORTED",
-    productRouting: "both",
-    availabilityState: "PUBLIC",
-    shareClass: "USDT",
-  },
-
-  // Internal admin-only
-  {
-    id: "internal-only-vol",
-    maturityPhase: "live_stable",
-    coverageStatus: "SUPPORTED",
-    productRouting: "internal_only",
-    availabilityState: "PUBLIC",
-    shareClass: "USDT",
-  },
-
-  // Retired (always hidden client-side)
-  {
-    id: "retired-arb-old",
-    maturityPhase: "live_stable",
-    coverageStatus: "SUPPORTED",
-    productRouting: "both",
-    availabilityState: "RETIRED",
-    shareClass: "USDT",
-  },
-
-  // Coverage-blocked (hidden for clients; visible internally)
-  {
-    id: "blocked-tradfi-options",
-    maturityPhase: "paper_1d",
-    coverageStatus: "BLOCKED",
-    productRouting: "both",
-    availabilityState: "PUBLIC",
-    shareClass: "USDT",
-  },
-
-  // Client-exclusive (visible to IM-desk as read_only; hidden from prospects)
-  {
-    id: "client-exclusive-mandate",
-    maturityPhase: "live_stable",
-    coverageStatus: "SUPPORTED",
-    productRouting: "im_only",
-    availabilityState: "CLIENT_EXCLUSIVE",
-    shareClass: "USDT",
-  },
-];
 
 const STATE_LABEL: Record<StrategyVisibilityState, string> = {
   owned: "owned",
@@ -237,51 +59,11 @@ interface StrategyVisibilitySummaryProps {
 }
 
 export function StrategyVisibilitySummary({ className }: StrategyVisibilitySummaryProps) {
-  const { user } = useAuth();
   const scope = useWorkspaceScope();
-
-  const resolverUser: AuthUserForResolver = React.useMemo(() => {
-    if (!user) {
-      return { role: "client", entitlements: [], subscriptions: [] };
-    }
-    return {
-      role: user.role === "admin" ? "admin" : user.role === "internal" ? "internal" : "client",
-      entitlements: (user.entitlements ?? []).map((e) => (typeof e === "string" ? e : `${e.domain}:${e.tier}`)),
-      // For demo: assume "owned" subscriptions match the first 2 instances above
-      // so the resolver returns a non-zero "owned" count for any persona that
-      // has a subscription axis. Production wires the real subscription list.
-      subscriptions:
-        user.role === "client" && user.entitlements?.some((e) => typeof e === "string" && e === "strategy-full")
-          ? ["arb-cefi-defi-spot", "carry-basis-perp-cefi"]
-          : [],
-    };
-  }, [user]);
-
-  const decisions = React.useMemo(
-    () => resolveVisibleStrategyInstances(DEMO_INSTANCES, resolverUser, scope.surface),
-    [resolverUser, scope.surface],
-  );
-
-  const counts = React.useMemo(() => {
-    const c: Record<StrategyVisibilityState, number> = {
-      owned: 0,
-      available_to_request: 0,
-      locked_by_tier: 0,
-      locked_by_workflow: 0,
-      hidden: 0,
-      admin_only: 0,
-      read_only: 0,
-    };
-    for (const { decision } of decisions) {
-      c[decision.visibility] += 1;
-    }
-    return c;
-  }, [decisions]);
-
-  const totalVisible = decisions.length - counts.hidden;
+  const { counts, totalVisible, totalInstances } = useStrategyVisibility();
   const surfaceLabel = scope.surface;
 
-  // Hide hidden + admin-only with zero counts to keep the strip tight.
+  // Order matters — owned first, then upgrade pathways, then internal-only states.
   const ordered: readonly StrategyVisibilityState[] = [
     "owned",
     "available_to_request",
@@ -303,7 +85,7 @@ export function StrategyVisibilitySummary({ className }: StrategyVisibilitySumma
           Strategy availability for you on <span className="font-mono">{surfaceLabel}</span>
         </span>
         <span className="text-[10px] text-muted-foreground/60">
-          ({totalVisible} of {DEMO_INSTANCES.length} visible)
+          ({totalVisible} of {totalInstances} visible)
         </span>
         <span aria-hidden className="text-muted-foreground/30">
           ·

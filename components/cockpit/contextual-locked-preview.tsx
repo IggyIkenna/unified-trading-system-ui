@@ -21,6 +21,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { previewsForScope, type LockedPreview } from "@/lib/cockpit/locked-previews";
+import { useStrategyVisibility } from "@/lib/cockpit/use-strategy-visibility";
 import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 import { cn } from "@/lib/utils";
 
@@ -32,9 +33,20 @@ interface ContextualLockedPreviewProps {
 
 export function ContextualLockedPreview({ className, maxPreviews = 3 }: ContextualLockedPreviewProps) {
   const scope = useWorkspaceScope();
+  // Polish #3: resolver-driven gating. Hide the FOMO previews entirely when
+  // the resolver says the user has nothing locked-by-tier or
+  // locked-by-workflow. Admins / fully-entitled DART-Full users should not
+  // be tempted to upgrade something they already own.
+  const { hasLockedCapabilities, hasAvailableToRequest } = useStrategyVisibility();
   const previews = React.useMemo(() => previewsForScope(scope).slice(0, maxPreviews), [scope, maxPreviews]);
 
+  // No previews to render — either the scope doesn't match any FOMO copy
+  // OR the resolver decided the user has full access to everything in the
+  // demo spread (no capability locks AND no available-to-request).
   if (previews.length === 0) {
+    return null;
+  }
+  if (!hasLockedCapabilities && !hasAvailableToRequest) {
     return null;
   }
 
@@ -60,10 +72,7 @@ export function ContextualLockedPreview({ className, maxPreviews = 3 }: Contextu
 
 function PreviewCard({ preview }: { readonly preview: LockedPreview }) {
   return (
-    <Card
-      className="border-amber-500/30 bg-amber-500/5"
-      data-testid={`locked-preview-${preview.id}`}
-    >
+    <Card className="border-amber-500/30 bg-amber-500/5" data-testid={`locked-preview-${preview.id}`}>
       <CardContent className="p-3 space-y-2">
         <div className="flex items-baseline justify-between gap-2">
           <span className="text-sm font-semibold tracking-tight">{preview.title}</span>
@@ -82,7 +91,11 @@ function PreviewCard({ preview }: { readonly preview: LockedPreview }) {
           ))}
         </ul>
         <Link href={preview.ctaHref} className="block pt-1">
-          <Button variant="outline" size="sm" className="w-full text-xs h-7 border-amber-500/40 text-amber-500 hover:bg-amber-500/10">
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full text-xs h-7 border-amber-500/40 text-amber-500 hover:bg-amber-500/10"
+          >
             {preview.cta}
             <ArrowRight className="size-3 ml-1" />
           </Button>
