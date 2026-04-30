@@ -146,3 +146,29 @@ describe("DART tile-split contract", () => {
     expect(shape.reports).toBe("visible");
   });
 });
+
+/**
+ * Plan D Phase 4 — Admin & Ops "Approvals" chip is visible to admin and
+ * internal-trader personas only; every other persona gets it hidden.
+ */
+describe("Plan D — admin approvals chip visibility", () => {
+  it("admin sees the approvals chip", () => {
+    const subs = personaDashboardSubRoutes({ id: "admin" });
+    expect(subs.admin.approvals).toBe("visible");
+  });
+
+  it("internal-trader sees the approvals chip", () => {
+    const subs = personaDashboardSubRoutes({ id: "internal-trader" });
+    expect(subs.admin.approvals).toBe("visible");
+  });
+
+  it("client-full does not see the approvals chip", () => {
+    const subs = personaDashboardSubRoutes({ id: "client-full" });
+    expect(subs.admin.approvals).toBe("hidden");
+  });
+
+  it("desmond-signals-in does not see the approvals chip", () => {
+    const subs = personaDashboardSubRoutes({ id: "desmond-signals-in" });
+    expect(subs.admin.approvals).toBe("hidden");
+  });
+});

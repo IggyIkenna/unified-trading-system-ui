@@ -483,6 +483,18 @@ export const SERVICE_REGISTRY: readonly ServiceDefinition[] = [
         requiredEntitlements: ["*"],
         description: "System-wide audit trail.",
       },
+      // Plan D Phase 4 — pending approvals queue (onboarding requests +
+      // strategy-version request-approval). Single chip lands at the
+      // tabbed /approvals page, which routes between the two queues
+      // internally. Visible to admin + internal-trader personas.
+      {
+        key: "approvals",
+        label: "Approvals",
+        href: "/approvals",
+        icon: "ListChecks",
+        requiredEntitlements: ["*"],
+        description: "Onboarding + strategy-version approval queues.",
+      },
     ],
   },
 ] as const;

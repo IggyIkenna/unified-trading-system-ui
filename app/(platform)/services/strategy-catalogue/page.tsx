@@ -35,15 +35,19 @@ import {
 } from "@/lib/architecture-v2/catalogue-filter";
 import { loadStrategyCatalogue } from "@/lib/architecture-v2/lifecycle";
 import { VENUE_ASSET_GROUPS_V2, type VenueAssetGroupV2 } from "@/lib/architecture-v2";
+import { listSubscriptionsForOrg } from "@/lib/api/strategy-subscriptions";
 import { useAuth } from "@/hooks/use-auth";
 
 type CatalogueTab = "reality" | "explore";
 
 /**
- * Placeholder subscription mapping. Admin sees every instance as "subscribed"
- * so Reality tab demonstrates the layout; non-admin sees a deterministic
- * stable-maturity subset (first 4) so both tabs render content until the
- * real client-subscriptions service wires in.
+ * Placeholder subscription mapping (Plan D fallback). Admin sees every
+ * instance as "subscribed" so Reality tab demonstrates the layout;
+ * non-admin sees a deterministic stable-maturity subset (first 4). This
+ * is the fallback the strategy-catalogue page renders against when the
+ * real `listSubscriptionsForOrg` call fails (mock-mode / offline / API
+ * not yet wired). Once the GET endpoint is reliable, the placeholder is
+ * dead code we can remove.
  */
 function subscribedInstanceIdsFor(role: string | undefined): readonly string[] {
   const catalogue = loadStrategyCatalogue();
@@ -59,7 +63,30 @@ export default function StrategyCataloguePage() {
   const fromParam = searchParams?.get("from") ?? null;
   const tabParam = searchParams?.get("tab") ?? null;
 
-  const subscribedInstanceIds = useMemo(() => subscribedInstanceIdsFor(user?.role), [user?.role]);
+  // Plan D Phase 4 — replace the placeholder mapping with the real UTA
+  // GET /api/v1/strategy-instances/subscriptions?client_id=... call when
+  // the user is signed in and has an org. Falls back to the deterministic
+  // placeholder on error so mock-mode + offline development keep working.
+  const placeholder = useMemo(() => subscribedInstanceIdsFor(user?.role), [user?.role]);
+  const [liveSubscriptionIds, setLiveSubscriptionIds] = useState<readonly string[] | null>(null);
+  useEffect(() => {
+    const clientId = user?.org?.id;
+    if (!clientId) return;
+    let cancelled = false;
+    listSubscriptionsForOrg({ clientId })
+      .then((records) => {
+        if (cancelled) return;
+        setLiveSubscriptionIds(records.map((r) => r.instance_id));
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setLiveSubscriptionIds(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.org?.id]);
+  const subscribedInstanceIds = liveSubscriptionIds ?? placeholder;
 
   const hasSubscriptions = subscribedInstanceIds.length > 0;
 

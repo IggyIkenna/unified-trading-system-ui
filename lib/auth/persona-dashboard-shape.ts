@@ -95,6 +95,10 @@ const DEFAULT_SUBROUTE_SHAPE: DashboardSubRouteVisibility = {
     engagement: "hidden",
     "data-etl": "hidden",
     "audit-log": "hidden",
+    // Plan D Phase 4 — approvals chip (onboarding + strategy-version queues).
+    // Hidden for non-admin/non-internal personas; visible to admin and the
+    // internal-trader persona (overridden in PERSONA_SUBROUTE_SHAPES below).
+    approvals: "hidden",
   },
 };
 
@@ -189,6 +193,7 @@ const ALL_VISIBLE_SUBROUTES: DashboardSubRouteVisibility = {
     engagement: "visible",
     "data-etl": "visible",
     "audit-log": "visible",
+    approvals: "visible",
   },
 };
 
@@ -421,6 +426,9 @@ const PERSONA_SUBROUTE_SHAPES: Record<string, DashboardSubRouteVisibility> = {
       engagement: "visible",
       "data-etl": "visible",
       "audit-log": "visible",
+      // Plan D Phase 4 — internal-trader can review onboarding +
+      // strategy-version approval requests.
+      approvals: "visible",
     },
   },
   "im-desk-operator": subRouteOverride({
