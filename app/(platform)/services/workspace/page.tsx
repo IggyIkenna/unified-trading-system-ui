@@ -21,8 +21,11 @@
 
 import * as React from "react";
 
+import { AdminOperationalConfigPanel } from "@/components/cockpit/admin-operational-config-panel";
 import { CockpitWidgetGrid } from "@/components/cockpit/cockpit-widget-grid";
 import { ContextualLockedPreview } from "@/components/cockpit/contextual-locked-preview";
+import { ExplainAttributionPanel } from "@/components/cockpit/explain-attribution-panel";
+import { PromoteBundleForm } from "@/components/cockpit/promote-bundle-form";
 import { ReleaseBundlePanel } from "@/components/cockpit/release-bundle-panel";
 import { ResearchJourneyRail } from "@/components/cockpit/research-journey-rail";
 import { RuntimeOverrideAuthoring } from "@/components/cockpit/runtime-override-authoring";
@@ -30,7 +33,7 @@ import { TerminalModeTabs } from "@/components/cockpit/terminal-mode-tabs";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { DartScopeBar } from "@/components/shell/dart-scope-bar";
-import { DEMO_BUNDLE, DEMO_OVERRIDES } from "@/lib/cockpit/demo-bundle";
+import { DEMO_BUNDLE, DEMO_CONNECTIVITY, DEMO_OVERRIDES, DEMO_TREASURY_OPERATIONAL } from "@/lib/cockpit/demo-bundle";
 import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 
 export default function WorkspaceShellPage() {
@@ -56,11 +59,30 @@ export default function WorkspaceShellPage() {
         (scope.surface === "research" && scope.researchStage === "promote") ? (
           <ReleaseBundlePanel bundle={DEMO_BUNDLE} activeOverrides={DEMO_OVERRIDES} />
         ) : null}
+        {/* Promote bundle-creation form — only on Research/Promote. Pairs with
+            the read-only ReleaseBundlePanel above so the user sees the
+            artifact they would create AND the form that creates it. */}
+        {scope.surface === "research" && scope.researchStage === "promote" ? (
+          <PromoteBundleForm connectivity={DEMO_CONNECTIVITY} />
+        ) : null}
         {/* Runtime-override authoring — daily-trader configuration surface.
             Renders on Terminal/Command + Strategies (where the user is
             actively running the strategy and may need to override). */}
         {scope.surface === "terminal" && (scope.terminalMode === "command" || scope.terminalMode === "strategies") ? (
           <RuntimeOverrideAuthoring bundle={DEMO_BUNDLE} />
+        ) : null}
+        {/* Explain side-by-side attribution — bundle baseline + override
+            deltas + realised. §4.8.3 rule 2 (overrides surfaced by
+            contract). */}
+        {scope.surface === "terminal" && scope.terminalMode === "explain" ? (
+          <ExplainAttributionPanel bundle={DEMO_BUNDLE} activeOverrides={DEMO_OVERRIDES} />
+        ) : null}
+        {/* Admin Operational config — Treasury routing + CeFi/DeFi
+            connectivity + signers + outbound endpoints. Renders on
+            Terminal/Ops mode (operator view) and on the dedicated
+            surface=ops admin route group. */}
+        {(scope.surface === "terminal" && scope.terminalMode === "ops") || scope.surface === "ops" ? (
+          <AdminOperationalConfigPanel treasury={DEMO_TREASURY_OPERATIONAL} connectivity={DEMO_CONNECTIVITY} />
         ) : null}
         <ContextualLockedPreview />
       </main>
