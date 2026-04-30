@@ -148,6 +148,12 @@ export function ServiceTile({
   subRoutes,
   maxChips = 4,
 }: ServiceTileProps): React.ReactElement | null {
+  // Hooks MUST run before any conditional return per react-hooks/rules-of-hooks.
+  // Audit fix #7 disclosure state — tiles that route into /services/workspace
+  // collapse their legacy sub-route chips behind a "Show advanced tools"
+  // toggle so the dashboard leads with the cockpit, not the maze.
+  const [showAdvanced, setShowAdvanced] = React.useState(false);
+
   if (lockState === "hidden") {
     // Intentionally render nothing — HIDDEN-ENTIRELY per rule 06.
     return null;
@@ -219,6 +225,15 @@ export function ServiceTile({
   const shownChips = visibleChips.slice(0, maxChips);
   const overflowCount = Math.max(0, visibleChips.length - shownChips.length);
   const hasChips = shownChips.length > 0;
+  // 2026-04-30 audit fix #7: tiles that route into the unified workspace
+  // shell (DART Terminal / DART Research) are anchors for the cockpit
+  // experience; their sub-route chips are LEGACY deep links to the per-page
+  // surfaces the cockpit replaces. Demote them behind an "Advanced tools"
+  // disclosure so the dashboard leads with the cockpit, not the maze.
+  // Tiles that do NOT route to the workspace (Reports, IM, Admin, etc.)
+  // keep their chips visible — those routes are still the canonical surfaces.
+  const routesToCockpit = service.href.startsWith("/services/workspace");
+  const chipsVisible = routesToCockpit ? showAdvanced : true;
   return (
     <Card
       data-testid={testId}
@@ -263,7 +278,36 @@ export function ServiceTile({
           <ChevronRight className="size-3.5 text-muted-foreground/20 group-hover:text-muted-foreground flex-shrink-0 mt-1 transition-colors" />
         </CardContent>
       </Link>
-      {hasChips && (
+      {hasChips && routesToCockpit ? (
+        <div className="px-4 pb-3 pt-0">
+          <button
+            type="button"
+            onClick={() => setShowAdvanced((v) => !v)}
+            className="text-[10px] text-muted-foreground/60 hover:text-foreground border border-border/40 rounded px-1.5 h-5 inline-flex items-center gap-1"
+            data-testid={`${testId}-advanced-toggle`}
+            data-expanded={showAdvanced ? "true" : "false"}
+            aria-expanded={showAdvanced}
+          >
+            {showAdvanced ? "Hide" : "Show"} advanced tools ({visibleChips.length})
+          </button>
+          {chipsVisible ? (
+            <div className="mt-2 flex flex-wrap gap-1.5" data-testid={`${testId}-subroutes`}>
+              {shownChips.map((chip) => (
+                <SubRouteChip key={chip.key} chip={chip} stageColor={stageConfig.color} />
+              ))}
+              {overflowCount > 0 && (
+                <Link
+                  href={service.href}
+                  className="inline-flex items-center px-1.5 h-5 rounded text-[10px] text-muted-foreground/70 hover:text-foreground border border-border/40 hover:border-border"
+                  data-testid={`${testId}-subroute-overflow`}
+                >
+                  +{overflowCount} more
+                </Link>
+              )}
+            </div>
+          ) : null}
+        </div>
+      ) : hasChips ? (
         <div className="px-4 pb-3 pt-0 flex flex-wrap gap-1.5" data-testid={`${testId}-subroutes`}>
           {shownChips.map((chip) => (
             <SubRouteChip key={chip.key} chip={chip} stageColor={stageConfig.color} />
@@ -278,7 +322,7 @@ export function ServiceTile({
             </Link>
           )}
         </div>
-      )}
+      ) : null}
     </Card>
   );
 }

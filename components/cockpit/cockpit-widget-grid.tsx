@@ -82,12 +82,9 @@ export function CockpitWidgetGrid({ className, widgetIds, maxPrimary = 12, maxSe
       ) : null}
 
       {primary.length > 0 ? (
-        <div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5"
-          data-testid="cockpit-widget-grid-primary"
-        >
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3" data-testid="cockpit-widget-grid-primary">
           {primary.map((w) => (
-            <WidgetTile key={w.id} widget={w} variant="primary" />
+            <PrimaryWidgetCard key={w.id} widget={w} />
           ))}
         </div>
       ) : null}
@@ -107,6 +104,71 @@ export function CockpitWidgetGrid({ className, widgetIds, maxPrimary = 12, maxSe
       ) : null}
     </div>
   );
+}
+
+/**
+ * PrimaryWidgetCard — renders the actual widget component, NOT a card with
+ * description. Per audit fix #1: "the widget grid is still a widget catalogue
+ * not a cockpit dashboard." For primary widgets we mount `widget.component`
+ * inside an `ErrorBoundary` so a single bad widget doesn't take down the
+ * whole grid.
+ */
+function PrimaryWidgetCard({ widget }: { readonly widget: WidgetDefinition }) {
+  const WidgetComponent = widget.component;
+  const instanceId = `cockpit-${widget.id}`;
+  return (
+    <Card
+      className="border-border/50 bg-card/40 overflow-hidden flex flex-col"
+      data-testid={`cockpit-widget-tile-${widget.id}`}
+      data-variant="primary"
+      data-widget-id={widget.id}
+    >
+      <header className="flex items-center justify-between gap-2 border-b border-border/40 px-3 py-1.5 bg-muted/10">
+        <span className="text-xs font-semibold tracking-tight truncate" title={widget.label}>
+          {widget.label}
+        </span>
+        <div className="flex items-center gap-1 shrink-0">
+          <Badge variant="outline" className="text-[9px] font-mono">
+            {widget.catalogGroup}
+          </Badge>
+          <Badge variant="secondary" className="text-[9px] font-mono">
+            {widget.assetGroup}
+          </Badge>
+        </div>
+      </header>
+      <div className="min-h-[180px] max-h-[460px] overflow-auto" data-testid={`cockpit-widget-render-${widget.id}`}>
+        <WidgetErrorBoundary widgetId={widget.id}>
+          <WidgetComponent instanceId={instanceId} />
+        </WidgetErrorBoundary>
+      </div>
+    </Card>
+  );
+}
+
+class WidgetErrorBoundary extends React.Component<
+  { readonly widgetId: string; readonly children: React.ReactNode },
+  { readonly error: Error | null }
+> {
+  state = { error: null as Error | null };
+
+  static getDerivedStateFromError(error: Error): { error: Error } {
+    return { error };
+  }
+
+  componentDidCatch(error: Error, info: React.ErrorInfo): void {
+    console.error(`[cockpit] widget ${this.props.widgetId} threw:`, error, info);
+  }
+
+  render(): React.ReactNode {
+    if (this.state.error) {
+      return (
+        <div className="p-3 text-[11px] text-amber-300 bg-amber-500/5 border-t border-amber-500/30">
+          Widget {this.props.widgetId} failed to render. Other widgets unaffected.
+        </div>
+      );
+    }
+    return this.props.children;
+  }
 }
 
 function WidgetTile({
@@ -134,9 +196,6 @@ function WidgetTile({
             {widget.assetGroup}
           </Badge>
         </div>
-        {variant === "primary" ? (
-          <p className="text-[11px] text-muted-foreground/80 leading-snug line-clamp-2">{widget.description}</p>
-        ) : null}
         <div className="flex items-center gap-1 text-[9px] text-muted-foreground/60">
           <span className="font-mono">{widget.catalogGroup}</span>
         </div>

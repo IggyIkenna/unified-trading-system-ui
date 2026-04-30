@@ -29,7 +29,10 @@ import { PromoteBundleForm } from "@/components/cockpit/promote-bundle-form";
 import { ReleaseBundlePanel } from "@/components/cockpit/release-bundle-panel";
 import { ResearchJourneyRail } from "@/components/cockpit/research-journey-rail";
 import { RuntimeOverrideAuthoring } from "@/components/cockpit/runtime-override-authoring";
+import { StrategyVisibilitySummary } from "@/components/cockpit/strategy-visibility-summary";
 import { TerminalModeTabs } from "@/components/cockpit/terminal-mode-tabs";
+import { WorkspaceUrlSync } from "@/components/cockpit/workspace-url-sync";
+import { AllWidgetProviders } from "@/components/widgets/all-widget-providers";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { DartScopeBar } from "@/components/shell/dart-scope-bar";
@@ -39,54 +42,69 @@ import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 export default function WorkspaceShellPage() {
   const scope = useWorkspaceScope();
 
+  // Audit fix #1 — the CockpitWidgetGrid renders REAL widget components for
+  // primary widgets, not just cards. The widgets read from context-based
+  // data providers, so the entire workspace shell must be wrapped in
+  // `AllWidgetProviders` (the same provider tree the legacy /services/trading
+  // layouts used). Each provider seeds deterministic mock data for the demo.
   return (
-    <div className="flex flex-col h-full">
-      {/* Scope bar — always visible, always answers "what am I looking at". */}
-      <div className="border-b border-border/40 px-4 py-2.5">
-        <DartScopeBar defaultExpanded />
-      </div>
+    <AllWidgetProviders>
+      <div className="flex flex-col h-full">
+        {/* Scope bar — always visible, always answers "what am I looking at". */}
+        <div className="border-b border-border/40 px-4 py-2.5">
+          <DartScopeBar defaultExpanded />
+        </div>
 
-      {/* Surface-specific primary nav. */}
-      {scope.surface === "research" ? <ResearchJourneyRail /> : <TerminalModeTabs />}
+        {/* Surface-specific primary nav. */}
+        {scope.surface === "research" ? <ResearchJourneyRail /> : <TerminalModeTabs />}
 
-      {/* Cockpit body — scope summary header + widget grid + locked previews
+        {/* Cockpit body — scope summary header + widget grid + locked previews
           + release-bundle panel surfaces the typed Configuration Lifecycle
           (Bundle + active RuntimeOverrides) on Strategies / Explain modes. */}
-      <main className="flex-1 min-h-0 overflow-auto p-4 space-y-4" data-testid="cockpit-shell-body">
-        <CockpitHeader />
-        <CockpitWidgetGrid />
-        {(scope.surface === "terminal" && (scope.terminalMode === "strategies" || scope.terminalMode === "explain")) ||
-        (scope.surface === "research" && scope.researchStage === "promote") ? (
-          <ReleaseBundlePanel bundle={DEMO_BUNDLE} activeOverrides={DEMO_OVERRIDES} />
-        ) : null}
-        {/* Promote bundle-creation form — only on Research/Promote. Pairs with
+        <main className="flex-1 min-h-0 overflow-auto p-4 space-y-4" data-testid="cockpit-shell-body">
+          {/* Audit fix #6 — every scope mutation pushes the canonical URL so
+            refresh + share-link both restore the exact cockpit shape. */}
+          <WorkspaceUrlSync />
+          <CockpitHeader />
+          {/* Audit fix #5 — StrategyAvailabilityResolver counts surface here so
+            the buyer sees scope + persona + entitlement combined into a
+            single visibility decision (not just scope filtering). */}
+          <StrategyVisibilitySummary />
+          <CockpitWidgetGrid />
+          {(scope.surface === "terminal" &&
+            (scope.terminalMode === "strategies" || scope.terminalMode === "explain")) ||
+          (scope.surface === "research" && scope.researchStage === "promote") ? (
+            <ReleaseBundlePanel bundle={DEMO_BUNDLE} activeOverrides={DEMO_OVERRIDES} />
+          ) : null}
+          {/* Promote bundle-creation form — only on Research/Promote. Pairs with
             the read-only ReleaseBundlePanel above so the user sees the
             artifact they would create AND the form that creates it. */}
-        {scope.surface === "research" && scope.researchStage === "promote" ? (
-          <PromoteBundleForm connectivity={DEMO_CONNECTIVITY} />
-        ) : null}
-        {/* Runtime-override authoring — daily-trader configuration surface.
+          {scope.surface === "research" && scope.researchStage === "promote" ? (
+            <PromoteBundleForm connectivity={DEMO_CONNECTIVITY} />
+          ) : null}
+          {/* Runtime-override authoring — daily-trader configuration surface.
             Renders on Terminal/Command + Strategies (where the user is
             actively running the strategy and may need to override). */}
-        {scope.surface === "terminal" && (scope.terminalMode === "command" || scope.terminalMode === "strategies") ? (
-          <RuntimeOverrideAuthoring bundle={DEMO_BUNDLE} />
-        ) : null}
-        {/* Explain side-by-side attribution — bundle baseline + override
+          {scope.surface === "terminal" && (scope.terminalMode === "command" || scope.terminalMode === "strategies") ? (
+            <RuntimeOverrideAuthoring bundle={DEMO_BUNDLE} />
+          ) : null}
+          {/* Explain side-by-side attribution — bundle baseline + override
             deltas + realised. §4.8.3 rule 2 (overrides surfaced by
             contract). */}
-        {scope.surface === "terminal" && scope.terminalMode === "explain" ? (
-          <ExplainAttributionPanel bundle={DEMO_BUNDLE} activeOverrides={DEMO_OVERRIDES} />
-        ) : null}
-        {/* Admin Operational config — Treasury routing + CeFi/DeFi
+          {scope.surface === "terminal" && scope.terminalMode === "explain" ? (
+            <ExplainAttributionPanel bundle={DEMO_BUNDLE} activeOverrides={DEMO_OVERRIDES} />
+          ) : null}
+          {/* Admin Operational config — Treasury routing + CeFi/DeFi
             connectivity + signers + outbound endpoints. Renders on
             Terminal/Ops mode (operator view) and on the dedicated
             surface=ops admin route group. */}
-        {(scope.surface === "terminal" && scope.terminalMode === "ops") || scope.surface === "ops" ? (
-          <AdminOperationalConfigPanel treasury={DEMO_TREASURY_OPERATIONAL} connectivity={DEMO_CONNECTIVITY} />
-        ) : null}
-        <ContextualLockedPreview />
-      </main>
-    </div>
+          {(scope.surface === "terminal" && scope.terminalMode === "ops") || scope.surface === "ops" ? (
+            <AdminOperationalConfigPanel treasury={DEMO_TREASURY_OPERATIONAL} connectivity={DEMO_CONNECTIVITY} />
+          ) : null}
+          <ContextualLockedPreview />
+        </main>
+      </div>
+    </AllWidgetProviders>
   );
 }
 

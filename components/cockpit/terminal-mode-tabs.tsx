@@ -64,20 +64,28 @@ export function TerminalModeTabs({ className }: TerminalModeTabsProps) {
     if (scope.terminalMode !== fromPath) setTerminalMode(fromPath, "route-redirect");
   }, [pathname, scope.surface, scope.terminalMode, setSurface, setTerminalMode]);
 
+  // Audit fix #2 — when the user is INSIDE the unified workspace shell, the
+  // tabs must mutate the workspace URL (?surface=terminal&tm=…) instead of
+  // bouncing them back to the legacy per-route pages. The legacy hrefs stay
+  // as fallbacks for deep links from outside the cockpit.
+  const insideWorkspace = pathname.startsWith("/services/workspace");
+
   return (
     <nav
       aria-label="Terminal mode"
       className={cn("flex items-center gap-1 border-b border-border/40 bg-background", className)}
       data-testid="terminal-mode-tabs"
       data-active-mode={activeMode}
+      data-inside-workspace={insideWorkspace ? "true" : "false"}
     >
       {TERMINAL_MODES.map((mode) => {
         const meta = TERMINAL_MODE_META[mode];
         const isActive = mode === activeMode;
+        const href = insideWorkspace ? `/services/workspace?surface=terminal&tm=${mode}` : meta.defaultHref;
         return (
           <Link
             key={mode}
-            href={meta.defaultHref}
+            href={href}
             aria-current={isActive ? "page" : undefined}
             data-testid={`terminal-mode-tab-${mode}`}
             data-active={isActive}

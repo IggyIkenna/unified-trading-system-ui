@@ -65,26 +65,28 @@ export function ResearchJourneyRail({ className }: ResearchJourneyRailProps) {
     if (scope.researchStage !== fromPath) setResearchStage(fromPath, "route-redirect");
   }, [pathname, scope.surface, scope.researchStage, setSurface, setResearchStage]);
 
+  // Audit fix #2 — workspace-native links when inside /services/workspace.
+  const insideWorkspace = pathname.startsWith("/services/workspace");
+
   return (
     <nav
       aria-label="Research journey"
-      className={cn(
-        "flex items-stretch gap-0 border-b border-border/40 bg-background overflow-x-auto",
-        className,
-      )}
+      className={cn("flex items-stretch gap-0 border-b border-border/40 bg-background overflow-x-auto", className)}
       data-testid="research-journey-rail"
       data-active-stage={activeStage}
+      data-inside-workspace={insideWorkspace ? "true" : "false"}
     >
       {RESEARCH_STAGES.map((stage, idx) => {
         const meta = RESEARCH_STAGE_META[stage];
         const isActive = stage === activeStage;
         const isFirst = idx === 0;
         const isLast = idx === RESEARCH_STAGES.length - 1;
+        const href = insideWorkspace ? `/services/workspace?surface=research&rs=${stage}` : meta.defaultHref;
 
         return (
           <React.Fragment key={stage}>
             <Link
-              href={meta.defaultHref}
+              href={href}
               aria-current={isActive ? "page" : undefined}
               data-testid={`research-stage-${stage}`}
               data-active={isActive}

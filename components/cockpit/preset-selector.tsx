@@ -23,12 +23,17 @@ import { recommendPresetForPersona } from "@/lib/cockpit/derive-preset-from-pers
 import { useWorkspaceScope, useWorkspaceScopeStore } from "@/lib/stores/workspace-scope-store";
 import { cn } from "@/lib/utils";
 
+// 2026-04-30 audit fix #4: every preset routes into the unified workspace
+// shell, never back to legacy per-route pages. The shell consumes the
+// surface / terminalMode / researchStage from the URL and reshapes around
+// it. Reports / Dashboard fall back to their dedicated pages because the
+// cockpit shell does not own those surfaces yet.
 const SURFACE_DEFAULT_HREF: Record<string, string> = {
-  terminal: "/services/trading/overview",
-  research: "/services/research/strategies",
+  terminal: "/services/workspace?surface=terminal&tm=command",
+  research: "/services/workspace?surface=research&rs=discover",
   reports: "/services/reports/overview",
-  signals: "/services/signals/dashboard",
-  ops: "/services/observe/risk",
+  signals: "/services/workspace?surface=signals",
+  ops: "/services/workspace?surface=ops",
   dashboard: "/dashboard",
 };
 
@@ -77,9 +82,7 @@ export function PresetSelector({ className }: PresetSelectorProps) {
       <div className="flex items-center gap-2">
         <Sparkles className="size-3.5 text-primary/70" aria-hidden />
         <h3 className="text-sm font-semibold tracking-tight">Recommended cockpit</h3>
-        <span className="text-[10px] uppercase tracking-wider text-muted-foreground/60">
-          {recommendation.reason}
-        </span>
+        <span className="text-[10px] uppercase tracking-wider text-muted-foreground/60">{recommendation.reason}</span>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5">
         {ordered.map((preset) => {
