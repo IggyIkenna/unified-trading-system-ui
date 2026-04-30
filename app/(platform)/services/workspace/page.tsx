@@ -25,6 +25,12 @@ import { AdminOperationalConfigPanel } from "@/components/cockpit/admin-operatio
 import { AssumptionStackPanel } from "@/components/cockpit/assumption-stack-panel";
 import { BacktestVsOperatingPanel } from "@/components/cockpit/backtest-vs-operating-panel";
 import { CockpitWidgetGrid } from "@/components/cockpit/cockpit-widget-grid";
+import {
+  BacktestRunsPanel,
+  CockpitToastDock,
+  MlTrainingRunsPanel,
+  OrderTicketPanel,
+} from "@/components/cockpit/cockpit-ops-panels";
 import { ContextualLockedPreview } from "@/components/cockpit/contextual-locked-preview";
 import { ExplainAttributionPanel } from "@/components/cockpit/explain-attribution-panel";
 import { PromoteBundleForm } from "@/components/cockpit/promote-bundle-form";
@@ -97,6 +103,16 @@ export default function WorkspaceShellPage() {
               "would this signal still work after the operating costs are
               applied?" */}
           {scope.surface === "research" && scope.researchStage === "validate" ? <BacktestVsOperatingPanel /> : null}
+          {/* Plan §13 mock-mode liveness: real interactive backtest runs on
+              Research/Validate. Click "Run backtest" → row appears →
+              progresses → completes with operating-adjusted Sharpe. */}
+          {scope.surface === "research" && scope.researchStage === "validate" ? <BacktestRunsPanel /> : null}
+          {/* ML training runs on Research/Train — Start training → row
+              progresses → "Promote to paper" transitions state. */}
+          {scope.surface === "research" && scope.researchStage === "train" ? <MlTrainingRunsPanel /> : null}
+          {/* Order ticket on Terminal/Command — Submit → pending → fill
+              lands ~1s later with synthetic slippage. */}
+          {scope.surface === "terminal" && scope.terminalMode === "command" ? <OrderTicketPanel /> : null}
           <CockpitWidgetGrid />
           {(scope.surface === "terminal" &&
             (scope.terminalMode === "strategies" || scope.terminalMode === "explain")) ||
@@ -130,6 +146,11 @@ export default function WorkspaceShellPage() {
           ) : null}
           <ContextualLockedPreview />
         </main>
+        {/* Bottom-right toast dock — every interactive dispatch (override,
+            promote, backtest queued, ML training started, order routed,
+            fill landed) renders a confirmation here. Auto-dismisses after
+            4s. */}
+        <CockpitToastDock />
       </div>
     </AllWidgetProviders>
   );

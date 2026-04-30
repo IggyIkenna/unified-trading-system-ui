@@ -51,10 +51,14 @@ import {
   validateOverrideAgainstGuardrails,
   type GuardrailRejectionCode,
   type GuardrailValidationResult,
+  type RuntimeOverride,
   type RuntimeOverrideType,
   type RuntimeOverrideValue,
 } from "@/lib/architecture-v2/runtime-override";
 import type { StrategyReleaseBundle } from "@/lib/architecture-v2/strategy-release-bundle";
+import { EMPTY_WORKSPACE_SCOPE } from "@/lib/architecture-v2/workspace-scope";
+import { useCockpitOpsStore } from "@/lib/mocks/cockpit-ops-store";
+import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 
 const OVERRIDE_LABEL: Record<RuntimeOverrideType, string> = {
@@ -98,6 +102,8 @@ interface RuntimeOverrideAuthoringProps {
 }
 
 export function RuntimeOverrideAuthoring({ bundle, className, onSubmit }: RuntimeOverrideAuthoringProps) {
+  const { user } = useAuth();
+  const appendRuntimeOverride = useCockpitOpsStore((s) => s.appendRuntimeOverride);
   const [overrideType, setOverrideType] = React.useState<RuntimeOverrideType>("size_multiplier");
   const [reason, setReason] = React.useState<string>("");
 
@@ -145,9 +151,26 @@ export function RuntimeOverrideAuthoring({ bundle, className, onSubmit }: Runtim
 
   const handleSubmit = React.useCallback(() => {
     if (!candidate || !validation.allowed) return;
+    // Layer audit metadata on top of the typed value, then dispatch into the
+    // cockpit ops store. The ReleaseBundlePanel reads the merged overrides
+    // list from the store so the new override appears immediately below.
+    const fullOverride: RuntimeOverride = {
+      overrideId: `ov-${Date.now().toString(36)}-${Math.floor(Math.random() * 1e6).toString(36)}`,
+      releaseId: bundle.releaseId,
+      scope: EMPTY_WORKSPACE_SCOPE,
+      reason: reason.trim(),
+      createdBy: user?.email ?? user?.id ?? "trader-anon",
+      createdAt: new Date().toISOString(),
+      requiresApproval: false,
+      preOverrideState: {},
+      postOverrideState: {},
+      auditEventId: `evt-${Date.now().toString(36)}`,
+      ...candidate,
+    };
+    appendRuntimeOverride(fullOverride);
     onSubmit?.(candidate, reason.trim());
     setReason("");
-  }, [candidate, validation.allowed, reason, onSubmit]);
+  }, [candidate, validation.allowed, reason, onSubmit, appendRuntimeOverride, bundle.releaseId, user]);
 
   const guardrails = bundle.runtimeOverrideGuardrails;
 

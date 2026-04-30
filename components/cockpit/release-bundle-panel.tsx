@@ -30,6 +30,7 @@ import {
   type StrategyReleaseBundle,
 } from "@/lib/architecture-v2/strategy-release-bundle";
 import { type RuntimeOverride } from "@/lib/architecture-v2/runtime-override";
+import { useCockpitOpsStore } from "@/lib/mocks/cockpit-ops-store";
 import { cn } from "@/lib/utils";
 
 interface ReleaseBundlePanelProps {
@@ -55,7 +56,18 @@ const STATUS_TONE: Record<ReleaseBundlePromotionStatus, string> = {
 
 export function ReleaseBundlePanel({ bundle, activeOverrides = [], className }: ReleaseBundlePanelProps) {
   const maturity = PROMOTION_STATUS_TO_MATURITY[bundle.promotionStatus];
-  const overrideCount = activeOverrides.length;
+  // Merge in any RuntimeOverrides authored this session (via
+  // RuntimeOverrideAuthoring → useCockpitOpsStore.appendRuntimeOverride).
+  // The submit click → bundle-panel reflection is the demo's "click does
+  // something" loop.
+  const sessionOverrides = useCockpitOpsStore((s) =>
+    s.runtimeOverrides.filter((o) => o.releaseId === bundle.releaseId),
+  );
+  const mergedOverrides: readonly RuntimeOverride[] = React.useMemo(
+    () => [...activeOverrides, ...sessionOverrides],
+    [activeOverrides, sessionOverrides],
+  );
+  const overrideCount = mergedOverrides.length;
 
   return (
     <Card className={cn("border-border/50", className)} data-testid="release-bundle-panel">
@@ -162,7 +174,7 @@ export function ReleaseBundlePanel({ bundle, activeOverrides = [], className }: 
             </p>
           ) : (
             <div className="space-y-1">
-              {activeOverrides.map((ov) => (
+              {mergedOverrides.map((ov) => (
                 <div
                   key={ov.overrideId}
                   className="flex items-center justify-between gap-2 px-2 py-1 rounded bg-rose-500/5 border border-rose-500/20 text-[10px]"

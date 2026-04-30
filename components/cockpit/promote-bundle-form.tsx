@@ -33,6 +33,7 @@ import {
   type AccountConnectivityConfig,
 } from "@/lib/architecture-v2/account-connectivity-config";
 import { DEFAULT_BUNDLE_GUARDRAILS, type StrategyReleaseBundle } from "@/lib/architecture-v2/strategy-release-bundle";
+import { useCockpitOpsStore } from "@/lib/mocks/cockpit-ops-store";
 import { cn } from "@/lib/utils";
 
 interface PromoteBundleFormProps {
@@ -53,6 +54,9 @@ export function PromoteBundleForm({
   className,
   onSubmit,
 }: PromoteBundleFormProps) {
+  const appendBundleCandidate = useCockpitOpsStore((s) => s.appendBundleCandidate);
+  const recentCandidates = useCockpitOpsStore((s) => s.bundleCandidates);
+
   // Identity.
   const [strategyId, setStrategyId] = React.useState("ARBITRAGE_PRICE_DISPERSION");
   const [strategyVersion, setStrategyVersion] = React.useState("3.3.0");
@@ -149,9 +153,11 @@ export function PromoteBundleForm({
       contentHash: `sha256:${releaseId}-${Date.now().toString(16)}`,
       lineageHash: `sha256:lineage-${releaseId}`,
     };
+    appendBundleCandidate(bundle);
     onSubmit?.(bundle);
   }, [
     allGatesPass,
+    appendBundleCandidate,
     strategyId,
     strategyVersion,
     researchConfigVersion,
@@ -355,6 +361,35 @@ export function PromoteBundleForm({
             Author candidate bundle
           </Button>
         </div>
+
+        {/* Recently authored candidates — proves the click did something. */}
+        {recentCandidates.length > 0 ? (
+          <div
+            className="rounded border border-emerald-500/30 bg-emerald-500/5 p-2 space-y-1.5"
+            data-testid="promote-recent-candidates"
+          >
+            <p className="text-[10px] uppercase tracking-wider text-emerald-300">
+              Authored this session ({recentCandidates.length})
+            </p>
+            <ul className="space-y-1">
+              {recentCandidates
+                .slice(-3)
+                .reverse()
+                .map(({ bundle: candidate, authoredAt }) => (
+                  <li
+                    key={candidate.releaseId}
+                    className="flex items-center justify-between gap-2 text-[10px] font-mono"
+                    data-testid={`promote-candidate-${candidate.releaseId}`}
+                  >
+                    <span className="text-emerald-300/90 truncate">{candidate.releaseId}</span>
+                    <span className="text-muted-foreground/70 shrink-0">
+                      {new Date(authoredAt).toLocaleTimeString()}
+                    </span>
+                  </li>
+                ))}
+            </ul>
+          </div>
+        ) : null}
       </CardContent>
     </Card>
   );
