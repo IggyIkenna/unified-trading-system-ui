@@ -312,6 +312,15 @@ export function StrategyDetailPageClient({ params }: { params: Promise<{ id: str
               Config
             </Button>
           </Link>
+          {/* Plan D Phase 4 — wire the per-instance version timeline route
+              ([id]/versions/page.tsx) into the parent detail header so
+              dart_exclusive holders can reach the lineage view. */}
+          <Link href={`/services/trading/strategies/${encodeURIComponent(id)}/versions`}>
+            <Button variant="outline" size="sm" className="gap-2" data-testid="strategy-detail-versions-tab">
+              <History className="size-4" />
+              Versions
+            </Button>
+          </Link>
           <Link href={`/positions?strategy_id=${id}`}>
             <Button size="sm" className="gap-2">
               <Activity className="size-4" />
