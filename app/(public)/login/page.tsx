@@ -23,7 +23,8 @@ import Link from "next/link";
 const DEMOTED_INTERNAL_EMAIL_HINTS: Readonly<Record<string, string>> = {
   "femi.amoo@gmail.com": "femi@odum-research.com",
   "femi.amoo3@gmail.com": "femi@odum-research.com",
-  "harshkantariya.work@gmail.com": "harsh@odum-research.com",
+  "harshkantariya.work@gmail.com": "harshkantariya@odum-research.com",
+  "harsh@odum-research.com": "harshkantariya@odum-research.com",
 };
 
 export default function LoginPage() {
