@@ -175,6 +175,66 @@ describe("help-tree — generated catalogue branch covers every primitive", () =
   });
 });
 
+describe("help-tree — silent-regression guards", () => {
+  // Without these, a new archetype / new widget would generate a "thin" node
+  // (no blurb, empty description, generic fallback text) and tests above
+  // would still pass — bot would technically have a node but the answer
+  // would be useless. These guards force the generator (and the data it
+  // pulls from) to stay rich.
+
+  it("every archetype has a non-generic blurb in its generated answer", () => {
+    for (const archetype of STRATEGY_ARCHETYPES_V2) {
+      const node = ALL.find((n) => n.id === `archetype-${archetype}`);
+      expect(node, `missing node for archetype ${archetype}`).toBeDefined();
+      // Generic fallback text from help-tree-generated.ts when an
+      // archetype is missing from ARCHETYPE_BLURB. If this fires, add a
+      // blurb in lib/help/help-tree-generated.ts ARCHETYPE_BLURB.
+      expect(
+        node!.answer,
+        `archetype ${archetype} fell back to the generic blurb — add an entry to ARCHETYPE_BLURB`,
+      ).not.toMatch(/Strategy archetype in the .* family\.$/);
+      // Family line is mandatory.
+      expect(node!.answer, `archetype ${archetype} missing family line`).toMatch(/\*\*Family:\*\*/);
+    }
+  });
+
+  it("every generated widget node has a non-empty description in its answer", () => {
+    const widgetNodes = ALL.filter((n) => n.id.startsWith("widget-") && !n.id.startsWith("widget-group-"));
+    for (const node of widgetNodes) {
+      // Synthesised widget answer leads with widget.description; if a
+      // register.ts ever sets description="" or omits it, the answer
+      // starts with a newline — flag that as a regression.
+      const firstLine = node.answer.split("\n")[0];
+      expect(firstLine.trim().length, `widget ${node.id} has an empty description in the registry`).toBeGreaterThan(10);
+    }
+  });
+
+  it("no help-tree node id collides with another (curated vs generated)", () => {
+    const seen = new Map<string, number>();
+    for (const node of ALL) {
+      seen.set(node.id, (seen.get(node.id) ?? 0) + 1);
+    }
+    const dupes = Array.from(seen.entries()).filter(([, count]) => count > 1);
+    expect(
+      dupes,
+      `duplicate help-node ids (curated may be shadowing a generated node): ${JSON.stringify(dupes)}`,
+    ).toHaveLength(0);
+  });
+
+  it("every help-tree node has a non-empty answer", () => {
+    for (const node of ALL) {
+      expect(node.answer.trim().length, `node ${node.id} has empty answer`).toBeGreaterThan(0);
+    }
+  });
+
+  it("every help-tree link href starts with / (no malformed URLs)", () => {
+    const linked = ALL.filter((n) => n.link);
+    for (const node of linked) {
+      expect(node.link!.href, `node ${node.id} has malformed href: ${node.link!.href}`).toMatch(/^\//);
+    }
+  });
+});
+
 describe("help-search — generated nodes are searchable", () => {
   it("'iv smile widget' returns the generated widget node", () => {
     const matches = searchHelp("iv smile widget", 5);
