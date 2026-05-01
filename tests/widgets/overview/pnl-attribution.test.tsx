@@ -6,7 +6,7 @@
  * - Loading spinner via coreLoading
  * - Empty-state message when pnlComponents is []
  * - null-context fallback text
- * - "View All" link to /services/trading/pnl
+ * - "View All" link to /services/workspace?surface=terminal&tm=explain
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
@@ -34,7 +34,7 @@ describe("pnl-attribution — L1.5 harness", () => {
   it("renders View All link to pnl route", () => {
     render(<PnLAttributionWidget {...({} as never)} />);
     const links = screen.getAllByRole("link");
-    expect(links.some((l) => l.getAttribute("href") === "/services/trading/pnl")).toBe(true);
+    expect(links.some((l) => l.getAttribute("href") === "/services/workspace?surface=terminal&tm=explain")).toBe(true);
   });
 
   it("renders component rows when pnlComponents populated", () => {

@@ -128,10 +128,7 @@ export function AlertsFeed({
     const escalationMinutes = escalationConfig[alert.severity].minutes;
     if (!escalationMinutes) return null;
 
-    const alertDate =
-      typeof alert.timestamp === "string"
-        ? new Date(alert.timestamp)
-        : alert.timestamp;
+    const alertDate = typeof alert.timestamp === "string" ? new Date(alert.timestamp) : alert.timestamp;
     const elapsedMinutes = (now.getTime() - alertDate.getTime()) / 60000;
     const remaining = escalationMinutes - elapsedMinutes;
 
@@ -146,30 +143,22 @@ export function AlertsFeed({
       {alerts.slice(0, maxItems).map((alert) => {
         const config = severityConfig[alert.severity];
         const Icon = config.icon;
-        const escalation = showEscalationTimers
-          ? getEscalationStatus(alert)
-          : null;
+        const escalation = showEscalationTimers ? getEscalationStatus(alert) : null;
         const displayTitle = alert.title || alert.message || "Alert";
 
         return (
           <Link
             key={alert.id}
-            href="/services/trading/alerts"
+            href="/services/workspace?surface=terminal&tm=command"
             className={cn(
               "flex items-start gap-3 p-3 rounded-lg border transition-all hover:border-white/30 cursor-pointer block",
-              alert.acknowledged
-                ? "opacity-50 border-border/30"
-                : "border-border/50",
-              escalation?.escalated &&
-                "border-[var(--status-error)] animate-pulse",
+              alert.acknowledged ? "opacity-50 border-border/30" : "border-border/50",
+              escalation?.escalated && "border-[var(--status-error)] animate-pulse",
             )}
             style={{ backgroundColor: config.bgColor }}
           >
             <Icon
-              className={cn(
-                "size-4 mt-0.5 shrink-0",
-                escalation?.escalated && "animate-pulse",
-              )}
+              className={cn("size-4 mt-0.5 shrink-0", escalation?.escalated && "animate-pulse")}
               style={{ color: config.color }}
             />
             <div className="flex-1 min-w-0">
@@ -183,10 +172,7 @@ export function AlertsFeed({
                 >
                   {config.label}
                 </span>
-                <span
-                  className="text-xs text-muted-foreground"
-                  suppressHydrationWarning
-                >
+                <span className="text-xs text-muted-foreground" suppressHydrationWarning>
                   {formatTime(alert.timestamp)}
                 </span>
 
@@ -201,9 +187,7 @@ export function AlertsFeed({
                   </Badge>
                 )}
                 {escalation?.escalated && (
-                  <Badge className="text-[10px] gap-1 bg-[var(--status-error)]">
-                    ESCALATED
-                  </Badge>
+                  <Badge className="text-[10px] gap-1 bg-[var(--status-error)]">ESCALATED</Badge>
                 )}
 
                 {/* Acknowledged badge */}
@@ -217,19 +201,11 @@ export function AlertsFeed({
               </div>
 
               <p className="text-sm font-medium">{displayTitle}</p>
-              {alert.description && (
-                <p className="text-xs text-muted-foreground truncate">
-                  {alert.description}
-                </p>
-              )}
+              {alert.description && <p className="text-xs text-muted-foreground truncate">{alert.description}</p>}
 
               {/* Source and linked entity */}
               <div className="flex items-center gap-2 mt-1">
-                {alert.source && (
-                  <span className="text-[10px] text-muted-foreground/60">
-                    {alert.source}
-                  </span>
-                )}
+                {alert.source && <span className="text-[10px] text-muted-foreground/60">{alert.source}</span>}
                 {alert.strategyId && (
                   <Link
                     href={`/services/trading/strategies/${alert.strategyId}`}
@@ -242,55 +218,50 @@ export function AlertsFeed({
               </div>
 
               {/* Action buttons for unacknowledged alerts */}
-              {!alert.acknowledged &&
-                (onAcknowledge || onReduce || onInvestigate) && (
-                  <div className="flex items-center gap-1 mt-2">
-                    {onAcknowledge && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-6 text-[10px] gap-1"
-                        onClick={() => onAcknowledge(alert.id)}
-                      >
-                        <Check className="size-3" />
-                        Acknowledge
-                      </Button>
-                    )}
-                    {onReduce &&
-                      (alert.severity === "critical" ||
-                        alert.severity === "high") && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="h-6 text-[10px] gap-1 border-[var(--status-warning)] text-[var(--status-warning)]"
-                          onClick={() => onReduce(alert.id, 50)}
-                        >
-                          <TrendingDown className="size-3" />
-                          Reduce 50%
-                        </Button>
-                      )}
-                    {onInvestigate && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-6 text-[10px] gap-1"
-                        onClick={() => onInvestigate(alert.id)}
-                      >
-                        <Eye className="size-3" />
-                        Investigate
-                      </Button>
-                    )}
-                  </div>
-                )}
+              {!alert.acknowledged && (onAcknowledge || onReduce || onInvestigate) && (
+                <div className="flex items-center gap-1 mt-2">
+                  {onAcknowledge && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-6 text-[10px] gap-1"
+                      onClick={() => onAcknowledge(alert.id)}
+                    >
+                      <Check className="size-3" />
+                      Acknowledge
+                    </Button>
+                  )}
+                  {onReduce && (alert.severity === "critical" || alert.severity === "high") && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-6 text-[10px] gap-1 border-[var(--status-warning)] text-[var(--status-warning)]"
+                      onClick={() => onReduce(alert.id, 50)}
+                    >
+                      <TrendingDown className="size-3" />
+                      Reduce 50%
+                    </Button>
+                  )}
+                  {onInvestigate && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 text-[10px] gap-1"
+                      onClick={() => onInvestigate(alert.id)}
+                    >
+                      <Eye className="size-3" />
+                      Investigate
+                    </Button>
+                  )}
+                </div>
+              )}
             </div>
           </Link>
         );
       })}
 
       {alerts.length === 0 && (
-        <div className="text-center py-4 text-sm text-muted-foreground">
-          No alerts in current scope
-        </div>
+        <div className="text-center py-4 text-sm text-muted-foreground">No alerts in current scope</div>
       )}
 
       {onViewAll && alerts.length > maxItems && (

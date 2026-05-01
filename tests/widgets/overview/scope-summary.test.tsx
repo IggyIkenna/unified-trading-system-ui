@@ -25,7 +25,9 @@ vi.mock("@/components/widgets/overview/overview-data-context", () => ({
 }));
 
 vi.mock("@/lib/stores/workspace-scope-store", () => ({
-  useWorkspaceScope: () => mockScope.scope, useWorkspaceScopeStore: (selector?: (s: typeof mockScope) => unknown) => (selector ? selector(mockScope) : mockScope), useWorkspaceScopeActions: () => mockScope,
+  useWorkspaceScope: () => mockScope.scope,
+  useWorkspaceScopeStore: (selector?: (s: typeof mockScope) => unknown) => (selector ? selector(mockScope) : mockScope),
+  useWorkspaceScopeActions: () => mockScope,
 }));
 
 // Stub the nested trading surfaces — they have their own tests elsewhere.
@@ -77,7 +79,7 @@ describe("scope-summary — L1.5 harness", () => {
   it("renders 'Open Trading Terminal' link to terminal route", () => {
     render(<ScopeSummaryWidget {...({} as never)} />);
     const links = screen.getAllByRole("link");
-    const terminal = links.find((l) => l.getAttribute("href") === "/services/trading/terminal");
+    const terminal = links.find((l) => l.getAttribute("href") === "/services/workspace?surface=terminal&tm=command");
     expect(terminal).toBeTruthy();
     expect(terminal?.textContent).toMatch(/Open Trading Terminal/i);
   });
@@ -120,7 +122,10 @@ describe("scope-summary — L1.5 harness", () => {
       useOverviewDataSafe: () => null,
     }));
     vi.doMock("@/lib/stores/workspace-scope-store", () => ({
-      useWorkspaceScope: () => mockScope.scope, useWorkspaceScopeStore: (selector?: (s: typeof mockScope) => unknown) => (selector ? selector(mockScope) : mockScope), useWorkspaceScopeActions: () => mockScope,
+      useWorkspaceScope: () => mockScope.scope,
+      useWorkspaceScopeStore: (selector?: (s: typeof mockScope) => unknown) =>
+        selector ? selector(mockScope) : mockScope,
+      useWorkspaceScopeActions: () => mockScope,
     }));
     const mod = await import("@/components/widgets/overview/scope-summary-widget");
     render(<mod.ScopeSummaryWidget {...({} as never)} />);

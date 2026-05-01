@@ -424,180 +424,11 @@ export const STRATEGY_SUB_TABS: ServiceTab[] = [
 ];
 
 // ── Run (Trader — Live) ──────────────────────────────────────────────────────
-// Group 1: Shared — relevant to all asset classes (monitoring + trading + analysis)
-// Group 2: Strategy families — collapsible groups for DeFi, Sports, Options, Predictions
-export const TRADING_TABS: ServiceTab[] = [
-  // ── Shared (top-level, always visible) ────────────────────────────────────
-  {
-    label: "Overview",
-    href: "/services/trading/overview",
-    icon: LayoutDashboard,
-  },
-  { label: "Terminal", href: "/services/trading/terminal", icon: MonitorDot },
-  { label: "Book", href: "/services/trading/book", icon: BookMarked },
-  { label: "Orders", href: "/services/trading/orders", icon: ClipboardList },
-  { label: "Positions", href: "/services/trading/positions", icon: BookOpen },
-  { label: "Alerts", href: "/services/trading/alerts", icon: Bell },
-  { label: "Risk", href: "/services/trading/risk", icon: ShieldAlert },
-  { label: "P&L", href: "/services/trading/pnl", icon: BarChart3 },
-  { label: "Accounts", href: "/services/trading/accounts", icon: Wallet },
-  { label: "Instructions", href: "/services/trading/instructions", icon: ScrollText },
-  {
-    label: "Markets",
-    href: "/services/trading/markets",
-    icon: Activity,
-    requiredEntitlement: { domain: "trading-common", tier: "basic" } as TradingEntitlement,
-  },
-  { label: "Strategies", href: "/services/trading/strategies", icon: Layers, requiredEntitlement: "strategy-families" },
-  // ── DART umbrella sub-tabs (Phase 11) ─────────────────────────────────────
-  // Strategy Config requires strategy-full entitlement (ml-full is further
-  // enforced at the page level). DART Signals-In personas never see it.
-  {
-    label: "Strategy Config",
-    href: "/services/trading/strategy-config",
-    requiredEntitlement: "strategy-full",
-    lockedRedirectTo: `${DART_FULL_LOCKED_PAGE}?from=research`,
-  },
-  // Signal Intake — inbound signal webhooks for Signals-In + admin cross-client view
-  { label: "Signal Intake", href: "/services/signals/dashboard" },
-  // Observe — risk/alerts/health/live-PnL folded into DART
-  { label: "Observe", href: "/services/observe/risk" },
-  // Deployment — runtime profile + chaos + kill-switch (links to deployment-ui)
-  {
-    label: "Deployment",
-    href: "/services/trading/deployment",
-    requiredEntitlement: "strategy-full",
-    lockedRedirectTo: `${DART_FULL_LOCKED_PAGE}?from=promote`,
-  },
-  // ── DeFi family ───────────────────────────────────────────────────────────
-  {
-    label: "DeFi",
-    href: "/services/trading/defi",
-    icon: Cpu,
-    group: "DeFi",
-    familyGroup: "DeFi",
-    familyIcon: "Layers",
-    exact: true,
-    requiredEntitlement: { domain: "trading-defi", tier: "basic" } as TradingEntitlement,
-  },
-  {
-    label: "Bundles",
-    href: "/services/trading/defi/bundles",
-    icon: GitFork,
-    group: "DeFi",
-    familyGroup: "DeFi",
-    requiredEntitlement: { domain: "trading-defi", tier: "basic" } as TradingEntitlement,
-  },
-  {
-    label: "Staking",
-    href: "/services/trading/defi/staking",
-    icon: Layers,
-    group: "DeFi",
-    familyGroup: "DeFi",
-    requiredEntitlement: { domain: "trading-defi", tier: "basic" } as TradingEntitlement,
-  },
-  // ── Sports family ─────────────────────────────────────────────────────────
-  {
-    label: "Sports",
-    href: "/services/trading/sports",
-    icon: Trophy,
-    group: "Sports",
-    familyGroup: "Sports",
-    familyIcon: "Trophy",
-    exact: true,
-    requiredEntitlement: { domain: "trading-sports", tier: "basic" } as TradingEntitlement,
-  },
-  {
-    label: "Place Bets",
-    href: "/services/trading/sports/bet",
-    icon: Zap,
-    group: "Sports",
-    familyGroup: "Sports",
-    requiredEntitlement: { domain: "trading-sports", tier: "basic" } as TradingEntitlement,
-  },
-  {
-    label: "Accumulators",
-    href: "/services/trading/sports/accumulators",
-    icon: GitFork,
-    group: "Sports",
-    familyGroup: "Sports",
-    requiredEntitlement: { domain: "trading-sports", tier: "basic" } as TradingEntitlement,
-  },
-  // ── Options & Futures family ──────────────────────────────────────────────
-  {
-    label: "Options",
-    href: "/services/trading/options",
-    icon: TrendingUp,
-    group: "Options & Futures",
-    familyGroup: "Options & Futures",
-    familyIcon: "BarChart3",
-    exact: true,
-    requiredEntitlement: { domain: "trading-options", tier: "basic" } as TradingEntitlement,
-  },
-  {
-    label: "Combo Builder",
-    href: "/services/trading/options/combos",
-    icon: GitFork,
-    group: "Options & Futures",
-    familyGroup: "Options & Futures",
-    requiredEntitlement: { domain: "trading-options", tier: "basic" } as TradingEntitlement,
-  },
-  {
-    label: "Pricing",
-    href: "/services/trading/options/pricing",
-    matchPrefix: "/services/trading/options/pricing",
-    icon: LineChart,
-    group: "Options & Futures",
-    familyGroup: "Options & Futures",
-    requiredEntitlement: { domain: "trading-options", tier: "basic" } as TradingEntitlement,
-  },
-  // ── Predictions family ────────────────────────────────────────────────────
-  {
-    label: "Predictions",
-    href: "/services/trading/predictions",
-    icon: Lightbulb,
-    requiredEntitlement: { domain: "trading-predictions", tier: "basic" } as TradingEntitlement,
-    group: "Predictions",
-    familyGroup: "Predictions",
-    familyIcon: "TrendingUp",
-    exact: true,
-  },
-  {
-    label: "Aggregators",
-    href: "/services/trading/predictions/aggregators",
-    icon: GitFork,
-    group: "Predictions",
-    familyGroup: "Predictions",
-    requiredEntitlement: { domain: "trading-predictions", tier: "basic" } as TradingEntitlement,
-  },
-  // ── TradFi family (P4 of DART terminal plan) ──────────────────────────────
-  // Net-new asset_group surface for the cross-asset-group widening — rates,
-  // ETF flows, vol surface, sector heatmap. Gated on `trading-common`
-  // (shared with CeFi) until a dedicated `trading-tradfi` domain is added.
-  {
-    label: "TradFi",
-    href: "/services/trading/tradfi",
-    icon: Landmark,
-    requiredEntitlement: { domain: "trading-common", tier: "basic" } as TradingEntitlement,
-    group: "TradFi",
-    familyGroup: "TradFi",
-    familyIcon: "Landmark",
-    exact: true,
-  },
-];
-
-// ── Observe (Risk / Ops) ─────────────────────────────────────────────────────
-export const OBSERVE_TABS: ServiceTab[] = [
-  { label: "Risk Dashboard", href: "/services/observe/risk" },
-  { label: "Alerts", href: "/services/observe/alerts" },
-  { label: "News", href: "/services/observe/news" },
-  { label: "Strategy Health", href: "/services/observe/strategy-health" },
-  { label: "Scenarios", href: "/services/observe/scenarios" },
-  { label: "System Health", href: "/services/observe/health" },
-  { label: "Event Audit", href: "/services/observe/event-audit" },
-  { label: "Position Recon", href: "/services/observe/reconciliation" },
-  { label: "Recovery", href: "/services/observe/recovery" },
-];
+// 2026-05-01 Phase 9 wave 2 — TRADING_TABS + OBSERVE_TABS + TERMINAL_TABS
+// removed. The trading + observe service pages were collapsed into the
+// /services/workspace cockpit; nothing imported these arrays anymore.
+// The cockpit's TerminalModeTabs (components/cockpit/terminal-mode-tabs.tsx)
+// is the SSOT for primary trading nav.
 
 // ── Manage (Back Office) ─────────────────────────────────────────────────────
 export const MANAGE_TABS: ServiceTab[] = [
@@ -707,21 +538,8 @@ export const USER_MGMT_TABS = ADMIN_TABS;
 // research-page imports of BUILD_TABS.
 export const RESEARCH_TABS = BUILD_TABS;
 
-// 2026-04-28: TERMINAL_TABS is the chip set for the new DART Terminal tile
-// (Signals-In + DART-Full + admin visible). Live trading surfaces only —
-// Terminal, Observe, Strategy Catalogue (read for Signals-In, manage for
-// DART-Full), Signal Intake. Sub-routes track the SERVICE_REGISTRY
-// dart-terminal entry in lib/config/services.ts.
-export const TERMINAL_TABS: ServiceTab[] = [
-  { label: "Terminal", href: "/services/trading/terminal" },
-  { label: "Observe", href: "/services/observe/risk", matchPrefix: "/services/observe" },
-  {
-    label: "Strategy Catalogue",
-    href: "/services/strategy-catalogue",
-    matchPrefix: "/services/strategy-catalogue",
-  },
-  { label: "Signal Intake", href: "/services/signals/dashboard", matchPrefix: "/services/signals/dashboard" },
-];
+// 2026-05-01 Phase 9 wave 2 — TERMINAL_TABS removed (0 consumers). The
+// cockpit's TerminalModeTabs is the SSOT for the DART Terminal tile.
 export const EXECUTE_TABS: ServiceTab[] = [
   { label: "Overview", href: "/services/execution/overview" },
   { label: "Algos", href: "/services/execution/algos" },

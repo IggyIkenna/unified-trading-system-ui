@@ -20,7 +20,7 @@ export function PnLAttributionWidget(_props: WidgetComponentProps) {
   return (
     <div className="p-3">
       <div className="flex justify-end mb-2">
-        <Link href="/services/trading/pnl">
+        <Link href="/services/workspace?surface=terminal&tm=explain">
           <Button variant="ghost" size="sm" className="h-7 text-xs">
             View All
           </Button>

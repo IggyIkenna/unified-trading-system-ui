@@ -78,7 +78,7 @@ export function ScopeSummaryWidget(_props: WidgetComponentProps) {
               context.organizationIds.length > 0 || context.clientIds.length > 0 ? "Filtered" : "All Strategies",
           }}
         />
-        <Link href="/services/trading/terminal">
+        <Link href="/services/workspace?surface=terminal&tm=command">
           <Button variant="default" size="sm" className="h-8 gap-1.5">
             Open Trading Terminal
             <ArrowRight className="size-3.5" />

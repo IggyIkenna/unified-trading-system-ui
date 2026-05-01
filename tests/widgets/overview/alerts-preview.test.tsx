@@ -12,7 +12,7 @@
  * - Severity badge text: CRIT / HIGH / MED
  * - Loading spinner via isLoading
  * - Empty-state when no active alerts
- * - "View All" link + per-alert Link wrapper targets /services/trading/alerts
+ * - "View All" link + per-alert Link wrapper targets /services/workspace?surface=terminal&tm=command
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
@@ -80,9 +80,11 @@ describe("alerts-preview — L1.5 harness", () => {
     render(<AlertsPreviewWidget {...({} as never)} />);
     // Per-row badges were removed during the AlertsDataContext refactor — only
     // a single severity-count summary badge renders the "HIGH" text. The
-    // row-cap of 3 is asserted via the per-row /services/trading/alerts links.
+    // row-cap of 3 is asserted via the per-row /services/workspace?surface=terminal&tm=command links.
     expect(screen.getAllByText("HIGH").length).toBe(1);
-    const rowLinks = screen.getAllByRole("link").filter((l) => l.getAttribute("href") === "/services/trading/alerts");
+    const rowLinks = screen
+      .getAllByRole("link")
+      .filter((l) => l.getAttribute("href") === "/services/workspace?surface=terminal&tm=command");
     // 1 View All + 3 capped rows = 4.
     expect(rowLinks.length).toBe(4);
   });
@@ -100,11 +102,11 @@ describe("alerts-preview — L1.5 harness", () => {
     expect(screen.getByText(/No active alerts/i)).toBeTruthy();
   });
 
-  it("each alert row links to /services/trading/alerts", () => {
+  it("each alert row links to /services/workspace?surface=terminal&tm=command", () => {
     render(<AlertsPreviewWidget {...({} as never)} />);
     const alertsLinks = screen
       .getAllByRole("link")
-      .filter((l) => l.getAttribute("href") === "/services/trading/alerts");
+      .filter((l) => l.getAttribute("href") === "/services/workspace?surface=terminal&tm=command");
     // 1 View All + 2 per-row = 3 (test seeded 2 alerts).
     expect(alertsLinks.length).toBe(3);
   });

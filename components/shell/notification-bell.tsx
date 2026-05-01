@@ -51,10 +51,7 @@ export function NotificationBell() {
     queryKey: ["alerts-active", user?.id],
     queryFn: async () => {
       try {
-        const res = await typedFetch<{ alerts: Alert[] }>(
-          "/api/alerts/active?acknowledged=false",
-          token,
-        );
+        const res = await typedFetch<{ alerts: Alert[] }>("/api/alerts/active?acknowledged=false", token);
         return (res as { alerts: Alert[] })?.alerts ?? [];
       } catch {
         return [];
@@ -102,27 +99,15 @@ export function NotificationBell() {
         <DropdownMenuSeparator />
 
         {recentAlerts.length === 0 ? (
-          <div className="px-3 py-4 text-center text-sm text-muted-foreground">
-            No active alerts
-          </div>
+          <div className="px-3 py-4 text-center text-sm text-muted-foreground">No active alerts</div>
         ) : (
           recentAlerts.map((alert) => (
             <DropdownMenuItem key={alert.id} asChild>
-              <Link
-                href="/services/trading/alerts"
-                className="flex items-start gap-2 py-2"
-              >
-                <span
-                  className={cn(
-                    "mt-1.5 size-2 rounded-full shrink-0",
-                    severityColors[alert.severity],
-                  )}
-                />
+              <Link href="/services/workspace?surface=terminal&tm=command" className="flex items-start gap-2 py-2">
+                <span className={cn("mt-1.5 size-2 rounded-full shrink-0", severityColors[alert.severity])} />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm truncate">{alert.message}</p>
-                  <p className="text-[10px] text-muted-foreground">
-                    {formatRelativeTime(alert.timestamp)}
-                  </p>
+                  <p className="text-[10px] text-muted-foreground">{formatRelativeTime(alert.timestamp)}</p>
                 </div>
                 <Button
                   variant="ghost"
@@ -143,10 +128,7 @@ export function NotificationBell() {
 
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link
-            href="/services/trading/alerts"
-            className="justify-center text-xs text-primary"
-          >
+          <Link href="/services/workspace?surface=terminal&tm=command" className="justify-center text-xs text-primary">
             View All Alerts
           </Link>
         </DropdownMenuItem>

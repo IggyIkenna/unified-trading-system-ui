@@ -5,7 +5,6 @@ import { TRADING_DOMAINS, type TradingDomain } from "@/lib/config/auth";
 
 const REPO_ROOT = join(__dirname, "..", "..");
 const WIDGETS_DIR = join(REPO_ROOT, "components", "widgets");
-const TRADING_LAYOUTS_DIR = join(REPO_ROOT, "app", "(platform)", "services", "trading");
 
 /**
  * Expected trading domain per widget category directory.
@@ -105,25 +104,13 @@ describe("Widget register.ts — entitlement wiring", () => {
   });
 });
 
-describe("Trading layout.tsx — PageEntitlementGate wiring", () => {
-  const LAYOUTS: Array<{ path: string; expectedDomain: TradingDomain | null }> = [
-    { path: "defi/layout.tsx", expectedDomain: "trading-defi" },
-    { path: "sports/layout.tsx", expectedDomain: "trading-sports" },
-    { path: "options/layout.tsx", expectedDomain: "trading-options" },
-    { path: "predictions/layout.tsx", expectedDomain: "trading-predictions" },
-  ];
-
-  it.each(LAYOUTS)("$path uses domain $expectedDomain at tier basic", ({ path, expectedDomain }) => {
-    const src = readFileSync(join(TRADING_LAYOUTS_DIR, path), "utf8");
-    expect(src).toContain(`domain: "${expectedDomain}"`);
-    expect(src).toContain(`tier: "basic"`);
-  });
-
-  it("root trading/layout.tsx does not use old flat string entitlements", () => {
-    const src = readFileSync(join(TRADING_LAYOUTS_DIR, "layout.tsx"), "utf8");
-    expect(src).not.toMatch(/entitlement=["'](defi|sports|options|predictions|markets)-?\w*["']/);
-  });
-});
+// 2026-05-01 Phase 9 wave 2 — the per-asset-group trading layouts (defi /
+// sports / options / predictions) were removed; PageEntitlementGate
+// responsibilities migrated to the cockpit's StrategyAvailabilityResolver
+// (see lib/cockpit/use-strategy-visibility.ts + lib/architecture-v2/
+// strategy-availability-resolver.ts). The widget-register entitlement-
+// wiring invariants below are the remaining SSOT for "every widget must
+// declare a trading-domain entitlement".
 
 describe("Registry dead-code check", () => {
   it("ENTITLEMENTS const does not contain old trading strings", async () => {
