@@ -435,6 +435,11 @@ const nextConfig = {
         permanent: false,
       },
       {
+        source: "/services/trading/positions/:path*",
+        destination: "/services/workspace?surface=terminal&tm=command",
+        permanent: false,
+      },
+      {
         source: "/services/trading/positions",
         destination: "/services/workspace?surface=terminal&tm=command",
         permanent: false,
@@ -457,6 +462,11 @@ const nextConfig = {
       {
         source: "/services/trading/pnl",
         destination: "/services/workspace?surface=terminal&tm=explain",
+        permanent: false,
+      },
+      {
+        source: "/services/trading/accounts/:path*",
+        destination: "/services/workspace?surface=terminal&tm=command",
         permanent: false,
       },
       {

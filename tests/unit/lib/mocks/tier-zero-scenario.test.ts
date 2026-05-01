@@ -31,6 +31,23 @@ describe("tier-zero-scenario", () => {
         expect(sc.bundles.length, `${sc.id} bundles`).toBeGreaterThan(0);
       }
     });
+
+    it("registry covers every WorkspacePreset 1:1 (10 scenarios)", () => {
+      const ids = new Set(TIER_ZERO_SCENARIOS.map((s) => s.id));
+      // 6 originals
+      expect(ids.has("tier0-arbitrage-command")).toBe(true);
+      expect(ids.has("tier0-defi-yield-risk")).toBe(true);
+      expect(ids.has("tier0-vol-lab")).toBe(true);
+      expect(ids.has("tier0-sports-prediction")).toBe(true);
+      expect(ids.has("tier0-ml-directional")).toBe(true);
+      expect(ids.has("tier0-tradfi-pairs")).toBe(true);
+      // 4 first-class additions
+      expect(ids.has("tier0-signals-in-monitor")).toBe(true);
+      expect(ids.has("tier0-live-trading-desk")).toBe(true);
+      expect(ids.has("tier0-executive-overview")).toBe(true);
+      expect(ids.has("tier0-research-to-live")).toBe(true);
+      expect(TIER_ZERO_SCENARIOS.length).toBe(10);
+    });
   });
 
   describe("matchesScope axis filtering", () => {
@@ -107,22 +124,60 @@ describe("tier-zero-scenario", () => {
       expect(view.strategies).toHaveLength(0);
     });
 
-    it("partial_match: scope matches a scenario but per-axis filters remove every row", () => {
-      // CEFI + ARBITRAGE_STRUCTURAL matches Arbitrage Command (which uses USDT/USDC),
-      // but BTC share-class filter removes every row.
+    it("partial_match or unsupported: rare-share-class combinations resolve cleanly", () => {
+      // SOL share class is not covered by any tier-zero scenario today.
+      // The resolver should land in unsupported (no scenario covers the axis)
+      // not in match.
       const view = resolveTierZeroScenario(
         scopeWith({
           assetGroups: ["CEFI"],
           families: ["ARBITRAGE_STRUCTURAL"],
-          shareClasses: ["BTC"],
+          shareClasses: ["SOL"],
         }),
       );
-      // Arbitrage Command's shareClasses = [USDT, USDC]; BTC isn't in them.
-      // scenarioOverlapsScope returns false because shareClass overlap is empty.
-      // So this lands in unsupported, not partial_match. That's acceptable for
-      // the tier-zero matrix — we're shipping unsupported when the scenario
-      // doesn't even cover the share-class axis.
+      // No scenario lists SOL on its shareClasses axis, so scenarioOverlapsScope
+      // rules every scenario out → unsupported.
       expect(["unsupported", "partial_match"]).toContain(view.status);
+    });
+
+    it("scenarios beyond the original 6 are reachable: SIGNALS_IN_MONITOR matches signals scope", () => {
+      // Signals-In Monitor — CEFI + ML_DIRECTIONAL + binance.
+      const view = resolveTierZeroScenario(
+        scopeWith({
+          assetGroups: ["CEFI"],
+          families: ["ML_DIRECTIONAL"],
+          venueOrProtocolIds: ["binance"],
+        }),
+      );
+      expect(view.status).toBe("match");
+      const ids = view.matchedScenarios.map((s) => s.id);
+      expect(ids).toContain("tier0-signals-in-monitor");
+    });
+
+    it("RESEARCH_TO_LIVE_PIPELINE has rows across every maturity phase", () => {
+      const view = resolveTierZeroScenario(EMPTY_WORKSPACE_SCOPE);
+      const rtolStrategies = view.strategies.filter((s) => s.id.startsWith("rtol-"));
+      const maturities = new Set(rtolStrategies.map((s) => s.maturity));
+      expect(maturities.has("smoke")).toBe(true);
+      expect(maturities.has("backtest_30d")).toBe(true);
+      expect(maturities.has("paper_1d")).toBe(true);
+      expect(maturities.has("paper_14d")).toBe(true);
+      expect(maturities.has("pilot")).toBe(true);
+      expect(maturities.has("live_stable")).toBe(true);
+    });
+
+    it("EXECUTIVE_OVERVIEW carries mandate-level aggregate strategies", () => {
+      const view = resolveTierZeroScenario(scopeWith({ assetGroups: ["TRADFI"] }));
+      const ids = view.matchedScenarios.map((s) => s.id);
+      expect(ids).toContain("tier0-executive-overview");
+      const execStrategies = view.strategies.filter((s) => s.id.startsWith("exec-mandate-"));
+      expect(execStrategies.length).toBeGreaterThan(0);
+    });
+
+    it("LIVE_TRADING_DESK matches the broad cross-asset desk view", () => {
+      const view = resolveTierZeroScenario(scopeWith({ assetGroups: ["CEFI"] }));
+      const ids = view.matchedScenarios.map((s) => s.id);
+      expect(ids).toContain("tier0-live-trading-desk");
     });
 
     it("venue axis narrows rows within a matched scenario", () => {
