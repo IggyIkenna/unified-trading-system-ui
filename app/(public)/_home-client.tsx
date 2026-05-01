@@ -457,23 +457,19 @@ function WaysClientsUseOdum() {
   // cards to 1-3 visible at a time depending on viewport. Each card retains
   // its accent + bullets + CTA — the carousel never hides depth, just paces
   // it. Embla 8.x is already installed (package.json), so no new dep.
+  // `loop: true` enables infinite rotation in both directions — chevrons
+  // never reach a dead-end, and `containScroll` is intentionally omitted
+  // because it conflicts with looping (would clamp scroll at the edges).
   const [emblaRef, emblaApi] = useEmblaCarousel({
     align: "center",
-    loop: false,
+    loop: true,
     skipSnaps: false,
-    containScroll: "trimSnaps",
   });
   const [selectedIndex, setSelectedIndex] = React.useState(0);
-  const [canScrollPrev, setCanScrollPrev] = React.useState(false);
-  const [canScrollNext, setCanScrollNext] = React.useState(true);
 
   React.useEffect(() => {
     if (!emblaApi) return;
-    const onSelect = () => {
-      setSelectedIndex(emblaApi.selectedScrollSnap());
-      setCanScrollPrev(emblaApi.canScrollPrev());
-      setCanScrollNext(emblaApi.canScrollNext());
-    };
+    const onSelect = () => setSelectedIndex(emblaApi.selectedScrollSnap());
     onSelect();
     emblaApi.on("select", onSelect);
     emblaApi.on("reInit", onSelect);
@@ -506,21 +502,21 @@ function WaysClientsUseOdum() {
           aria-roledescription="carousel"
           aria-label="Ways clients use Odum"
         >
+          {/* Loop is enabled, so chevrons never reach a disabled state — no
+              `disabled` attribute or `disabled:` Tailwind variants needed. */}
           <button
             type="button"
             onClick={scrollPrev}
-            disabled={!canScrollPrev}
             aria-label="Previous card"
-            className="absolute left-0 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-border/60 bg-background/90 text-muted-foreground shadow-sm backdrop-blur transition hover:border-border hover:text-foreground disabled:pointer-events-none disabled:opacity-0 md:-left-4"
+            className="absolute left-0 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-border/60 bg-background/90 text-muted-foreground shadow-sm backdrop-blur transition hover:border-border hover:text-foreground md:-left-4"
           >
             <ChevronLeft className="size-5" />
           </button>
           <button
             type="button"
             onClick={scrollNext}
-            disabled={!canScrollNext}
             aria-label="Next card"
-            className="absolute right-0 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-border/60 bg-background/90 text-muted-foreground shadow-sm backdrop-blur transition hover:border-border hover:text-foreground disabled:pointer-events-none disabled:opacity-0 md:-right-4"
+            className="absolute right-0 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-border/60 bg-background/90 text-muted-foreground shadow-sm backdrop-blur transition hover:border-border hover:text-foreground md:-right-4"
           >
             <ChevronRight className="size-5" />
           </button>
