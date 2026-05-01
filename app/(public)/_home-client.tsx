@@ -45,6 +45,7 @@ export function HomePageClient() {
       <main>
         <Hero />
         <MarketsUniverse />
+        <WaysClientsUseOdum />
         <EngagementRoutes />
         <WhyOdum />
         <EngagementJourney />
@@ -67,7 +68,7 @@ function HomeStartReviewButton({
   return (
     <Button asChild size={size} variant={variant}>
       <Link href="/start-your-review" onClick={() => trackEvent("homepage_start_review_click", { source })}>
-        Start Your Review
+        Start Your Strategy &amp; Infrastructure Review
         <ArrowRight className="ml-2 size-4" />
       </Link>
     </Button>
@@ -227,27 +228,28 @@ function Hero() {
               className="block motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-700"
               style={{ animationFillMode: "both" }}
             >
-              Systematic strategies.
+              Trading infrastructure,
             </span>
             <span
               className="block motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-700"
               style={{ animationDelay: "140ms", animationFillMode: "both" }}
             >
-              Trading infrastructure.
+              built around
             </span>
             <span
               className="block motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-700"
               style={{ animationDelay: "280ms", animationFillMode: "both" }}
             >
-              Institutional clients.
+              your problem.
             </span>
           </h1>
           <p
             className="mx-auto mt-7 max-w-2xl text-pretty text-base leading-relaxed md:text-lg motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700"
             style={{ color: COLORS.textSecondary, animationDelay: "480ms", animationFillMode: "both" }}
           >
-            Odum manages selected systematic strategies and provides access to the infrastructure and regulated
-            operating models around them.
+            Odum helps institutional clients design, build, and operate systematic trading capabilities across digital
+            assets, traditional markets, sports, and prediction markets. Bring your own strategies — we protect your IP
+            — or use ours; either way, you get tailored builds, infrastructure, and regulated operating models.
           </p>
           <div
             className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700"
@@ -408,6 +410,67 @@ const ENGAGEMENT_ROUTES: readonly EngagementRoute[] = [
     accent: "#34D399",
   },
 ] as const;
+
+// ─── Ways clients use Odum ──────────────────────────────────────────────────
+// Problem-led 5-bullet block. Sits between hero ("Trading infrastructure,
+// built around your problem") and the engagement-route cards. Frames the
+// page in terms of the visitor's use case before showing which Odum service
+// maps to it. IP-protection point lives here too — bullet #3.
+const WAYS_CLIENTS_USE_ODUM: readonly { readonly title: string; readonly body: string }[] = [
+  {
+    title: "Build a new trading capability",
+    body: "Research-to-execution infrastructure for teams launching from scratch. Bring strategies, or build them with us — we cover data, signal generation, execution, monitoring, and reporting end to end.",
+  },
+  {
+    title: "Upgrade fragmented trading infrastructure",
+    body: "Consolidate data, research, execution, monitoring, and reporting onto one operating surface. Replace point-tool sprawl with one system that scales with the strategy.",
+  },
+  {
+    title: "Bring your own strategies, keep your IP",
+    body: "Odum runs the surrounding infrastructure (data, execution, risk, reporting, governance) without taking signal ownership. Where strategies need work, we help you enhance them and close gaps.",
+  },
+  {
+    title: "Launch under institutional controls",
+    body: "Regulated operating models, fund structures, or affiliate arrangements where the engagement requires it. Reviewed case by case; not a generic umbrella service.",
+  },
+  {
+    title: "Access Odum-managed systematic strategies",
+    body: "Selected strategies managed by Odum, available through SMA or fund-route structures. Reporting is delivered through the same operating surface used to run the mandate.",
+  },
+];
+
+function WaysClientsUseOdum() {
+  return (
+    <section aria-labelledby="ways-clients-heading" className="border-b border-border/40 bg-background">
+      <div className="container px-4 py-16 md:px-6 md:py-20">
+        <div className="mx-auto max-w-5xl">
+          <div className="mx-auto max-w-2xl text-center">
+            <h2 id="ways-clients-heading" className="text-3xl font-semibold tracking-tight md:text-4xl">
+              Ways clients use Odum
+            </h2>
+            <p className="mt-4 text-base leading-[1.7] text-muted-foreground">
+              From a single capability gap to a full operating model. Use the parts that fit, combine them where it
+              makes sense.
+            </p>
+          </div>
+          <ul className="mt-12 grid gap-5 md:grid-cols-2">
+            {WAYS_CLIENTS_USE_ODUM.map((row) => (
+              <li
+                key={row.title}
+                className="rounded-lg border border-border/60 bg-card/40 p-6 transition-colors hover:bg-card/60"
+              >
+                <h3 className="text-base font-semibold text-foreground">{row.title}</h3>
+                <p className="mt-2 text-[14px] text-muted-foreground" style={{ lineHeight: 1.65 }}>
+                  {row.body}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+  );
+}
 
 function EngagementRoutes() {
   return (
@@ -717,11 +780,12 @@ function FinalCTA() {
       <div className="container px-4 py-20 md:px-6 md:py-24">
         <div className="mx-auto max-w-2xl text-center">
           <h2 id="final-cta-heading" className="text-3xl font-semibold tracking-tight md:text-4xl">
-            Start with a review
+            Start your strategy &amp; infrastructure review
           </h2>
           <p className="mt-4 text-base text-muted-foreground" style={{ lineHeight: 1.7 }}>
-            A short questionnaire helps us understand the route, briefing, and next step. If your situation is already
-            specific, contact us directly.
+            Tell us where you are — building a capability, upgrading infrastructure, bringing your own strategies,
+            launching under institutional controls, or accessing Odum-managed strategies. The questionnaire takes a few
+            minutes; the review is bespoke.
           </p>
           <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <HomeStartReviewButton source="final" />

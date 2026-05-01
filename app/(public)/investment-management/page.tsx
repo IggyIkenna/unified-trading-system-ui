@@ -137,13 +137,15 @@ export default function InvestmentManagementPage() {
             </div>
             <h1 className="text-3xl font-bold tracking-tight md:text-4xl">{SERVICE_LABELS.investment.marketing}</h1>
             <p className="mt-4 text-lg text-muted-foreground">
-              Allocate to selected systematic strategies managed by Odum.
+              Allocate to selected systematic strategies managed by Odum — accelerating capital deployment under
+              Odum&rsquo;s operating discipline.
             </p>
             <p className="mt-3 text-sm text-muted-foreground">
               Odum acts as investment manager for selected systematic strategies available to eligible clients through
               SMA or fund-route structures where appropriate. Strategies may be developed by Odum, shaped with partners,
               or operated through Odum&rsquo;s infrastructure where the structure, governance, and risk controls are
-              suitable.
+              suitable. Mandates aren&rsquo;t limited to the published strategy list — bespoke allocations are reviewed
+              case by case.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Button asChild>

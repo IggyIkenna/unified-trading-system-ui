@@ -140,8 +140,10 @@ export default function MarketingPlatformPage() {
             </Badge>
             <h1 className="text-3xl font-bold tracking-tight md:text-4xl">{SERVICE_LABELS.dart.marketing}</h1>
             <p className="mx-auto mt-4 max-w-3xl text-lg text-muted-foreground">
-              DART is the infrastructure layer behind Odum&rsquo;s systematic trading activity, available to selected
-              clients who need a controlled path from research to execution, monitoring, and reporting.
+              DART is the infrastructure layer that accelerates your trading build — research, execution, monitoring,
+              and reporting in one operating surface. Bring your own strategies and we protect your IP, use
+              Odum&rsquo;s, or combine both. Modes below are starting points; bespoke configurations are reviewed case
+              by case.
             </p>
             <div className="mt-6 flex flex-wrap justify-center gap-3">
               <Button asChild>

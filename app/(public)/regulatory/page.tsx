@@ -103,11 +103,12 @@ export default function RegulatoryPage() {
             <p className="mt-4 text-lg text-muted-foreground">
               Some trading engagements need more than technology. Odum can help selected clients structure an
               appropriate operating model around governance, reporting, counterparties, permissions, and regulatory
-              responsibilities.
+              responsibilities — accelerating launch under institutional controls.
             </p>
             <p className="mt-3 text-sm text-muted-foreground">
               Coverage is reviewed case by case. The right route depends on who manages the strategy, who faces the
-              client, where the capital sits, and what approvals or affiliate arrangements are required.
+              client, where the capital sits, and what approvals or affiliate arrangements are required. Bespoke
+              wrappers are reviewed case by case; not limited to the structures shown below.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Button asChild>
