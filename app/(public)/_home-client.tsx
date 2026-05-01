@@ -46,7 +46,6 @@ export function HomePageClient() {
         <Hero />
         <MarketsUniverse />
         <WaysClientsUseOdum />
-        <EngagementRoutes />
         <WhyOdum />
         <EngagementJourney />
         <GovernanceAndRisk />
@@ -349,8 +348,16 @@ function MarketsUniverse() {
   );
 }
 
-type EngagementRoute = {
-  readonly key: "investment" | "dart" | "regulatory";
+// ─── Ways clients use Odum ──────────────────────────────────────────────────
+// Merged 2026-05-01: replaces the prior split between "Three engagement
+// routes" (mechanism-led: Investment Management / DART / Regulatory) and a
+// separate problem-led bullet list. Now one section: 5 problem-led use cases
+// + 1 catch-all CTA, each card carrying the visual treatment of the original
+// engagement-route cards (accent strip, summary, bullets, CTA). Each CTA links
+// to the relevant deep-dive page so the engagement-route concept survives in
+// the link target without consuming a second card section.
+type WayClientsUseOdum = {
+  readonly key: string;
   readonly title: string;
   readonly summary: string;
   readonly bullets: readonly string[];
@@ -360,82 +367,85 @@ type EngagementRoute = {
   readonly accent: string;
 };
 
-const ENGAGEMENT_ROUTES: readonly EngagementRoute[] = [
+const WAYS_CLIENTS_USE_ODUM: readonly WayClientsUseOdum[] = [
   {
-    key: "investment",
-    title: SERVICE_LABELS.investment.marketing,
-    // Each card answers three things in parallel: WHAT it is, structural
-    // mechanism, and one qualifier. ~3 short bullets max — anything longer
-    // belongs on the route's own page.
-    summary: "Allocate capital to selected systematic strategies managed by Odum.",
+    key: "build",
+    title: "Build a new trading capability",
+    summary: "Research-to-execution infrastructure for teams launching from scratch.",
     bullets: [
-      "Available through {{term:sma}} or fund-route structures where appropriate.",
-      "Odum acts as investment manager.",
-      "Reporting is delivered through the same operating surface used to run the mandate.",
+      "Bring strategies, or build them with us — research, signal generation, execution, monitoring, reporting end to end.",
+      "Live ops handover from day one or staged over time.",
+      "Bespoke configurations reviewed case by case.",
     ],
-    href: "/investment-management",
-    cta: "Explore Odum-Managed Strategies",
-    // Subtle per-card accent strip across the top — gold for the
-    // capital/performance route. Restrained tones; signal not decoration.
-    accent: "#C8A94A",
+    href: "/platform",
+    cta: "Explore {{term:dart|DART}} Trading Infrastructure",
+    accent: "#22D3EE", // cyan — DART family
   },
   {
-    key: "dart",
-    // Wrap "DART" in the title with the glossary tooltip — first mention of
-    // the acronym on the homepage. Subsequent mentions inside the card (CTA,
-    // bullets) stay plain to avoid dotted-underline noise.
-    title: SERVICE_LABELS.dart.marketing.replace("DART", "{{term:dart|DART}}"),
-    summary: "Use Odum's research-to-execution infrastructure to run strategies under the agreed engagement model.",
+    key: "upgrade",
+    title: "Upgrade fragmented trading infrastructure",
+    summary: "Consolidate data, research, execution, monitoring, and reporting onto one operating surface.",
     bullets: [
-      "Client-provided, Odum-provided, or hybrid signal workflows.",
-      "Research, testing, execution, monitoring, and reporting in one system.",
-      "Suitable for teams that want to run their own infrastructure without allocating capital to Odum-managed strategies.",
+      "Replace point-tool sprawl with one system that scales with the strategy.",
+      "Keep your existing IP and signal logic; plug into Odum's surrounding stack.",
+      "Migration paths reviewed case by case.",
     ],
     href: "/platform",
     cta: "Explore DART Trading Infrastructure",
     accent: "#22D3EE",
   },
   {
-    key: "regulatory",
-    title: SERVICE_LABELS.regulatory.marketing,
-    summary:
-      "Where the engagement requires it, Odum can help structure the operating model around governance, reporting, and permissions.",
+    key: "byo-ip",
+    title: "Bring your own strategies — keep your IP",
+    summary: "Odum runs the surrounding infrastructure without taking signal ownership.",
+    bullets: [
+      "Data, execution, risk, reporting, governance — all run by Odum.",
+      "Your signals stay yours. We never see proprietary logic.",
+      "Where strategies need work, we help you enhance them and close gaps.",
+    ],
+    href: "/platform",
+    cta: "Explore DART Trading Infrastructure",
+    accent: "#22D3EE",
+  },
+  {
+    key: "institutional",
+    title: "Launch under institutional controls",
+    summary: "Regulated operating models, fund structures, or affiliate arrangements where the engagement requires it.",
     bullets: [
       "Reviewed case by case; not a generic umbrella service.",
       "May include {{term:sma}} pathways, affiliate-supported structures, or other approved arrangements.",
-      "Governance, reporting, and oversight are aligned to the engagement.",
+      "Governance, reporting, and oversight aligned to the engagement.",
     ],
     href: "/regulatory",
     cta: "Explore Regulated Operating Models",
-    accent: "#34D399",
-  },
-] as const;
-
-// ─── Ways clients use Odum ──────────────────────────────────────────────────
-// Problem-led 5-bullet block. Sits between hero ("Trading infrastructure,
-// built around your problem") and the engagement-route cards. Frames the
-// page in terms of the visitor's use case before showing which Odum service
-// maps to it. IP-protection point lives here too — bullet #3.
-const WAYS_CLIENTS_USE_ODUM: readonly { readonly title: string; readonly body: string }[] = [
-  {
-    title: "Build a new trading capability",
-    body: "Research-to-execution infrastructure for teams launching from scratch. Bring strategies, or build them with us — we cover data, signal generation, execution, monitoring, and reporting end to end.",
+    accent: "#34D399", // green — Regulatory
   },
   {
-    title: "Upgrade fragmented trading infrastructure",
-    body: "Consolidate data, research, execution, monitoring, and reporting onto one operating surface. Replace point-tool sprawl with one system that scales with the strategy.",
-  },
-  {
-    title: "Bring your own strategies, keep your IP",
-    body: "Odum runs the surrounding infrastructure (data, execution, risk, reporting, governance) without taking signal ownership. Where strategies need work, we help you enhance them and close gaps.",
-  },
-  {
-    title: "Launch under institutional controls",
-    body: "Regulated operating models, fund structures, or affiliate arrangements where the engagement requires it. Reviewed case by case; not a generic umbrella service.",
-  },
-  {
+    key: "managed",
     title: "Access Odum-managed systematic strategies",
-    body: "Selected strategies managed by Odum, available through SMA or fund-route structures. Reporting is delivered through the same operating surface used to run the mandate.",
+    summary: "Selected strategies managed by Odum, available through SMA or fund-route structures.",
+    bullets: [
+      "Odum acts as investment manager.",
+      "Reporting delivered through the same operating surface used to run the mandate.",
+      "Mandates aren't limited to the published list — bespoke allocations reviewed case by case.",
+    ],
+    href: "/investment-management",
+    cta: "Explore Odum-Managed Strategies",
+    accent: "#C8A94A", // gold — Investment Management
+  },
+  {
+    key: "custom",
+    title: "Don't fit a single bucket?",
+    summary:
+      "Most engagements blend two or three of the above. Tell us what you're solving and we'll map the right combination.",
+    bullets: [
+      "Bespoke builds and operating models reviewed case by case.",
+      "We tailor to your business reality, not the other way around.",
+      "Start with a review and we'll route the conversation.",
+    ],
+    href: "/start-your-review",
+    cta: "Start Your Strategy & Infrastructure Review",
+    accent: "#8B93A0", // neutral — catch-all
   },
 ];
 
@@ -449,69 +459,31 @@ function WaysClientsUseOdum() {
               Ways clients use Odum
             </h2>
             <p className="mt-4 text-base leading-[1.7] text-muted-foreground">
-              From a single capability gap to a full operating model. Use the parts that fit, combine them where it
-              makes sense.
-            </p>
-          </div>
-          <ul className="mt-12 grid gap-5 md:grid-cols-2">
-            {WAYS_CLIENTS_USE_ODUM.map((row) => (
-              <li
-                key={row.title}
-                className="rounded-lg border border-border/60 bg-card/40 p-6 transition-colors hover:bg-card/60"
-              >
-                <h3 className="text-base font-semibold text-foreground">{row.title}</h3>
-                <p className="mt-2 text-[14px] text-muted-foreground" style={{ lineHeight: 1.65 }}>
-                  {row.body}
-                </p>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function EngagementRoutes() {
-  return (
-    <section aria-labelledby="engagement-routes-heading" className="border-b border-border/40 bg-background">
-      <div className="container px-4 py-16 md:px-6 md:py-20">
-        <div className="mx-auto max-w-5xl">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 id="engagement-routes-heading" className="text-3xl font-semibold tracking-tight md:text-4xl">
-              Three engagement routes
-            </h2>
-            <p className="mt-4 text-base leading-[1.7] text-muted-foreground">
-              Most clients fit one of three routes. The questionnaire helps confirm the right one before either side
-              commits time to a call.
+              From a single capability gap to a full operating model. Each card maps to a deep-dive page; most
+              engagements blend two or three.
             </p>
           </div>
           <div className="mt-12 grid gap-6 md:grid-cols-3">
-            {ENGAGEMENT_ROUTES.map((route) => (
-              <Card
-                key={route.key}
-                className="relative flex h-full flex-col overflow-hidden border-border/80 bg-card/60"
-              >
-                {/* 2px accent strip across the top — gold / cyan / green —
-                    restrained scan-aid so the three routes are visually
-                    distinct without the cards looking decorative. Inline
-                    style so the colour ships regardless of Tailwind JIT. */}
+            {WAYS_CLIENTS_USE_ODUM.map((row) => (
+              <Card key={row.key} className="relative flex h-full flex-col overflow-hidden border-border/80 bg-card/60">
+                {/* 2px accent strip across the top — restrained scan-aid so
+                    cards are visually distinct without looking decorative.
+                    Inline style so the colour ships regardless of Tailwind
+                    JIT. */}
                 <span
                   aria-hidden
                   className="absolute inset-x-0 top-0 h-[2px]"
-                  style={{ backgroundColor: route.accent, opacity: 0.85 }}
+                  style={{ backgroundColor: row.accent, opacity: 0.85 }}
                 />
                 <CardHeader className="pt-6">
-                  <CardTitle className="text-lg">{renderWithTerms(route.title)}</CardTitle>
-                  {/* Summary does the heavy lift — first thing a skimmer
-                      reads. Keep at sm but bump line-height for readability. */}
+                  <CardTitle className="text-lg">{renderWithTerms(row.title)}</CardTitle>
                   <CardDescription className="text-sm leading-[1.65] text-muted-foreground">
-                    {route.summary}
+                    {row.summary}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-1 flex-col">
                   <ul className="space-y-3 text-[13px] text-muted-foreground" style={{ lineHeight: 1.6 }}>
-                    {route.bullets.map((bullet) => (
+                    {row.bullets.map((bullet) => (
                       <li key={bullet} className="flex gap-2.5">
                         {/* Bullet dot vertically centred on the first line of
                             text. text-[13px] × leading 1.6 = 20.8px line, so
@@ -525,7 +497,7 @@ function EngagementRoutes() {
                             width: 6,
                             height: 6,
                             marginTop: 7,
-                            backgroundColor: route.accent,
+                            backgroundColor: row.accent,
                             opacity: 0.85,
                           }}
                         />
@@ -536,14 +508,18 @@ function EngagementRoutes() {
                   <div className="mt-auto pt-6">
                     <Button asChild variant="outline" size="sm">
                       <Link
-                        href={route.href}
+                        href={row.href}
                         onClick={() =>
+                          // Reuses the existing `engagement_route_card_click`
+                          // event since the merged section IS the evolution of
+                          // the prior 3-route card section. Keeps analytics
+                          // continuity across the rename.
                           trackEvent("engagement_route_card_click", {
-                            route: route.key,
+                            route: row.key,
                           })
                         }
                       >
-                        {route.cta}
+                        {renderWithTerms(row.cta)}
                         <ArrowRight className="ml-1.5 size-3.5" />
                       </Link>
                     </Button>
