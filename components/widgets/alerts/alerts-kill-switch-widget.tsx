@@ -196,7 +196,11 @@ export function AlertsKillSwitchWidget(_props: WidgetComponentProps) {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col gap-3 p-3">
+      <div
+        data-testid="alerts-kill-switch-widget"
+        data-source={useTierZero ? "tier-zero" : "legacy"}
+        className="flex flex-col gap-3 p-3"
+      >
         <Skeleton className="h-8 w-full" />
         <Skeleton className="h-8 w-full" />
         <Skeleton className="h-8 w-full" />
@@ -207,7 +211,11 @@ export function AlertsKillSwitchWidget(_props: WidgetComponentProps) {
   }
 
   return (
-    <div className="flex flex-col gap-2 h-full min-h-0 p-1">
+    <div
+      data-testid="alerts-kill-switch-widget"
+      data-source={useTierZero ? "tier-zero" : "legacy"}
+      className="flex flex-col gap-2 h-full min-h-0 p-1"
+    >
       <div className="px-2 pb-2 space-y-4">
         <div className="grid grid-cols-2 gap-2">
           <div className="space-y-1.5">
