@@ -27,6 +27,18 @@ vi.mock("@/components/widgets/widget-chrome-context", () => ({
   useWidgetHeaderEndSlot: () => null,
 }));
 
+// Force tier-zero into "unsupported" so the widget falls through to legacy.
+vi.mock("@/lib/cockpit/use-tier-zero-scenario", () => ({
+  useTierZeroScenario: () => ({
+    matchedScenarios: [],
+    strategies: [],
+    positions: [],
+    backtests: [],
+    bundles: [],
+    status: "unsupported" as const,
+  }),
+}));
+
 import { AccountsKpiWidget } from "@/components/widgets/accounts/accounts-kpi-widget";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 

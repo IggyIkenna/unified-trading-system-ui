@@ -19,6 +19,21 @@ vi.mock("@/components/widgets/positions/positions-data-context", () => ({
   usePositionsData: () => mockData,
 }));
 
+// Force the tier-zero hook into "unsupported" so the widget falls through to
+// the legacy positions-data path the test asserts on. Real cockpit usage
+// resolves a wide-open scope to "match" + every scenario; that path is
+// exercised by tests/e2e/cockpit-tier-zero-filters.spec.ts.
+vi.mock("@/lib/cockpit/use-tier-zero-scenario", () => ({
+  useTierZeroScenario: () => ({
+    matchedScenarios: [],
+    strategies: [],
+    positions: [],
+    backtests: [],
+    bundles: [],
+    status: "unsupported" as const,
+  }),
+}));
+
 import { PositionsKpiWidget } from "@/components/widgets/positions/positions-kpi-widget";
 
 const WIDGET_PROPS = { instanceId: "positions-kpi-strip-test" };

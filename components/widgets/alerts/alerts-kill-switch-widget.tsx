@@ -9,6 +9,7 @@ import type { WidgetComponentProps } from "@/components/widgets/widget-registry"
 import { useStrategyHealth } from "@/hooks/api/use-strategies";
 import { useKillSwitch, type KillSwitchActionType } from "@/hooks/api/use-kill-switch";
 import { useAlertsData } from "./alerts-data-context";
+import { useTierZeroScenario } from "@/lib/cockpit/use-tier-zero-scenario";
 import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 import { Pause, Power, Square, XCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -89,19 +90,31 @@ export function AlertsKillSwitchWidget(_props: WidgetComponentProps) {
   const [selectedAction, setSelectedAction] = React.useState<KillSwitchAction | null>(null);
   const [rationale, setRationale] = React.useState<string>("");
 
+  const tierZero = useTierZeroScenario();
+  const useTierZero = tierZero.status === "match" && tierZero.strategies.length > 0;
   const entityOptions = React.useMemo<ReadonlyArray<{ id: string; name: string }>>(() => {
     switch (scopeType) {
       case "strategy":
-        return strategies.map((s) => ({ id: s.id, name: s.name }));
+        // 2026-05-01 migration: when in cockpit + scope matches a tier-zero
+        // scenario, the strategy dropdown reflects the scope-filtered
+        // strategies. Otherwise fall back to legacy useStrategyHealth.
+        return useTierZero
+          ? tierZero.strategies.map((s) => ({ id: s.id, name: s.label }))
+          : strategies.map((s) => ({ id: s.id, name: s.name }));
       case "client":
         return scope.clientIds.map((id) => ({ id, name: id }));
       case "venue":
+        // Use the scope's selected venues if present (tighter than the
+        // hard-coded VENUE_OPTIONS); fall back to legacy when empty.
+        if (scope.venueOrProtocolIds && scope.venueOrProtocolIds.length > 0) {
+          return scope.venueOrProtocolIds.map((id) => ({ id, name: id }));
+        }
         return VENUE_OPTIONS;
       case "firm":
       default:
         return [];
     }
-  }, [scopeType, strategies, scope.clientIds]);
+  }, [scopeType, strategies, scope.clientIds, scope.venueOrProtocolIds, useTierZero, tierZero.strategies]);
 
   React.useEffect(() => {
     if (scopeType === "firm") {

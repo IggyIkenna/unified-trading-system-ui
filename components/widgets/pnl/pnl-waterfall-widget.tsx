@@ -15,6 +15,7 @@ import { formatPercent } from "@/lib/utils/formatters";
 import { SHARE_CLASSES, SHARE_CLASS_LABELS, type ShareClass } from "@/lib/types/defi";
 import { FactorHistogram } from "./pnl-waterfall-factor-histogram";
 import { FactorPie } from "./pnl-waterfall-factor-pie";
+import { useTierZeroScenario } from "@/lib/cockpit/use-tier-zero-scenario";
 
 type FactorViewMode = "bars" | "histogram" | "pie";
 
@@ -44,6 +45,18 @@ export function PnlWaterfallWidget(_props: WidgetComponentProps) {
   const maxFactorAbs = Math.max(...pnlComponents.map((c) => Math.abs(c.value)), 1);
   const defiPnlMax = Math.max(...defiPnlAttribution.map((c) => Math.abs(c.value)), 1);
 
+  // 2026-05-01 cockpit migration: derive a scope-filtered MTD-PnL badge from
+  // tier-zero strategies. The full waterfall keeps reading from the legacy
+  // pnl-data-context (chart rewrite is out of scope); the badge gives the
+  // demo prospect an immediate "this is YOUR scoped MTD" anchor.
+  const tierZero = useTierZeroScenario();
+  const useTierZero = tierZero.status === "match" && tierZero.strategies.length > 0;
+  const scopedMtdPnl = React.useMemo(
+    () => (useTierZero ? tierZero.strategies.reduce((sum, s) => sum + s.mtdPnlUsd, 0) : 0),
+    [useTierZero, tierZero.strategies],
+  );
+  const scopedStrategyCount = useTierZero ? tierZero.strategies.length : 0;
+
   const [factorView, setFactorView] = React.useState<FactorViewMode>("bars");
 
   function handleGenerateReport() {
@@ -54,8 +67,23 @@ export function PnlWaterfallWidget(_props: WidgetComponentProps) {
   }
 
   return (
-    <div className="flex flex-col gap-2 h-full min-h-0 p-2">
+    <div
+      data-testid="pnl-waterfall-widget"
+      data-source={useTierZero ? "tier-zero" : "legacy"}
+      className="flex flex-col gap-2 h-full min-h-0 p-2"
+    >
       <div className="shrink-0 space-y-1.5 pb-2 border-b border-border/60">
+        {useTierZero && (
+          <div
+            data-testid="pnl-waterfall-scoped-mtd"
+            className="flex items-center justify-between gap-2 px-2 py-1 rounded-md bg-primary/5 border border-primary/20"
+          >
+            <span className="text-micro uppercase tracking-wider text-muted-foreground">
+              Scope MTD · {scopedStrategyCount} {scopedStrategyCount === 1 ? "strategy" : "strategies"}
+            </span>
+            <PnLValue value={scopedMtdPnl} size="sm" showSign />
+          </div>
+        )}
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex items-center gap-0.5 p-0.5 bg-muted rounded-md">
             <Button
