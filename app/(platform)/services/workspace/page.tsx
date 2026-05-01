@@ -37,6 +37,13 @@ import { PromoteBundleForm } from "@/components/cockpit/promote-bundle-form";
 import { ReleaseBundlePanel } from "@/components/cockpit/release-bundle-panel";
 import { ResearchJourneyRail } from "@/components/cockpit/research-journey-rail";
 import { RuntimeOverrideAuthoring } from "@/components/cockpit/runtime-override-authoring";
+import {
+  ScopeStatusBanner,
+  ScopedBacktestsPanel,
+  ScopedPositionsPanel,
+  ScopedReleaseBundlesPanel,
+  ScopedStrategyTablePanel,
+} from "@/components/cockpit/scoped-data-panels";
 import { StrategyScenarioTapePanel } from "@/components/cockpit/strategy-scenario-tape";
 import { StrategyVisibilitySummary } from "@/components/cockpit/strategy-visibility-summary";
 import { TerminalModeTabs } from "@/components/cockpit/terminal-mode-tabs";
@@ -86,6 +93,26 @@ export default function WorkspaceShellPage() {
             the buyer sees scope + persona + entitlement combined into a
             single visibility decision (not just scope filtering). */}
           <StrategyVisibilitySummary />
+          {/* Scope status banner — surfaces empty / unsupported / partial-
+              match cleanly so no chip combination feels like a silent
+              no-op. Per audit: every filter must change something visible. */}
+          <ScopeStatusBanner />
+          {/* Always-on scoped data panels — strategy / positions table that
+              respond to every chip toggle on the DartScopeBar. The
+              tier-zero scenario matrix is the SSOT; rows filter by
+              matchesScope() against asset_group / family / archetype /
+              share_class / venue. */}
+          <ScopedStrategyTablePanel />
+          {scope.surface === "terminal" && (scope.terminalMode === "command" || scope.terminalMode === "explain") ? (
+            <ScopedPositionsPanel />
+          ) : null}
+          {scope.surface === "research" && (scope.researchStage === "validate" || scope.researchStage === "promote") ? (
+            <ScopedBacktestsPanel />
+          ) : null}
+          {(scope.surface === "research" && scope.researchStage === "promote") ||
+          (scope.surface === "terminal" && scope.terminalMode === "strategies") ? (
+            <ScopedReleaseBundlesPanel />
+          ) : null}
           {/* Plan §4.9 — assumption-stack USP. Renders on every cockpit
               surface where the buyer asks "what assumptions drive this?":
               Research/Validate (author), Research/Promote (frozen),
