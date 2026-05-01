@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAdminAuth } from "@/lib/firebase-admin";
+import { isSuperAdminClaim, isRestrictedEntitlementGrant } from "@/lib/auth/super-admin";
 
 const ADMIN_DOMAINS = ["@odum.internal", "@odum-research.com"];
 
@@ -38,12 +39,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, reason: "unauthorized" }, { status: 401 });
   }
 
+  let callerSuperAdmin = false;
   try {
     const decoded = await adminAuth.verifyIdToken(callerToken);
-    const adminClaim = decoded["admin"] === true;
+    const adminClaim = decoded["admin"] === true || decoded["role"] === "admin";
     if (!adminClaim && !isAdminEmail(decoded.email)) {
       return NextResponse.json({ ok: false, reason: "forbidden" }, { status: 403 });
     }
+    callerSuperAdmin = isSuperAdminClaim(decoded);
   } catch {
     return NextResponse.json({ ok: false, reason: "invalid_token" }, { status: 401 });
   }
@@ -57,6 +60,18 @@ export async function POST(request: Request) {
 
   if (!targetEmail || !Array.isArray(entitlements)) {
     return NextResponse.json({ ok: false, reason: "missing_params" }, { status: 400 });
+  }
+
+  if (isRestrictedEntitlementGrant(entitlements) && !callerSuperAdmin) {
+    return NextResponse.json(
+      {
+        ok: false,
+        reason: "super_admin_required",
+        message:
+          "Granting wildcard or admin entitlements requires a super admin. Full admins are scoped to UTS UI operations only.",
+      },
+      { status: 403 },
+    );
   }
 
   let uid: string;

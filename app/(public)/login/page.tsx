@@ -14,6 +14,18 @@ import { isDemoPersonaEmail } from "@/lib/auth/personas";
 import { isMockDataMode } from "@/lib/runtime/data-mode";
 import Link from "next/link";
 
+// Map of personal-email accounts that previously had admin and have since
+// been demoted in favour of a workspace identity. When someone types one of
+// these, we show a friendly hint pointing them at the right login. The map
+// is intentionally small — internals only — and lives here so the hint
+// stays close to the form. Add new entries when an internal team member's
+// admin role gets moved off a personal email.
+const DEMOTED_INTERNAL_EMAIL_HINTS: Readonly<Record<string, string>> = {
+  "femi.amoo@gmail.com": "femi@odum-research.com",
+  "femi.amoo3@gmail.com": "femi@odum-research.com",
+  "harshkantariya.work@gmail.com": "harsh@odum-research.com",
+};
+
 export default function LoginPage() {
   const router = useRouter();
   const { user, loading, loginByEmail, loginError } = useAuth();
@@ -296,6 +308,22 @@ export default function LoginPage() {
                     <p className="font-medium">Completing your sign-in&hellip;</p>
                     <p className="mt-1 text-xs text-emerald-300/80">
                       Carrying your credentials across from the main site so you don&rsquo;t have to type them again.
+                    </p>
+                  </div>
+                )}
+                {DEMOTED_INTERNAL_EMAIL_HINTS[email.trim().toLowerCase()] && (
+                  <div className="rounded-md border border-sky-500/30 bg-sky-500/10 px-3 py-3 text-sm text-sky-200">
+                    <p className="font-medium">Use your Odum Research email</p>
+                    <p className="mt-1 text-xs text-sky-300/80">
+                      Internal team accounts moved to{" "}
+                      <button
+                        type="button"
+                        className="font-mono underline hover:text-sky-100"
+                        onClick={() => setEmail(DEMOTED_INTERNAL_EMAIL_HINTS[email.trim().toLowerCase()] ?? "")}
+                      >
+                        {DEMOTED_INTERNAL_EMAIL_HINTS[email.trim().toLowerCase()]}
+                      </button>
+                      . Tap to switch.
                     </p>
                   </div>
                 )}

@@ -11,6 +11,7 @@ import type { NextRequest } from "next/server";
 import type { DecodedIdToken } from "firebase-admin/auth";
 
 import { getAdminAuth } from "@/lib/firebase-admin";
+import { isSuperAdminClaim } from "@/lib/auth/super-admin";
 import {
   appEntitlementsCollection,
   groupsCollection,
@@ -23,15 +24,33 @@ import {
 /** True when the caller is a platform admin (profile.role==="admin" OR custom claim). */
 export async function isPlatformAdmin(uid: string): Promise<boolean> {
   const snap = await usersCollection().doc(uid).get();
-  const profileRole = snap.exists
-    ? (snap.data() as { role?: string } | undefined)?.role
-    : undefined;
+  const profileRole = snap.exists ? (snap.data() as { role?: string } | undefined)?.role : undefined;
   if (profileRole === "admin") return true;
   const auth = getAdminAuth();
   if (!auth) return false;
   try {
     const rec = await auth.getUser(uid);
     return rec.customClaims?.role === "admin";
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * True when the caller is a SUPER admin — i.e. allowed to onboard people
+ * into external systems (Workspace / GitHub / GCP / Slack) and to grant
+ * other users wildcard entitlements. Full admins (`superAdmin:false`) are
+ * scoped to the UTS UI itself and cannot escalate other users.
+ *
+ * Reads the user's Firebase custom claims and delegates the actual rule
+ * to `isSuperAdminClaim` so the route handler + this server helper agree.
+ */
+export async function isSuperAdmin(uid: string): Promise<boolean> {
+  const auth = getAdminAuth();
+  if (!auth) return false;
+  try {
+    const rec = await auth.getUser(uid);
+    return isSuperAdminClaim(rec.customClaims);
   } catch {
     return false;
   }
@@ -76,11 +95,7 @@ export interface EffectiveAccess {
  * user_groups + app_entitlements + app_capabilities + user_profiles —
  * exactly the algorithm the legacy /authorize used.
  */
-export async function computeEffectiveAccess(
-  uid: string,
-  appId: string,
-  env: string | null,
-): Promise<EffectiveAccess> {
+export async function computeEffectiveAccess(uid: string, appId: string, env: string | null): Promise<EffectiveAccess> {
   const groupsSnap = await groupsCollection().get();
   const userGroupIds: string[] = [];
   for (const docSnap of groupsSnap.docs) {
@@ -110,7 +125,7 @@ export async function computeEffectiveAccess(
     if (!isDirect && !isGroup) continue;
     if (env && ent.environments && ent.environments.length > 0 && !ent.environments.includes(env)) continue;
     const role = ent.role as Role | undefined;
-    const rank = role ? ROLE_RANK[role] ?? 0 : 0;
+    const rank = role ? (ROLE_RANK[role] ?? 0) : 0;
     if (rank > bestRank && role) {
       bestRank = rank;
       bestRole = role;
