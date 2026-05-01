@@ -1,9 +1,10 @@
 "use client";
 
 import * as React from "react";
-import { ArrowRight, Globe } from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight, Globe } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import useEmblaCarousel from "embla-carousel-react";
 
 import { ArbitrageGalaxy } from "@/components/marketing/arbitrage-galaxy";
 import { renderWithTerms } from "@/components/marketing/render-with-terms";
@@ -450,85 +451,219 @@ const WAYS_CLIENTS_USE_ODUM: readonly WayClientsUseOdum[] = [
 ];
 
 function WaysClientsUseOdum() {
+  // Embla-driven carousel — Deltix-style "Our Product Lines" pattern: one
+  // focused card centered with side-card peek, prev/next chevrons on the
+  // edges, dot indicators below. Cuts visual density from 6 simultaneous
+  // cards to 1-3 visible at a time depending on viewport. Each card retains
+  // its accent + bullets + CTA — the carousel never hides depth, just paces
+  // it. Embla 8.x is already installed (package.json), so no new dep.
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    align: "center",
+    loop: false,
+    skipSnaps: false,
+    containScroll: "trimSnaps",
+  });
+  const [selectedIndex, setSelectedIndex] = React.useState(0);
+  const [canScrollPrev, setCanScrollPrev] = React.useState(false);
+  const [canScrollNext, setCanScrollNext] = React.useState(true);
+
+  React.useEffect(() => {
+    if (!emblaApi) return;
+    const onSelect = () => {
+      setSelectedIndex(emblaApi.selectedScrollSnap());
+      setCanScrollPrev(emblaApi.canScrollPrev());
+      setCanScrollNext(emblaApi.canScrollNext());
+    };
+    onSelect();
+    emblaApi.on("select", onSelect);
+    emblaApi.on("reInit", onSelect);
+    return () => {
+      emblaApi.off("select", onSelect);
+      emblaApi.off("reInit", onSelect);
+    };
+  }, [emblaApi]);
+
+  const scrollPrev = React.useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
+  const scrollNext = React.useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
+  const scrollTo = React.useCallback((idx: number) => emblaApi?.scrollTo(idx), [emblaApi]);
+
   return (
     <section aria-labelledby="ways-clients-heading" className="border-b border-border/40 bg-background">
       <div className="container px-4 py-16 md:px-6 md:py-20">
-        <div className="mx-auto max-w-5xl">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 id="ways-clients-heading" className="text-3xl font-semibold tracking-tight md:text-4xl">
-              Ways clients use Odum
-            </h2>
-            <p className="mt-4 text-base leading-[1.7] text-muted-foreground">
-              From a single capability gap to a full operating model. Each card maps to a deep-dive page; most
-              engagements blend two or three.
-            </p>
-          </div>
-          <div className="mt-12 grid gap-6 md:grid-cols-3">
-            {WAYS_CLIENTS_USE_ODUM.map((row) => (
-              <Card key={row.key} className="relative flex h-full flex-col overflow-hidden border-border/80 bg-card/60">
-                {/* 2px accent strip across the top — restrained scan-aid so
-                    cards are visually distinct without looking decorative.
-                    Inline style so the colour ships regardless of Tailwind
-                    JIT. */}
-                <span
-                  aria-hidden
-                  className="absolute inset-x-0 top-0 h-[2px]"
-                  style={{ backgroundColor: row.accent, opacity: 0.85 }}
-                />
-                <CardHeader className="pt-6">
-                  <CardTitle className="text-lg">{renderWithTerms(row.title)}</CardTitle>
-                  <CardDescription className="text-sm leading-[1.65] text-muted-foreground">
-                    {row.summary}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="flex flex-1 flex-col">
-                  <ul className="space-y-3 text-[13px] text-muted-foreground" style={{ lineHeight: 1.6 }}>
-                    {row.bullets.map((bullet) => (
-                      <li key={bullet} className="flex gap-2.5">
-                        {/* Bullet dot vertically centred on the first line of
-                            text. text-[13px] × leading 1.6 = 20.8px line, so
-                            (20.8 − 6) / 2 ≈ 7.4px top offset for a 6px dot.
-                            Inline style: Tailwind arbitrary-value mt-[Npx]
-                            is unreliable through the JIT in this codebase. */}
-                        <span
-                          aria-hidden
-                          className="shrink-0 rounded-full"
-                          style={{
-                            width: 6,
-                            height: 6,
-                            marginTop: 7,
-                            backgroundColor: row.accent,
-                            opacity: 0.85,
-                          }}
-                        />
-                        <span>{renderWithTerms(bullet)}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="mt-auto pt-6">
-                    <Button asChild variant="outline" size="sm">
-                      <Link
-                        href={row.href}
-                        onClick={() =>
-                          // Reuses the existing `engagement_route_card_click`
-                          // event since the merged section IS the evolution of
-                          // the prior 3-route card section. Keeps analytics
-                          // continuity across the rename.
-                          trackEvent("engagement_route_card_click", {
-                            route: row.key,
-                          })
-                        }
-                      >
-                        {renderWithTerms(row.cta)}
-                        <ArrowRight className="ml-1.5 size-3.5" />
-                      </Link>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+        <div className="mx-auto max-w-2xl text-center">
+          <h2 id="ways-clients-heading" className="text-3xl font-semibold tracking-tight md:text-4xl">
+            Ways clients use Odum
+          </h2>
+          <p className="mt-4 text-base leading-[1.7] text-muted-foreground">
+            From a single capability gap to a full operating model. Each card maps to a deep-dive page; most engagements
+            blend two or three.
+          </p>
         </div>
+
+        <div
+          className="relative mt-12"
+          role="region"
+          aria-roledescription="carousel"
+          aria-label="Ways clients use Odum"
+        >
+          <button
+            type="button"
+            onClick={scrollPrev}
+            disabled={!canScrollPrev}
+            aria-label="Previous card"
+            className="absolute left-0 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-border/60 bg-background/90 text-muted-foreground shadow-sm backdrop-blur transition hover:border-border hover:text-foreground disabled:pointer-events-none disabled:opacity-0 md:-left-4"
+          >
+            <ChevronLeft className="size-5" />
+          </button>
+          <button
+            type="button"
+            onClick={scrollNext}
+            disabled={!canScrollNext}
+            aria-label="Next card"
+            className="absolute right-0 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-border/60 bg-background/90 text-muted-foreground shadow-sm backdrop-blur transition hover:border-border hover:text-foreground disabled:pointer-events-none disabled:opacity-0 md:-right-4"
+          >
+            <ChevronRight className="size-5" />
+          </button>
+
+          <div className="overflow-hidden" ref={emblaRef}>
+            <div className="flex">
+              {WAYS_CLIENTS_USE_ODUM.map((row, idx) => {
+                const isFocused = idx === selectedIndex;
+                return (
+                  <div
+                    key={row.key}
+                    className="ways-clients-slide min-w-0 shrink-0 grow-0 px-3"
+                    role="group"
+                    aria-roledescription="slide"
+                    aria-label={`${idx + 1} of ${WAYS_CLIENTS_USE_ODUM.length}: ${row.title}`}
+                  >
+                    <Card
+                      className="relative flex h-full flex-col overflow-hidden border-border/80 bg-card/60 transition-all duration-300"
+                      style={{
+                        opacity: isFocused ? 1 : 0.6,
+                        transform: isFocused ? "scale(1)" : "scale(0.97)",
+                      }}
+                    >
+                      <span
+                        aria-hidden
+                        className="absolute inset-x-0 top-0 h-[2px]"
+                        style={{
+                          backgroundColor: row.accent,
+                          opacity: isFocused ? 0.95 : 0.55,
+                        }}
+                      />
+                      <CardHeader className="pt-6">
+                        <CardTitle
+                          className="text-lg transition-colors"
+                          style={{ color: isFocused ? row.accent : undefined }}
+                        >
+                          {renderWithTerms(row.title)}
+                        </CardTitle>
+                        <CardDescription className="text-sm leading-[1.65] text-muted-foreground">
+                          {row.summary}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="flex flex-1 flex-col">
+                        <ul className="space-y-3 text-[13px] text-muted-foreground" style={{ lineHeight: 1.6 }}>
+                          {row.bullets.map((bullet) => (
+                            <li key={bullet} className="flex gap-2.5">
+                              <span
+                                aria-hidden
+                                className="shrink-0 rounded-full"
+                                style={{
+                                  width: 6,
+                                  height: 6,
+                                  marginTop: 7,
+                                  backgroundColor: row.accent,
+                                  opacity: 0.85,
+                                }}
+                              />
+                              <span>{renderWithTerms(bullet)}</span>
+                            </li>
+                          ))}
+                        </ul>
+                        <div className="mt-auto pt-6">
+                          <Button asChild variant="outline" size="sm">
+                            <Link
+                              href={row.href}
+                              onClick={() =>
+                                trackEvent("engagement_route_card_click", {
+                                  route: row.key,
+                                })
+                              }
+                            >
+                              {renderWithTerms(row.cta)}
+                              <ArrowRight className="ml-1.5 size-3.5" />
+                            </Link>
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Per-breakpoint slide width: 85% mobile (1 visible + peek), 46%
+              tablet (2 visible), 32% desktop (3 visible). Plain CSS via
+              styled-jsx keeps Tailwind JIT out of the picture for arbitrary
+              flex-basis values, which has been unreliable in this codebase. */}
+          <style jsx>{`
+            .ways-clients-slide {
+              flex: 0 0 85%;
+              max-width: 85%;
+            }
+            @media (min-width: 768px) {
+              .ways-clients-slide {
+                flex: 0 0 46%;
+                max-width: 46%;
+              }
+            }
+            @media (min-width: 1024px) {
+              .ways-clients-slide {
+                flex: 0 0 32%;
+                max-width: 32%;
+              }
+            }
+          `}</style>
+        </div>
+
+        {/* Dot indicators — clickable, aria-current state on active. Active
+            dot widens (w-6) so visitors can scan position at a glance. */}
+        <div className="mt-8 flex items-center justify-center gap-2">
+          {WAYS_CLIENTS_USE_ODUM.map((_, idx) => (
+            <button
+              key={idx}
+              type="button"
+              onClick={() => scrollTo(idx)}
+              aria-label={`Go to card ${idx + 1}`}
+              aria-current={idx === selectedIndex}
+              className="h-1.5 rounded-full transition-all"
+              style={{
+                width: idx === selectedIndex ? 24 : 6,
+                backgroundColor:
+                  idx === selectedIndex ? "hsl(var(--foreground) / 0.7)" : "hsl(var(--muted-foreground) / 0.3)",
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Fit-finder fallback — for visitors who don't see themselves in any
+            card, or who want to skip directly to the questionnaire / contact
+            form. Mirrors the catch-all card's CTA but as a low-key text link
+            so it doesn't compete with the active card's primary CTA. */}
+        <p className="mt-8 text-center text-sm text-muted-foreground">
+          Not sure which fits?{" "}
+          <Link href="/start-your-review" className="font-medium text-foreground underline-offset-4 hover:underline">
+            Start your review
+          </Link>{" "}
+          or{" "}
+          <Link href="/contact" className="font-medium text-foreground underline-offset-4 hover:underline">
+            contact us
+          </Link>{" "}
+          for a tailored conversation.
+        </p>
       </div>
     </section>
   );
