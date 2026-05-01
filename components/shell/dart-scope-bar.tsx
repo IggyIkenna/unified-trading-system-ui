@@ -44,7 +44,12 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/use-auth";
-import { STRATEGY_ARCHETYPES_V2, STRATEGY_FAMILIES_V2, VENUE_ASSET_GROUPS_V2 } from "@/lib/architecture-v2/enums";
+import {
+  STRATEGY_ARCHETYPES_V2,
+  STRATEGY_FAMILIES_V2,
+  VENUE_ASSET_GROUPS_V2,
+  type ShareClass,
+} from "@/lib/architecture-v2/enums";
 import {
   type ResearchStage,
   type TerminalMode,
@@ -73,7 +78,16 @@ const INSTRUMENT_TYPE_OPTIONS: readonly string[] = [
   "staked_position",
   "liquidity_position",
 ];
-const SHARE_CLASS_OPTIONS: readonly string[] = ["USDT", "USDC", "USD", "GBP", "EUR", "BTC", "ETH", "SOL"];
+const SHARE_CLASS_OPTIONS = [
+  "USDT",
+  "USDC",
+  "USD",
+  "GBP",
+  "EUR",
+  "BTC",
+  "ETH",
+  "SOL",
+] as const satisfies readonly ShareClass[];
 const VENUE_OPTIONS: readonly string[] = [
   "binance",
   "okx",
@@ -197,15 +211,15 @@ function SegmentedToggle<T extends string>({ testIdPrefix, label, value, options
 // ChipMultiSelect — editable chip row for one scope axis
 // ─────────────────────────────────────────────────────────────────────────────
 
-interface ChipMultiSelectProps {
+interface ChipMultiSelectProps<T extends string> {
   readonly label: string;
   readonly axisKey: string;
-  readonly options: readonly string[];
-  readonly values: readonly string[];
-  readonly onChange: (next: readonly string[]) => void;
+  readonly options: readonly T[];
+  readonly values: readonly T[];
+  readonly onChange: (next: readonly T[]) => void;
 }
 
-function ChipMultiSelect({ label, axisKey, options, values, onChange }: ChipMultiSelectProps) {
+function ChipMultiSelect<T extends string>({ label, axisKey, options, values, onChange }: ChipMultiSelectProps<T>) {
   const [open, setOpen] = React.useState(false);
   const [filter, setFilter] = React.useState("");
 
@@ -216,7 +230,7 @@ function ChipMultiSelect({ label, axisKey, options, values, onChange }: ChipMult
   }, [options, filter]);
 
   const toggleValue = React.useCallback(
-    (v: string) => {
+    (v: T) => {
       if (values.includes(v)) {
         onChange(values.filter((x) => x !== v));
       } else {
@@ -226,7 +240,7 @@ function ChipMultiSelect({ label, axisKey, options, values, onChange }: ChipMult
     [values, onChange],
   );
 
-  const removeValue = React.useCallback((v: string) => onChange(values.filter((x) => x !== v)), [values, onChange]);
+  const removeValue = React.useCallback((v: T) => onChange(values.filter((x) => x !== v)), [values, onChange]);
 
   return (
     <div className="flex items-start gap-2 min-w-0" data-testid={`scope-chip-axis-${axisKey}`}>

@@ -234,7 +234,13 @@ export function useStrategyVisibility(): StrategyVisibilityResult {
     if (!user) return { role: "client", entitlements: [], subscriptions: [] };
     return {
       role: user.role === "admin" ? "admin" : user.role === "internal" ? "internal" : "client",
-      entitlements: (user.entitlements ?? []).map((e) => (typeof e === "string" ? e : `${e.domain}:${e.tier}`)),
+      entitlements: (user.entitlements ?? []).map((e) => {
+        if (typeof e === "string") return e;
+        // Discriminate the union: TradingEntitlement has `domain`,
+        // StrategyFamilyEntitlement has `family`.
+        if ("domain" in e) return `${e.domain}:${e.tier}`;
+        return `${e.family}:${e.tier}`;
+      }),
       // Demo: a DART-Full subscription overlays "owned" on the first two
       // representative instances. Production wires the real list.
       subscriptions:
@@ -246,7 +252,10 @@ export function useStrategyVisibility(): StrategyVisibilityResult {
 
   return React.useMemo<StrategyVisibilityResult>(() => {
     const decisions = resolveVisibleStrategyInstances(DEMO_INSTANCES, resolverUser, scope.surface);
-    const counts: VisibilityCounts = { ...ZERO_COUNTS };
+    // Mutable working buckets; cast to VisibilityCounts (readonly) when
+    // returning. Keeps the public type immutable while letting the
+    // accumulation loop stay simple.
+    const counts: { -readonly [K in keyof VisibilityCounts]: VisibilityCounts[K] } = { ...ZERO_COUNTS };
     for (const { decision } of decisions) {
       counts[decision.visibility as StrategyVisibilityState] += 1;
     }

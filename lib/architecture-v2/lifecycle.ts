@@ -38,6 +38,7 @@ import type { ShareClass, StrategyArchetype, StrategyFamily } from "./enums";
  */
 export type StrategyMaturityPhase =
   | "smoke"
+  | "backtest_30d"
   | "backtest_minimal"
   | "backtest_1yr"
   | "backtest_multi_year"
@@ -52,6 +53,7 @@ export type StrategyMaturityPhase =
 
 export const STRATEGY_MATURITY_PHASES: readonly StrategyMaturityPhase[] = [
   "smoke",
+  "backtest_30d",
   "backtest_minimal",
   "backtest_1yr",
   "backtest_multi_year",
@@ -67,6 +69,7 @@ export const STRATEGY_MATURITY_PHASES: readonly StrategyMaturityPhase[] = [
 
 export const MATURITY_PHASE_LABEL: Record<StrategyMaturityPhase, string> = {
   smoke: "Smoke",
+  backtest_30d: "Backtest 30d",
   backtest_minimal: "Backtest <1y",
   backtest_1yr: "Backtest 1y",
   backtest_multi_year: "Backtest Ny",
@@ -82,6 +85,7 @@ export const MATURITY_PHASE_LABEL: Record<StrategyMaturityPhase, string> = {
 
 export const MATURITY_PHASE_TONE: Record<StrategyMaturityPhase, "muted" | "amber" | "sky" | "emerald" | "violet"> = {
   smoke: "muted",
+  backtest_30d: "muted",
   backtest_minimal: "muted",
   backtest_1yr: "amber",
   backtest_multi_year: "amber",
@@ -316,14 +320,17 @@ export function allowsAllocationCta(phase: StrategyMaturityPhase): boolean {
  */
 const MATURITY_PHASE_LADDER: readonly StrategyMaturityPhase[] = [
   "smoke",
+  "backtest_30d",
   "backtest_minimal",
   "backtest_1yr",
   "backtest_multi_year",
   "paper_1d",
   "paper_14d",
   "paper_stable",
+  "pilot",
   "live_early",
   "live_stable",
+  "monitor",
 ] as const;
 
 /** Return ladder index, or -1 for `retired` (orthogonal terminal state). */

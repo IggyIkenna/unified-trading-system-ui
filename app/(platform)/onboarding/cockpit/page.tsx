@@ -32,7 +32,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
-import { VENUE_ASSET_GROUPS_V2, STRATEGY_FAMILIES_V2 } from "@/lib/architecture-v2/enums";
+import {
+  VENUE_ASSET_GROUPS_V2,
+  STRATEGY_FAMILIES_V2,
+  type ShareClass,
+  type StrategyFamily,
+  type VenueAssetGroupV2,
+} from "@/lib/architecture-v2/enums";
 import { applyPresetToScope, COCKPIT_PRESETS, getPreset } from "@/lib/cockpit/presets";
 import { recommendPresetForPersona } from "@/lib/cockpit/derive-preset-from-persona";
 import {
@@ -149,14 +155,21 @@ export default function OnboardingCockpitPage() {
   const [proofGoal, setProofGoal] = React.useState<ProofGoalId>("promotion");
 
   // Scope step state — start from the preset's defaults, mutate as the user edits.
-  const [assetGroups, setAssetGroups] = React.useState<readonly string[]>(preset.defaultScope.assetGroups ?? []);
-  const [families, setFamilies] = React.useState<readonly string[]>(preset.defaultScope.families ?? []);
-  const [shareClasses, setShareClasses] = React.useState<readonly string[]>([]);
+  // The preset's defaultScope is typed as a Partial<WorkspaceScope> with the
+  // canonical typed arrays; cast through here so the state matches the
+  // WorkspaceScope shape we eventually replaceScope() into.
+  const [assetGroups, setAssetGroups] = React.useState<readonly VenueAssetGroupV2[]>(
+    (preset.defaultScope.assetGroups as readonly VenueAssetGroupV2[] | undefined) ?? [],
+  );
+  const [families, setFamilies] = React.useState<readonly StrategyFamily[]>(
+    (preset.defaultScope.families as readonly StrategyFamily[] | undefined) ?? [],
+  );
+  const [shareClasses, setShareClasses] = React.useState<readonly ShareClass[]>([]);
 
   // Re-seed scope when preset changes.
   React.useEffect(() => {
-    setAssetGroups(preset.defaultScope.assetGroups ?? []);
-    setFamilies(preset.defaultScope.families ?? []);
+    setAssetGroups((preset.defaultScope.assetGroups as readonly VenueAssetGroupV2[] | undefined) ?? []);
+    setFamilies((preset.defaultScope.families as readonly StrategyFamily[] | undefined) ?? []);
   }, [preset]);
 
   const [engagement, setEngagement] = React.useState<WorkspaceEngagement>(preset.defaultEngagement);
@@ -469,15 +482,15 @@ export default function OnboardingCockpitPage() {
   );
 }
 
-interface ChipRowProps {
+interface ChipRowProps<T extends string> {
   readonly label: string;
   readonly axis: string;
-  readonly options: readonly string[];
-  readonly values: readonly string[];
-  readonly onChange: (next: readonly string[]) => void;
+  readonly options: readonly T[];
+  readonly values: readonly T[];
+  readonly onChange: (next: readonly T[]) => void;
 }
 
-function ChipRow({ label, axis, options, values, onChange }: ChipRowProps) {
+function ChipRow<T extends string>({ label, axis, options, values, onChange }: ChipRowProps<T>) {
   return (
     <div className="space-y-1.5" data-testid={`wizard-chip-row-${axis}`}>
       <p className="text-[10px] uppercase tracking-wider text-muted-foreground/70">{label}</p>

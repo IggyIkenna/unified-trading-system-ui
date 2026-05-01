@@ -85,7 +85,9 @@ describe("strategy-scenario-engine", () => {
       }
       const sc = useCockpitOpsStore.getState().activeScenarios.find((a) => a.id === scenario.id);
       expect(sc?.status).toBe("completed");
-      expect(sc?.cursor).toBe(scenario.totalEvents ?? scenario.steps.length);
+      // StrategyScenario doesn't expose a totalEvents field; the cursor
+      // advances one per step in the timeline.
+      expect(sc?.cursor).toBe(scenario.steps.length);
       // Every step appears in strategyEvents
       const eventsForScenario = useCockpitOpsStore
         .getState()

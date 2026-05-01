@@ -32,6 +32,7 @@ import {
   hasDefiWalletsForProtocols,
   type AccountConnectivityConfig,
 } from "@/lib/architecture-v2/account-connectivity-config";
+import { type ShareClass } from "@/lib/architecture-v2/enums";
 import { DEFAULT_BUNDLE_GUARDRAILS, type StrategyReleaseBundle } from "@/lib/architecture-v2/strategy-release-bundle";
 import { useCockpitOpsStore } from "@/lib/mocks/cockpit-ops-store";
 import { cn } from "@/lib/utils";
@@ -60,7 +61,7 @@ export function PromoteBundleForm({
   // Identity.
   const [strategyId, setStrategyId] = React.useState("ARBITRAGE_PRICE_DISPERSION");
   const [strategyVersion, setStrategyVersion] = React.useState("3.3.0");
-  const [shareClass, setShareClass] = React.useState("USDT");
+  const [shareClass, setShareClass] = React.useState<ShareClass>("USDT");
   const [accountOrMandateId, setAccountOrMandateId] = React.useState("mandate-arbitrage-001");
 
   // Versioned component pins.
@@ -206,7 +207,12 @@ export function PromoteBundleForm({
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
           <Field id="strategy-id" label="Strategy id" value={strategyId} onChange={setStrategyId} />
           <Field id="strategy-version" label="Version" value={strategyVersion} onChange={setStrategyVersion} />
-          <Field id="share-class" label="Share class" value={shareClass} onChange={setShareClass} />
+          <Field
+            id="share-class"
+            label="Share class"
+            value={shareClass}
+            onChange={(v) => setShareClass(v as ShareClass)}
+          />
           <Field
             id="mandate-id"
             label="Mandate / account"

@@ -44,13 +44,14 @@ describe("StrategyMaturityPhase — Pilot stage added (§4.8.7)", () => {
     }
   });
 
-  it("12 phases total (10 forward + monitor + retired)", () => {
-    expect(STRATEGY_MATURITY_PHASES).toHaveLength(12);
+  it("13 phases total (11 forward + monitor + retired) — backtest_30d added per dart-cockpit plan §22", () => {
+    expect(STRATEGY_MATURITY_PHASES).toHaveLength(13);
   });
 
   it("phase set is exhaustive over StrategyMaturityPhase", () => {
     const exhaustive: StrategyMaturityPhase[] = [
       "smoke",
+      "backtest_30d",
       "backtest_minimal",
       "backtest_1yr",
       "backtest_multi_year",

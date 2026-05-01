@@ -118,27 +118,67 @@ export function RuntimeOverrideAuthoring({ bundle, className, onSubmit }: Runtim
   const [riskNewValue, setRiskNewValue] = React.useState<number>(0);
   const [treasuryWalletId, setTreasuryWalletId] = React.useState<string>("");
 
-  const candidate = React.useMemo<RuntimeOverrideValue | null>(() => {
+  const candidate: RuntimeOverrideValue | null = React.useMemo(() => {
+    // The discriminated union has variants whose `value` shapes are
+    // mutually-incompatible (e.g. PauseEntriesValue = Record<string, never>).
+    // TS's useMemo inference widens each branch's value with every other
+    // branch's keys as optional-undefined, which then conflicts with
+    // Record<string, never>'s index-signature constraint. Help it by
+    // typing each return as RuntimeOverrideValue at the construction site.
     switch (overrideType) {
-      case "size_multiplier":
-        return { overrideType, value: { multiplier: sizeMultiplier } };
-      case "venue_disable":
+      case "size_multiplier": {
+        const next: RuntimeOverrideValue = {
+          overrideType: "size_multiplier",
+          value: { multiplier: sizeMultiplier },
+        };
+        return next;
+      }
+      case "venue_disable": {
         if (!venueId.trim()) return null;
-        return { overrideType, value: { venueOrProtocolId: venueId.trim() } };
-      case "execution_preset":
+        const next: RuntimeOverrideValue = {
+          overrideType: "venue_disable",
+          value: { venueOrProtocolId: venueId.trim() },
+        };
+        return next;
+      }
+      case "execution_preset": {
         if (!presetId.trim()) return null;
-        return { overrideType, value: { presetId: presetId.trim() } };
-      case "risk_limit_tightening":
-        return { overrideType, value: { limit: riskLimit, newValue: riskNewValue } };
-      case "treasury_route":
+        const next: RuntimeOverrideValue = {
+          overrideType: "execution_preset",
+          value: { presetId: presetId.trim() },
+        };
+        return next;
+      }
+      case "risk_limit_tightening": {
+        const next: RuntimeOverrideValue = {
+          overrideType: "risk_limit_tightening",
+          value: { limit: riskLimit, newValue: riskNewValue },
+        };
+        return next;
+      }
+      case "treasury_route": {
         if (!treasuryWalletId.trim()) return null;
-        return { overrideType, value: { toWalletId: treasuryWalletId.trim() } };
-      case "pause_entries":
-        return { overrideType, value: {} };
-      case "exit_only":
-        return { overrideType, value: {} };
-      case "kill_switch":
-        return { overrideType, value: { haltNewEntries: true } };
+        const next: RuntimeOverrideValue = {
+          overrideType: "treasury_route",
+          value: { toWalletId: treasuryWalletId.trim() },
+        };
+        return next;
+      }
+      case "pause_entries": {
+        const next: RuntimeOverrideValue = { overrideType: "pause_entries", value: {} };
+        return next;
+      }
+      case "exit_only": {
+        const next: RuntimeOverrideValue = { overrideType: "exit_only", value: {} };
+        return next;
+      }
+      case "kill_switch": {
+        const next: RuntimeOverrideValue = {
+          overrideType: "kill_switch",
+          value: { haltNewEntries: true },
+        };
+        return next;
+      }
     }
   }, [overrideType, sizeMultiplier, venueId, presetId, riskLimit, riskNewValue, treasuryWalletId]);
 

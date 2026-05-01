@@ -156,7 +156,10 @@ export default function StrategyCataloguePage() {
   // contributes asset_groups + families + archetypes + share_classes.
   const scope = useWorkspaceScope();
   const scopedFilter = useMemo<StrategyCatalogueFilter>(() => {
-    const merged: StrategyCatalogueFilter = { ...filter };
+    // Build into a mutable working shape so we can layer scope on top of
+    // the explicit `filter` props without fighting the readonly fields on
+    // StrategyCatalogueFilter. The final return narrows back to readonly.
+    const merged: { -readonly [K in keyof StrategyCatalogueFilter]: StrategyCatalogueFilter[K] } = { ...filter };
     // Asset groups — narrow to v2-typed list.
     if (!merged.venueAssetGroups || merged.venueAssetGroups.length === 0) {
       const ags = scope.assetGroups
