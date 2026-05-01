@@ -16,6 +16,207 @@ export interface HelpNode {
 }
 
 export const HELP_TREE: HelpNode[] = [
+  // ── 0. Workspace cockpit — the unified live workspace ─────────────────────
+  // Cockpit is the SSOT for live trading + research. Every other section
+  // (positions, P&L, DeFi, sports, options, …) renders inside it via the
+  // active scope + mode. These nodes explain the cockpit primitives so
+  // returning users + newcomers can answer "what is the workspace?",
+  // "how do I shape what I see?", "why isn't widget X showing?", etc.
+  {
+    id: "cockpit",
+    question: "What is the Workspace cockpit?",
+    answer:
+      "The **Workspace cockpit** at `/services/workspace` is the unified live workspace. One scope — **asset group / instrument type / family / archetype / share class / venue** — drives what every panel renders. Switch context with chips on the scope bar; the cockpit reshapes (different widgets, different mock data, different locked previews).\n\nTwo top-level surfaces share the same shell:\n\n• **DART Terminal** (`surface=terminal`) — Command, Markets, Strategies, Explain, Ops modes\n• **DART Research** (`surface=research`) — Discover, Build, Train, Validate, Allocate, Promote stages\n\nTwo orthogonal dials shape engagement: **Monitor vs Replicate** (passive watching vs hands-on stepping through trades) and **Paper vs Live** execution stream.",
+    link: { href: "/services/workspace?surface=terminal&tm=command", label: "Open the cockpit" },
+    children: [
+      {
+        id: "cockpit-scope-bar",
+        question: "How does the scope bar work?",
+        answer:
+          "The **scope bar** at the top of every cockpit page exposes 5 filter axes plus 4 dials:\n\n• **Asset group** chip (CEFI / DEFI / TRADFI / SPORTS / PREDICTION)\n• **Family** chip (ARBITRAGE_STRUCTURAL / CARRY_AND_YIELD / VOL_TRADING / ML_DIRECTIONAL / EVENT_DRIVEN)\n• **Archetype** chip (specific strategy archetype)\n• **Share class** chip (USDT / USDC / BTC / ETH / USD)\n• **Venue / protocol** chip (binance / okx / aave_v3 / lido / cme / …)\n\nDials: **Surface** (Terminal / Research / Reports / Signals / Ops), **Mode** (within Terminal: Command/Markets/Strategies/Explain/Ops; within Research: Discover/Build/Train/Validate/Allocate/Promote), **Engagement** (Monitor / Replicate), **Stream** (Paper / Live).\n\nEvery axis round-trips on the URL, so refresh and copy-paste links restore the exact cockpit shape.",
+        link: { href: "/services/workspace?surface=terminal&tm=command", label: "Try toggling chips" },
+      },
+      {
+        id: "cockpit-modes",
+        question: "What do the 5 Terminal modes do?",
+        answer:
+          "Each mode anchors a buyer-facing question:\n\n• **Command** — *What's running, what alerts fired, what's my P&L right now?* (positions / orders / fills / kill switch)\n• **Markets** — *What does the market look like in my scope?* (order books / funding / basis / vol surface / venue health)\n• **Strategies** — *What strategies are live, what config version, where's the runtime override?* (release bundles + override authoring)\n• **Explain** — *Why did P&L happen, where did execution leak, did live drift from backtest?* (P&L attribution / slippage / drift)\n• **Ops** — *Is the platform healthy, what's deploying, what's the audit trail?* (service health / incidents / recovery)\n\nMode toggles preserve scope. Same scope, different lens.",
+      },
+      {
+        id: "cockpit-research-stages",
+        question: "What do the 6 Research stages do?",
+        answer:
+          "Research stages walk a strategy from idea to live:\n\n1. **Discover** — strategy universe, family map, archetype map, locked previews of what you don't yet have\n2. **Build** — datasets, feature pipelines, instrument coverage\n3. **Train** — ML experiments, model registry, candidate scoring\n4. **Validate** — backtests, paper trading, slippage assumptions, **assumption stack vs realised drift**\n5. **Allocate** — capital sizing, risk contribution, mandate fit\n6. **Promote** — promotion readiness, config version, approval, paper→live handoff\n\nThe handoff to Terminal is a config flip: same scope, same widgets, same vocabulary — backtest to live with no re-platform.",
+        link: { href: "/services/workspace?surface=research&rs=discover", label: "Open Research" },
+      },
+      {
+        id: "cockpit-monitor-vs-replicate",
+        question: "What's Monitor vs Replicate engagement?",
+        answer:
+          "Two ways to relate to a strategy:\n\n• **Monitor** (default) — strategy runs automatically; you supervise. Surfaces kill switches, exception alerts, P&L attribution. The cockpit shows passive watching widgets.\n• **Replicate** — you walk through the strategy yourself, leg by leg. Surfaces a step-by-step trade builder, manual order pad with venue-routing helper, leg tracker, hedge calculator, paper-fill simulator. Used for demo walkthroughs, training, and validating-before-automating.\n\nToggle preserves scope and layout — only the widget bundle swaps. **Replicate always defaults to Paper stream**; switching to Live requires an explicit confirm dialog (and is disabled for demo personas).",
+      },
+      {
+        id: "cockpit-deep-link",
+        question: "Where did /services/trading/positions (and friends) go?",
+        answer:
+          "The per-asset-group trading pages and observe pages were collapsed into the cockpit. The cockpit renders all 207 widgets through scope-derived metadata — positions, orders, alerts, P&L, DeFi, sports, predictions, options, etc. all live there now.\n\nOld URLs (`/services/trading/positions`, `/services/observe/risk`, `/services/trading/defi`, …) redirect to the matching cockpit mode + scope. Bookmarks still work; you just land in the cockpit.\n\n**Preserved as deep links:** `/services/strategy-catalogue/*` (canonical strategy universe), `/services/trading/strategies/[id]` (per-strategy detail), `/services/trading/custom/[id]` (user-defined panels).",
+        link: { href: "/services/workspace?surface=terminal&tm=command", label: "Open cockpit" },
+      },
+    ],
+  },
+
+  // ── 0.5 Presets — 8 starter cockpits keyed off persona + scope ─────────────
+  {
+    id: "presets",
+    question: "What workspace presets are available?",
+    answer:
+      "Eight starter cockpits ship pre-tuned for distinct personas + scopes. Each declares a default scope, surface/mode, engagement, and widget bundle. Pick one to land in a populated cockpit instead of building from scratch.",
+    link: { href: "/services/workspace?surface=terminal&tm=command", label: "Open cockpit" },
+    children: [
+      {
+        id: "preset-arbitrage-command",
+        question: "What's the Arbitrage Command preset?",
+        answer:
+          "**Arbitrage Command** — for arbitrage-focused buyers. Default scope: CeFi+DeFi · spot/perp · ARBITRAGE_STRUCTURAL · price-dispersion / basis / funding. Cockpit surfaces: spread monitor, opportunity feed, cross-venue liquidity, leg state, hedge state, funding/basis, stale-quote alerts, execution slippage, P&L attribution. Replicate engagement adds a leg-by-leg simulator + hedge calculator + paper-fill convergence helper.",
+        link: {
+          href: "/services/workspace?surface=terminal&tm=command&fam=ARBITRAGE_STRUCTURAL",
+          label: "Open Arbitrage Command",
+        },
+      },
+      {
+        id: "preset-defi-yield",
+        question: "What's the DeFi Yield & Risk preset?",
+        answer:
+          "**DeFi Yield & Risk** — for DeFi yield / lending / staking / collateral / protocol-risk buyers. Default scope: DEFI · CARRY_AND_YIELD. Cockpit surfaces: protocol exposure, lending rates, staking yields, reward APR, collateral health, LTV, liquidation risk, bridge/chain exposure, gas, MEV alerts, protocol health. Replicate: yield-rotation builder, supply/borrow simulator, gas-cost forecast.",
+        link: {
+          href: "/services/workspace?surface=terminal&tm=command&ag=DEFI&fam=CARRY_AND_YIELD",
+          label: "Open DeFi Yield & Risk",
+        },
+      },
+      {
+        id: "preset-vol-lab",
+        question: "What's the Volatility Research Lab preset?",
+        answer:
+          "**Volatility Research Lab** — for options / vol / derivatives buyers. Default scope: option · VOL_TRADING. v1 venue scope is **Deribit + CME only** (TradFi options partial, DeFi options blocked). Surfaces: vol surface, skew, term structure, Greeks, straddle/strangle candidates, vega exposure, gamma risk, vol model fit, backtest candidates. Default engagement is Replicate: combo builder, Greek pre-trade calculator, scenario shocker, margin pre-check.",
+        link: { href: "/services/workspace?surface=research&rs=validate&fam=VOL_TRADING", label: "Open Vol Lab" },
+      },
+      {
+        id: "preset-sports-prediction",
+        question: "What's the Sports / Prediction Desk preset?",
+        answer:
+          "**Sports / Prediction Desk** — for sports / odds / prediction-market / event-driven buyers. Default scope: SPORTS+PREDICTION · EVENT_DRIVEN. Surfaces: fixtures / events, odds movement, market depth, event risk, liquidity, position exposure, execution state, arb opps, settlement. Replicate: bet ladder, stake-sizing helper, cross-book arb stepper, event-risk pre-check.",
+        link: {
+          href: "/services/workspace?surface=terminal&tm=markets&ag=SPORTS,PREDICTION",
+          label: "Open Sports / Prediction",
+        },
+      },
+      {
+        id: "preset-signals-in",
+        question: "What's the Signals-In Monitor preset?",
+        answer:
+          "**Signals-In Monitor** — for external signal providers / regulatory umbrellas / BYO-strategy clients. Surfaces: signal intake status, payload validation, signal freshness, rejected signals, routing state, execution mapping, paper/live status, reporting coverage. Monitor-only by nature (signal routing is automated).",
+        link: { href: "/services/workspace?surface=signals", label: "Open Signals-In" },
+      },
+      {
+        id: "preset-research-to-live",
+        question: "What's the Research-to-Live Pipeline preset?",
+        answer:
+          "**Research-to-Live Pipeline** — for DART Full buyers walking strategies through every maturity phase. Strategies span the full ladder: smoke → backtest_30d → paper_1d → paper_14d → pilot → live_stable. Default surface is Research/Validate; the toolbar toggles to Replicate so you can step through Discover → Build → Train → Validate → Allocate → Promote.",
+        link: { href: "/services/workspace?surface=research&rs=validate", label: "Open Research-to-Live" },
+      },
+      {
+        id: "preset-live-trading-desk",
+        question: "What's the Live Trading Desk preset?",
+        answer:
+          "**Live Trading Desk** — for traders / PMs / execution operators. Cross-asset; populated from the user's actual subscriptions (resolver-driven). Surfaces: positions, orders, fills, alerts, execution quality, risk limits, venue health, open exceptions. Replicate adds a manual order pad + venue-routing helper + slippage forecast.",
+        link: { href: "/services/workspace?surface=terminal&tm=command", label: "Open Live Trading Desk" },
+      },
+      {
+        id: "preset-executive",
+        question: "What's the Executive Overview preset?",
+        answer:
+          "**Executive Overview** — for CIOs / allocators / investors / stakeholders. Mandate-level rollups, monitor-only by nature. Surfaces: AUM, P&L, drawdown, risk, exposure, strategy health, top opportunities, incidents, reporting status. Empty state when you're not subscribed to any strategy says so explicitly (no silent demo data).",
+        link: { href: "/services/workspace?surface=reports", label: "Open Executive Overview" },
+      },
+    ],
+  },
+
+  // ── 0.6 Strategy availability — what shows, why ──────────────────────────
+  {
+    id: "availability",
+    question: "Why don't I see strategy X? (Owned vs locked vs hidden)",
+    answer:
+      "Scope decides relevance; the **StrategyAvailabilityResolver** decides visibility. Two strategies that match the same scope can be in different states for the same user. The cockpit returns one of seven states per strategy:\n\n• **Owned** — you're subscribed/allocated; renders live P&L + positions\n• **Available to request** — visible in catalogue Explore; CTA = request allocation\n• **Locked by tier** — needs a higher entitlement (e.g. DART Full); shows a contextual locked preview\n• **Locked by workflow** — needs questionnaire / KYC / mandate review\n• **Hidden** — pre-maturity, retired, or product-routing fails (never surfaced)\n• **Admin only** — internal QA / lifecycle editor\n• **Read only** — IM desk seeing client-exclusive (read but not allocate)\n\n**Rule:** the resolver runs before any strategy-backed widget renders. So if you see a strategy, you can act on it (or were shown an explicit unlock CTA).",
+    children: [
+      {
+        id: "availability-locked-preview",
+        question: "What's a locked preview / FOMO card?",
+        answer:
+          "Two flavours of locked previews exist, with different rules:\n\n• **Catalogue FOMO** (strict) — strategy-instance / allocation FOMO. Lives at `/services/strategy-catalogue` Reality + Explore tabs. Pre-maturity instances are *hidden*, product-routing failures are *hidden*; only available-to-request instances appear. CTA = human-gated allocation request.\n• **Cockpit FOMO** (looser) — workflow / capability FOMO. Lives inside the cockpit. Shows what you could *do with your existing strategies* if you upgraded a tier or completed a workflow gate. CTA = upgrade-tier or complete-questionnaire.\n\nThe locked preview text is **scope-specific**: an arbitrage user sees arbitrage-flavoured value; a DeFi user sees DeFi-flavoured value. Never generic 'Upgrade'.",
+        link: { href: "/services/strategy-catalogue", label: "Open Strategy Catalogue" },
+      },
+      {
+        id: "availability-empty-vs-unsupported",
+        question: "What's an empty vs unsupported scope state?",
+        answer:
+          "Per audit rule (every chip toggle must do *something* visible), the cockpit surfaces 4 explicit states via the `ScopeStatusBanner`:\n\n• **Match** — at least one tier-zero scenario fully matches the scope\n• **Partial match** — scope matches scenarios but some axes filter rows out\n• **Unsupported** — scope axes have no overlap with any tier-zero scenario (e.g. PREDICTION + ARBITRAGE_STRUCTURAL); banner shows + alternative scenario suggestions render\n• **Empty** — scope is wide-open; cockpit shows a representative cross-asset view\n\nNo chip combination is silently empty.",
+      },
+    ],
+  },
+
+  // ── 0.7 Configuration lifecycle — release bundles + runtime overrides ─────
+  {
+    id: "config-lifecycle",
+    question: "How does strategy config work? (Release bundles + runtime overrides + assumption stack)",
+    answer:
+      "Strategy config has three typed layers:\n\n• **Release bundle** — immutable, content-hashed snapshot frozen at promote-time. Carries strategy spec, scope envelope, allocation policy, risk limits, signed approval. Read-only after promote.\n• **Runtime override** — typed mutation layer the daily trader uses (`size_multiplier` / `pause_entries` / `venue_disable` / `treasury_route` / `risk_limit_change` / 3 more). Audited end-to-end; explain mode shows bundle baseline + override deltas + realised side by side.\n• **Assumption stack** — the USP layer. Nine layers (execution / gas / treasury / liquidation / client_flows / portfolio_rebalance / venue_routing / risk / reporting). Authored in Research/Validate, frozen at Promote, drift-checked in Terminal/Explain.\n\n**The promise:** backtest to live with no re-platform. Same scope, same widgets, same vocabulary across Discover → Validate → Promote → Live → Explain.",
+    children: [
+      {
+        id: "config-overrides",
+        question: "How do I override a running strategy's config?",
+        answer:
+          "Open the cockpit in **Terminal / Strategies** mode (or **Command** mode for ad-hoc overrides). The `RuntimeOverrideAuthoring` panel surfaces the active bundle + 8 typed override types. Pick one (e.g. *size multiplier 0.5x*), submit, and the cockpit confirms via the toast dock. The override is applied at the runtime layer; the bundle is unchanged.\n\nEvery override is auditable. Explain mode shows the bundle baseline, the override delta, and the realised P&L side by side.",
+        link: { href: "/services/workspace?surface=terminal&tm=strategies", label: "Open Strategies mode" },
+      },
+      {
+        id: "config-assumption-stack",
+        question: "What's in the assumption stack?",
+        answer:
+          "The assumption stack captures the **operating assumptions** that drive a backtest's realised performance — the things that usually break when you go live. Nine typed layers:\n\n1. **Execution** — slippage profile, latency, venue match-engine quirks\n2. **Gas** — gas-price model per chain, MEV exposure\n3. **Treasury** — share-class accounting, wallet routing\n4. **Liquidation** — LTV thresholds, liquidation cascade behaviour\n5. **Client flows** — deposit / redemption assumptions\n6. **Portfolio rebalance** — sleeve weights, risk-budget targets\n7. **Venue routing** — preferred venue, fallback ladder\n8. **Risk** — VaR model, exposure caps\n9. **Reporting** — NAV cadence, share-class reconciliation\n\nAuthored in Research/Validate, frozen at Promote, drift-tracked in Terminal/Explain (live realised vs frozen assumption).",
+        link: { href: "/services/workspace?surface=research&rs=validate", label: "Open Research / Validate" },
+      },
+      {
+        id: "config-promote",
+        question: "How does promote-to-live work?",
+        answer:
+          "Open **Research / Promote**. The `PromoteBundleForm` validates connectivity (CeFi venues / DeFi connectors / treasury wallets), freezes the assumption stack, and emits a content-hashed release bundle with approval signatures. After promote, the strategy is reachable from **Terminal / Strategies** as a running strategy with the bundle visible read-only. Runtime overrides are the only way to mutate behaviour from there.",
+        link: { href: "/services/workspace?surface=research&rs=promote", label: "Open Research / Promote" },
+      },
+    ],
+  },
+
+  // ── 0.8 Mock-mode liveness — tier-zero / demo behavior ────────────────────
+  {
+    id: "mock-mode",
+    question: "Is the demo data 'alive'? (Mock mode / tier-zero scenarios)",
+    answer:
+      "Yes. The cockpit ships with a **MockEventLoop** that drives realistic liveness on every demo session:\n\n• P&L ticks at sub-second cadence with a bounded random walk\n• Funding curves refresh every few seconds\n• Backtests progress (queued → running → completed) with realistic Sharpe + slippage\n• ML training runs land + transition to 'Promote to paper'\n• Order tickets fill ~1s after submit with synthetic slippage\n• Alerts arrive on schedule\n• Replicate-mode trades fill on paper with per-asset-group slippage profiles\n\nThe `tier-zero scenario matrix` (10 records, one per WorkspacePreset) is the SSOT for what data to show per scope. Toggle a chip → cockpit reshapes → mock data swaps to match.",
+    children: [
+      {
+        id: "mock-freeze",
+        question: "Can I freeze mock data for a screenshot?",
+        answer:
+          "Yes. Append `?freeze=true` to the URL. All MockEventLoop streams halt — P&L stops ticking, alerts stop arriving, backtests stop progressing. Used by Playwright for deterministic e2e tests and useful for clean screenshots. Append `?pace=10` to run the simulation 10× real-time for accelerated demo walkthroughs.",
+      },
+      {
+        id: "mock-scenarios",
+        question: "What's the tier-zero scenario matrix?",
+        answer:
+          "10 scenarios mapping 1:1 to the 8 starter presets (plus 2 derived):\n\n• Arbitrage Command, DeFi Yield & Risk, Volatility Lab, Sports/Prediction Desk, ML Directional, TradFi Pairs (the 6 originals)\n• Signals-In Monitor, Live Trading Desk, Executive Overview, Research-to-Live (the 4 first-class additions)\n\nEach scenario carries dense fixtures: ≥4 strategies, ≥3 positions, ≥3 backtests, ≥2 release bundles. Scope chip toggles run through the `resolveTierZeroScenario(scope)` resolver which returns matched scenarios + filtered rows + a status (match / partial_match / unsupported / empty). The resolver is the SSOT for every cockpit panel.",
+      },
+    ],
+  },
+
   // ── 1. Navigation ──────────────────────────────────────────────────────────
   {
     id: "navigation",
@@ -54,17 +255,17 @@ export const HELP_TREE: HelpNode[] = [
           },
           {
             id: "nav-trading",
-            question: "What's in the Trading service?",
+            question: "What's in the DART Terminal cockpit?",
             answer:
-              "**Trading** is the live terminal: positions, orders, P&L, market overview, DeFi, sports, predictions, options/futures, trade book, and strategy monitoring. This is where execution happens.",
-            link: { href: "/services/trading/overview", label: "Open Trading" },
+              "The **DART Terminal cockpit** is the unified live workspace. One scope (asset group, family, archetype, share class, venue) drives the whole grid; five modes shape what's foreground:\n\n• **Command** — positions, orders, fills, alerts, kill switches, P&L\n• **Markets** — order books, funding, basis, vol surface, venue health\n• **Strategies** — running strategies, configuration versions, runtime overrides\n• **Explain** — P&L attribution, execution slippage, drift vs backtest\n• **Ops** — service health, deployment, audit, recovery\n\nDeFi / sports / predictions / TradFi / options scope into Command (or Markets for vol). Toggle the chip on the scope bar — the cockpit reshapes.",
+            link: { href: "/services/workspace?surface=terminal&tm=command", label: "Open DART Terminal" },
           },
           {
             id: "nav-observe",
-            question: "What's in the Observe service?",
+            question: "Where did the Observe pages go?",
             answer:
-              "**Observe** provides real-time risk dashboards, alert management, news feed, strategy health monitoring, and system health status.",
-            link: { href: "/services/observe/health", label: "Open Observe" },
+              "Observe was folded into the Workspace cockpit. **Risk / scenarios / reconciliation** live in **Explain mode** (P&L attribution + drift). **Alerts / news** live in **Command mode**. **Strategy health** lives in **Strategies mode**. **System health / event audit / recovery** live in **Ops mode**. Same data, one shell, one scope.",
+            link: { href: "/services/workspace?surface=terminal&tm=ops", label: "Open Workspace (Ops mode)" },
           },
         ],
       },
@@ -79,7 +280,7 @@ export const HELP_TREE: HelpNode[] = [
         id: "nav-onboarding",
         question: "I'm new: where do I start?",
         answer:
-          "Start with the **Dashboard** to see your available services. Then explore:\n\n1. **Data > Instruments** to see what's tradeable\n2. **Trading > Overview** to see your portfolio\n3. **Trading > Positions** to see open positions\n4. **Observe > Alerts** to set up notifications\n\nIf you're a researcher, start with **Research > Strategy > Backtests**.",
+          "Start with the **Dashboard** to see your available services. Then explore:\n\n1. **Data > Instruments** to see what's tradeable\n2. **Workspace cockpit (Command mode)** to see your portfolio\n3. **Workspace cockpit (Command mode)** to see open positions\n4. **Workspace cockpit (Command mode)** to set up notifications\n\nIf you're a researcher, start with **Research > Strategy > Backtests**.",
         link: { href: "/dashboard", label: "Start at Dashboard" },
       },
     ],
@@ -90,15 +291,15 @@ export const HELP_TREE: HelpNode[] = [
     id: "widgets",
     question: "How do I set up and customise widgets?",
     answer:
-      "Trading pages support customisable widget layouts. Click the **Edit Layout** button in the toolbar to enter edit mode, then drag widgets to rearrange, resize, or remove them.",
-    link: { href: "/services/trading/overview", label: "Open Trading (widgets)" },
+      "The Workspace cockpit supports customisable widget layouts in addition to the scope-resolved primary grid. Click the **Edit Layout** button in the toolbar to enter edit mode, then drag widgets to rearrange, resize, or remove them.",
+    link: { href: "/services/workspace?surface=terminal&tm=command", label: "Open the Workspace cockpit" },
     children: [
       {
         id: "widgets-add",
         question: "How do I add new widgets?",
         answer:
           "In edit mode, click the **+ Add Widget** button to open the widget catalogue. Browse by category (positions, orders, charts, risk, P&L) and click to add. Widgets snap into the grid automatically. You can add the same widget type multiple times with different configurations.",
-        link: { href: "/services/trading/overview", label: "Try it on Trading Overview" },
+        link: { href: "/services/workspace?surface=terminal&tm=command", label: "Try it on the Workspace cockpit" },
       },
       {
         id: "widgets-resize",
@@ -111,7 +312,7 @@ export const HELP_TREE: HelpNode[] = [
         question: "What are workspaces?",
         answer:
           "Workspaces are saved widget layouts. You can create multiple workspaces for different workflows: e.g., one for crypto monitoring, another for DeFi execution, another for sports arb. Use the workspace dropdown in the toolbar to switch between them.",
-        link: { href: "/services/trading/overview", label: "Manage workspaces" },
+        link: { href: "/services/workspace?surface=terminal&tm=command", label: "Manage workspaces" },
         children: [
           {
             id: "workspace-create",
@@ -137,7 +338,7 @@ export const HELP_TREE: HelpNode[] = [
         id: "widgets-tabs",
         question: "Which tabs support widgets?",
         answer:
-          "Currently, widget layouts are available on all **Trading** tabs: Overview, Positions, Orders, P&L, Markets, DeFi, Sports, Predictions, Options, Book, Strategies, Alerts, and Accounts. Each tab has its own workspace settings.",
+          "Currently, widget layouts are available on the **Workspace cockpit modes** (Command, Markets, Strategies, Explain, Ops) and the surviving deep-link surfaces (custom panels, strategy detail). The cockpit uses the active scope to choose which widgets render — toggling a chip on the scope bar reshapes the grid.",
       },
     ],
   },
@@ -147,22 +348,22 @@ export const HELP_TREE: HelpNode[] = [
     id: "positions-pnl",
     question: "How can I see my positions and P&L?",
     answer:
-      "Go to **Trading > Positions** for a real-time view of all open positions across venues and asset classes. P&L is shown per-position and aggregated at portfolio level.",
-    link: { href: "/services/trading/positions", label: "Open Positions" },
+      "Go to **Workspace cockpit (Command mode)** for a real-time view of all open positions across venues and asset classes. P&L is shown per-position and aggregated at portfolio level.",
+    link: { href: "/services/workspace?surface=terminal&tm=command", label: "Open Positions" },
     children: [
       {
         id: "pnl-tab",
         question: "Where is the P&L dashboard?",
         answer:
-          "The dedicated **P&L** tab under Trading shows full P&L attribution: by strategy, venue, asset class, and time period. It includes waterfall charts, daily P&L bars, and cumulative return curves.",
-        link: { href: "/services/trading/pnl", label: "Open P&L" },
+          "The dedicated **Explain mode** in the Workspace cockpit shows full P&L attribution: by strategy, venue, asset class, and time period. It includes waterfall charts, daily P&L bars, and cumulative return curves.",
+        link: { href: "/services/workspace?surface=terminal&tm=explain", label: "Open P&L" },
       },
       {
         id: "pnl-breakdown",
         question: "How is P&L calculated?",
         answer:
           "P&L has two components:\n\n• **Realised**: profit/loss from closed trades (fill price vs entry)\n• **Unrealised**: mark-to-market on open positions (current price vs entry)\n\nFor DeFi, gas costs and slippage are attributed per-operation. Total P&L = Realised + Unrealised - Fees - Gas.",
-        link: { href: "/services/trading/pnl", label: "See P&L breakdown" },
+        link: { href: "/services/workspace?surface=terminal&tm=explain", label: "See P&L breakdown" },
       },
       {
         id: "pnl-historical",
@@ -176,21 +377,21 @@ export const HELP_TREE: HelpNode[] = [
         question: "Does P&L include DeFi gas costs?",
         answer:
           "Yes. Gas fees are tracked per-transaction and attributed to the strategy that initiated the trade. The **DeFi** tab shows gas costs broken down by chain (Ethereum, Arbitrum, etc.) and operation type (swap, flash loan, bridge, approve).",
-        link: { href: "/services/trading/defi", label: "Open DeFi tab" },
+        link: { href: "/services/workspace?surface=terminal&tm=command&ag=DEFI", label: "Open DeFi tab" },
       },
       {
         id: "pnl-orders",
         question: "Where can I see my orders?",
         answer:
-          "**Trading > Orders** shows all open, filled, and cancelled orders. Each order shows venue, instrument, side, quantity, price, fill status, and timestamps. Click an order to see fill detail.",
-        link: { href: "/services/trading/orders", label: "Open Orders" },
+          "**Workspace cockpit (Command mode)** shows all open, filled, and cancelled orders. Each order shows venue, instrument, side, quantity, price, fill status, and timestamps. Click an order to see fill detail.",
+        link: { href: "/services/workspace?surface=terminal&tm=command", label: "Open Orders" },
       },
       {
         id: "pnl-book",
         question: "What is the trade book?",
         answer:
           "The **Book** tab is a complete audit trail of every trade. It shows the full lifecycle: order placement → fill → settlement. Use it for compliance queries, debugging, or reconciliation.",
-        link: { href: "/services/trading/book", label: "Open Trade Book" },
+        link: { href: "/services/workspace?surface=terminal&tm=command", label: "Open Trade Book" },
       },
     ],
   },
@@ -200,36 +401,36 @@ export const HELP_TREE: HelpNode[] = [
     id: "defi",
     question: "How do I do a DeFi trade?",
     answer:
-      "DeFi trading is under **Trading > DeFi**. You can execute swaps (Uniswap), flash loans (Aave), and cross-chain bridges. All trades are pre-simulated on Tenderly before broadcast.",
-    link: { href: "/services/trading/defi", label: "Open DeFi" },
+      "DeFi trading is under **Workspace cockpit with DeFi scope**. You can execute swaps (Uniswap), flash loans (Aave), and cross-chain bridges. All trades are pre-simulated on Tenderly before broadcast.",
+    link: { href: "/services/workspace?surface=terminal&tm=command&ag=DEFI", label: "Open DeFi" },
     children: [
       {
         id: "defi-swap",
         question: "How do I execute a swap?",
         answer:
-          "Navigate to **Trading > DeFi**:\n\n1. Select the **chain** (Ethereum, Arbitrum, etc.)\n2. Choose token pair (e.g., WETH → USDC)\n3. Enter the amount\n4. Review the simulated output: slippage, gas estimate, effective price\n5. Click **Execute** to submit\n\nThe transaction is pre-simulated. If simulation fails, you'll see the revert reason before any gas is spent.",
-        link: { href: "/services/trading/defi", label: "Execute a swap" },
+          "Navigate to **Workspace cockpit with DeFi scope**:\n\n1. Select the **chain** (Ethereum, Arbitrum, etc.)\n2. Choose token pair (e.g., WETH → USDC)\n3. Enter the amount\n4. Review the simulated output: slippage, gas estimate, effective price\n5. Click **Execute** to submit\n\nThe transaction is pre-simulated. If simulation fails, you'll see the revert reason before any gas is spent.",
+        link: { href: "/services/workspace?surface=terminal&tm=command&ag=DEFI", label: "Execute a swap" },
       },
       {
         id: "defi-flash-loan",
         question: "What are flash loans?",
         answer:
           "Flash loans let you borrow assets without collateral for the duration of a single transaction. We support **Aave V3** flash loans. The strategy service generates the parameters (borrow amount, target operations) and the execution service handles the atomic transaction. If any step fails, the entire transaction reverts: no risk of partial execution.",
-        link: { href: "/services/trading/defi", label: "View flash loans" },
+        link: { href: "/services/workspace?surface=terminal&tm=command&ag=DEFI", label: "View flash loans" },
       },
       {
         id: "defi-chains",
         question: "Which chains are supported?",
         answer:
           "Currently supported:\n\n• **Ethereum mainnet**: Uniswap, Aave, full DEX coverage\n• **Arbitrum**: fast, low-cost swaps\n• **Optimism**: OP Stack L2\n• **Polygon**: wide token coverage\n• **Base**: Coinbase L2\n• **Sepolia testnet**: paper trading, no real funds\n\nChain selection is in the DeFi tab header.",
-        link: { href: "/services/trading/defi", label: "Select a chain" },
+        link: { href: "/services/workspace?surface=terminal&tm=command&ag=DEFI", label: "Select a chain" },
       },
       {
         id: "defi-gas",
         question: "How are gas costs tracked?",
         answer:
           "Every DeFi transaction records gas used, gas price, and total cost in ETH and USD. Costs are attributed to the strategy that initiated the trade. The P&L page includes gas as a line item. L2 chains (Arbitrum, Optimism, Base) have separate L1 data fee tracking.",
-        link: { href: "/services/trading/pnl", label: "See gas in P&L" },
+        link: { href: "/services/workspace?surface=terminal&tm=explain", label: "See gas in P&L" },
       },
     ],
   },
@@ -239,43 +440,46 @@ export const HELP_TREE: HelpNode[] = [
     id: "sports",
     question: "How do I view sports and prediction markets?",
     answer:
-      "Sports trading is under **Trading > Sports**. Prediction markets (Polymarket, etc.) are under **Trading > Predictions**.",
-    link: { href: "/services/trading/sports", label: "Open Sports" },
+      "Sports trading is under **Workspace cockpit with Sports scope**. Prediction markets (Polymarket, etc.) are under **Workspace cockpit with Prediction scope**.",
+    link: { href: "/services/workspace?surface=terminal&tm=command&ag=SPORTS", label: "Open Sports" },
     children: [
       {
         id: "sports-fixtures",
         question: "How are fixtures organised?",
         answer:
           "The **Fixtures** tab groups matches by league and date. Each fixture card shows teams, kickoff time, and best available odds across venues. Click a fixture to expand the detail panel with full market depth, head-to-head stats, form guide, and venue comparison.",
-        link: { href: "/services/trading/sports", label: "Browse fixtures" },
+        link: { href: "/services/workspace?surface=terminal&tm=command&ag=SPORTS", label: "Browse fixtures" },
       },
       {
         id: "sports-arb",
         question: "What are arbitrage opportunities?",
         answer:
           "The **Arb** tab scans odds across all connected bookmakers in real-time and identifies mispriced markets where you can guarantee profit by betting both sides. Opportunities show:\n\n• Margin percentage\n• Time to expiry\n• Stake distribution per venue\n• Auto-expire countdown",
-        link: { href: "/services/trading/sports", label: "View arb opportunities" },
+        link: { href: "/services/workspace?surface=terminal&tm=command&ag=SPORTS", label: "View arb opportunities" },
       },
       {
         id: "sports-bets",
         question: "Where do I see my bets?",
         answer:
           "The **My Bets** tab shows all open, settled, and voided bets. Each bet shows the fixture, market, odds, stake, and P&L. You can filter by sport, league, and status.",
-        link: { href: "/services/trading/sports", label: "View my bets" },
+        link: { href: "/services/workspace?surface=terminal&tm=command&ag=SPORTS", label: "View my bets" },
       },
       {
         id: "sports-predictions",
         question: "How do prediction markets work?",
         answer:
-          "**Trading > Predictions** covers event-based markets from Polymarket and other venues. Five tabs:\n\n• **Markets**: browse all active markets with volumes\n• **Trade**: place orders on specific outcomes\n• **Portfolio**: track your positions and P&L\n• **Odum Focus**: our curated picks and analysis\n• **Arb Stream**: cross-venue arbitrage detection",
-        link: { href: "/services/trading/predictions", label: "Open Predictions" },
+          "**Workspace cockpit with Prediction scope** covers event-based markets from Polymarket and other venues. Five tabs:\n\n• **Markets**: browse all active markets with volumes\n• **Trade**: place orders on specific outcomes\n• **Portfolio**: track your positions and P&L\n• **Odum Focus**: our curated picks and analysis\n• **Arb Stream**: cross-venue arbitrage detection",
+        link: { href: "/services/workspace?surface=terminal&tm=command&ag=PREDICTION", label: "Open Predictions" },
       },
       {
         id: "sports-options",
         question: "What about options and futures?",
         answer:
-          "**Trading > Options** covers traditional options and futures: TradFi and crypto. Features include expiry strip navigation, Greeks display, scenario analysis panel, and watchlist with pinned symbols.",
-        link: { href: "/services/trading/options", label: "Open Options & Futures" },
+          "**Workspace cockpit (Markets mode, Vol Lab preset)** covers traditional options and futures: TradFi and crypto. Features include expiry strip navigation, Greeks display, scenario analysis panel, and watchlist with pinned symbols.",
+        link: {
+          href: "/services/workspace?surface=terminal&tm=markets&fam=VOL_TRADING",
+          label: "Open Options & Futures",
+        },
       },
     ],
   },
@@ -297,14 +501,14 @@ export const HELP_TREE: HelpNode[] = [
         id: "filter-strategy",
         question: "Can I filter by strategy?",
         answer:
-          "Yes. The **Strategy** filter lets you view positions, P&L, and risk for a specific strategy or group. Available on Trading, Research, and Reports pages. On the **Strategies** tab, you can see all strategies in a grid view.",
-        link: { href: "/services/trading/strategies/grid", label: "View strategy grid" },
+          "Yes. The **Strategy** filter lets you view positions, P&L, and risk for a specific strategy or group. Available on Workspace, Research, and Reports surfaces. On the **Strategies** tab, you can see all strategies in a grid view.",
+        link: { href: "/services/strategy-catalogue", label: "View strategy grid" },
       },
       {
         id: "filter-venue",
         question: "Can I filter by venue or asset class?",
         answer:
-          "Yes. Use the **Venue** filter to scope to a specific exchange (Binance, Hyperliquid, Uniswap, etc.) and the **Asset Class** filter for crypto spot, crypto perps, DeFi, sports, predictions, options, etc. Available on Data, Trading, and Reports pages.",
+          "Yes. Use the **Venue** filter to scope to a specific exchange (Binance, Hyperliquid, Uniswap, etc.) and the **Asset Class** filter for crypto spot, crypto perps, DeFi, sports, predictions, options, etc. Available on Data, Workspace, and Reports surfaces.",
         link: { href: "/services/data/venues", label: "View all venues" },
       },
       {
@@ -403,43 +607,43 @@ export const HELP_TREE: HelpNode[] = [
     id: "risk",
     question: "How do I monitor risk?",
     answer:
-      "The **Observe** service provides real-time risk monitoring. Four key pages: **Health** (system status), **Risk** (exposure), **Alerts** (notifications), and **Strategy Health** (strategy-level monitoring).",
-    link: { href: "/services/observe/health", label: "Open Observe" },
+      "Risk monitoring is split across cockpit modes by ownership. **Explain mode** owns exposure, scenarios, and position recon. **Command mode** owns alerts and kill switches. **Strategies mode** owns per-strategy health. **Ops mode** owns service health, recovery, and event audit. Toggle the mode tab — same scope, different lens.",
+    link: { href: "/services/workspace?surface=terminal&tm=explain", label: "Open Explain mode" },
     children: [
       {
         id: "risk-dashboard",
         question: "What does the risk dashboard show?",
         answer:
-          "**Observe > Risk** shows:\n\n• Portfolio-level exposure by venue, asset class, and currency\n• VaR (Value at Risk) with confidence intervals\n• Margin utilisation per venue\n• Concentration risk heatmap\n• Drawdown tracking vs limits",
-        link: { href: "/services/observe/risk", label: "Open Risk Dashboard" },
+          "**Workspace cockpit (Explain mode)** shows:\n\n• Portfolio-level exposure by venue, asset class, and currency\n• VaR (Value at Risk) with confidence intervals\n• Margin utilisation per venue\n• Concentration risk heatmap\n• Drawdown tracking vs limits",
+        link: { href: "/services/workspace?surface=terminal&tm=explain", label: "Open Risk Dashboard" },
       },
       {
         id: "risk-alerts",
         question: "How do alerts work?",
         answer:
-          "**Observe > Alerts** shows all triggered alerts: position limits, drawdown thresholds, venue latency spikes, missed fills, and more. Each alert shows severity (critical/warning/info), trigger condition, timestamp, and recommended action.",
-        link: { href: "/services/observe/alerts", label: "View alerts" },
+          "**Workspace cockpit (Command mode)** shows all triggered alerts: position limits, drawdown thresholds, venue latency spikes, missed fills, and more. Each alert shows severity (critical/warning/info), trigger condition, timestamp, and recommended action.",
+        link: { href: "/services/workspace?surface=terminal&tm=command", label: "View alerts" },
       },
       {
         id: "risk-strategy-health",
         question: "How do I monitor strategy health?",
         answer:
-          "**Observe > Strategy Health** tracks each strategy's live performance vs expectations: P&L drift, fill rate, latency, and signal accuracy. Anomalies are flagged automatically.",
-        link: { href: "/services/observe/strategy-health", label: "View strategy health" },
+          "**Workspace cockpit (Strategies mode)** tracks each strategy's live performance vs expectations: P&L drift, fill rate, latency, and signal accuracy. Anomalies are flagged automatically.",
+        link: { href: "/services/workspace?surface=terminal&tm=strategies", label: "View strategy health" },
       },
       {
         id: "risk-kill-switch",
         question: "Is there an emergency kill switch?",
         answer:
-          "Yes. The **Kill Switch** panel in Trading lets you instantly:\n\n• Flatten all positions (close everything)\n• Halt execution for a specific venue\n• Halt a specific strategy\n• Halt the entire portfolio\n\nRequires confirmation to prevent accidental activation. Actions are logged for audit.",
-        link: { href: "/services/trading/overview", label: "Access Kill Switch" },
+          "Yes. The **Kill Switch** panel in the Workspace cockpit (Command mode) lets you instantly:\n\n• Flatten all positions (close everything)\n• Halt execution for a specific venue\n• Halt a specific strategy\n• Halt the entire portfolio\n\nRequires confirmation to prevent accidental activation. Actions are logged for audit.",
+        link: { href: "/services/workspace?surface=terminal&tm=command", label: "Access Kill Switch" },
       },
       {
         id: "risk-news",
         question: "Is there a news feed?",
         answer:
-          "**Observe > News** aggregates market-moving news relevant to your positions and watchlist. News items are tagged by asset, venue, and impact level.",
-        link: { href: "/services/observe/news", label: "Open News" },
+          "**Workspace cockpit (Command mode)** aggregates market-moving news relevant to your positions and watchlist. News items are tagged by asset, venue, and impact level.",
+        link: { href: "/services/workspace?surface=terminal&tm=command", label: "Open News" },
       },
     ],
   },
@@ -534,7 +738,7 @@ export const HELP_TREE: HelpNode[] = [
         id: "accounts-subscription",
         question: "What subscription tiers are available?",
         answer:
-          "Five tiers:\n\n• **Starter**: Data service only\n• **Professional**: Data + Research\n• **Trader**: Full trading + Observe\n• **Enterprise**: White-label, custom strategies, dedicated support\n• **Internal**: Full platform access (staff only)\n\nEach tier unlocks additional services and features. Contact your account manager to upgrade.",
+          "Five tiers:\n\n• **Starter**: Data service only\n• **Professional**: Data + Research\n• **Trader**: Workspace cockpit (full live trading + risk monitoring)\n• **Enterprise**: White-label, custom strategies, dedicated support\n• **Internal**: Full platform access (staff only)\n\nEach tier unlocks additional services and features. Contact your account manager to upgrade.",
       },
       {
         id: "accounts-users",
@@ -570,8 +774,8 @@ export const HELP_TREE: HelpNode[] = [
         id: "accounts-trading-accounts",
         question: "Where are my trading accounts?",
         answer:
-          "**Trading > Accounts** shows all connected trading accounts: venue credentials, balances, margin status, and connectivity. You can link new venue accounts here.",
-        link: { href: "/services/trading/accounts", label: "View trading accounts" },
+          "**Workspace cockpit (Command mode)** shows all connected trading accounts: venue credentials, balances, margin status, and connectivity. You can link new venue accounts here.",
+        link: { href: "/services/workspace?surface=terminal&tm=command", label: "View trading accounts" },
       },
     ],
   },
@@ -609,8 +813,8 @@ export const HELP_TREE: HelpNode[] = [
         id: "reports-saft",
         question: "What is the SAFT report?",
         answer:
-          "**SAFT** (Simple Agreement for Future Tokens) covers token warrant positions. **Trading > Accounts > SAFT** shows:\n\n• Active SAFT agreements with issuer and token detail\n• Vesting schedules (cliff + linear unlock)\n• Unlock timeline chart\n• Estimated value at current token price\n• Pending vs vested warrant counts\n\nSAFTs are typically long-dated: use the timeline chart to plan liquidity needs.",
-        link: { href: "/services/trading/accounts/saft", label: "View SAFT positions" },
+          "**SAFT** (Simple Agreement for Future Tokens) covers token warrant positions. **Accounts (SAFT)** in the Workspace cockpit shows:\n\n• Active SAFT agreements with issuer and token detail\n• Vesting schedules (cliff + linear unlock)\n• Unlock timeline chart\n• Estimated value at current token price\n• Pending vs vested warrant counts\n\nSAFTs are typically long-dated: use the timeline chart to plan liquidity needs.",
+        link: { href: "/services/workspace?surface=terminal&tm=command/saft", label: "View SAFT positions" },
       },
       {
         id: "reports-settlement",
@@ -655,21 +859,21 @@ export const HELP_TREE: HelpNode[] = [
         question: "What DeFi strategies are available?",
         answer:
           "Six DeFi strategy archetypes:\n\n• **Basis Trade**: long spot / short perp to capture funding rate\n• **Yield**: lending on Aave, Compound across chains\n• **Recursive Staking**: loop collateral to amplify staking yield\n• **Mean Reversion**: price reversion on DeFi pairs\n• **Momentum**: cross-chain momentum with on-chain confirmation\n• **Market Making**: concentrated liquidity provisioning (Uniswap V3)\n\nHealth Factor monitoring is available for all leveraged DeFi strategies.",
-        link: { href: "/services/trading/defi", label: "Open DeFi trading" },
+        link: { href: "/services/workspace?surface=terminal&tm=command&ag=DEFI", label: "Open DeFi trading" },
         children: [
           {
             id: "family-defi-hf",
             question: "What is Health Factor and why does it matter?",
             answer:
               "**Health Factor (HF)** measures collateral safety in lending protocols:\n\n• **HF > 1.5**: safe zone\n• **1.2 ≤ HF < 1.5**: deleverage warning\n• **1.0 ≤ HF < 1.2**: emergency exit zone\n• **HF < 1.0**: liquidation by protocol\n\nThe Risk > Margin page shows the HF time series. Set alerts at HF 1.5 to get early warning.",
-            link: { href: "/services/observe/risk", label: "View Health Factor chart" },
+            link: { href: "/services/workspace?surface=terminal&tm=explain", label: "View Health Factor chart" },
           },
           {
             id: "family-defi-chains",
             question: "Which chains are used for DeFi strategies?",
             answer:
               "Strategies can run across: Ethereum, Arbitrum, Optimism, Polygon, Base, and BSC. Chain selection is in the DeFi strategy config panel. The platform uses the RPC URL registry in UAC: no custom RPC needed.",
-            link: { href: "/services/trading/defi", label: "Configure chain" },
+            link: { href: "/services/workspace?surface=terminal&tm=command&ag=DEFI", label: "Configure chain" },
           },
         ],
       },
@@ -678,21 +882,24 @@ export const HELP_TREE: HelpNode[] = [
         question: "What sports strategies are available?",
         answer:
           "Three sports strategy archetypes:\n\n• **Arbitrage**: cross-bookmaker guaranteed profit on mispriced odds\n• **Accumulator**: multi-leg combo bets with ML probability weighting\n• **Model-Based**: ML model signals vs market odds (edge extraction)\n\nThe Sports Arb Scanner runs continuously across 15 bookmakers with ms-level latency.",
-        link: { href: "/services/trading/sports", label: "Open Sports trading" },
+        link: { href: "/services/workspace?surface=terminal&tm=command&ag=SPORTS", label: "Open Sports trading" },
         children: [
           {
             id: "family-sports-arb",
             question: "How does sports arbitrage work?",
             answer:
               "The arb scanner identifies markets where the combined back+lay (or back+back) odds imply a guaranteed profit regardless of outcome. Each opportunity shows:\n\n• Gross margin %\n• Stake distribution per venue\n• Time to expiry\n• Recommended bet sizes\n\nOpportunities decay quickly: the scanner is optimised for sub-second detection.",
-            link: { href: "/services/trading/sports", label: "View arb opportunities" },
+            link: {
+              href: "/services/workspace?surface=terminal&tm=command&ag=SPORTS",
+              label: "View arb opportunities",
+            },
           },
           {
             id: "family-sports-accumulators",
             question: "What are accumulators?",
             answer:
-              "Accumulators (accas) combine multiple match outcomes into a single bet. The payout multiplies: 4 legs at 2.0 odds = 16x return. The platform's ML models assign probability to each leg and recommend stakes via Kelly criterion.\n\nUse **Trading > Sports > My Bets** to track acca performance.",
-            link: { href: "/services/trading/sports", label: "View accumulators" },
+              "Accumulators (accas) combine multiple match outcomes into a single bet. The payout multiplies: 4 legs at 2.0 odds = 16x return. The platform's ML models assign probability to each leg and recommend stakes via Kelly criterion.\n\nUse the **Workspace cockpit with Sports scope (My Bets panel)** to track acca performance.",
+            link: { href: "/services/workspace?surface=terminal&tm=command&ag=SPORTS", label: "View accumulators" },
           },
         ],
       },
@@ -701,14 +908,14 @@ export const HELP_TREE: HelpNode[] = [
         question: "What options strategies are available?",
         answer:
           "Options strategies cover:\n\n• **Spreads**: bull/bear call or put spreads\n• **Straddles**: long vol (buy call + put at same strike)\n• **Strangles**: cheaper vol play at OTM strikes\n• **Iron Condors**: range-bound premium collection\n• **Covered calls**: yield enhancement on long positions\n\nThe Options tab has a Greeks display, expiry strip navigation, and a scenario P&L panel.",
-        link: { href: "/services/trading/options", label: "Open Options" },
+        link: { href: "/services/workspace?surface=terminal&tm=markets&fam=VOL_TRADING", label: "Open Options" },
       },
       {
         id: "family-predictions",
         question: "What prediction market strategies are available?",
         answer:
           "Prediction market strategies use Polymarket and binary event venues:\n\n• **Market Making**: provide liquidity on both sides of a binary market\n• **Arbitrage**: cross-venue mispricing detection\n• **Model-Based**: ML probability vs market-implied probability\n\nThe Predictions tab has five sub-tabs: Markets, Trade, Portfolio, Odum Focus, and Arb Stream.",
-        link: { href: "/services/trading/predictions", label: "Open Predictions" },
+        link: { href: "/services/workspace?surface=terminal&tm=command&ag=PREDICTION", label: "Open Predictions" },
       },
     ],
   },
@@ -718,36 +925,36 @@ export const HELP_TREE: HelpNode[] = [
     id: "execution",
     question: "How does order execution work?",
     answer:
-      "Orders are routed through the execution service with smart order routing, algo selection, and venue-level TCA. View order status under **Trading > Orders**.",
-    link: { href: "/services/trading/orders", label: "Open Orders" },
+      "Orders are routed through the execution service with smart order routing, algo selection, and venue-level TCA. View order status under **Workspace cockpit (Command mode)**.",
+    link: { href: "/services/workspace?surface=terminal&tm=command", label: "Open Orders" },
     children: [
       {
         id: "exec-orders",
         question: "How do I place an order?",
         answer:
-          "From any Trading page, use the **Order Entry** widget or the **Terminal** tab for a full-featured order ticket. Select instrument, side (buy/sell), quantity, order type (market/limit/stop), and submit.",
-        link: { href: "/services/trading/terminal", label: "Open Terminal" },
+          "From the Workspace cockpit (Command mode), use the **Order Entry** widget or the **Terminal** tab for a full-featured order ticket. Select instrument, side (buy/sell), quantity, order type (market/limit/stop), and submit.",
+        link: { href: "/services/workspace?surface=terminal&tm=command", label: "Open Terminal" },
       },
       {
         id: "exec-algos",
         question: "What execution algorithms are available?",
         answer:
           "The platform supports TWAP, VWAP, iceberg, sniper, and custom algos. Algorithm selection is in the order ticket: choose based on urgency, size, and market impact requirements.",
-        link: { href: "/services/trading/terminal", label: "View algo options" },
+        link: { href: "/services/workspace?surface=terminal&tm=command", label: "View algo options" },
       },
       {
         id: "exec-bundles",
         question: "What are trade bundles?",
         answer:
-          "**Trading > Bundles** lets you group multiple orders into a single atomic package: e.g., buy BTC on Binance and sell on Hyperliquid simultaneously. Bundles execute all-or-nothing.",
-        link: { href: "/services/trading/defi/bundles", label: "Open Bundles" },
+          "**Workspace cockpit (Strategies mode, Promote stage)** lets you group multiple orders into a single atomic package: e.g., buy BTC on Binance and sell on Hyperliquid simultaneously. Bundles execute all-or-nothing.",
+        link: { href: "/services/workspace?surface=terminal&tm=command&ag=DEFI", label: "Open Bundles" },
       },
       {
         id: "exec-instructions",
         question: "What are trading instructions?",
         answer:
-          "**Trading > Instructions** shows pending and executed trading instructions from the strategy service. Each instruction specifies instrument, direction, size, and urgency. Instructions are routed to the execution service for fulfilment.",
-        link: { href: "/services/trading/instructions", label: "View Instructions" },
+          "**Workspace cockpit (Strategies mode)** shows pending and executed trading instructions from the strategy service. Each instruction specifies instrument, direction, size, and urgency. Instructions are routed to the execution service for fulfilment.",
+        link: { href: "/services/workspace?surface=terminal&tm=strategies", label: "View Instructions" },
       },
     ],
   },

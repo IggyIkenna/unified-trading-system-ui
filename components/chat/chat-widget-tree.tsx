@@ -20,7 +20,7 @@ const GREETING: ChatMessage = {
   id: "greeting",
   role: "bot",
   content:
-    "Hi! I'm the Odum Research assistant. I can help you navigate the platform, set up widgets, find your P&L, and more. What would you like to know?",
+    "Hi! I'm the Odum Research assistant. I can answer questions about the **Workspace cockpit** (scope, modes, presets), strategy lifecycle (Discover → Promote → Live), config (release bundles + runtime overrides + assumption stack), and locked-preview FOMO. What would you like to know?",
   options: HELP_TREE,
 };
 
