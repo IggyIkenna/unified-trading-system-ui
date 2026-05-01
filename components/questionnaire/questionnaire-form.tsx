@@ -398,6 +398,16 @@ export function QuestionnaireForm({ returnPath, compact = false }: Questionnaire
         </>
       )}
 
+      <div
+        className={`${compact ? "mb-6" : "mt-6"} rounded-md border border-amber-500/30 bg-amber-500/5 px-4 py-3 text-sm text-amber-200`}
+      >
+        <p className="font-medium">Complete this in one go.</p>
+        <p className="mt-1 text-xs text-amber-300/80">
+          About two minutes. This short questionnaire does not auto-save, so finish in this session. Submit to unlock
+          your briefings access; we will email your code in case you come back later.
+        </p>
+      </div>
+
       <form onSubmit={onSubmit} className={compact ? "space-y-8" : "mt-8 space-y-8"} data-testid="questionnaire-form">
         <fieldset data-testid="axis-asset-groups">
           <legend className="font-medium">1. Which asset groups interest you?</legend>

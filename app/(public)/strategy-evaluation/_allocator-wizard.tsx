@@ -284,6 +284,14 @@ export default function AllocatorWizard({
         </p>
       </header>
 
+      <div className="rounded-md border border-sky-500/30 bg-sky-500/5 px-4 py-3 text-sm text-sky-200">
+        <p className="font-medium">Your answers save automatically as you go.</p>
+        <p className="mt-1 text-xs text-sky-300/80">
+          You can close the tab and come back later. Just open this page again from the same browser (Chrome to Chrome,
+          Firefox to Firefox) and your draft is right where you left it.
+        </p>
+      </div>
+
       <ol className="flex flex-wrap gap-2 text-xs">
         {STEPS.map((s) => (
           <li

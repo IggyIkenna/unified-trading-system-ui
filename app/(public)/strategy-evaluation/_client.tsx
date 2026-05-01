@@ -975,6 +975,14 @@ export default function StrategyEvaluationFormClient({
         </div>
       )}
 
+      <div className="mb-6 rounded-md border border-sky-500/30 bg-sky-500/5 px-4 py-3 text-sm text-sky-200">
+        <p className="font-medium">Your answers save automatically as you go.</p>
+        <p className="mt-1 text-xs text-sky-300/80">
+          You can close the tab and come back later. Just open this page again from the same browser (Chrome to Chrome,
+          Firefox to Firefox) and your draft is right where you left it.
+        </p>
+      </div>
+
       {/* Wizard stepper — shows progress + lets the user jump back to any earlier step. */}
       <div className="mb-8">
         <div className="flex items-center gap-1 mb-3" aria-label="Form progress">
