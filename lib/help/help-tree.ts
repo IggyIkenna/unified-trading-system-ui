@@ -5,7 +5,14 @@
  *
  * Each node can have a `link` (href + label) that renders as a clickable
  * navigation shortcut in the chat bubble.
+ *
+ * The curated tree below covers architectural primitives. The full
+ * catalogue (widgets / archetypes / families / asset groups) is appended
+ * at module load via help-tree-generated.ts so the bot stays in sync
+ * with the runtime SSOTs (no drift when register.ts files change).
  */
+
+import { generateCatalogueHelpNode } from "./help-tree-generated";
 
 export interface HelpNode {
   id: string;
@@ -15,7 +22,7 @@ export interface HelpNode {
   children?: HelpNode[];
 }
 
-export const HELP_TREE: HelpNode[] = [
+const CURATED_HELP_TREE: HelpNode[] = [
   // ── 0. Workspace cockpit — the unified live workspace ─────────────────────
   // Cockpit is the SSOT for live trading + research. Every other section
   // (positions, P&L, DeFi, sports, options, …) renders inside it via the
@@ -990,3 +997,15 @@ export const HELP_TREE: HelpNode[] = [
     ],
   },
 ];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// HELP_TREE — curated nodes + generated catalogue branch.
+//
+// The generated branch derives one node per registered widget (~207), one
+// per archetype (18), one per family (8), and one per asset group (5).
+// Search via flattenTree picks them up automatically; the menu surfaces
+// them via the single "Browse the catalogue" entry so the curated nav
+// stays clean.
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const HELP_TREE: HelpNode[] = [...CURATED_HELP_TREE, generateCatalogueHelpNode()];

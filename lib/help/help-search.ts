@@ -98,6 +98,27 @@ const SYNONYMS: Record<string, string[]> = {
   aggregator: ["predictions", "multi-market", "combine"],
   rebalance: ["drift", "allocation", "target", "model", "portfolio"],
   notification: ["alert", "push", "mobile", "email", "telegram"],
+  // ── Catalogue vocabulary — widgets, archetypes, families, asset groups ──
+  // Synonyms are added to the query token set; keep them surgical. Avoid
+  // explosive expansion (family → carry → arbitrage → ...) because that
+  // floods scoring across unrelated nodes.
+  catalogue: ["browse", "catalog"],
+  catalog: ["catalogue", "browse"],
+  archetype: ["archetypes"],
+  archetypes: ["archetype"],
+  family: ["families"],
+  families: ["family"],
+  basis: ["carry", "perp", "dated", "staked"],
+  recursive: ["staked", "leverage", "loop"],
+  liquidation: ["capture", "flash", "loan", "aave"],
+  dispersion: ["arbitrage", "cross-venue", "cex-dex"],
+  smile: ["iv", "vol", "implied", "skew"],
+  greek: ["delta", "gamma", "vega", "theta"],
+  greeks: ["greek"],
+  cefi: ["centralised", "binance", "okx", "bybit", "deribit", "hyperliquid", "kraken"],
+  defi: ["decentralised", "uniswap", "aave", "morpho", "compound", "lido", "jito", "eigenlayer"],
+  tradfi: ["traditional", "cme", "futures", "es", "nq", "vix", "etf"],
+  prediction: ["predictions", "polymarket", "event", "binary"],
   // ── Cockpit / workspace vocabulary ──────────────────────────────────────
   cockpit: ["workspace", "terminal", "dart", "command", "shell"],
   scope: ["filter", "asset group", "family", "archetype", "venue", "share class"],
