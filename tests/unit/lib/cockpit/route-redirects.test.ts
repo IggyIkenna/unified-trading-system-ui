@@ -1,10 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import {
-  COCKPIT_ROUTE_REDIRECTS,
-  cockpitAnchorForPath,
-  isCataloguePath,
-} from "@/lib/cockpit/route-redirects";
+import { COCKPIT_ROUTE_REDIRECTS, cockpitAnchorForPath, isCataloguePath } from "@/lib/cockpit/route-redirects";
 
 describe("COCKPIT_ROUTE_REDIRECTS — table integrity", () => {
   it("ships at least 20 mappings (Trading + Observe)", () => {
@@ -35,7 +31,8 @@ describe("cockpitAnchorForPath", () => {
     expect(cockpitAnchorForPath("/services/trading/markets")?.mode).toBe("markets");
     expect(cockpitAnchorForPath("/services/trading/strategies")?.mode).toBe("strategies");
     expect(cockpitAnchorForPath("/services/observe/reconciliation")?.mode).toBe("explain");
-    expect(cockpitAnchorForPath("/services/observe/risk")?.mode).toBe("ops");
+    // 2026-04-30 audit fix: risk is attribution-flavoured, not service-health (Ops).
+    expect(cockpitAnchorForPath("/services/observe/risk")?.mode).toBe("explain");
   });
 
   it("prefix-match resolves nested routes (e.g. /options/combos → markets)", () => {

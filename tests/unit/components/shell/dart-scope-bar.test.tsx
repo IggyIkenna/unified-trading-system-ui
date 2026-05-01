@@ -203,11 +203,20 @@ describe("DartScopeBar — active filter chips render in expanded body", () => {
     expect(within(body).getByText("CARRY_BASIS_PERP")).toBeTruthy();
   });
 
-  it("shows 'none — viewing all strategies' when no filters", async () => {
+  it("renders editable chip rows with 'all' placeholder when no filters set", async () => {
+    // 2026-04-30 polish-pass-1: the read-only "none — viewing all strategies"
+    // copy was replaced with editable chip rows. When a row has no chips
+    // selected, the placeholder is "all" inline next to the axis label.
     const user = userEvent.setup();
     render(<DartScopeBar />);
     await user.click(screen.getByTestId("dart-scope-bar-toggle"));
-    expect(screen.getByText(/none — viewing all strategies/i)).toBeTruthy();
+    // 6 axis rows render: ag, it, fam, arch, sc, venue.
+    expect(screen.getByTestId("scope-chip-axis-ag")).toBeTruthy();
+    expect(screen.getByTestId("scope-chip-axis-fam")).toBeTruthy();
+    expect(screen.getByTestId("scope-chip-axis-arch")).toBeTruthy();
+    expect(screen.getByTestId("scope-chip-axis-sc")).toBeTruthy();
+    expect(screen.getByTestId("scope-chip-axis-it")).toBeTruthy();
+    expect(screen.getByTestId("scope-chip-axis-venue")).toBeTruthy();
   });
 });
 
