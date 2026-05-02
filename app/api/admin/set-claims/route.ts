@@ -46,7 +46,12 @@ export async function POST(request: Request) {
     if (!adminClaim && !isAdminEmail(decoded.email)) {
       return NextResponse.json({ ok: false, reason: "forbidden" }, { status: 403 });
     }
-    callerSuperAdmin = isSuperAdminClaim(decoded);
+    callerSuperAdmin = isSuperAdminClaim({
+      role: decoded["role"],
+      admin: decoded["admin"],
+      superAdmin: decoded["superAdmin"],
+      entitlements: decoded["entitlements"],
+    });
   } catch {
     return NextResponse.json({ ok: false, reason: "invalid_token" }, { status: 401 });
   }

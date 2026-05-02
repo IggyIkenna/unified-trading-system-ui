@@ -68,7 +68,7 @@ function HomeStartReviewButton({
   return (
     <Button asChild size={size} variant={variant}>
       <Link href="/start-your-review" onClick={() => trackEvent("homepage_start_review_click", { source })}>
-        Start Your Strategy &amp; Infrastructure Review
+        Start Your Strategy and Infrastructure Review
         <ArrowRight className="ml-2 size-4" />
       </Link>
     </Button>
@@ -247,9 +247,16 @@ function Hero() {
             className="mx-auto mt-7 max-w-2xl text-pretty text-base leading-relaxed md:text-lg motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700"
             style={{ color: COLORS.textSecondary, animationDelay: "480ms", animationFillMode: "both" }}
           >
-            Odum helps institutional clients design, build, and operate systematic trading capabilities across digital
-            assets, traditional markets, sports, and prediction markets. Bring your own strategies — we protect your IP
-            — or use ours; either way, you get tailored builds, infrastructure, and regulated operating models.
+            Odum helps institutional clients design, deploy and operate systematic trading capabilities across digital
+            assets, traditional markets, sports and prediction markets.
+          </p>
+          <p
+            className="mx-auto mt-5 max-w-2xl text-pretty text-base leading-relaxed md:text-lg motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700"
+            style={{ color: COLORS.textSecondary, animationDelay: "560ms", animationFillMode: "both" }}
+          >
+            Bring us a strategy, venue, dataset, execution challenge or operating model. We help shape the solution,
+            protect clear IP boundaries and provide the infrastructure, implementation and regulated operating support
+            needed to run it.
           </p>
           <div
             className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700"
@@ -374,7 +381,7 @@ const WAYS_CLIENTS_USE_ODUM: readonly WayClientsUseOdum[] = [
     title: "Build a new trading capability",
     summary: "Research-to-execution infrastructure for teams launching from scratch.",
     bullets: [
-      "Bring strategies, or build them with us — research, signal generation, execution, monitoring, reporting end to end.",
+      "Bring strategies, or design them with us — research, signal generation, execution, monitoring, and reporting on one operating surface.",
       "Live ops handover from day one or staged over time.",
       "Bespoke configurations reviewed case by case.",
     ],
@@ -387,7 +394,7 @@ const WAYS_CLIENTS_USE_ODUM: readonly WayClientsUseOdum[] = [
     title: "Upgrade fragmented trading infrastructure",
     summary: "Consolidate data, research, execution, monitoring, and reporting onto one operating surface.",
     bullets: [
-      "Replace point-tool sprawl with one system that scales with the strategy.",
+      "Replace point-tool sprawl with one system that grows with the mandate without rebuild.",
       "Keep your existing IP and signal logic; plug into Odum's surrounding stack.",
       "Migration paths reviewed case by case.",
     ],
@@ -440,12 +447,12 @@ const WAYS_CLIENTS_USE_ODUM: readonly WayClientsUseOdum[] = [
     summary:
       "Most engagements blend two or three of the above. Tell us what you're solving and we'll map the right combination.",
     bullets: [
-      "Bespoke builds and operating models reviewed case by case.",
+      "Tailored builds and operating models reviewed case by case.",
       "We tailor to your business reality, not the other way around.",
       "Start with a review and we'll route the conversation.",
     ],
     href: "/start-your-review",
-    cta: "Start Your Strategy & Infrastructure Review",
+    cta: "Start Your Strategy and Infrastructure Review",
     accent: "#8B93A0", // neutral — catch-all
   },
 ];
@@ -709,38 +716,40 @@ const ENGAGEMENT_JOURNEY: readonly {
   {
     step: "01",
     title: "Questionnaire",
-    description: "Six axes; a few minutes. Routes you to the relevant briefing pillar.",
+    description: "Tell us where you are across six axes; we point you at the briefing that fits.",
   },
   {
     step: "02",
     title: "Briefings",
-    description: "Three pillars; gated material covering structure, mechanics, and scope.",
+    description: "Walk through how Odum approaches your route — structure, mechanics, and scope — before we book time.",
   },
   {
     step: "03",
     title: "Initial call",
-    description: "If the briefings line up, a focused call rather than a generic intro.",
+    description:
+      "If the briefings resonate, a focused conversation about your problem and what an engagement could look like.",
   },
   {
     step: "04",
     title: "Strategy Evaluation",
-    description: "Structured DDQ covering entity, paths, risk, treasury, and governance.",
+    description:
+      "We work through your context together — entity, paths, risk, treasury, governance — staying inside your IP boundaries.",
   },
   {
     step: "05",
     title: "Strategy Review",
-    description: "A tailored pre-demo review of your route, requirements, and demo focus.",
+    description:
+      "We share a tailored read of how we'd shape the engagement — your route, requirements, and what the demo should cover.",
   },
   {
     step: "06",
     title: "Platform walkthrough",
-    description:
-      "A tailored walkthrough of the relevant workflows, followed by a self-guided review and feedback on fit.",
+    description: "We walk you through the relevant workflows, then leave you to explore and tell us what fits.",
   },
   {
     step: "07",
     title: "Commercial Tailoring",
-    description: "Once the demo confirms fit, we open the deeper catalogue, pricing, and contract shape.",
+    description: "Once fit lines up both ways, we open the deeper catalogue, pricing, and contract shape together.",
   },
 ] as const;
 
@@ -754,7 +763,8 @@ function EngagementJourney() {
               How an engagement progresses
             </h2>
             <p className="mt-4 text-base text-muted-foreground" style={{ lineHeight: 1.7 }}>
-              The funnel is intentional. Each stage filters fit on both sides and earns the next.
+              Tailored to the mandate; standardised in the path. Each stage shapes the engagement together — both sides
+              walk in with constraints clear.
             </p>
           </div>
 
@@ -887,12 +897,12 @@ function FinalCTA() {
       <div className="container px-4 py-20 md:px-6 md:py-24">
         <div className="mx-auto max-w-2xl text-center">
           <h2 id="final-cta-heading" className="text-3xl font-semibold tracking-tight md:text-4xl">
-            Start your strategy &amp; infrastructure review
+            Start your strategy and infrastructure review
           </h2>
           <p className="mt-4 text-base text-muted-foreground" style={{ lineHeight: 1.7 }}>
             Tell us where you are — building a capability, upgrading infrastructure, bringing your own strategies,
             launching under institutional controls, or accessing Odum-managed strategies. The questionnaire takes a few
-            minutes; the review is bespoke.
+            minutes; the review is tailored to your mandate.
           </p>
           <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <HomeStartReviewButton source="final" />

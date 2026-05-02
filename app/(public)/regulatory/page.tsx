@@ -55,27 +55,27 @@ const PROCESS_STEPS: readonly ProcessStep[] = [
   {
     number: "03",
     title: "Fit call",
-    body: "We confirm whether Odum, DART, an SMA route, or an affiliate pathway is relevant.",
+    body: "A focused conversation about whether Odum, DART, an SMA route, or an affiliate pathway is the right shape.",
   },
   {
     number: "04",
     title: "Strategy Evaluation",
-    body: "You provide the specifics needed to assess structure, risk, and reporting.",
+    body: "We work through your context together — structure, risk, and reporting — without asking for strategy IP.",
   },
   {
     number: "05",
     title: "Strategy Review",
-    body: "A tailored pre-demo review of your route, requirements, and demo focus.",
+    body: "We share a tailored read of how we'd shape the operating model — route, requirements, and what the demo should cover.",
   },
   {
     number: "06",
     title: "Platform walkthrough",
-    body: "A tailored walkthrough of the relevant workflows and a self-guided fit check.",
+    body: "We walk you through the relevant workflows, then leave you to explore and check fit.",
   },
   {
     number: "07",
     title: "Commercial Tailoring",
-    body: "Deeper catalogue, structure, and contract shape against your specifics.",
+    body: "We open the deeper catalogue, structure, and contract shape against your specifics — both sides walk in with constraints clear.",
   },
 ];
 
@@ -256,7 +256,7 @@ export default function RegulatoryPage() {
                       <span>
                         <span className="block font-medium text-foreground">{SERVICE_LABELS.dart.marketing}</span>
                         <span className="mt-1 block text-xs leading-relaxed text-muted-foreground">
-                          Build, run, monitor, or scale strategies through Odum&rsquo;s infrastructure.
+                          Design, deploy, operate, or evolve strategies through Odum&rsquo;s infrastructure.
                         </span>
                       </span>
                       <ArrowRight className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
