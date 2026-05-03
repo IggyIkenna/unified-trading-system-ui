@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useCallback, useState } from "react";
 import { toast } from "sonner";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 import {
   useRiskAlertStream,
   type RiskAlertStreamEvent,
@@ -35,7 +35,7 @@ const MAX_FEED_SIZE = 50;
  * Also accumulates a rolling feed of alerts for inline dashboard display.
  */
 export function useRiskAlertNotifications() {
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
   const isLive = scope.mode === "live";
 
   const [alertFeed, setAlertFeed] = useState<RiskAlertStreamEvent[]>([]);

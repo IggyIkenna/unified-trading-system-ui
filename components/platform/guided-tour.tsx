@@ -3,10 +3,7 @@
 import * as React from "react";
 import dynamic from "next/dynamic";
 
-const Joyride = dynamic(
-  () => import("react-joyride").then((mod) => mod.Joyride),
-  { ssr: false },
-);
+const Joyride = dynamic(() => import("react-joyride").then((mod) => mod.Joyride), { ssr: false });
 
 const TOUR_STEPS = [
   {
@@ -16,15 +13,14 @@ const TOUR_STEPS = [
     title: "Global Scope Filters",
   },
   {
-    target: '[href="/services/trading/overview"]',
+    target: '[href="/services/workspace?surface=terminal&tm=command"]',
     content:
       "The Trading Overview shows your P&L, strategy performance, alerts, and service health. Click into the Terminal tab to trade.",
     title: "Trading Overview",
   },
   {
     target: '[data-slot="debug-footer"]',
-    content:
-      "In demo mode, use Reset Demo to clear all state, or Switch Persona to test different access levels.",
+    content: "In demo mode, use Reset Demo to clear all state, or Switch Persona to test different access levels.",
     title: "Demo Controls",
   },
 ];
@@ -42,17 +38,12 @@ export function GuidedTour() {
     }
   }, []);
 
-  const handleEvent = React.useCallback(
-    (event: { type: string; status?: string }) => {
-      if (event.status === "finished" || event.status === "skipped") {
-        localStorage.setItem(STORAGE_KEY, "true");
-        setRun(false);
-      }
-    },
-    [],
-  );
+  const handleEvent = React.useCallback((event: { type: string; status?: string }) => {
+    if (event.status === "finished" || event.status === "skipped") {
+      localStorage.setItem(STORAGE_KEY, "true");
+      setRun(false);
+    }
+  }, []);
 
-  return (
-    <Joyride steps={TOUR_STEPS} run={run} continuous onEvent={handleEvent} />
-  );
+  return <Joyride steps={TOUR_STEPS} run={run} continuous onEvent={handleEvent} />;
 }

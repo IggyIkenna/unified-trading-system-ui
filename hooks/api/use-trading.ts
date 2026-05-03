@@ -2,7 +2,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { apiFetch } from "@/lib/api/fetch";
 import type { PaginatedResponse } from "@/lib/api/types";
 import { withMode } from "@/lib/api/with-mode";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 import type { TradingClient, TradingOrganization } from "@/lib/types/trading";
 import type { PnLBreakdown, TimeSeriesPoint } from "@/lib/mocks/fixtures/trading-data";
 import { useQuery } from "@tanstack/react-query";
@@ -65,13 +65,13 @@ interface LiveBatchDeltaResponse {
 
 export function useTradingOrgs() {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery<TradingOrgsResponse>({
     queryKey: ["trading-organizations", user?.id, scope.mode],
     queryFn: () =>
       apiFetch(
-        withMode("/api/trading/organizations", scope.mode, scope.asOfDatetime),
+        withMode("/api/trading/organizations", scope.mode, scope.asOfTs ?? undefined),
         token,
       ) as Promise<TradingOrgsResponse>,
     enabled: !!user,
@@ -81,13 +81,13 @@ export function useTradingOrgs() {
 
 export function useTradingClients() {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery<TradingClientsResponse>({
     queryKey: ["trading-clients", user?.id, scope.mode],
     queryFn: () =>
       apiFetch(
-        withMode("/api/trading/clients", scope.mode, scope.asOfDatetime),
+        withMode("/api/trading/clients", scope.mode, scope.asOfTs ?? undefined),
         token,
       ) as Promise<TradingClientsResponse>,
     enabled: !!user,
@@ -97,12 +97,12 @@ export function useTradingClients() {
 
 export function useTradingPnl() {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery<PnLBreakdown>({
     queryKey: ["trading-pnl", user?.id, scope.mode],
     queryFn: () =>
-      apiFetch(withMode("/api/trading/pnl", scope.mode, scope.asOfDatetime), token) as Promise<PnLBreakdown>,
+      apiFetch(withMode("/api/trading/pnl", scope.mode, scope.asOfTs ?? undefined), token) as Promise<PnLBreakdown>,
     enabled: !!user,
     refetchInterval: scope.mode === "batch" ? false : undefined,
   });
@@ -110,13 +110,13 @@ export function useTradingPnl() {
 
 export function useTradingTimeseries() {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery<TradingTimeseriesResponse>({
     queryKey: ["trading-timeseries", user?.id, scope.mode],
     queryFn: () =>
       apiFetch(
-        withMode("/api/trading/timeseries", scope.mode, scope.asOfDatetime),
+        withMode("/api/trading/timeseries", scope.mode, scope.asOfTs ?? undefined),
         token,
       ) as Promise<TradingTimeseriesResponse>,
     enabled: !!user,
@@ -126,13 +126,13 @@ export function useTradingTimeseries() {
 
 export function useTradingPerformance() {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery<TradingPerformanceResponse>({
     queryKey: ["trading-performance", user?.id, scope.mode],
     queryFn: () =>
       apiFetch(
-        withMode("/api/trading/performance", scope.mode, scope.asOfDatetime),
+        withMode("/api/trading/performance", scope.mode, scope.asOfTs ?? undefined),
         token,
       ) as Promise<TradingPerformanceResponse>,
     enabled: !!user,
@@ -142,7 +142,7 @@ export function useTradingPerformance() {
 
 export function useTradingLiveBatchDelta() {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery<LiveBatchDeltaResponse>({
     queryKey: ["trading-live-batch-delta", user?.id, scope.mode],

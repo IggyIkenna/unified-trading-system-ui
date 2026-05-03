@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { typedFetch, type GatewayApiResponse } from "@/lib/api/typed-fetch";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 import {
   usePositionStream,
   type PositionStreamEvent,
@@ -63,7 +63,7 @@ function mergePositionEvent(
 
 export function usePositions(mode?: string, asOf?: string) {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
   const queryClient = useQueryClient();
 
   const params = new URLSearchParams();
@@ -104,7 +104,7 @@ export function usePositions(mode?: string, asOf?: string) {
 
 export function usePositionsSummary() {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
   const queryClient = useQueryClient();
 
   const isLive = scope.mode === "live";
@@ -145,7 +145,7 @@ export function usePositionsSummary() {
 
 export function useBalances() {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
   const queryClient = useQueryClient();
 
   const isLive = scope.mode === "live";

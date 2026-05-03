@@ -18,7 +18,7 @@ import {
   type TradingEntitlement,
 } from "@/lib/config/auth";
 
-type GateEntitlement = Entitlement | TradingEntitlement | StrategyFamilyEntitlement;
+export type GateEntitlement = Entitlement | TradingEntitlement | StrategyFamilyEntitlement;
 
 interface EntitlementGateProps {
   entitlement?: GateEntitlement;
@@ -49,7 +49,7 @@ const ENTITLEMENT_HIERARCHY: Record<string, string[]> = {
 };
 
 export function hasAnyEntitlement(
-  required: GateEntitlement[],
+  required: ReadonlyArray<string | TradingEntitlement | StrategyFamilyEntitlement>,
   checker: (e: Entitlement) => boolean,
   userEnts: readonly (string | TradingEntitlement | StrategyFamilyEntitlement)[] = [],
 ): boolean {

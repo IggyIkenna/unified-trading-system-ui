@@ -28,7 +28,8 @@ function fakeWidget(id: string, opts?: { singleton?: boolean }): WidgetDefinitio
     label: id,
     description: id,
     icon: LayoutDashboard,
-    category: "test",
+    assetGroup: "PLATFORM",
+    catalogGroup: "test",
     minW: 1,
     minH: 1,
     defaultW: 4,
@@ -236,9 +237,7 @@ describe("workspace-store — layouts + widgets", () => {
 
   it("updateLayout replaces layouts on active", () => {
     act(() =>
-      useWorkspaceStore.getState().updateLayout("t", [
-        { widgetId: "x", instanceId: "i", x: 0, y: 0, w: 1, h: 1 },
-      ]),
+      useWorkspaceStore.getState().updateLayout("t", [{ widgetId: "x", instanceId: "i", x: 0, y: 0, w: 1, h: 1 }]),
     );
     const ws = useWorkspaceStore.getState().workspaces["t"]?.find((w) => w.id === "w1");
     expect(ws?.layouts.length).toBe(1);
@@ -481,9 +480,7 @@ describe("workspace-store — snapshots + undo", () => {
   it("restoreSnapshot restores layouts and pushes undo", () => {
     let snapId: string | null = null;
     act(() => {
-      useWorkspaceStore.getState().updateLayout("t", [
-        { widgetId: "a", instanceId: "a-1", x: 0, y: 0, w: 1, h: 1 },
-      ]);
+      useWorkspaceStore.getState().updateLayout("t", [{ widgetId: "a", instanceId: "a-1", x: 0, y: 0, w: 1, h: 1 }]);
       snapId = useWorkspaceStore.getState().saveSnapshot("t", "Initial");
       useWorkspaceStore.getState().updateLayout("t", []);
     });
@@ -518,9 +515,7 @@ describe("workspace-store — snapshots + undo", () => {
   it("undo reverts the active workspace + pops the stack", () => {
     act(() => {
       useWorkspaceStore.getState().pushUndo("t");
-      useWorkspaceStore.getState().updateLayout("t", [
-        { widgetId: "a", instanceId: "a-1", x: 0, y: 0, w: 1, h: 1 },
-      ]);
+      useWorkspaceStore.getState().updateLayout("t", [{ widgetId: "a", instanceId: "a-1", x: 0, y: 0, w: 1, h: 1 }]);
     });
     let ok = false;
     act(() => {
@@ -729,9 +724,7 @@ describe("workspace-store — profiles", () => {
       ok = useWorkspaceStore.getState().importProfile(payload);
     });
     expect(ok).toBe(true);
-    expect(
-      useWorkspaceStore.getState().profiles.some((p) => p.name === "Legacy Import"),
-    ).toBe(true);
+    expect(useWorkspaceStore.getState().profiles.some((p) => p.name === "Legacy Import")).toBe(true);
   });
 
   it("importProfile delegates v1 payload to importWorkspace", () => {
@@ -748,9 +741,7 @@ describe("workspace-store — profiles", () => {
 
   it("importProfile returns false for bad JSON + unknown versions", () => {
     expect(useWorkspaceStore.getState().importProfile("{broken")).toBe(false);
-    expect(
-      useWorkspaceStore.getState().importProfile(JSON.stringify({ version: 99 })),
-    ).toBe(false);
+    expect(useWorkspaceStore.getState().importProfile(JSON.stringify({ version: 99 }))).toBe(false);
   });
 
   it("importProfile uniquifies name when same name already present", () => {

@@ -223,7 +223,7 @@ export function StrategyTableWidget(_props: WidgetComponentProps) {
           {formatDollar(filtered.reduce((s, x) => s + (Number(x.pnl) || 0), 0))}
         </span>
       </span>
-      <Link href="/services/trading/strategies" className="shrink-0">
+      <Link href="/services/strategy-catalogue" className="shrink-0">
         <Button variant="outline" size="sm" className="h-7 text-xs">
           View All
         </Button>

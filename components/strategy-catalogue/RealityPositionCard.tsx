@@ -7,18 +7,45 @@
  * Drill-through targets the DART terminal + Reports attribution for the
  * specific instance (the real URLs are wired by Plan B Phase 4; for now the
  * chips link to existing routes that already exist).
+ *
+ * Plan D Phase 4 additions:
+ *   - "Unsubscribe" overflow action with destructive confirm dialog
+ *   - "Fork for research" primary action that opens a <ForkDialog> modal
+ *     in-place (placement audit replaced the standalone /fork page)
+ *   - <VersionLineageBadge> in the header
  */
 
+import * as React from "react";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, GitFork, MoreVertical } from "lucide-react";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { MATURITY_PHASE_LABEL, SHARE_CLASS_LABEL, type StrategyMaturityPhase } from "@/lib/architecture-v2/lifecycle";
 import type { ShareClass, StrategyArchetype, StrategyFamily } from "@/lib/architecture-v2";
+import { unsubscribeFromInstance, type SubscriptionType } from "@/lib/api/strategy-subscriptions";
 import { formatArchetype, formatFamily } from "@/lib/strategy-display";
 
+import { ForkDialog, type ForkDialogField } from "./ForkDialog";
 import { PerformanceOverlay } from "./PerformanceOverlay";
+import { VersionLineageBadge } from "./VersionLineageBadge";
 import type { PerformanceSeriesResponse } from "@/lib/api/performance-overlay";
 
 export interface RealityInstanceSummary {
@@ -33,10 +60,30 @@ export interface RealityInstanceSummary {
   readonly venuesActive: readonly string[];
   readonly terminalHref: string;
   readonly reportsHref: string;
+  /** Plan D — current version index (0 = genesis). */
+  readonly versionIndex?: number;
+  /** Plan D — parent version index. `null` ⇒ genesis. */
+  readonly parentVersionIndex?: number | null;
+  /** Plan D — subscription type from the StrategyInstanceSubscription record.
+   * Drives Fork eligibility: `dart_exclusive` permits forking; `im_allocation`
+   * + `signals_in` do not. Defaults to `dart_exclusive` for legacy callers
+   * that don't pass it (preserves the pre-Plan-D fork-anywhere behaviour). */
+  readonly subscriptionType?: SubscriptionType;
 }
 
 export interface RealityPositionCardProps {
   readonly instance: RealityInstanceSummary;
+  /** Plan D — caller's clientId required for the Unsubscribe + Fork API
+   * calls. When omitted, both actions render disabled. */
+  readonly callerClientId?: string;
+  /** Plan D — fields exposed on the ForkDialog. Defaults to a minimal set;
+   * callers wiring real config-diffs supply the full list. */
+  readonly forkDialogFields?: readonly ForkDialogField[];
+  /** Plan D — fired after a successful unsubscribe so the parent grid can
+   * remove the row optimistically. */
+  readonly onUnsubscribed?: (instanceId: string) => void;
+  /** Plan D — fired after a successful fork with the new version_id. */
+  readonly onForked?: (instanceId: string, versionId: string) => void;
   /** Test-only: pre-computed series, bypasses the live fetch. */
   readonly performanceOverride?: PerformanceSeriesResponse;
 }
@@ -50,9 +97,49 @@ function formatCurrency(value: number | null): string {
   return `${sign}$${abs.toFixed(0)}`;
 }
 
-export function RealityPositionCard({ instance, performanceOverride }: RealityPositionCardProps) {
+export function RealityPositionCard({
+  instance,
+  callerClientId,
+  forkDialogFields,
+  onUnsubscribed,
+  onForked,
+  performanceOverride,
+}: RealityPositionCardProps) {
   const pnlTone =
     instance.livePnl === null ? "text-muted-foreground" : instance.livePnl >= 0 ? "text-emerald-500" : "text-rose-500";
+
+  const subscriptionType = instance.subscriptionType ?? "dart_exclusive";
+  const forkAllowed = subscriptionType === "dart_exclusive";
+  // IM_ALLOCATION subscriptions cannot fork — pooled routing has no
+  // per-client config-diff surface. signals_in tenants cannot fork either
+  // (read-only signal tap). Both render the action disabled with a tooltip.
+  const forkDisabled = !callerClientId || !forkAllowed;
+  const unsubscribeDisabled = !callerClientId;
+
+  const [confirmOpen, setConfirmOpen] = React.useState(false);
+  const [forkOpen, setForkOpen] = React.useState(false);
+  const [unsubBusy, setUnsubBusy] = React.useState(false);
+  const [unsubError, setUnsubError] = React.useState<string | null>(null);
+
+  const onConfirmUnsubscribe = async () => {
+    if (!callerClientId) return;
+    setUnsubBusy(true);
+    setUnsubError(null);
+    try {
+      await unsubscribeFromInstance({ instanceId: instance.instanceId, clientId: callerClientId });
+      onUnsubscribed?.(instance.instanceId);
+      setConfirmOpen(false);
+    } catch (err) {
+      setUnsubError((err as Error).message);
+    } finally {
+      setUnsubBusy(false);
+    }
+  };
+
+  const fields: readonly ForkDialogField[] = forkDialogFields ?? [
+    { name: "config.notional_usd", currentValue: "" },
+    { name: "config.max_drawdown_pct", currentValue: "" },
+  ];
 
   return (
     <Card data-testid="reality-position-card" data-instance-id={instance.instanceId} className="gap-4 py-4">
@@ -63,10 +150,47 @@ export function RealityPositionCard({ instance, performanceOverride }: RealityPo
               {formatFamily(instance.family)} / {formatArchetype(instance.archetype)}
             </p>
             <p className="text-sm font-medium">{instance.venueSetLabel}</p>
+            {instance.versionIndex !== undefined ? (
+              <div className="pt-0.5">
+                <VersionLineageBadge
+                  versionIndex={instance.versionIndex}
+                  parentVersionIndex={instance.parentVersionIndex ?? null}
+                  compact
+                />
+              </div>
+            ) : null}
           </div>
-          <Badge variant="outline" className="font-mono text-[10px]">
-            {MATURITY_PHASE_LABEL[instance.maturityPhase]}
-          </Badge>
+          <div className="flex items-start gap-1">
+            <Badge variant="outline" className="font-mono text-[10px]">
+              {MATURITY_PHASE_LABEL[instance.maturityPhase]}
+            </Badge>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6"
+                  aria-label="Open instance actions"
+                  data-testid="reality-overflow-trigger"
+                >
+                  <MoreVertical className="size-3" aria-hidden />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  disabled={unsubscribeDisabled}
+                  onSelect={(e) => {
+                    e.preventDefault();
+                    setConfirmOpen(true);
+                  }}
+                  data-testid="reality-unsubscribe-action"
+                  className="text-destructive focus:text-destructive"
+                >
+                  Unsubscribe
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
         {instance.shareClass ? (
           <Badge variant="secondary" className="w-fit font-mono text-[10px]">
@@ -103,7 +227,24 @@ export function RealityPositionCard({ instance, performanceOverride }: RealityPo
             ))}
           </div>
         ) : null}
-        <div className="flex gap-2 pt-1">
+        <div className="flex flex-wrap items-center gap-2 pt-1">
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={forkDisabled}
+            onClick={() => setForkOpen(true)}
+            title={
+              !callerClientId
+                ? "Sign in required"
+                : !forkAllowed
+                  ? "Fork is only available for DART exclusive subscriptions"
+                  : ""
+            }
+            data-testid="reality-fork-action"
+          >
+            <GitFork className="mr-1 size-3" aria-hidden />
+            Fork for research
+          </Button>
           <Link
             href={instance.terminalHref}
             className="flex items-center gap-1 text-xs text-primary underline-offset-2 hover:underline"
@@ -120,6 +261,45 @@ export function RealityPositionCard({ instance, performanceOverride }: RealityPo
           </Link>
         </div>
       </CardContent>
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogContent data-testid="reality-unsubscribe-confirm">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Unsubscribe from this strategy?</AlertDialogTitle>
+            <AlertDialogDescription>
+              The exclusive lock will be released and another client can subscribe. Active positions stay open until you
+              unwind them; this action only stops new signals.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          {unsubError ? (
+            <p role="alert" className="text-xs text-destructive">
+              {unsubError}
+            </p>
+          ) : null}
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={unsubBusy}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={unsubBusy}
+              onClick={(e) => {
+                e.preventDefault();
+                void onConfirmUnsubscribe();
+              }}
+              data-testid="reality-unsubscribe-confirm-action"
+            >
+              Unsubscribe
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      {callerClientId ? (
+        <ForkDialog
+          instanceId={instance.instanceId}
+          clientId={callerClientId}
+          fields={fields}
+          open={forkOpen}
+          onOpenChange={setForkOpen}
+          onForked={(versionId) => onForked?.(instance.instanceId, versionId)}
+        />
+      ) : null}
     </Card>
   );
 }

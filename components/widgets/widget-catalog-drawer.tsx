@@ -68,15 +68,15 @@ function WidgetDetailPanel({
   const widgetSelection = selections["widget"];
 
   if (!widgetSelection) {
-    const categorySelection = selections["category"];
-    if (categorySelection) {
-      const catData = categorySelection.data as { category: string; widgets: WidgetDefinition[] };
+    const catalogGroupSelection = selections["catalogGroup"];
+    if (catalogGroupSelection) {
+      const catData = catalogGroupSelection.data as { catalogGroup: string; widgets: WidgetDefinition[] };
       return (
         <div className="p-4 space-y-3">
-          <p className="text-sm font-semibold">{catData.category}</p>
+          <p className="text-sm font-semibold">{catData.catalogGroup}</p>
           <p className="text-xs text-muted-foreground">
-            {catData.widgets.length} widget{catData.widgets.length !== 1 ? "s" : ""} in this category. Select a widget
-            to see details.
+            {catData.widgets.length} widget{catData.widgets.length !== 1 ? "s" : ""} in this group. Select a widget to
+            see details.
           </p>
         </div>
       );
@@ -85,9 +85,7 @@ function WidgetDetailPanel({
       <div className="flex flex-col items-center justify-center h-full px-6 text-center">
         <LayoutGrid className="size-8 mb-2 opacity-20" />
         <p className={cn(finderText.title, "font-medium text-muted-foreground")}>No widget selected</p>
-        <p className={cn(finderText.sub, "opacity-60 mt-1")}>
-          Browse categories and select a widget to see its details
-        </p>
+        <p className={cn(finderText.sub, "opacity-60 mt-1")}>Browse groups and select a widget to see its details</p>
       </div>
     );
   }
@@ -124,8 +122,8 @@ function WidgetDetailPanel({
 
         <div className="grid grid-cols-2 gap-3 text-xs">
           <div>
-            <p className="text-muted-foreground mb-1">Category</p>
-            <p className="font-medium">{def.category}</p>
+            <p className="text-muted-foreground mb-1">Group</p>
+            <p className="font-medium">{def.catalogGroup}</p>
           </div>
           <div>
             <p className="text-muted-foreground mb-1">Singleton</p>

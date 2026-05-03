@@ -47,6 +47,7 @@ storybook-static/
 
 # Playwright MCP scratch dir (separate from test artifacts)
 .playwright-mcp/
+.playwright-evidence/
 
 # Stray screenshots from MCP / Playwright agents must never land in repo root.
 # Subdir PNGs (public/, docs/, context/) are unaffected.

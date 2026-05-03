@@ -1,6 +1,7 @@
 "use client";
 
 import { PageHeader } from "@/components/shared/page-header";
+import { FamilyArchetypeAssetGroupBrowser } from "../../_components/family-archetype-asset-group-browser";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -320,6 +321,12 @@ export default function StrategyOverviewPage() {
             New Backtest
           </Button>
         </div>
+
+        {/* 2026-04-28 DART tile-split D.6 page-level: research-side family →
+            archetype → asset_group browser. Sits above the KPI strip so quants
+            can drill into the live hierarchy before reading the aggregate
+            counts. */}
+        <FamilyArchetypeAssetGroupBrowser title="Strategy hierarchy · family → archetype → asset_group" />
 
         {/* KPI Cards */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">

@@ -43,14 +43,26 @@ vi.mock("@/hooks/api/use-kill-switch", () => ({
   useKillSwitch: () => mockKillSwitch,
 }));
 
-vi.mock("@/lib/stores/global-scope-store", () => ({
-  useGlobalScope: () => ({
-    scope: {
-      mode: "live",
-      organizationIds: [],
-      clientIds: ["client-a", "client-b"],
-      strategyIds: [],
-    },
+// Force tier-zero into "unsupported" so the widget reads its strategy /
+// venue options from the legacy useStrategyHealth + VENUE_OPTIONS path the
+// test asserts on.
+vi.mock("@/lib/cockpit/use-tier-zero-scenario", () => ({
+  useTierZeroScenario: () => ({
+    matchedScenarios: [],
+    strategies: [],
+    positions: [],
+    backtests: [],
+    bundles: [],
+    status: "unsupported" as const,
+  }),
+}));
+
+vi.mock("@/lib/stores/workspace-scope-store", () => ({
+  useWorkspaceScope: () => ({
+    mode: "live",
+    organizationIds: [],
+    clientIds: ["client-a", "client-b"],
+    strategyIds: [],
   }),
 }));
 

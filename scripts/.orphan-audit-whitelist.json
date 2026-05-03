@@ -19,6 +19,10 @@
       "reason": "UNAUTHENTICATED-FUNNEL — post-signup holding page; reached via OAuth redirect flow before session established."
     },
     {
+      "path": "/onboarding/cockpit",
+      "reason": "UNAUTHENTICATED-FUNNEL — first-login cockpit wizard reached via firebase-provider redirect immediately post-auth (plan §9 + §22). Not a declared nav tile because the wizard is intentionally one-shot per user. Wiring of the redirect itself is tracked separately; this entry comes off the whitelist when the redirect lands."
+    },
+    {
       "path": "/api/accounts/transfer-history",
       "reason": "API-HANDLER — Next.js route.ts fetched programmatically by the UI; not a page."
     },

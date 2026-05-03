@@ -227,44 +227,87 @@ export function buildMockOverviewData(overrides: MockOverviewDataOverrides = {})
 }
 
 /**
- * Minimal useGlobalScope() return shape — only the fields overview widgets
- * read. Use in vi.mock('@/lib/stores/global-scope-store', ...).
+ * Minimal mock for the unified WorkspaceScopeStore — only the fields overview
+ * widgets read. Use via:
+ *
+ *   const mockScope = buildMockWorkspaceScope();
+ *   vi.mock("@/lib/stores/workspace-scope-store", () => ({
+ *     useWorkspaceScope: () => mockScope.scope,
+ *     useWorkspaceScopeStore: (selector?: (s: typeof mockScope) => unknown) =>
+ *       selector ? selector(mockScope) : mockScope,
+ *     useWorkspaceScopeActions: () => mockScope,
+ *   }));
+ *
+ * Mutate via Object.assign(mockScope, buildMockWorkspaceScope({...})) in beforeEach.
  */
-export function buildMockGlobalScope(
+export function buildMockWorkspaceScope(
   overrides: Partial<{
-    organizationIds: string[];
-    clientIds: string[];
-    strategyIds: string[];
+    organizationIds: readonly string[];
+    clientIds: readonly string[];
+    strategyIds: readonly string[];
+    families: readonly string[];
+    archetypes: readonly string[];
+    assetGroups: readonly string[];
     mode: "live" | "batch";
-    asOfDatetime: string | undefined;
+    asOfTs: string | null;
   }> = {},
 ) {
+  const scope = {
+    organizationIds: overrides.organizationIds ?? [],
+    clientIds: overrides.clientIds ?? [],
+    strategyIds: overrides.strategyIds ?? [],
+    assetGroups: overrides.assetGroups ?? [],
+    instrumentTypes: [],
+    families: overrides.families ?? [],
+    archetypes: overrides.archetypes ?? [],
+    shareClasses: [],
+    venueOrProtocolIds: [],
+    accountOrMandateId: null,
+    surface: "dashboard" as const,
+    terminalMode: null,
+    researchStage: null,
+    engagement: "monitor" as const,
+    executionStream: "paper" as const,
+    workspaceId: null,
+    underlyingIds: [],
+    mode: overrides.mode ?? ("live" as const),
+    asOfTs: overrides.asOfTs ?? "2026-04-24T00:00:00Z",
+    coverageStatuses: [],
+    maturityPhases: [],
+    productRoutings: [],
+    availabilityStates: [],
+    venueSetVariants: [],
+  };
   return {
-    scope: {
-      organizationIds: overrides.organizationIds ?? [],
-      clientIds: overrides.clientIds ?? [],
-      strategyIds: overrides.strategyIds ?? [],
-      assetGroupIds: [],
-      strategyFamilyIdsV2: [],
-      strategyArchetypeIds: [],
-      strategyFamily: undefined,
-      strategyArchetype: undefined,
-      underlyingIds: [],
-      mode: overrides.mode ?? ("live" as const),
-      asOfDatetime: overrides.asOfDatetime ?? "2026-04-24T00:00:00Z",
-    },
+    scope,
+    setAssetGroups: vi.fn(),
+    setInstrumentTypes: vi.fn(),
+    setFamilies: vi.fn(),
+    setArchetypes: vi.fn(),
+    setStrategyIds: vi.fn(),
+    setShareClasses: vi.fn(),
+    setVenueOrProtocolIds: vi.fn(),
+    setAccountOrMandateId: vi.fn(),
+    setSurface: vi.fn(),
+    setTerminalMode: vi.fn(),
+    setResearchStage: vi.fn(),
+    setEngagement: vi.fn(),
+    setExecutionStream: vi.fn(),
+    setMode: vi.fn(),
+    setWorkspaceId: vi.fn(),
+    setAsOfTs: vi.fn(),
     setOrganizationIds: vi.fn(),
     setClientIds: vi.fn(),
-    setStrategyIds: vi.fn(),
-    setAssetGroupIds: vi.fn(),
-    setStrategyFamilyIdsV2: vi.fn(),
-    setStrategyArchetypeIds: vi.fn(),
-    setStrategyFamily: vi.fn(),
-    setStrategyArchetype: vi.fn(),
     setUnderlyingIds: vi.fn(),
-    setMode: vi.fn(),
-    setAsOfDatetime: vi.fn(),
-    clearAll: vi.fn(),
+    setCoverageStatuses: vi.fn(),
+    setMaturityPhases: vi.fn(),
+    setProductRoutings: vi.fn(),
+    setAvailabilityStates: vi.fn(),
+    applyScope: vi.fn(),
+    replaceScope: vi.fn(),
     reset: vi.fn(),
   };
 }
+
+/** @deprecated — use {@link buildMockWorkspaceScope} */
+export const buildMockGlobalScope = buildMockWorkspaceScope;

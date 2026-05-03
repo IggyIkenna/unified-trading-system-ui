@@ -8,7 +8,7 @@ import { usePnlChartData, CHART_DATA_START } from "./use-pnl-chart-data";
 import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/shared/spinner";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 import { cn } from "@/lib/utils";
 import { formatPercent } from "@/lib/utils/formatters";
 import { ArrowLeftRight, Database, DollarSign, Minus, Percent, Radio, SplitSquareVertical } from "lucide-react";
@@ -89,7 +89,7 @@ function useChartPixelHeight(): {
 
 export function PnLChartWidget(_props: WidgetComponentProps) {
   const ctx = useOverviewDataSafe();
-  const { scope: context } = useGlobalScope();
+  const context = useWorkspaceScope();
   const today = getToday();
   const [dateRange, setDateRange] = React.useState({ from: today, to: today });
   const [activeTab, setActiveTab] = React.useState<MetricKey>("pnl");
@@ -199,7 +199,7 @@ export function PnLChartWidget(_props: WidgetComponentProps) {
             <Badge variant="outline" className="text-micro">
               <span className="flex items-center gap-1">
                 <Database className="size-2.5" />
-                Batch ({context.asOfDatetime?.split("T")[0]})
+                Batch ({context.asOfTs?.split("T")[0]})
               </span>
             </Badge>
           )}

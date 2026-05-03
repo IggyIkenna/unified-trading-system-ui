@@ -18,6 +18,8 @@ EXPECTED_BASE_VERSION="1.0"
 # Track uplift via unified-trading-pm/plans/active/coverage_uplift_*.plan.md; raise as test suite matures.
 MIN_UI_COVERAGE=${MIN_UI_COVERAGE:-40}
 STEP_TIMEOUT_TYPECHECK=${STEP_TIMEOUT_TYPECHECK:-120}  # bumped: tsc on this codebase takes ~20s; 60s default too tight under load
+STEP_TIMEOUT_LINT=${STEP_TIMEOUT_LINT:-180}            # bumped: ESLint on ~302 routes + React 19 hook rules takes ~60-90s; default 60s flakes
+MAX_DURATION=${MAX_DURATION:-360}                      # bumped: full QG (typecheck + lint + 220 tests + build + orphan-audit + invariants) lands ~190-220s; 180s default too tight
 WORKSPACE_ROOT="${WORKSPACE_ROOT:-$(cd "$(git rev-parse --show-toplevel)/.." && pwd)}"
 BASE_UI="${WORKSPACE_ROOT}/unified-trading-pm/scripts/quality-gates-base/base-ui.sh"
 

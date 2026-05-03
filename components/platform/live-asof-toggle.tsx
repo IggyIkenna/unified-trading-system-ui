@@ -9,13 +9,24 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Radio, Calendar, AlertTriangle } from "lucide-react";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScope, useWorkspaceScopeStore } from "@/lib/stores/workspace-scope-store";
 
 export function LiveAsOfToggle({ className }: { className?: string }) {
-  const { scope, setMode, setAsOfDatetime } = useGlobalScope();
+  const scope = useWorkspaceScope();
+  const applyScope = useWorkspaceScopeStore((s) => s.applyScope);
+  const setAsOfTs = useWorkspaceScopeStore((s) => s.setAsOfTs);
 
-  const selectedDateTime = scope.asOfDatetime
-    ? new Date(scope.asOfDatetime)
+  const setMode = (mode: "live" | "batch") =>
+    applyScope(
+      {
+        mode,
+        asOfTs: mode === "live" ? null : (scope.asOfTs ?? new Date().toISOString().slice(0, 16)),
+      },
+      "scope-bar",
+    );
+
+  const selectedDateTime = scope.asOfTs
+    ? new Date(scope.asOfTs)
     : new Date();
   const now = new Date();
   const yesterday8am = new Date(now);
@@ -70,9 +81,9 @@ export function LiveAsOfToggle({ className }: { className?: string }) {
             <input
               type="datetime-local"
               value={
-                scope.asOfDatetime || new Date().toISOString().slice(0, 16)
+                scope.asOfTs || new Date().toISOString().slice(0, 16)
               }
-              onChange={(e) => setAsOfDatetime(e.target.value)}
+              onChange={(e) => setAsOfTs(e.target.value)}
               className="bg-transparent text-xs border-none focus:outline-none w-36"
             />
           </div>
@@ -96,7 +107,7 @@ export function LiveAsOfToggle({ className }: { className?: string }) {
                   const dt = new Date();
                   dt.setDate(dt.getDate() + offset);
                   dt.setHours(23, 59, 0, 0);
-                  setAsOfDatetime(dt.toISOString().slice(0, 16));
+                  setAsOfTs(dt.toISOString().slice(0, 16));
                 }}
                 className="px-1.5 py-0.5 text-[10px] text-muted-foreground hover:text-foreground hover:bg-secondary rounded"
               >

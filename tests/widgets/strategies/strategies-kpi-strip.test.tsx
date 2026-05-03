@@ -80,11 +80,12 @@ describe("strategies-kpi-strip — L1.5 harness", () => {
   });
 
   describe("loading state", () => {
-    it("renders em-dash for all values when isLoading=true", () => {
+    it("renders dash for all values when isLoading=true", () => {
       Object.assign(mockStrategiesData, buildMockStrategiesData({ isLoading: true }));
       render(<StrategiesKpiWidget instanceId="test" />);
       const values = screen.getAllByTestId("kpi-value");
-      const allDash = values.every((v) => v.textContent === "—");
+      // Widget renders ASCII hyphen "-" as the loading placeholder.
+      const allDash = values.every((v) => v.textContent === "-");
       expect(allDash).toBe(true);
     });
   });

@@ -26,7 +26,7 @@ import type { PnLBreakdown, TimeSeriesPoint } from "@/lib/mocks/fixtures/trading
 import { CLIENTS, ORGANIZATIONS } from "@/lib/mocks/fixtures/trading-data";
 import { SEED_SERVICES } from "@/lib/mocks/fixtures/trading-pages";
 import { isMockDataMode } from "@/lib/runtime/data-mode";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 import { formatNumber, formatCurrency as formatUsdCompact } from "@/lib/utils/formatters";
 
 function seedToStrategyPerformanceRow(s: SeedStrategy): StrategyPerformanceRow {
@@ -116,7 +116,7 @@ export function useOverviewPageData(): OverviewPageResult {
 
   const [realtimePnl, setRealtimePnl] = React.useState<Record<string, number>>({});
   const [realtimePnlPoints, setRealtimePnlPoints] = React.useState<TimeSeriesPoint[]>([]);
-  const { scope: wsScope } = useGlobalScope();
+  const wsScope = useWorkspaceScope();
 
   const handleWsMessage = React.useCallback((msg: Record<string, unknown>) => {
     if (msg.channel === "analytics" && msg.type === "pnl_snapshot") {
@@ -237,7 +237,7 @@ export function useOverviewPageData(): OverviewPageResult {
     (mockDataMode ? seedTimeSeries : null) ?? { pnl: emptyTs, nav: emptyTs, exposure: emptyTs };
 
   const apiStrategies = performanceData?.data ?? performanceData?.strategies ?? [];
-  const { scope: context } = useGlobalScope();
+  const context = useWorkspaceScope();
 
   const allStrategies = React.useMemo((): StrategyPerformanceRow[] => {
     if (apiStrategies.length > 0) return apiStrategies;

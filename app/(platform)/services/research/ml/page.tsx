@@ -17,7 +17,7 @@ import {
   useUnifiedTrainingRuns,
 } from "@/hooks/api/use-ml-models";
 import { usePredictionStream, type PredictionStreamEvent } from "@/hooks/api/use-sse-channels";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 import type { ModelFamily, UnifiedTrainingRun } from "@/lib/types/ml";
 import { Activity, AlertTriangle, Brain, CheckCircle2, Clock, Cpu, Layers, Play, Radio, XCircle } from "lucide-react";
 import Link from "next/link";
@@ -80,7 +80,7 @@ function confidenceColor(prob: number): string {
 
 export default function MLOverviewPage() {
   const [mlTab, setMlTab] = useTabParam("overview");
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
   const isLive = scope.mode === "live";
 
   // Prediction stream — only active in live mode

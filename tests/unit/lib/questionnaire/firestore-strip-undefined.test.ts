@@ -15,7 +15,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { type QuestionnaireEnvelope, type QuestionnaireResponse } from "@/lib/questionnaire/types";
 
-const addDocMock = vi.fn(async () => ({ id: "fake-doc-id" }));
+// Typed signature: addDoc(collectionRef, payload) — declaring the parameter
+// shape so vi.fn().mock.calls[0] is inferred as `[unknown, unknown]` rather
+// than `[]`, letting the destructuring `[_, payload]` access work in tests.
+const addDocMock = vi.fn(async (_collectionRef: unknown, _data: unknown) => ({ id: "fake-doc-id" }));
 const collectionMock = vi.fn((_db: unknown, name: string) => ({ name }));
 const serverTimestampMock = vi.fn(() => "<<server-timestamp>>");
 
@@ -83,7 +86,8 @@ describe("submitQuestionnaire — Firestore payload sanitisation", () => {
     const result = await submitQuestionnaire(RESPONSE, ENVELOPE_WITH_ID);
     expect(result.success).toBe(true);
     expect(addDocMock).toHaveBeenCalledTimes(1);
-    const [, payload] = addDocMock.mock.calls[0]!;
+    const callArgs = addDocMock.mock.calls[0] as unknown as [unknown, unknown];
+    const payload = callArgs[1];
     expect(hasUndefinedDeep(payload), `payload contained undefined: ${JSON.stringify(payload)}`).toBe(false);
   });
 
@@ -91,7 +95,8 @@ describe("submitQuestionnaire — Firestore payload sanitisation", () => {
     const { submitQuestionnaire } = await import("@/lib/questionnaire/submit");
     const result = await submitQuestionnaire(RESPONSE, ENVELOPE_WITHOUT_ID);
     expect(result.success).toBe(true);
-    const [, payload] = addDocMock.mock.calls[0]!;
+    const callArgs = addDocMock.mock.calls[0] as unknown as [unknown, unknown];
+    const payload = callArgs[1];
     expect(hasUndefinedDeep(payload)).toBe(false);
   });
 
@@ -99,15 +104,17 @@ describe("submitQuestionnaire — Firestore payload sanitisation", () => {
     const { submitQuestionnaire } = await import("@/lib/questionnaire/submit");
     const result = await submitQuestionnaire(RESPONSE, null);
     expect(result.success).toBe(true);
-    const [, payload] = addDocMock.mock.calls[0]!;
+    const callArgs = addDocMock.mock.calls[0] as unknown as [unknown, unknown];
+    const payload = callArgs[1];
     expect(hasUndefinedDeep(payload)).toBe(false);
   });
 
   it("strips submissionId from submitted_by — Firestore doc id supersedes any prior value", async () => {
     const { submitQuestionnaire } = await import("@/lib/questionnaire/submit");
     await submitQuestionnaire(RESPONSE, ENVELOPE_WITH_ID);
-    const [, payload] = addDocMock.mock.calls[0]!;
-    const submittedBy = (payload as { submitted_by?: { submissionId?: string } }).submitted_by;
+    const callArgs = addDocMock.mock.calls[0] as unknown as [unknown, unknown];
+    const payload = callArgs[1];
+    const submittedBy = (payload as { submitted_by?: { submissionId?: string } } | undefined)?.submitted_by;
     expect(submittedBy).toBeDefined();
     expect(submittedBy).not.toHaveProperty("submissionId");
     expect(submittedBy?.submissionId).toBeUndefined();

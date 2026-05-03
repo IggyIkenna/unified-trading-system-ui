@@ -53,6 +53,7 @@ import { Spinner } from "@/components/shared/spinner";
 import { MODEL_STRATEGY_MAP } from "./components/strategy-detail-constants";
 import { StrategyDetailTabPanels } from "./components/strategy-detail-tab-panels";
 import { StrategyDetailArchetypePanel } from "./components/strategy-detail-archetype-panel";
+import { VersionLineageBadge } from "@/components/strategy-catalogue/VersionLineageBadge";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 function decodeStrategyRouteId(raw: string): string {
@@ -61,6 +62,15 @@ function decodeStrategyRouteId(raw: string): string {
   } catch {
     return raw;
   }
+}
+
+/** Plan D — extract the numeric version index from the fixture-style
+ * ``v1.2.3`` / ``1.2.3`` / ``v3`` strings. Returns 0 (genesis) when no
+ * leading-integer is present so the badge always renders. */
+function parseDetailVersionIndex(version: string | undefined | null): number {
+  if (!version) return 0;
+  const match = version.match(/^v?(\d+)/);
+  return match && match[1] ? Number.parseInt(match[1], 10) : 0;
 }
 
 export function StrategyDetailPageClient({ params }: { params: Promise<{ id: string }> }) {
@@ -77,20 +87,27 @@ export function StrategyDetailPageClient({ params }: { params: Promise<{ id: str
   // Fall back to API data if not in registry
   const apiStrategy = perfRaw.find((s: Record<string, unknown>) => s.id === id) as Record<string, unknown> | undefined;
   const registryStrategy = getDefaultStrategyById(id);
-  // Merge: registry as base, API data for live metrics
-  const strategy = registryStrategy
-    ? {
-        ...registryStrategy,
-        ...(apiStrategy
-          ? {
-              pnl: apiStrategy.pnl,
-              nav: apiStrategy.nav,
-              exposure: apiStrategy.exposure,
-              sharpe: apiStrategy.sharpe,
-            }
-          : {}),
-      }
-    : ((apiStrategy as unknown as Strategy) ?? DEFAULT_STRATEGIES[0]);
+  // Merge: registry as base, API data for live metrics. Memoised so the
+  // downstream useMemo dependencies don't re-run on every render — without
+  // this wrapper React's exhaustive-deps lint flagged the conditional
+  // assignment as creating a new object every render.
+  const strategy = React.useMemo<Strategy>(
+    () =>
+      registryStrategy
+        ? ({
+            ...registryStrategy,
+            ...(apiStrategy
+              ? {
+                  pnl: apiStrategy.pnl,
+                  nav: apiStrategy.nav,
+                  exposure: apiStrategy.exposure,
+                  sharpe: apiStrategy.sharpe,
+                }
+              : {}),
+          } as Strategy)
+        : ((apiStrategy as unknown as Strategy) ?? DEFAULT_STRATEGIES[0]),
+    [registryStrategy, apiStrategy],
+  );
   const mlModel = MODEL_STRATEGY_MAP[strategy.strategyIdPattern];
   const pnlBreakdown: PnLBreakdownData = React.useMemo(() => {
     try {
@@ -163,12 +180,23 @@ export function StrategyDetailPageClient({ params }: { params: Promise<{ id: str
       <div className="max-w-[1400px] mx-auto space-y-6">
         <PageHeader
           title={
-            <span className="flex flex-wrap items-center gap-3">
+            <span className="flex flex-wrap items-center gap-3" data-testid="strategy-detail-title">
               {strategy.name}
               <StatusBadge status={strategy.status} />
               <Badge variant="outline" className="font-mono text-xs">
                 {strategy.version}
               </Badge>
+              {/* Plan D — DART terminal-header VersionLineageBadge. Strategy
+                  fixtures don't carry parent-version lineage today, so this
+                  renders the genesis-style ``v{N}`` (parentVersionIndex=null).
+                  Once strategy_subscriptions Phase-3 wiring lands the
+                  StrategyVersion record on this page, parentVersionIndex
+                  will flow from there. */}
+              <VersionLineageBadge
+                versionIndex={parseDetailVersionIndex(strategy.version)}
+                parentVersionIndex={null}
+                compact
+              />
               <ExecutionModeIndicator />
             </span>
           }
@@ -282,6 +310,15 @@ export function StrategyDetailPageClient({ params }: { params: Promise<{ id: str
             <Button variant="outline" size="sm" className="gap-2">
               <Settings className="size-4" />
               Config
+            </Button>
+          </Link>
+          {/* Plan D Phase 4 — wire the per-instance version timeline route
+              ([id]/versions/page.tsx) into the parent detail header so
+              dart_exclusive holders can reach the lineage view. */}
+          <Link href={`/services/trading/strategies/${encodeURIComponent(id)}/versions`}>
+            <Button variant="outline" size="sm" className="gap-2" data-testid="strategy-detail-versions-tab">
+              <History className="size-4" />
+              Versions
             </Button>
           </Link>
           <Link href={`/positions?strategy_id=${id}`}>

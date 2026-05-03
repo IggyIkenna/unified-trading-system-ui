@@ -8,7 +8,7 @@
  * - Renders the full service list (no preview cap)
  * - Refresh button invalidates the service-health query
  * - null-context fallback
- * - "View All" link to /services/observe/health
+ * - "View All" link to /services/workspace?surface=terminal&tm=ops
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
@@ -89,10 +89,10 @@ describe("health-grid — L1.5 harness", () => {
     expect(spy).toHaveBeenCalledWith({ queryKey: ["service-health"] });
   });
 
-  it("View All link targets /services/observe/health", () => {
+  it("View All link targets /services/workspace?surface=terminal&tm=ops", () => {
     renderWidget();
     const links = screen.getAllByRole("link");
-    expect(links.some((l) => l.getAttribute("href") === "/services/observe/health")).toBe(true);
+    expect(links.some((l) => l.getAttribute("href") === "/services/workspace?surface=terminal&tm=ops")).toBe(true);
   });
 
   it("falls back to 'Navigate to Overview tab' when context null", async () => {

@@ -13,7 +13,7 @@ import {
   generateStrategyBreakdown,
   generateTimeSeriesData,
 } from "@/lib/mocks/generators/pnl-generators";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 import { getClientIdsForOrgs, getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
 import { type ShareClass } from "@/lib/types/defi";
 import type {
@@ -113,7 +113,7 @@ export function PnLDataProvider({ children }: { children: React.ReactNode }) {
   const { data: tickersData, isLoading: tickersLoading, error: tickersError, refetch: refetchTickers } = useTickers();
   const { data: perfRaw } = useStrategyPerformance();
   const { data: orgsRaw } = useOrganizationsList();
-  const { scope: globalScope } = useGlobalScope();
+  const globalScope = useWorkspaceScope();
 
   const apiStrategies: StrategyRecord[] = React.useMemo(() => {
     if (!perfRaw) return [];
@@ -178,9 +178,11 @@ export function PnLDataProvider({ children }: { children: React.ReactNode }) {
 
   // Sync local P&L scope selectors with the global scope bar (re-syncs on every change)
   React.useEffect(() => {
-    setSelectedOrgIds(globalScope.organizationIds);
+    setSelectedOrgIds([...globalScope.organizationIds]);
     const derivedClients =
-      globalScope.clientIds.length > 0 ? globalScope.clientIds : getClientIdsForOrgs(globalScope.organizationIds);
+      globalScope.clientIds.length > 0
+        ? [...globalScope.clientIds]
+        : getClientIdsForOrgs(globalScope.organizationIds);
     setSelectedClientIds(derivedClients);
     setSelectedStrategyIds(getStrategyIdsForScope(globalScope));
   }, [globalScope, globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds]);

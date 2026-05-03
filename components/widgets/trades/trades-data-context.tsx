@@ -2,7 +2,7 @@
 
 import { getTradesForPosition, getTradesForScope } from "@/lib/mocks/fixtures/mock-data-index";
 import type { SeedTrade } from "@/lib/mocks/fixtures/mock-data-seed";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 import { useSearchParams } from "next/navigation";
 import * as React from "react";
 
@@ -39,7 +39,7 @@ const TradesDataContext = React.createContext<TradesContextValue | null>(null);
 export function TradesDataProvider({ children }: { children: React.ReactNode }) {
   const searchParams = useSearchParams();
   const urlPositionId = searchParams.get("position_id") ?? "";
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   const [positionIdFilter, setPositionIdFilter] = React.useState(urlPositionId);
   const [sideFilter, setSideFilter] = React.useState<TradeSide>("all");

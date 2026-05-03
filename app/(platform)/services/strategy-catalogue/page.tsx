@@ -33,16 +33,28 @@ import {
   parseCatalogueFilter,
   type StrategyCatalogueFilter,
 } from "@/lib/architecture-v2/catalogue-filter";
+import {
+  STRATEGY_ARCHETYPES_V2,
+  STRATEGY_FAMILIES_V2,
+  type StrategyArchetype,
+  type StrategyFamily,
+} from "@/lib/architecture-v2/enums";
 import { loadStrategyCatalogue } from "@/lib/architecture-v2/lifecycle";
+import { VENUE_ASSET_GROUPS_V2, type VenueAssetGroupV2 } from "@/lib/architecture-v2";
+import { listSubscriptionsForOrg } from "@/lib/api/strategy-subscriptions";
 import { useAuth } from "@/hooks/use-auth";
+import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 
 type CatalogueTab = "reality" | "explore";
 
 /**
- * Placeholder subscription mapping. Admin sees every instance as "subscribed"
- * so Reality tab demonstrates the layout; non-admin sees a deterministic
- * stable-maturity subset (first 4) so both tabs render content until the
- * real client-subscriptions service wires in.
+ * Placeholder subscription mapping (Plan D fallback). Admin sees every
+ * instance as "subscribed" so Reality tab demonstrates the layout;
+ * non-admin sees a deterministic stable-maturity subset (first 4). This
+ * is the fallback the strategy-catalogue page renders against when the
+ * real `listSubscriptionsForOrg` call fails (mock-mode / offline / API
+ * not yet wired). Once the GET endpoint is reliable, the placeholder is
+ * dead code we can remove.
  */
 function subscribedInstanceIdsFor(role: string | undefined): readonly string[] {
   const catalogue = loadStrategyCatalogue();
@@ -58,7 +70,30 @@ export default function StrategyCataloguePage() {
   const fromParam = searchParams?.get("from") ?? null;
   const tabParam = searchParams?.get("tab") ?? null;
 
-  const subscribedInstanceIds = useMemo(() => subscribedInstanceIdsFor(user?.role), [user?.role]);
+  // Plan D Phase 4 — replace the placeholder mapping with the real UTA
+  // GET /api/v1/strategy-instances/subscriptions?client_id=... call when
+  // the user is signed in and has an org. Falls back to the deterministic
+  // placeholder on error so mock-mode + offline development keep working.
+  const placeholder = useMemo(() => subscribedInstanceIdsFor(user?.role), [user?.role]);
+  const [liveSubscriptionIds, setLiveSubscriptionIds] = useState<readonly string[] | null>(null);
+  useEffect(() => {
+    const clientId = user?.org?.id;
+    if (!clientId) return;
+    let cancelled = false;
+    listSubscriptionsForOrg({ clientId })
+      .then((records) => {
+        if (cancelled) return;
+        setLiveSubscriptionIds(records.map((r) => r.instance_id));
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setLiveSubscriptionIds(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.org?.id]);
+  const subscribedInstanceIds = liveSubscriptionIds ?? placeholder;
 
   const hasSubscriptions = subscribedInstanceIds.length > 0;
 
@@ -90,12 +125,16 @@ export default function StrategyCataloguePage() {
     if (filter !== EMPTY_CATALOGUE_FILTER) return;
     const seed = readPersistedSeed();
     if (!seed) return;
+    // Only the venue asset_group axis maps cleanly onto the canonical
+    // StrategyCatalogueFilter today. Other questionnaire seed axes
+    // (instrumentTypes, marketNeutral, riskProfile, leveragePreference) are
+    // informational and don't yet have a corresponding filter axis — they
+    // are intentionally dropped here until the filter shape is widened.
+    const seedAssetGroupsTyped = seed.assetGroups
+      .map((g) => g.toUpperCase())
+      .filter((g): g is VenueAssetGroupV2 => VENUE_ASSET_GROUPS_V2.includes(g as VenueAssetGroupV2));
     const seeded: StrategyCatalogueFilter = {
-      ...(seed.assetGroups.length > 0 ? { assetGroups: seed.assetGroups } : {}),
-      ...(seed.instrumentTypes.length > 0 ? { instrumentTypes: seed.instrumentTypes } : {}),
-      ...(seed.marketNeutral ? { marketNeutral: seed.marketNeutral } : {}),
-      ...(seed.riskProfile ? { riskProfile: seed.riskProfile } : {}),
-      ...(seed.leveragePreference ? { leveragePreference: seed.leveragePreference } : {}),
+      ...(seedAssetGroupsTyped.length > 0 ? { venueAssetGroups: seedAssetGroupsTyped } : {}),
     };
     const hasAny = Object.keys(seeded).some((k) => seeded[k as keyof StrategyCatalogueFilter] !== undefined);
     if (hasAny) {
@@ -107,6 +146,49 @@ export default function StrategyCataloguePage() {
   }, []);
 
   const fromQuestionnaire = fromParam === "questionnaire" || hydratedFromSeed;
+
+  // 2026-04-30 audit polish — Strategy Catalogue is now scope-aware
+  // BEHAVIOURALLY (not just visually). The active WorkspaceScope merges
+  // into the catalogue filter so toggling the asset-group / family /
+  // archetype / share-class chips on the DartScopeBar reshapes the list
+  // live. The catalogue's own filter is still authoritative for
+  // catalogue-only axes (maturity, allocation status, coverage); scope
+  // contributes asset_groups + families + archetypes + share_classes.
+  const scope = useWorkspaceScope();
+  const scopedFilter = useMemo<StrategyCatalogueFilter>(() => {
+    // Build into a mutable working shape so we can layer scope on top of
+    // the explicit `filter` props without fighting the readonly fields on
+    // StrategyCatalogueFilter. The final return narrows back to readonly.
+    const merged: { -readonly [K in keyof StrategyCatalogueFilter]: StrategyCatalogueFilter[K] } = { ...filter };
+    // Asset groups — narrow to v2-typed list.
+    if (!merged.venueAssetGroups || merged.venueAssetGroups.length === 0) {
+      const ags = scope.assetGroups
+        .map((g) => g.toUpperCase())
+        .filter((g): g is VenueAssetGroupV2 => VENUE_ASSET_GROUPS_V2.includes(g as VenueAssetGroupV2));
+      if (ags.length > 0) merged.venueAssetGroups = ags;
+    }
+    // Families — narrow to v2-typed list.
+    if (!merged.families || merged.families.length === 0) {
+      const fams = scope.families.filter((f): f is StrategyFamily =>
+        (STRATEGY_FAMILIES_V2 as readonly string[]).includes(f),
+      );
+      if (fams.length > 0) merged.families = fams;
+    }
+    // Single archetype — scope.archetypes is multi-valued; filter expects
+    // a single archetype, so we apply only when exactly one is selected.
+    if (!merged.archetype && scope.archetypes.length === 1) {
+      const a = scope.archetypes[0];
+      if (a && (STRATEGY_ARCHETYPES_V2 as readonly string[]).includes(a)) {
+        merged.archetype = a as StrategyArchetype;
+      }
+    }
+    // Share classes — pass through; the catalogue already supports the axis.
+    if ((!merged.shareClasses || merged.shareClasses.length === 0) && scope.shareClasses.length > 0) {
+      // ShareClass is a union literal; cast explicitly so the filter shape stays typed.
+      merged.shareClasses = scope.shareClasses as StrategyCatalogueFilter["shareClasses"];
+    }
+    return merged;
+  }, [filter, scope.assetGroups, scope.families, scope.archetypes, scope.shareClasses]);
 
   const viewModeFor = (t: CatalogueTab): StrategyCatalogueViewMode =>
     t === "reality" ? "client-reality" : "client-fomo";
@@ -158,7 +240,7 @@ export default function StrategyCataloguePage() {
           <TabsContent value="reality" className="pt-4">
             <StrategyCatalogueSurface
               viewMode={viewModeFor("reality")}
-              filter={filter}
+              filter={scopedFilter}
               onFilterChange={setFilter}
               subscribedInstanceIds={subscribedInstanceIds}
             />
@@ -166,7 +248,7 @@ export default function StrategyCataloguePage() {
           <TabsContent value="explore" className="pt-4">
             <StrategyCatalogueSurface
               viewMode={viewModeFor("explore")}
-              filter={filter}
+              filter={scopedFilter}
               onFilterChange={setFilter}
               subscribedInstanceIds={subscribedInstanceIds}
             />

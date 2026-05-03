@@ -45,7 +45,7 @@ describe("SiteHeader nav structure", () => {
     expect(screen.getAllByText("Who We Are").length).toBeGreaterThan(0);
   }, 15000);
 
-  it("unauth CTA Book a call points to Calendly", async () => {
+  it("unauth CTA Start Your Review points to /start-your-review (pre-briefing-session)", async () => {
     const { SiteHeader } = await import("@/components/shell/site-header");
     const { AuthContext } = await import("@/hooks/use-auth");
     const React = await import("react");
@@ -72,8 +72,11 @@ describe("SiteHeader nav structure", () => {
       );
 
     const { container } = render(<SiteHeader />, { wrapper: UnauthWrapper });
-    const cta = Array.from(container.querySelectorAll("a")).find((a) => a.textContent?.trim() === "Book a call");
+    // Pre-briefing-session unauth: primary CTA is "Start Your Review" →
+    // /start-your-review. Post-briefing-session it swaps to "Submit Strategy
+    // Evaluation" + "Book a Fit Call" → /contact.
+    const cta = Array.from(container.querySelectorAll("a")).find((a) => a.textContent?.trim() === "Start Your Review");
     expect(cta).toBeTruthy();
-    expect(cta?.getAttribute("href")).toBe("https://calendly.com/odum-ikenna");
+    expect(cta?.getAttribute("href")).toBe("/start-your-review");
   }, 15000);
 });

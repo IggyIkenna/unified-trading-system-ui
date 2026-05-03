@@ -87,6 +87,7 @@ interface AllocatorWizardProps {
   readonly submitting: boolean;
   readonly submitted: boolean;
   readonly submitError: boolean;
+  readonly validationErrors?: readonly { field: string; message: string }[];
   readonly onSubmit: () => void | Promise<void>;
   readonly onSwitchToBuilder: () => void;
 }
@@ -218,10 +219,17 @@ export default function AllocatorWizard({
   submitting,
   submitted,
   submitError,
+  validationErrors,
   onSubmit,
   onSwitchToBuilder,
 }: AllocatorWizardProps) {
   const [step, setStep] = React.useState<number>(1);
+  const ALLOCATOR_FIELD_TO_STEP: Readonly<Record<string, number>> = {
+    strategyName: 1,
+    leadResearcher: 1,
+    email: 1,
+    allocatorInvestorType: 2,
+  };
 
   if (submitted) {
     return (
@@ -238,7 +246,7 @@ export default function AllocatorWizard({
   const totalSteps = STEPS.length;
   const canAdvance =
     step === 1
-      ? Boolean(form.leadResearcher.trim()) && Boolean(form.email.trim())
+      ? Boolean(form.strategyName.trim()) && Boolean(form.leadResearcher.trim()) && Boolean(form.email.trim())
       : step === 2
         ? Boolean(form.allocatorInvestorType.trim())
         : true;
@@ -251,6 +259,15 @@ export default function AllocatorWizard({
   }
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    // If parent's validate() is going to reject this submission, jump to the
+    // step that holds the first failing field so the user sees the gap. The
+    // parent still re-runs validate() and is the authority — this is just a
+    // pre-jump for UX.
+    const firstField = validationErrors?.[0]?.field;
+    const targetStep = firstField ? ALLOCATOR_FIELD_TO_STEP[firstField] : undefined;
+    if (targetStep && targetStep !== step) {
+      setStep(targetStep);
+    }
     void onSubmit();
   }
 
@@ -266,6 +283,14 @@ export default function AllocatorWizard({
           </button>
         </p>
       </header>
+
+      <div className="rounded-md border border-sky-500/30 bg-sky-500/5 px-4 py-3 text-sm text-sky-200">
+        <p className="font-medium">Your answers save automatically as you go.</p>
+        <p className="mt-1 text-xs text-sky-300/80">
+          You can close the tab and come back later. Just open this page again from the same browser (Chrome to Chrome,
+          Firefox to Firefox) and your draft is right where you left it.
+        </p>
+      </div>
 
       <ol className="flex flex-wrap gap-2 text-xs">
         {STEPS.map((s) => (
@@ -488,6 +513,18 @@ export default function AllocatorWizard({
           </section>
         )}
 
+        {validationErrors && validationErrors.length > 0 && (
+          <div className="rounded-md border border-destructive/40 bg-destructive/5 p-3 text-sm text-destructive">
+            <p className="font-medium">
+              Please fix {validationErrors.length} field{validationErrors.length > 1 ? "s" : ""} before submitting:
+            </p>
+            <ul className="mt-1 list-disc pl-5">
+              {validationErrors.map((e) => (
+                <li key={e.field}>{e.message}</li>
+              ))}
+            </ul>
+          </div>
+        )}
         {submitError && (
           <div className="rounded-md border border-destructive/40 bg-destructive/5 p-3 text-sm text-destructive">
             Submission failed. Please retry or email us if it persists.
@@ -515,7 +552,13 @@ export default function AllocatorWizard({
           ) : (
             <button
               type="submit"
-              disabled={submitting || !form.leadResearcher.trim() || !form.email.trim()}
+              disabled={
+                submitting ||
+                !form.strategyName.trim() ||
+                !form.leadResearcher.trim() ||
+                !form.email.trim() ||
+                !form.allocatorInvestorType.trim()
+              }
               className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-40"
             >
               {submitting ? "Submitting…" : "Submit allocator intake"}

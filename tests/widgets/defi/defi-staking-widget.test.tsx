@@ -103,9 +103,10 @@ describe("defi-staking-widget — L1.5 harness", () => {
   });
 
   describe("amount input + reactive annual yield", () => {
-    it("shows em-dash when amount is empty", () => {
+    it("shows dash when amount is empty", () => {
       render(<DeFiStakingWidget />);
-      expect(screen.getByTestId("expected-yield").textContent).toContain("—");
+      // Widget renders ASCII hyphen "-" as the empty-state placeholder.
+      expect(screen.getByTestId("expected-yield").textContent).toContain("-");
     });
 
     it("computes annual yield from amount × apy when amount > 0", () => {

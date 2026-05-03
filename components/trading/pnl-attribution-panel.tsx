@@ -105,7 +105,7 @@ export function PnLAttributionPanel({
 
       {/* Links */}
       <div className="flex flex-col gap-1 pt-2">
-        <Link href="/services/trading/pnl" passHref>
+        <Link href="/services/workspace?surface=terminal&tm=explain" passHref>
           <Button
             variant="ghost"
             size="sm"
@@ -115,7 +115,7 @@ export function PnLAttributionPanel({
             <ChevronRight className="size-3" />
           </Button>
         </Link>
-        <Link href="/services/trading/risk" passHref>
+        <Link href="/services/workspace?surface=terminal&tm=explain" passHref>
           <Button
             variant="ghost"
             size="sm"

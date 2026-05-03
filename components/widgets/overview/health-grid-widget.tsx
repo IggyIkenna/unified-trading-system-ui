@@ -30,7 +30,7 @@ export function HealthGridWidget(_props: WidgetComponentProps) {
           <RefreshCw className="size-3.5" />
           Refresh
         </Button>
-        <Link href="/services/observe/health">
+        <Link href="/services/workspace?surface=terminal&tm=ops">
           <Button variant="ghost" size="sm" className="h-7 text-xs">
             View All
           </Button>

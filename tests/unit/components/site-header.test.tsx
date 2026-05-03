@@ -45,7 +45,7 @@ describe("SiteHeader", () => {
     expect(shell).toBeTruthy();
   }, 15000);
 
-  it("renders Sign In and Book a call when not authenticated", async () => {
+  it("renders Sign In and Start Your Review when not authenticated (pre-briefing-session)", async () => {
     const { SiteHeader } = await import("@/components/shell/site-header");
     const { AuthContext } = await import("@/hooks/use-auth");
     const React = await import("react");
@@ -58,7 +58,7 @@ describe("SiteHeader", () => {
       loading: false,
       loginError: null,
       loginByEmail: async () => true,
-      logout: async () => { },
+      logout: async () => {},
       hasEntitlement: () => false,
       isAdmin: () => false,
       isInternal: () => false,
@@ -72,7 +72,11 @@ describe("SiteHeader", () => {
       );
 
     render(<SiteHeader />, { wrapper: UnauthWrapper });
-    expect(screen.getByText("Sign In")).toBeTruthy();
-    expect(screen.getByText("Book a call")).toBeTruthy();
+    // Sign In appears in two places (desktop + mobile sheet); use getAllByText.
+    expect(screen.getAllByText("Sign In").length).toBeGreaterThan(0);
+    // Pre-briefing-session unauth users see "Start Your Review" as the
+    // primary CTA. Post-briefing-session it swaps to "Submit Strategy
+    // Evaluation" + "Book a Fit Call" — see site-header.tsx briefingSessionActive branch.
+    expect(screen.getAllByText("Start Your Review").length).toBeGreaterThan(0);
   }, 15000);
 });

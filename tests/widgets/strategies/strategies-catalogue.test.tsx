@@ -37,6 +37,9 @@ vi.mock("@/lib/config/services/strategies.config", () => ({
     { id: "yield-rotation", label: "Yield Rotation" },
     { id: "momentum", label: "Momentum" },
   ],
+  // Identity normaliser — real one snake-cases / strips emoji prefixes; for
+  // mock data we keep archetype strings as-is.
+  normalizeArchetype: (s: string) => s,
   asset_group_COLORS: {
     DeFi: "#10b981",
     Crypto: "#6366f1",

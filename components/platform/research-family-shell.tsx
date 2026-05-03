@@ -26,7 +26,7 @@ import { ErrorBoundary } from "@/components/shared/error-boundary";
 import { EntitlementGate } from "@/components/platform/entitlement-gate";
 import { BatchLiveRail } from "@/components/platform/batch-live-rail";
 import { useAuth } from "@/hooks/use-auth";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScope, useWorkspaceScopeStore } from "@/lib/stores/workspace-scope-store";
 import { cn } from "@/lib/utils";
 import type { Entitlement } from "@/lib/config/auth";
 
@@ -77,7 +77,8 @@ export function ResearchFamilyShell({
   className,
 }: ResearchFamilyShellProps) {
   const { user } = useAuth();
-  const { scope, setMode } = useGlobalScope();
+  const scope = useWorkspaceScope();
+  const applyScope = useWorkspaceScopeStore((s) => s.applyScope);
   const config = PLATFORM_CONFIG[platform];
 
   return (
@@ -91,7 +92,16 @@ export function ResearchFamilyShell({
           platform={platform}
           currentStage={config.defaultStage}
           context={scope.mode === "live" ? "LIVE" : "BATCH"}
-          onContextChange={(v) => setMode(v === "LIVE" ? "live" : "batch")}
+          onContextChange={(v) => {
+            const nextMode = v === "LIVE" ? "live" : "batch";
+            applyScope(
+              {
+                mode: nextMode,
+                asOfTs: nextMode === "live" ? null : (scope.asOfTs ?? new Date().toISOString().slice(0, 16)),
+              },
+              "scope-bar",
+            );
+          }}
           compact
         />
       )}

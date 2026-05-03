@@ -2,10 +2,7 @@ import "@testing-library/jest-dom/vitest";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import {
-  FomoTearsheetCard,
-  type FomoInstanceSummary,
-} from "@/components/strategy-catalogue/FomoTearsheetCard";
+import { FomoTearsheetCard, type FomoInstanceSummary } from "@/components/strategy-catalogue/FomoTearsheetCard";
 import type { PerformanceSeriesResponse } from "@/lib/api/performance-overlay";
 import {
   allowsAllocationCta,
@@ -50,9 +47,7 @@ const STATIC_SERIES: PerformanceSeriesResponse = {
   ],
 };
 
-function baseSummary(
-  overrides: Partial<FomoInstanceSummary> = {},
-): FomoInstanceSummary {
+function baseSummary(overrides: Partial<FomoInstanceSummary> = {}): FomoInstanceSummary {
   return {
     instanceId: "test-instance",
     family: "CARRY_AND_YIELD",
@@ -69,9 +64,14 @@ function baseSummary(
 }
 
 describe("allowsAllocationCta (Plan B p5-fomo-cta-gating-test)", () => {
-  const enabled: StrategyMaturityPhase[] = ["paper_stable", "live_early", "live_stable"];
+  // 2026-04-29 (Phase 1B per dart_ux_cockpit_refactor §4.8.7): pilot + monitor
+  // joined the allocatable set — pilot is capped real-money execution,
+  // monitor is live with capacity decay measurement; both serve real
+  // positions, so both permit incoming allocations.
+  const enabled: StrategyMaturityPhase[] = ["paper_stable", "pilot", "live_early", "live_stable", "monitor"];
   const disabled: StrategyMaturityPhase[] = [
     "smoke",
+    "backtest_30d",
     "backtest_minimal",
     "backtest_1yr",
     "backtest_multi_year",
@@ -80,7 +80,7 @@ describe("allowsAllocationCta (Plan B p5-fomo-cta-gating-test)", () => {
     "retired",
   ];
 
-  it("enables allocation only for paper_stable / live_early / live_stable", () => {
+  it("enables allocation for paper_stable / pilot / live_early / live_stable / monitor", () => {
     for (const phase of enabled) expect(allowsAllocationCta(phase)).toBe(true);
     for (const phase of disabled) expect(allowsAllocationCta(phase)).toBe(false);
   });
@@ -103,9 +103,7 @@ describe("<FomoTearsheetCard> CTA gating", () => {
     );
     const cta = screen.getByTestId("fomo-request-allocation-cta");
     expect(cta).toBeDisabled();
-    expect(
-      screen.getByText("Allocation opens at paper-stable maturity or later."),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Allocation opens at paper-stable maturity or later.")).toBeInTheDocument();
   });
 
   it("enables CTA at paper_stable + later when a handler is attached", () => {
@@ -120,12 +118,7 @@ describe("<FomoTearsheetCard> CTA gating", () => {
   });
 
   it("disables CTA when no handler is attached even if phase qualifies", () => {
-    render(
-      <FomoTearsheetCard
-        instance={baseSummary()}
-        performanceOverride={STATIC_SERIES}
-      />,
-    );
+    render(<FomoTearsheetCard instance={baseSummary()} performanceOverride={STATIC_SERIES} />);
     expect(screen.getByTestId("fomo-request-allocation-cta")).toBeDisabled();
   });
 

@@ -3,7 +3,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthContext } from "@/hooks/use-auth";
 import type { AuthState } from "@/hooks/use-auth";
 import type { AuthUser } from "@/lib/auth/types";
-import type { AuthPersona, Entitlement, EntitlementOrWildcard, TradingEntitlement } from "@/lib/config/auth";
+import type {
+  AuthPersona,
+  Entitlement,
+  EntitlementOrWildcard,
+  StrategyFamilyEntitlement,
+  TradingEntitlement,
+} from "@/lib/config/auth";
 import { ALL_ENTITLEMENTS, isTradingEntitlement } from "@/lib/config/auth";
 import { getPersonaById } from "@/lib/auth/personas";
 
@@ -20,7 +26,8 @@ function personaToAuthUser(p: AuthPersona): AuthUser {
 
 function makeAuthState(persona: AuthPersona | null): AuthState {
   const user = persona ? personaToAuthUser(persona) : null;
-  const entitlements: readonly (EntitlementOrWildcard | TradingEntitlement)[] = user?.entitlements ?? [];
+  const entitlements: readonly (EntitlementOrWildcard | TradingEntitlement | StrategyFamilyEntitlement)[] =
+    user?.entitlements ?? [];
   const hasWildcard = (entitlements as readonly unknown[]).includes(ALL_ENTITLEMENTS);
 
   const hasEntitlement = (e: Entitlement): boolean => {

@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiFetch } from "@/lib/api/fetch";
 import { withMode } from "@/lib/api/with-mode";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 import type { PerformanceSummary } from "@/lib/mocks/fixtures/client-performance";
 import {
   getMockPerformanceSummary,
@@ -28,13 +28,13 @@ const isMock = isMockDataMode();
 
 export function useClients() {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery<ClientsResponse>({
     queryKey: ["client-reporting-clients", user?.id, scope.mode],
     queryFn: async () => {
       if (isMock) return { clients: MOCK_CLIENTS, organisations: MOCK_ORGANISATIONS, strategies: MOCK_STRATEGIES };
-      const data = await apiFetch(withMode("/api/reporting/clients", scope.mode, scope.asOfDatetime), token);
+      const data = await apiFetch(withMode("/api/reporting/clients", scope.mode, scope.asOfTs ?? undefined), token);
       // Handle both old (array) and new (object) response shapes
       if (Array.isArray(data)) {
         return { clients: data as ClientInfo[], organisations: [] as OrganisationInfo[], strategies: [] as StrategyInfo[] };
@@ -48,13 +48,13 @@ export function useClients() {
 
 export function usePerformanceSummary(clientId: string | null) {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery<PerformanceSummary>({
     queryKey: ["performance-summary", clientId, user?.id, scope.mode],
     queryFn: async () => {
       if (isMock) return getMockPerformanceSummary(clientId!);
-      const data = await apiFetch(withMode(`/api/reporting/performance/summary?client_id=${clientId}`, scope.mode, scope.asOfDatetime), token);
+      const data = await apiFetch(withMode(`/api/reporting/performance/summary?client_id=${clientId}`, scope.mode, scope.asOfTs ?? undefined), token);
       return data as PerformanceSummary;
     },
     enabled: !!user && !!clientId,
@@ -64,13 +64,13 @@ export function usePerformanceSummary(clientId: string | null) {
 
 export function useOpenPositions(clientId: string | null) {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery<{ client_id: string; positions: PositionRecord[] }>({
     queryKey: ["open-positions", clientId, user?.id, scope.mode],
     queryFn: async () => {
       if (isMock) return { client_id: clientId!, positions: MOCK_POSITIONS };
-      const data = await apiFetch(withMode(`/api/reporting/performance/positions?client_id=${clientId}`, scope.mode, scope.asOfDatetime), token);
+      const data = await apiFetch(withMode(`/api/reporting/performance/positions?client_id=${clientId}`, scope.mode, scope.asOfTs ?? undefined), token);
       return data as { client_id: string; positions: PositionRecord[] };
     },
     enabled: !!user && !!clientId,
@@ -80,13 +80,13 @@ export function useOpenPositions(clientId: string | null) {
 
 export function useCoinBreakdown(clientId: string | null) {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery<{ client_id: string; coins: CoinBreakdown[] }>({
     queryKey: ["coin-breakdown", clientId, user?.id, scope.mode],
     queryFn: async () => {
       if (isMock) return { client_id: clientId!, coins: MOCK_COIN_BREAKDOWN };
-      const data = await apiFetch(withMode(`/api/reporting/performance/coin-breakdown?client_id=${clientId}`, scope.mode, scope.asOfDatetime), token);
+      const data = await apiFetch(withMode(`/api/reporting/performance/coin-breakdown?client_id=${clientId}`, scope.mode, scope.asOfTs ?? undefined), token);
       return data as { client_id: string; coins: CoinBreakdown[] };
     },
     enabled: !!user && !!clientId,
@@ -96,13 +96,13 @@ export function useCoinBreakdown(clientId: string | null) {
 
 export function useBalanceBreakdown(clientId: string | null) {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
 
   return useQuery<{ client_id: string } & BalanceBreakdown>({
     queryKey: ["balance-breakdown", clientId, user?.id, scope.mode],
     queryFn: async () => {
       if (isMock) return { client_id: clientId!, ...MOCK_BALANCE_BREAKDOWN };
-      const data = await apiFetch(withMode(`/api/reporting/performance/balances?client_id=${clientId}`, scope.mode, scope.asOfDatetime), token);
+      const data = await apiFetch(withMode(`/api/reporting/performance/balances?client_id=${clientId}`, scope.mode, scope.asOfTs ?? undefined), token);
       return data as { client_id: string } & BalanceBreakdown;
     },
     enabled: !!user && !!clientId,
@@ -112,7 +112,7 @@ export function useBalanceBreakdown(clientId: string | null) {
 
 export function useTradeHistory(clientId: string | null, params?: { symbol?: string; side?: string; limit?: number; offset?: number }) {
   const { user, token } = useAuth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
   const limit = params?.limit ?? 50;
   const offset = params?.offset ?? 0;
 
@@ -157,7 +157,7 @@ export function useTradeHistory(clientId: string | null, params?: { symbol?: str
       const qs = new URLSearchParams({ client_id: clientId!, limit: String(limit), offset: String(offset) });
       if (params?.symbol) qs.set("symbol", params.symbol);
       if (params?.side) qs.set("side", params.side);
-      const data = await apiFetch(withMode(`/api/reporting/trades?${qs.toString()}`, scope.mode, scope.asOfDatetime), token);
+      const data = await apiFetch(withMode(`/api/reporting/trades?${qs.toString()}`, scope.mode, scope.asOfTs ?? undefined), token);
       return data as {
         client_id: string;
         trades: TradeRecord[];

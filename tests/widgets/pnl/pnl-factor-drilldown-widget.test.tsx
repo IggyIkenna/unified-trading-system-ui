@@ -88,7 +88,8 @@ describe("pnl-factor-drilldown-widget — L1.5 harness", () => {
         }),
       );
       renderWidget();
-      expect(screen.getByText(/funding — by strategy/i)).toBeTruthy();
+      // Widget renders "<Factor>: by strategy" (colon, not em-dash).
+      expect(screen.getByText(/funding: by strategy/i)).toBeTruthy();
     });
 
     it("renders back button and calls setSelectedFactor(null) on click", () => {

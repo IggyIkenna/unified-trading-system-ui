@@ -7,7 +7,7 @@
 
 import * as React from "react";
 import { toast } from "sonner";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 import { getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
 import { apiFetch } from "@/lib/api/fetch";
 import {
@@ -80,7 +80,7 @@ export function useRiskPageData(): {
     error: stressError,
     refetch: refetchStress,
   } = useStressScenarios();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
   const isBatchMode = scope.mode === "batch";
   const scopeStrategyIds = React.useMemo(
     () =>

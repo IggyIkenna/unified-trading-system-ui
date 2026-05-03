@@ -17,20 +17,19 @@
  */
 
 import { describe, expect, it } from "vitest";
-import {
-  personaDashboardShape,
-  type DashboardTileVisibility,
-} from "@/lib/auth/persona-dashboard-shape";
+import { personaDashboardShape, type DashboardTileVisibility } from "@/lib/auth/persona-dashboard-shape";
 import { SERVICE_REGISTRY } from "@/lib/config/services";
 
-const ALL_TILES = ["dart", "odum-signals", "reports", "investor-relations", "admin"] as const;
-const FOLDED_AWAY_KEYS = [
-  "data",
-  "research",
-  "promote",
-  "observe",
-  "strategy-catalogue",
-] as const;
+// Post-2026-04-28 the legacy single `dart` tile was split into `dart-terminal` +
+// `dart-research` (commit a36a9889). The product-axis collapse invariant became
+// "≤6 tiles" instead of "≤5"; the dart-* pair is treated together by the
+// `hasDart()` helper below.
+const ALL_TILES = ["dart-terminal", "dart-research", "odum-signals", "reports", "investor-relations", "admin"] as const;
+/** True when a persona has access to either DART tile (terminal or research). */
+function hasDart(visible: readonly string[]): boolean {
+  return visible.includes("dart-terminal") || visible.includes("dart-research");
+}
+const FOLDED_AWAY_KEYS = ["data", "research", "promote", "observe", "strategy-catalogue"] as const;
 
 // 19 personas — mirrors lib/auth/personas.ts seed list (admin + internal +
 // im-desk-operator + DART full × 4 + Signals-In + Odum-Signals counterparty +
@@ -66,33 +65,29 @@ describe("dashboard tile collapse — per-persona visibility matrix", () => {
     expect(ALL_PERSONA_IDS).toHaveLength(19);
   });
 
-  it("no persona sees more than 5 tiles (product-axis collapse invariant)", () => {
+  it("no persona sees more than 6 tiles (product-axis collapse invariant; post dart-split)", () => {
     for (const personaId of ALL_PERSONA_IDS) {
       const visible = visibleTileIds(personaDashboardShape({ id: personaId, role: "client" }));
       expect(
         visible.length,
-        `persona ${personaId} must render ≤5 tiles, got ${visible.length}: ${visible.join(",")}`,
-      ).toBeLessThanOrEqual(5);
+        `persona ${personaId} must render ≤6 tiles, got ${visible.length}: ${visible.join(",")}`,
+      ).toBeLessThanOrEqual(6);
     }
   });
 
-  it("admin + internal-trader see all 5 tiles", () => {
+  it("admin + internal-trader see all 6 tiles", () => {
     const admin = visibleTileIds(personaDashboardShape({ id: "admin", role: "admin" }));
-    const internal = visibleTileIds(
-      personaDashboardShape({ id: "internal-trader", role: "internal" }),
-    );
-    expect(admin).toHaveLength(5);
-    // internal-trader sees 4 (admin + DART + signals + reports; IR hidden).
+    const internal = visibleTileIds(personaDashboardShape({ id: "internal-trader", role: "internal" }));
+    expect(admin).toHaveLength(6);
+    // internal-trader sees 5 (admin + dart-terminal + dart-research + signals + reports; IR hidden).
     expect(internal).toEqual(
-      expect.arrayContaining(["dart", "odum-signals", "reports", "admin"]),
+      expect.arrayContaining(["dart-terminal", "dart-research", "odum-signals", "reports", "admin"]),
     );
     expect(internal).not.toContain("investor-relations");
   });
 
   it("prospect-odum-signals sees ONLY Odum Signals tile", () => {
-    const visible = visibleTileIds(
-      personaDashboardShape({ id: "prospect-odum-signals", role: "client" }),
-    );
+    const visible = visibleTileIds(personaDashboardShape({ id: "prospect-odum-signals", role: "client" }));
     expect(visible).toEqual(["odum-signals"]);
   });
 
@@ -104,19 +99,15 @@ describe("dashboard tile collapse — per-persona visibility matrix", () => {
   });
 
   it("client-regulatory sees ONLY Reports tile", () => {
-    const visible = visibleTileIds(
-      personaDashboardShape({ id: "client-regulatory", role: "client" }),
-    );
+    const visible = visibleTileIds(personaDashboardShape({ id: "client-regulatory", role: "client" }));
     expect(visible).toEqual(["reports"]);
   });
 
   it("IM clients see Reports + Investor Relations (no DART)", () => {
     for (const id of ["client-im-pooled", "client-im-sma"]) {
       const visible = visibleTileIds(personaDashboardShape({ id, role: "client" }));
-      expect(visible).toEqual(
-        expect.arrayContaining(["reports", "investor-relations"]),
-      );
-      expect(visible).not.toContain("dart");
+      expect(visible).toEqual(expect.arrayContaining(["reports", "investor-relations"]));
+      expect(hasDart(visible)).toBe(false);
       expect(visible).not.toContain("admin");
     }
   });
@@ -124,25 +115,30 @@ describe("dashboard tile collapse — per-persona visibility matrix", () => {
   it("DART-full clients see DART + Reports (no admin, no Odum Signals)", () => {
     for (const id of ["client-full", "client-premium", "prospect-dart"]) {
       const visible = visibleTileIds(personaDashboardShape({ id, role: "client" }));
-      expect(visible).toContain("dart");
+      expect(hasDart(visible)).toBe(true);
       expect(visible).not.toContain("admin");
       expect(visible).not.toContain("odum-signals");
     }
   });
 
   it("client-data-only sees DART tile (no Reports — data-only subscription)", () => {
-    const visible = visibleTileIds(
-      personaDashboardShape({ id: "client-data-only", role: "client" }),
-    );
-    expect(visible).toContain("dart");
+    const visible = visibleTileIds(personaDashboardShape({ id: "client-data-only", role: "client" }));
+    expect(hasDart(visible)).toBe(true);
     expect(visible).not.toContain("reports");
   });
 
-  it("SERVICE_REGISTRY has exactly 5 top-level tiles (11→5 collapse)", () => {
+  it("SERVICE_REGISTRY has exactly 6 top-level tiles (post dart-split: dart-terminal + dart-research)", () => {
     const keys = SERVICE_REGISTRY.map((s) => s.key);
-    expect(keys).toHaveLength(5);
+    expect(keys).toHaveLength(6);
     expect(keys).toEqual(
-      expect.arrayContaining(["dart", "odum-signals", "reports", "investor-relations", "admin"]),
+      expect.arrayContaining([
+        "dart-terminal",
+        "dart-research",
+        "odum-signals",
+        "reports",
+        "investor-relations",
+        "admin",
+      ]),
     );
   });
 
@@ -157,9 +153,7 @@ describe("dashboard tile collapse — per-persona visibility matrix", () => {
   });
 
   it("unknown persona falls back to conservative default shape (Reports-only)", () => {
-    const visible = visibleTileIds(
-      personaDashboardShape({ id: "some-unknown-persona", role: "client" }),
-    );
+    const visible = visibleTileIds(personaDashboardShape({ id: "some-unknown-persona", role: "client" }));
     // Default shape exposes reports=visible; all other tiles are locked or hidden.
     expect(visible).toEqual(expect.arrayContaining(["reports"]));
   });

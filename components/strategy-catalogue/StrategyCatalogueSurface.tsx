@@ -243,7 +243,9 @@ export function StrategyCatalogueSurface({
 
       {viewMode === "admin-editor" ? <AdminEditorGrid instances={visible} onInstanceSelect={onInstanceSelect} /> : null}
 
-      {viewMode === "client-reality" ? <RealityGrid instances={visible} onInstanceSelect={onInstanceSelect} /> : null}
+      {viewMode === "client-reality" ? (
+        <RealityGrid instances={visible} onInstanceSelect={onInstanceSelect} callerClientId={user?.org?.id} />
+      ) : null}
 
       {viewMode === "client-fomo" ? (
         <>
@@ -275,6 +277,8 @@ export function StrategyCatalogueSurface({
             subscribedSet={subscribedSet}
             onInstanceSelect={onInstanceSelect}
             onRequestAllocation={onRequestAllocation}
+            callerClientId={user?.org?.id}
+            callerEntitlements={entitlements}
           />
         </>
       ) : null}
@@ -594,9 +598,11 @@ function AdminEditorGrid({ instances, onInstanceSelect }: AdminEditorGridProps) 
 interface RealityGridProps {
   readonly instances: readonly StrategyInstance[];
   readonly onInstanceSelect?: (instanceId: string) => void;
+  /** Plan D — caller's clientId for the Unsubscribe + Fork actions. */
+  readonly callerClientId?: string;
 }
 
-function RealityGrid({ instances, onInstanceSelect }: RealityGridProps) {
+function RealityGrid({ instances, onInstanceSelect, callerClientId }: RealityGridProps) {
   if (instances.length === 0) {
     return (
       <Card>
@@ -632,7 +638,7 @@ function RealityGrid({ instances, onInstanceSelect }: RealityGridProps) {
             role={onInstanceSelect ? "button" : undefined}
             tabIndex={onInstanceSelect ? 0 : undefined}
           >
-            <RealityPositionCard instance={summary} />
+            <RealityPositionCard instance={summary} callerClientId={callerClientId} />
           </div>
         );
       })}
@@ -648,6 +654,13 @@ interface FomoGridProps {
   readonly subscribedSet: ReadonlySet<string>;
   readonly onInstanceSelect?: (instanceId: string) => void;
   readonly onRequestAllocation?: (instanceId: string) => void;
+  /** Plan D — caller's clientId (`user.org.id`) to thread into the
+   * SubscribeButton CTA-swap gate. Optional so legacy callers / mock-mode
+   * fallbacks (no auth user) keep the original Request-allocation flow. */
+  readonly callerClientId?: string;
+  /** Plan D — caller's entitlements; the CTA swap requires
+   * `strategy-full` / `ml-full` / `*`. */
+  readonly callerEntitlements?: readonly string[];
 }
 
 function FomoGrid({
@@ -656,6 +669,8 @@ function FomoGrid({
   subscribedSet,
   onInstanceSelect,
   onRequestAllocation,
+  callerClientId,
+  callerEntitlements,
 }: FomoGridProps) {
   if (instances.length === 0) {
     return (
@@ -699,6 +714,8 @@ function FomoGrid({
               instance={summary}
               access={access}
               isSubscribed={isSubscribed}
+              callerClientId={callerClientId}
+              callerEntitlements={callerEntitlements}
               onRequestAllocation={onRequestAllocation}
             />
           </div>

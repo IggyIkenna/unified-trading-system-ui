@@ -68,25 +68,30 @@ describe("lib/config/auth", () => {
 });
 
 describe("lib/config/services", () => {
-  it("exports SERVICE_REGISTRY with the 5 product tiles", () => {
+  it("exports SERVICE_REGISTRY with the 6 product tiles (post dart-split)", () => {
     expect(Array.isArray(SERVICE_REGISTRY)).toBe(true);
-    // 2026-04-21 collapse — top-level grid now renders 5 product tiles.
-    // Folded-away (now DART sub-routes): data · research · promote · observe
-    // · strategy-catalogue. Signals disambiguated: `odum-signals` is the
-    // counterparty-outbound tile; inbound Signal Intake lives as a DART
-    // sub-route for Signals-In clients.
-    expect(SERVICE_REGISTRY.length).toBe(5);
+    // 2026-04-21 collapse — top-level grid renders product tiles.
+    // 2026-04-28 dart-split (commit a36a9889) — the legacy single `dart` tile
+    // was split into `dart-terminal` (Signals-In + DART-Full visible) and
+    // `dart-research` (DART-Full only; padlocked-visible for Signals-In).
+    // Folded-away (now DART sub-routes): data · observe · strategy-catalogue
+    // live under dart-terminal; research · promote live under dart-research.
+    expect(SERVICE_REGISTRY.length).toBe(6);
     const keys = SERVICE_REGISTRY.map((s) => s.key);
     expect(keys).toEqual(
       expect.arrayContaining([
-        "dart",
+        "dart-terminal",
+        "dart-research",
         "odum-signals",
         "reports",
         "investor-relations",
         "admin",
       ]),
     );
-    // Folded-away keys MUST NOT appear as top-level tiles.
+    // Legacy single `dart` tile is gone — must NOT appear as a top-level key.
+    expect(keys).not.toContain("dart");
+    // Folded-away keys MUST NOT appear as top-level tiles (they live as
+    // sub-routes under dart-terminal / dart-research).
     expect(keys).not.toContain("data");
     expect(keys).not.toContain("research");
     expect(keys).not.toContain("promote");
@@ -94,21 +99,23 @@ describe("lib/config/services", () => {
     expect(keys).not.toContain("strategy-catalogue");
   });
 
-  it("DART tile carries sub-routes for the folded-away surfaces", () => {
-    const dart = SERVICE_REGISTRY.find((s) => s.key === "dart");
-    expect(dart).toBeDefined();
-    const subKeys = dart!.subRoutes.map((r) => r.key);
-    for (const k of [
-      "terminal",
-      "research",
-      "promote",
-      "observe",
-      "strategy-catalogue",
-      "signal-intake",
-      "data",
-    ]) {
-      expect(subKeys).toContain(k);
+  it("dart-terminal + dart-research carry the folded-away surfaces", () => {
+    const dartTerminal = SERVICE_REGISTRY.find((s) => s.key === "dart-terminal");
+    const dartResearch = SERVICE_REGISTRY.find((s) => s.key === "dart-research");
+    expect(dartTerminal, "dart-terminal tile must exist post-split").toBeDefined();
+    expect(dartResearch, "dart-research tile must exist post-split").toBeDefined();
+    const terminalKeys = dartTerminal!.subRoutes.map((r) => r.key);
+    const researchKeys = dartResearch!.subRoutes.map((r) => r.key);
+
+    // Trading-day surfaces under dart-terminal (per the split SSOT).
+    for (const k of ["terminal", "observe", "strategy-catalogue", "signal-intake", "data"]) {
+      expect(terminalKeys, `dart-terminal missing sub-route "${k}"`).toContain(k);
     }
+    // Research-side surfaces under dart-research; the legacy `research` chip
+    // was broken into research-overview + features + feature-etl + quant +
+    // strategies + ml + backtests + signals + execution-research + allocate.
+    expect(researchKeys, "dart-research must include research-overview").toContain("research-overview");
+    expect(researchKeys, "dart-research must include promote").toContain("promote");
   });
 
   it("each service has required fields", () => {

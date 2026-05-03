@@ -47,12 +47,10 @@ export interface PerformanceQueryParams {
 }
 
 /** UI gateway path; Next.js rewrite proxies to UTA. */
-const UI_GATEWAY_PREFIX = "/api/v1/strategy-instances";
+const UTA_BASE = process.env.NEXT_PUBLIC_UTA_BASE_URL || "/api/uta";
+const UI_GATEWAY_PREFIX = `${UTA_BASE}/v1/strategy-instances`;
 
-export function buildPerformanceUrl(
-  instanceId: string,
-  params: PerformanceQueryParams,
-): string {
+export function buildPerformanceUrl(instanceId: string, params: PerformanceQueryParams): string {
   const search = new URLSearchParams({
     views: params.views.join(","),
   });

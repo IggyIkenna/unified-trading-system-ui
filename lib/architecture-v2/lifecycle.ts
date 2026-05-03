@@ -26,55 +26,76 @@ import type { ShareClass, StrategyArchetype, StrategyFamily } from "./enums";
 // Enum mirrors
 // ──────────────────────────────────────────────────────────────────────────
 
-/** 9 forward-only maturity phases + orthogonal `retired` terminal state. */
+/**
+ * 11 forward-only maturity phases + orthogonal `retired` terminal state.
+ *
+ * 2026-04-29 (Phase 1B): `pilot` added between `paper_stable` and `live_early`
+ * per dart_ux_cockpit_refactor_2026_04_29.plan.md §4.8.7. Pilot = real money,
+ * capped at 1-5% of target size; bridges paper (simulated fills) and live
+ * (full target capital). The bundle promotion-status taxonomy in
+ * `lib/architecture-v2/strategy-release-bundle.ts` maps onto this canonical
+ * phase list.
+ */
 export type StrategyMaturityPhase =
   | "smoke"
+  | "backtest_30d"
   | "backtest_minimal"
   | "backtest_1yr"
   | "backtest_multi_year"
   | "paper_1d"
   | "paper_14d"
   | "paper_stable"
+  | "pilot"
   | "live_early"
   | "live_stable"
+  | "monitor"
   | "retired";
 
 export const STRATEGY_MATURITY_PHASES: readonly StrategyMaturityPhase[] = [
   "smoke",
+  "backtest_30d",
   "backtest_minimal",
   "backtest_1yr",
   "backtest_multi_year",
   "paper_1d",
   "paper_14d",
   "paper_stable",
+  "pilot",
   "live_early",
   "live_stable",
+  "monitor",
   "retired",
 ] as const;
 
 export const MATURITY_PHASE_LABEL: Record<StrategyMaturityPhase, string> = {
   smoke: "Smoke",
+  backtest_30d: "Backtest 30d",
   backtest_minimal: "Backtest <1y",
   backtest_1yr: "Backtest 1y",
   backtest_multi_year: "Backtest Ny",
   paper_1d: "Paper 1d",
   paper_14d: "Paper 14d",
   paper_stable: "Paper stable",
+  pilot: "Pilot",
   live_early: "Live (early)",
   live_stable: "Live (stable)",
+  monitor: "Monitor",
   retired: "Retired",
 };
 
 export const MATURITY_PHASE_TONE: Record<StrategyMaturityPhase, "muted" | "amber" | "sky" | "emerald" | "violet"> = {
   smoke: "muted",
+  backtest_30d: "muted",
   backtest_minimal: "muted",
   backtest_1yr: "amber",
   backtest_multi_year: "amber",
   paper_1d: "sky",
   paper_14d: "sky",
   paper_stable: "violet",
+  pilot: "violet",
   live_early: "emerald",
   live_stable: "emerald",
+  monitor: "amber",
   retired: "muted",
 };
 
@@ -272,11 +293,25 @@ export function variantsForArchetype(archetype: StrategyArchetype): readonly Ven
 
 /**
  * Does this maturity phase permit offering an allocation CTA?
- * Per plan: only `paper_stable`, `live_early`, `live_stable` qualify —
- * never smoke / backtest-only / paper-1d / paper-14d. Retired is terminal.
+ *
+ * Per plan: `paper_stable`, `pilot`, `live_early`, `live_stable`, `monitor`
+ * qualify — strategies running on real or paper-stable infrastructure with
+ * the same code path as live. Pre-paper-stable smoke / backtest / paper-1d
+ * are not yet allocatable; retired is terminal.
+ *
+ * 2026-04-29 (Phase 1B): `pilot` + `monitor` added per §4.8.7. Pilot is
+ * capped real-money execution (1-5% of target size); monitor is running
+ * live with capacity-decay measurement. Both serve real positions and so
+ * permit incoming allocations.
  */
 export function allowsAllocationCta(phase: StrategyMaturityPhase): boolean {
-  return phase === "paper_stable" || phase === "live_early" || phase === "live_stable";
+  return (
+    phase === "paper_stable" ||
+    phase === "pilot" ||
+    phase === "live_early" ||
+    phase === "live_stable" ||
+    phase === "monitor"
+  );
 }
 
 /**
@@ -285,14 +320,17 @@ export function allowsAllocationCta(phase: StrategyMaturityPhase): boolean {
  */
 const MATURITY_PHASE_LADDER: readonly StrategyMaturityPhase[] = [
   "smoke",
+  "backtest_30d",
   "backtest_minimal",
   "backtest_1yr",
   "backtest_multi_year",
   "paper_1d",
   "paper_14d",
   "paper_stable",
+  "pilot",
   "live_early",
   "live_stable",
+  "monitor",
 ] as const;
 
 /** Return ladder index, or -1 for `retired` (orthogonal terminal state). */

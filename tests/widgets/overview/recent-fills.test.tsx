@@ -6,7 +6,7 @@
  * - BUY/SELL badge + instrument + status display
  * - Loading spinner via ordersLoading
  * - Empty-state for [] and {orders: []} response shapes
- * - "View All" Link to /services/trading/orders
+ * - "View All" Link to /services/workspace?surface=terminal&tm=command
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
@@ -83,9 +83,9 @@ describe("recent-fills — L1.5 harness", () => {
     expect(screen.getByText(/No recent fills/i)).toBeTruthy();
   });
 
-  it("View All link targets /services/trading/orders", () => {
+  it("View All link targets /services/workspace?surface=terminal&tm=command", () => {
     render(<RecentFillsWidget {...({} as never)} />);
     const links = screen.getAllByRole("link");
-    expect(links.some((l) => l.getAttribute("href") === "/services/trading/orders")).toBe(true);
+    expect(links.some((l) => l.getAttribute("href") === "/services/workspace?surface=terminal&tm=command")).toBe(true);
   });
 });

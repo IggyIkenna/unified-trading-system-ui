@@ -16,7 +16,7 @@ import { getOrdersForScope } from "@/lib/mocks/fixtures/mock-data-index";
 import { SEED_STRATEGIES } from "@/lib/mocks/fixtures/mock-data-seed";
 import { mock01 } from "@/lib/mocks/generators/deterministic";
 import { isMockDataMode } from "@/lib/runtime/data-mode";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 import { getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
 import * as React from "react";
 
@@ -144,7 +144,7 @@ export { asset_group_OPTIONS, classifyInstrument };
 
 export function OrdersDataProvider({ children }: { children: React.ReactNode }) {
   const { data: ordersRaw, isLoading, error, refetch } = useOrders();
-  const { scope: globalScope } = useGlobalScope();
+  const globalScope = useWorkspaceScope();
   const { isPaper, isBatch } = useExecutionMode();
   const cancelMutation = useCancelOrder();
   const amendMutation = useAmendOrder();
@@ -301,8 +301,8 @@ export function OrdersDataProvider({ children }: { children: React.ReactNode }) 
     // Phase 3 (plan p3-wire-picker-orders-positions): filter by the global
     // (family, archetype) selection written by TradingFamilyFilterBanner.
     const familyPredicate = makeFamilyFilterPredicate({
-      family: globalScope.strategyFamily as StrategyFamily | undefined,
-      archetype: globalScope.strategyArchetype as StrategyArchetype | undefined,
+      family: globalScope.families[0] as StrategyFamily | undefined,
+      archetype: globalScope.archetypes[0] as StrategyArchetype | undefined,
     });
     result = result.filter(familyPredicate);
     return result;
@@ -314,8 +314,8 @@ export function OrdersDataProvider({ children }: { children: React.ReactNode }) 
     strategyFilter,
     sideFilter,
     instrumentTypeFilters,
-    globalScope.strategyFamily,
-    globalScope.strategyArchetype,
+    globalScope.families,
+    globalScope.archetypes,
   ]);
 
   const uniqueVenues = React.useMemo(() => [...new Set(orders.map((o) => o.venue))].sort(), [orders]);

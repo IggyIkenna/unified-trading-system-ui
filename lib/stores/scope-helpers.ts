@@ -7,33 +7,36 @@
  *
  * These helpers let any data context resolve "which strategies belong to the
  * selected organisations" without duplicating the lookup logic.
+ *
+ * Inputs are `readonly string[]` to match the unified `WorkspaceScope` shape
+ * (Phase 1 of dart_ux_cockpit_refactor_2026_04_29.plan.md).
  */
 
 import { CLIENTS } from "@/lib/mocks/fixtures/trading-data";
 import { STRATEGIES } from "@/lib/mocks/fixtures/strategy-instances";
-import type { GlobalScopeState } from "./global-scope-store";
+import type { WorkspaceScope } from "@/lib/architecture-v2/workspace-scope";
 
 /** Return client IDs that belong to the given organisation IDs. */
-export function getClientIdsForOrgs(orgIds: string[]): string[] {
+export function getClientIdsForOrgs(orgIds: readonly string[]): string[] {
   if (orgIds.length === 0) return [];
   return CLIENTS.filter((c) => orgIds.includes(c.orgId)).map((c) => c.id);
 }
 
 /** Return strategy IDs that belong to the given client IDs. */
-export function getStrategyIdsForClients(clientIds: string[]): string[] {
+export function getStrategyIdsForClients(clientIds: readonly string[]): string[] {
   if (clientIds.length === 0) return [];
   return STRATEGIES.filter((s) => clientIds.includes(s.clientId)).map((s) => s.id);
 }
 
 /** Return strategy IDs that match the full scope cascade: org -> client -> strategy. */
 export function getStrategyIdsForScope(
-  scope: Pick<GlobalScopeState, "organizationIds" | "clientIds" | "strategyIds">,
+  scope: Pick<WorkspaceScope, "organizationIds" | "clientIds" | "strategyIds">,
 ): string[] {
   // If explicit strategy IDs are set, those take highest precedence.
-  if (scope.strategyIds.length > 0) return scope.strategyIds;
+  if (scope.strategyIds.length > 0) return [...scope.strategyIds];
 
   // Resolve client IDs from org IDs (or use explicit client IDs).
-  let effectiveClientIds = scope.clientIds;
+  let effectiveClientIds: readonly string[] = scope.clientIds;
   if (effectiveClientIds.length === 0 && scope.organizationIds.length > 0) {
     effectiveClientIds = getClientIdsForOrgs(scope.organizationIds);
   }
@@ -50,10 +53,10 @@ export function getStrategyIdsForScope(
  * Deterministic seed from org IDs — lets mock generators produce different
  * numbers per organisation while staying deterministic.
  */
-export function orgSeed(orgIds: string[]): number {
+export function orgSeed(orgIds: readonly string[]): number {
   if (orgIds.length === 0) return 0;
   let h = 0;
-  const key = orgIds.sort().join(",");
+  const key = [...orgIds].sort().join(",");
   for (let i = 0; i < key.length; i++) {
     h = (Math.imul(31, h) + key.charCodeAt(i)) | 0;
   }

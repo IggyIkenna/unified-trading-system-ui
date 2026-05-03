@@ -28,6 +28,18 @@ vi.mock("@/components/widgets/widget-chrome-context", () => ({
   useWidgetHeaderEndSlot: () => null,
 }));
 
+// Force tier-zero into "unsupported" so the widget falls through to legacy.
+vi.mock("@/lib/cockpit/use-tier-zero-scenario", () => ({
+  useTierZeroScenario: () => ({
+    matchedScenarios: [],
+    strategies: [],
+    positions: [],
+    backtests: [],
+    bundles: [],
+    status: "unsupported" as const,
+  }),
+}));
+
 import { AlertsKpiStripWidget } from "@/components/widgets/alerts/alerts-kpi-strip-widget";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 
@@ -54,11 +66,12 @@ describe("alerts-kpi-strip — L1.5 harness", () => {
   });
 
   describe("loading state", () => {
-    it("renders em-dash for every metric when isLoading=true", () => {
+    it("renders dash for every metric when isLoading=true", () => {
       Object.assign(mockData, buildMockAlertsData({ isLoading: true }));
       render(<AlertsKpiStripWidget {...noopProps} />);
-      const dashes = screen.getAllByText("—");
-      // 4 metrics, each em-dash while loading
+      // Widget renders ASCII hyphen "-" as the loading placeholder.
+      const dashes = screen.getAllByText("-");
+      // 4 metrics, each dash while loading
       expect(dashes.length).toBeGreaterThanOrEqual(4);
     });
   });

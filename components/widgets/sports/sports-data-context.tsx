@@ -15,7 +15,7 @@ import { DEFAULT_ARB_THRESHOLD, FOOTBALL_LEAGUES } from "@/lib/mocks/fixtures/sp
 
 export { FOOTBALL_LEAGUES };
 import { CLIENTS } from "@/lib/mocks/fixtures/trading-data";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 import * as React from "react";
 
 export type SportsDateRange = "today" | "week" | "all" | "matchday" | "custom";
@@ -203,7 +203,7 @@ const SportsDataContext = React.createContext<SportsDataContextValue | null>(nul
 
 export function SportsDataProvider({ children }: { children: React.ReactNode }) {
   const { isPaper, isBatch, mode } = useExecutionMode();
-  const { scope: globalScope } = useGlobalScope();
+  const globalScope = useWorkspaceScope();
 
   // Check if selected org has a sports desk
   const hasSportsDesk = React.useMemo(() => {

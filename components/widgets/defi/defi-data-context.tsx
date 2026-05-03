@@ -42,7 +42,7 @@ import {
   getRewardFactorsForStrategyId,
 } from "@/lib/mocks/fixtures/defi-walkthrough";
 import { CLIENTS } from "@/lib/mocks/fixtures/trading-data";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 import {
   generateAllYieldSeries,
   generateYieldSummary,
@@ -170,7 +170,7 @@ const DeFiDataContext = React.createContext<DeFiDataContextValue | null>(null);
 
 export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
   const { isPaper, isBatch, mode } = useExecutionMode();
-  const { scope: globalScope } = useGlobalScope();
+  const globalScope = useWorkspaceScope();
 
   // Check if selected org has DeFi access (internal defi-desk OR any external DeFi client)
   const hasDefiDesk = React.useMemo(() => {

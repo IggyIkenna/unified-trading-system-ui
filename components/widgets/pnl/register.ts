@@ -64,10 +64,18 @@ registerWidget({
   defaultW: 14,
   defaultH: 11,
   requiredEntitlements: [...PNL_ENTITLEMENTS],
-  category: "P&L",
+  assetGroup: "PLATFORM",
+  catalogGroup: "P&L",
   availableOn: ["pnl"],
   singleton: true,
   component: PnlWaterfallWidget,
+  // Phase 5: P&L is meaningful in Command (live) and Explain (attribution).
+  // Reports surface also surfaces it — declared via the surface axis.
+  dartMeta: {
+    surfaces: ["terminal", "reports"],
+    terminalModes: ["command", "explain"],
+    importance: "primary",
+  },
 });
 
 registerWidget({
@@ -81,7 +89,8 @@ registerWidget({
   defaultW: 24,
   defaultH: 7,
   requiredEntitlements: [...PNL_ENTITLEMENTS],
-  category: "P&L",
+  assetGroup: "PLATFORM",
+  catalogGroup: "P&L",
   availableOn: ["pnl"],
   singleton: true,
   component: PnlTimeSeriesWidget,
@@ -97,7 +106,8 @@ registerWidget({
   defaultW: 24,
   defaultH: 5,
   requiredEntitlements: [...PNL_ENTITLEMENTS],
-  category: "P&L",
+  assetGroup: "PLATFORM",
+  catalogGroup: "P&L",
   availableOn: ["pnl"],
   singleton: true,
   component: PnlFactorDrilldownWidget,

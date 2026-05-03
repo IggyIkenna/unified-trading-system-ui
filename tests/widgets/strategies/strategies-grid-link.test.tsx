@@ -3,7 +3,7 @@
  *
  * Covers:
  * - Renders without crashing.
- * - Link href points to /services/trading/strategies/grid.
+ * - Link href points to /services/strategy-catalogue.
  * - Button text mentions "DimensionalGrid" / "Batch Analysis".
  * - No data-context dependencies (static CTA widget).
  *
@@ -30,10 +30,10 @@ describe("strategies-grid-link — L1.5 harness", () => {
       expect(screen.getByTestId("grid-link")).toBeTruthy();
     });
 
-    it("link href targets /services/trading/strategies/grid", () => {
+    it("link href targets /services/strategy-catalogue", () => {
       render(<StrategiesGridLinkWidget instanceId="test" />);
       const link = screen.getByTestId("grid-link");
-      expect(link.getAttribute("href")).toBe("/services/trading/strategies/grid");
+      expect(link.getAttribute("href")).toBe("/services/strategy-catalogue");
     });
 
     it("button text mentions DimensionalGrid", () => {

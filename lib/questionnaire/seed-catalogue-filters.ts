@@ -64,8 +64,11 @@ interface QuestionnaireLikeInput {
 
 function asArray(value: ReadonlySet<string> | readonly string[] | undefined): readonly string[] {
   if (!value) return [];
-  if (value instanceof Set) return Array.from(value);
-  return value;
+  if (Array.isArray(value)) return value;
+  // ReadonlySet<string> at this point — TS doesn't narrow `instanceof Set`
+  // against the readonly variant, so we narrow via the array check above
+  // and treat the remaining branch as the Set form.
+  return Array.from(value as ReadonlySet<string>);
 }
 
 /**
