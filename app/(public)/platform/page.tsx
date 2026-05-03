@@ -49,7 +49,7 @@ const PROCESS_STEPS: readonly ProcessStep[] = [
   {
     number: "03",
     title: "Initial call",
-    body: "If the briefing resonates, a focused conversation about your problem and what an engagement could look like.",
+    body: "If the briefing resonates, a focused conversation about your ambition and what an engagement could look like.",
   },
   {
     number: "04",

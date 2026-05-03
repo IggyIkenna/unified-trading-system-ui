@@ -722,7 +722,7 @@ const ENGAGEMENT_JOURNEY: readonly {
     step: "03",
     title: "Initial call",
     description:
-      "If the briefings resonate, a focused conversation about your problem and what an engagement could look like.",
+      "If the briefings resonate, a focused conversation about your ambition and what an engagement could look like.",
   },
   {
     step: "04",
