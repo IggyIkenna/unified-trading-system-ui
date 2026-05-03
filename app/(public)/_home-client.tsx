@@ -228,19 +228,19 @@ function Hero() {
               className="block motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-700"
               style={{ animationFillMode: "both" }}
             >
-              Trading infrastructure,
+              Trading infrastructure
             </span>
             <span
               className="block motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-700"
               style={{ animationDelay: "140ms", animationFillMode: "both" }}
             >
-              built around
+              tailored to
             </span>
             <span
               className="block motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-700"
               style={{ animationDelay: "280ms", animationFillMode: "both" }}
             >
-              your problem.
+              your ambition.
             </span>
           </h1>
           <p
@@ -399,7 +399,7 @@ const WAYS_CLIENTS_USE_ODUM: readonly WayClientsUseOdum[] = [
       "Migration paths reviewed case by case.",
     ],
     href: "/platform",
-    cta: "Explore DART Trading Infrastructure",
+    cta: "Explore {{term:dart|DART}} Trading Infrastructure",
     accent: "#22D3EE",
   },
   {
@@ -412,7 +412,7 @@ const WAYS_CLIENTS_USE_ODUM: readonly WayClientsUseOdum[] = [
       "Where strategies need work, we help you enhance them and close gaps.",
     ],
     href: "/platform",
-    cta: "Explore DART Trading Infrastructure",
+    cta: "Explore {{term:dart|DART}} Trading Infrastructure",
     accent: "#22D3EE",
   },
   {
@@ -495,7 +495,7 @@ function WaysClientsUseOdum() {
       <div className="container px-4 py-16 md:px-6 md:py-20">
         <div className="mx-auto max-w-2xl text-center">
           <h2 id="ways-clients-heading" className="text-3xl font-semibold tracking-tight md:text-4xl">
-            Ways clients use Odum
+            Where Odum fits
           </h2>
           <p className="mt-4 text-base leading-[1.7] text-muted-foreground">
             From a single capability gap to a full operating model. Each card maps to a deep-dive page; most engagements
@@ -503,12 +503,7 @@ function WaysClientsUseOdum() {
           </p>
         </div>
 
-        <div
-          className="relative mt-12"
-          role="region"
-          aria-roledescription="carousel"
-          aria-label="Ways clients use Odum"
-        >
+        <div className="relative mt-12" role="region" aria-roledescription="carousel" aria-label="Where Odum fits">
           {/* Loop is enabled, so chevrons never reach a disabled state — no
               `disabled` attribute or `disabled:` Tailwind variants needed. */}
           <button
