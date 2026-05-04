@@ -80,3 +80,4 @@ scripts/.orphan-audit-report.json
 
 # Claude Code worktrees
 .claude/
+lib/mocks/fixtures/live-universe/
