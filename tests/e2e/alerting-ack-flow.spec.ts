@@ -68,7 +68,7 @@ test.describe("Alerting Phase 5 — DART ack flow", () => {
     const runbookLink = page.getByTestId("alert-detail-runbook-link");
     await expect(runbookLink).toBeVisible();
     const href = await runbookLink.getAttribute("href");
-    expect(href).toContain("/codex/14-playbooks/alerting/defi_health_factor_critical.md");
+    expect(href).toContain("/codex/15-runbooks/alerting/defi_health_factor_critical.md");
 
     // Acknowledge — modal closes itself, mutation fires, bell badge ticks down.
     await page.getByTestId("alert-detail-ack").click();

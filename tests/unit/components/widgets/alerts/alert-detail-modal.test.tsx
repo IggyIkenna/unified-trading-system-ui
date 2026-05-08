@@ -22,16 +22,16 @@ const baseAlert: Alert = {
 describe("runbookUrlFor", () => {
   it("returns the playbook URL for known DeFi AlertCodes", () => {
     expect(runbookUrlFor("HEALTH_FACTOR_CRITICAL")).toBe(
-      "https://github.com/IggyIkenna/unified-trading-pm/blob/main/codex/14-playbooks/alerting/defi_health_factor_critical.md",
+      "https://github.com/IggyIkenna/unified-trading-pm/blob/main/codex/15-runbooks/alerting/defi_health_factor_critical.md",
     );
     expect(runbookUrlFor("WEETH_DEPEG")).toBe(
-      "https://github.com/IggyIkenna/unified-trading-pm/blob/main/codex/14-playbooks/alerting/defi_weeth_depeg.md",
+      "https://github.com/IggyIkenna/unified-trading-pm/blob/main/codex/15-runbooks/alerting/defi_weeth_depeg.md",
     );
     expect(runbookUrlFor("AAVE_UTILIZATION_SPIKE")).toBe(
-      "https://github.com/IggyIkenna/unified-trading-pm/blob/main/codex/14-playbooks/alerting/defi_aave_utilization_spike.md",
+      "https://github.com/IggyIkenna/unified-trading-pm/blob/main/codex/15-runbooks/alerting/defi_aave_utilization_spike.md",
     );
     expect(runbookUrlFor("FUNDING_RATE_FLIP")).toBe(
-      "https://github.com/IggyIkenna/unified-trading-pm/blob/main/codex/14-playbooks/alerting/defi_funding_rate_flip.md",
+      "https://github.com/IggyIkenna/unified-trading-pm/blob/main/codex/15-runbooks/alerting/defi_funding_rate_flip.md",
     );
   });
 
@@ -66,7 +66,7 @@ describe("AlertDetailModal", () => {
     expect(screen.getByText("Reduce leverage; close debt position.")).toBeTruthy();
 
     const runbookLink = screen.getByTestId("alert-detail-runbook-link") as HTMLAnchorElement;
-    expect(runbookLink.href).toContain("/codex/14-playbooks/alerting/defi_health_factor_critical.md");
+    expect(runbookLink.href).toContain("/codex/15-runbooks/alerting/defi_health_factor_critical.md");
     expect(runbookLink.target).toBe("_blank");
     expect(runbookLink.rel).toContain("noopener");
   });

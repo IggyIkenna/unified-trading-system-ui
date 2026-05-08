@@ -13,7 +13,7 @@ import type { Alert, AlertSeverity, AlertStatus, AlertType } from "./alerts-data
  * SSOT for the per-AlertCode runbook deep-link.
  *
  * Resolves an `AlertType` (= AlertCode) to the canonical playbook file under
- * `codex/14-playbooks/alerting/`. Mirrors the file list in
+ * `codex/15-runbooks/alerting/`. Mirrors the file list in
  * `unified-trading-pm/plans/active/alerting_service_live_rules_2026_05_07.md`
  * Phase 6. Returned URL points at the GitHub blob view so it works regardless
  * of whether the operator has the PM repo cloned locally.
@@ -41,7 +41,7 @@ const RUNBOOK_DOCS: Partial<Record<AlertType, string>> = {
   PRE_TRADE_REJECTION: "order_rejection_spike.md",
 };
 
-const RUNBOOK_BASE_URL = "https://github.com/IggyIkenna/unified-trading-pm/blob/main/codex/14-playbooks/alerting";
+const RUNBOOK_BASE_URL = "https://github.com/IggyIkenna/unified-trading-pm/blob/main/codex/15-runbooks/alerting";
 
 /** Returns the runbook URL for the given AlertCode, or null if no mapping exists. */
 export function runbookUrlFor(alertType: AlertType): string | null {
