@@ -1,9 +1,10 @@
-import { AlertCircle, Bell, Power } from "lucide-react";
+import { AlertCircle, Bell, PieChart, Power } from "lucide-react";
 import { registerPresets } from "../preset-registry";
 import { registerWidget } from "../widget-registry";
 import { AlertsKillSwitchWidget } from "./alerts-kill-switch-widget";
 import { AlertsKpiStripWidget } from "./alerts-kpi-strip-widget";
 import { AlertsTableWidget } from "./alerts-table-widget";
+import { SeverityBreakdownWidget } from "./severity-breakdown-widget";
 
 registerPresets("alerts", [
   {
@@ -83,4 +84,21 @@ registerWidget({
   availableOn: ["alerts"],
   singleton: true,
   component: AlertsKillSwitchWidget,
+});
+
+registerWidget({
+  id: "alerts-severity-breakdown",
+  label: "Severity Breakdown",
+  description: "Pie chart of active alerts by severity (critical / high / medium / low / info).",
+  icon: PieChart,
+  minW: 4,
+  minH: 4,
+  defaultW: 8,
+  defaultH: 6,
+  requiredEntitlements: [{ domain: "trading-common", tier: "basic" }],
+  assetGroup: "PLATFORM",
+  catalogGroup: "Alerts",
+  availableOn: ["alerts"],
+  singleton: true,
+  component: SeverityBreakdownWidget,
 });

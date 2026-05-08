@@ -16,6 +16,13 @@ export const PERSONAS = {
     email: "admin@odum.internal",
     token: "demo-token-admin",
   },
+  // DART operator persona used by alerting-service Phase 5 ack-flow tests.
+  // See unified-trading-pm/plans/active/alerting_service_live_rules_2026_05_07.md.
+  "live-operator": {
+    id: "live-operator",
+    email: "operator@odum.internal",
+    token: "demo-token-live-operator",
+  },
 } as const;
 
 export type PersonaKey = keyof typeof PERSONAS;
