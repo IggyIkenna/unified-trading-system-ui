@@ -6,17 +6,17 @@
  * (family, archetype) and persists to `useWorkspaceScope` so downstream
  * data-contexts can apply the filter.
  *
- * Phase 3 wave-B of `ui_unification_v2_sanitisation_2026_04_20.plan.md` §
+ * Phase 3 wave-B of `ui_unification_v2_sanitisation_2026_04_20.plan` §
  * p3-wire-picker-orders-positions. Placement: top of page, above WidgetGrid.
  *
  * `testIdPrefix` distinguishes banners across pages
  * (e.g. "orders" → `orders-family-picker`).
  */
 
-import { FamilyArchetypePicker } from "./family-archetype-picker";
 import type { StrategyArchetype, StrategyFamily } from "@/lib/architecture-v2";
 import { useWorkspaceScope, useWorkspaceScopeStore } from "@/lib/stores/workspace-scope-store";
 import { useMemo } from "react";
+import { FamilyArchetypePicker } from "./family-archetype-picker";
 
 export interface TradingFamilyFilterBannerProps {
   /** Prefix for data-testid attributes (e.g. "orders", "positions", "pnl"). */

@@ -3,7 +3,7 @@
 /**
  * ResearchJourneyRail — the 6-stage primary nav for DART Research.
  *
- * Per dart_ux_cockpit_refactor_2026_04_29.plan.md §5.3 + Phase 4 of §17:
+ * Per dart_ux_cockpit_refactor_2026_04_29.plan §5.3 + Phase 4 of §17:
  * the Research surface collapses behind 6 buyer-facing stages
  * (Discover · Build · Train · Validate · Allocate · Promote).
  *
@@ -23,18 +23,18 @@
  * affordances; Phase 9 retires the legacy per-route pages.
  */
 
-import * as React from "react";
+import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronRight } from "lucide-react";
+import * as React from "react";
 
+import type { ResearchStage } from "@/lib/architecture-v2/workspace-scope";
 import {
   RESEARCH_STAGES,
   RESEARCH_STAGE_META,
   defaultResearchStage,
   researchStageForPath,
 } from "@/lib/cockpit/research-stages";
-import type { ResearchStage } from "@/lib/architecture-v2/workspace-scope";
 import { useWorkspaceScope, useWorkspaceScopeStore } from "@/lib/stores/workspace-scope-store";
 import { cn } from "@/lib/utils";
 

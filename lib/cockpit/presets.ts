@@ -1,6 +1,6 @@
 /**
  * Cockpit preset registry — 8 starter cockpits per
- * dart_ux_cockpit_refactor_2026_04_29.plan.md §8 (Phase 6).
+ * dart_ux_cockpit_refactor_2026_04_29.md §8 (Phase 6).
  *
  * Six of the eight presets support both monitor + replicate engagement.
  * Executive Overview and Signals-In Monitor are monitor-only by their
@@ -13,8 +13,8 @@
  * instances for the user.
  */
 
-import type { WorkspaceScope } from "@/lib/architecture-v2/workspace-scope";
 import type { StrategyArchetype } from "@/lib/architecture-v2/enums";
+import type { WorkspaceScope } from "@/lib/architecture-v2/workspace-scope";
 import type { PresetArchetypeBinding } from "./preset-archetype-map";
 import { PRESET_ARCHETYPE_MAP } from "./preset-archetype-map";
 

@@ -55,4 +55,4 @@ The `docs/trading/` folder contains docs that are actively referenced for tradin
 
 ## Related but separate
 
-- `unified-trading-pm/plans/ai/ui_testing_strategy_2026_04_15.plan.md` — premature plan draft from earlier in the same session. **Do not treat as authoritative.** Once these scoping docs converge, a real plan will be written from scratch in `unified-trading-pm/plans/` and that draft will be deleted.
+- `unified-trading-pm/plans/ai/ui_testing_strategy_2026_04_15.md` — premature plan draft from earlier in the same session. **Do not treat as authoritative.** Once these scoping docs converge, a real plan will be written from scratch in `unified-trading-pm/plans/` and that draft will be deleted.

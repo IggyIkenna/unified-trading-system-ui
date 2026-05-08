@@ -9,7 +9,7 @@
  *
  * Same-origin call only — no NEXT_PUBLIC_USER_MGMT_API_URL anymore. The
  * legacy user-management-api Cloud Run service is being retired in favour
- * of native portal routes (see plans/active/retire_user_mgmt_api_*.plan.md).
+ * of native portal routes (see plans/active/retire_user_mgmt_api_*.md).
  */
 export const APP_ID = "unified-trading-system-ui";
 

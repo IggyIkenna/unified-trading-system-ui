@@ -17,7 +17,7 @@ import { clearPersona } from "../seed-persona";
  *    ships. An anonymous visitor should only ever reach public surfaces.
  * 5. Orphan-reachability — every public page is reachable from the main nav.
  *
- * Plan: plans/active/refactor_g1_12_public_site_ia_and_briefings_polish_2026_04_20.plan.md
+ * Plan: plans/active/refactor_g1_12_public_site_ia_and_briefings_polish_2026_04_20.plan
  * Codex SSOT: unified-trading-pm/codex/14-playbooks/experience/marketing-journey.md
  *             unified-trading-pm/codex/14-playbooks/experience/briefings-hub.md
  */

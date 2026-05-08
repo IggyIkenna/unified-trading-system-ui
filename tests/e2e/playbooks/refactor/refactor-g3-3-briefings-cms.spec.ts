@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
+import * as yaml from "js-yaml";
 import * as fs from "node:fs";
 import * as path from "node:path";
-import * as yaml from "js-yaml";
 import { clearPersona } from "../seed-persona";
 
 /**
@@ -21,7 +21,7 @@ import { clearPersona } from "../seed-persona";
  * 5. A pillar slug not in the YAML store must 404 (protects against
  *    stale routes persisting after a YAML delete).
  *
- * Plan: unified-trading-pm/plans/active/refactor_g3_3_briefings_cms_migration_2026_04_20.plan.md
+ * Plan: unified-trading-pm/plans/active/refactor_g3_3_briefings_cms_migration_2026_04_20.md
  * Codex SSOT: unified-trading-pm/codex/14-playbooks/experience/briefings-hub.md
  *             unified-trading-pm/codex/14-playbooks/experience/dart-briefing.md
  *             unified-trading-pm/codex/14-playbooks/experience/im-decision-journey.md

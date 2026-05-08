@@ -3,7 +3,7 @@
 /**
  * Admin view of onboarding documents uploaded by this organisation.
  *
- * Plan: unified-trading-pm/plans/active/reg_umbrella_questionnaire_and_onboarding_docs_2026_04_21.plan.md
+ * Plan: unified-trading-pm/plans/active/reg_umbrella_questionnaire_and_onboarding_docs_2026_04_21.plan
  *
  * Lists docs from /api/onboarding/docs/list?org_id=..., renders one row
  * per doc with View / Download / Delete-with-confirm actions. Delete
@@ -13,7 +13,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-import { AlertTriangle, Download, FileText, Eye, Trash2 } from "lucide-react";
+import { AlertTriangle, Download, Eye, FileText, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {

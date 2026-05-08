@@ -3,7 +3,7 @@
 /**
  * ContextualLockedPreview — Cockpit FOMO surface.
  *
- * Per dart_ux_cockpit_refactor_2026_04_29.plan.md §12 + Phase 7 of §17.
+ * Per dart_ux_cockpit_refactor_2026_04_29.md §12 + Phase 7 of §17.
  *
  * Renders scope-specific locked-preview cards inline in the cockpit. The
  * cards reflect the active scope so an arbitrage user sees arbitrage
@@ -13,9 +13,9 @@
  * single help surface for IA + capability questions.
  */
 
-import * as React from "react";
-import Link from "next/link";
 import { ArrowRight, Lock } from "lucide-react";
+import Link from "next/link";
+import * as React from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

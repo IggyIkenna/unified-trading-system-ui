@@ -10,7 +10,7 @@ Every repo must progress through three independent readiness axes: **Code (CR)**
 across all three axes.
 
 SSOT for: `cursor-rules/core/repo-readiness-checklist.mdc`, `cursor-rules/core/semver-v1-hardening.mdc` Master tracker:
-`plans/active/code_readiness_master_plan_2026_03_11.plan.md`
+`plans/active/code_readiness_master_plan_2026_03_11.md`
 
 ---
 
@@ -23,7 +23,7 @@ Per-repo code stages, executed in order. CR stages directly map to the plan gate
 | CR0   | C0    | Not started                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | CR1   | C1    | **Functionality 100%** — audit confirms: zero `NotImplementedError` in core paths, zero stub handlers returning `{}` or `pass`, no `TODO`/`FIXME` markers in production-path code. Make-sense criteria: run the trading system audit checklist (§2 Functionality) against this repo. Every stub must be tracked in an active plan.                                                                                                           |
 | CR2   | C2    | **Unit tests 100% passing** — `bash scripts/quality-gates.sh` unit stage green; coverage ≥ floor (80% for libraries, 70% for services); zero skipped tests without documented reason in the test file itself. Coverage XML written to disk (`--cov-report=xml`).                                                                                                                                                                             |
-| CR3   | (C3½) | **Integration tests 100% passing** — every _direct_ downstream dependency declared in `workspace-manifest.json` is exercised by at least one integration test (not just mocked). Uses emulators/mocks per `cicd_mock_hardening_2026_03_11.plan.md`. Make-sense criteria: count the repo's `dependencies` in the manifest; each must appear in `tests/integration/`. Tests run credential-free (`CLOUD_PROVIDER=local CLOUD_MOCK_MODE=true`). |
+| CR3   | (C3½) | **Integration tests 100% passing** — every _direct_ downstream dependency declared in `workspace-manifest.json` is exercised by at least one integration test (not just mocked). Uses emulators/mocks per `cicd_mock_hardening_2026_03_11.md`. Make-sense criteria: count the repo's `dependencies` in the manifest; each must appear in `tests/integration/`. Tests run credential-free (`CLOUD_PROVIDER=local CLOUD_MOCK_MODE=true`). |
 | CR4   | C4    | **Quality gate passing locally** — `bash scripts/quality-gates.sh` Pass 1 fully green: ruff, basedpyright (0 errors), coverage floor, codex checks, security scan, all tests pass. No `                                                                                                                                                                                                                                                      |     | :` bypasses added to reach green. |
 | CR5   | C5    | **Quickmerge to feature branch** — `bash scripts/quickmerge.sh "feat: ..." --agent` to `feat/code-readiness-<repo>` or equivalent feature branch. PR created and CI passes. This is NOT a merge to `main` or `staging`; it is the signal that CI validates the code on its own.                                                                                                                                                              |
 
@@ -46,7 +46,7 @@ integration-test.
 | Stage | Criteria                                                                                                                                                                                                                               |
 | ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | DR0   | Not started (default)                                                                                                                                                                                                                  |
-| DR1   | **Deployable** — Docker image builds; `cloudbuild.yaml` correct; infra provisioned (GCS buckets, PubSub topics, Secret Manager entries populated per `api_keys_and_auth.plan.md`); `scripts/setup-workspace.sh` succeeds for this repo |
+| DR1   | **Deployable** — Docker image builds; `cloudbuild.yaml` correct; infra provisioned (GCS buckets, PubSub topics, Secret Manager entries populated per `api_keys_and_auth.md`); `scripts/setup-workspace.sh` succeeds for this repo |
 | DR2   | **CI smoke tests pass** — `production_mock_e2e` suite green in GitHub Actions; emulators + mocks; zero live cloud calls; `CLOUD_PROVIDER=local CLOUD_MOCK_MODE=true` throughout                                                        |
 | DR3   | **Feature environment deployed** — at least one successful deployment to the `feat/` or `dev` Cloud Run environment; `GET /health` returns 200; `GET /readiness` returns 200; basic smoke route returns expected payload               |
 | DR4   | **Staging SIT pass** — `system-integration-tests` full suite passes with this repo as the target; uses real credentials in staging; no circuit breaker trips during the SIT run                                                        |
@@ -185,5 +185,5 @@ repo_gates:
     readiness_note: "CR4 reached; CR3 integration tests pending for UTL→UEI dependency"
 ```
 
-The `code_readiness_master_plan_2026_03_11.plan.md` is the authoritative tracker for per-repo CR/DR/BR state across all
+The `code_readiness_master_plan_2026_03_11.md` is the authoritative tracker for per-repo CR/DR/BR state across all
 65 repos.

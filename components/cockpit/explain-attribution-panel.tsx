@@ -3,7 +3,7 @@
 /**
  * ExplainAttributionPanel — bundle + override side-by-side P&L attribution.
  *
- * Per dart_ux_cockpit_refactor_2026_04_29.plan.md §4.8.3 rule 2:
+ * Per dart_ux_cockpit_refactor_2026_04_29.plan §4.8.3 rule 2:
  * "Explain mode and Reports MUST show both the approved release bundle AND
  *  any runtime overrides active during the reporting period. Performance
  *  attribution that hides overrides is forbidden."
@@ -19,8 +19,8 @@
  * Demo numbers — production wires this to the attribution-service stream.
  */
 
-import * as React from "react";
 import { ArrowRight, Calculator, Layers, Minus, Plus, Sparkle, TrendingDown, TrendingUp } from "lucide-react";
+import * as React from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";

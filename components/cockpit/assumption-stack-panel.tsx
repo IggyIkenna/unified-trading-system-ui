@@ -4,7 +4,7 @@
  * AssumptionStackPanel — visualises the 9-layer Odum AssumptionStack inline
  * in the cockpit shell.
  *
- * Per dart_ux_cockpit_refactor_2026_04_29.plan.md §4.9 (the assumption-stack
+ * Per dart_ux_cockpit_refactor_2026_04_29.plan §4.9 (the assumption-stack
  * USP layer):
  *
  *   "Most platforms backtest signals. DART simulates the operating system
@@ -25,17 +25,14 @@
  * deviation — answers "is live behaving like the simulation said it would?"
  */
 
-import * as React from "react";
 import {
   AlertTriangle,
   CheckCircle2,
-  ClipboardList,
   Cpu,
   Database,
   FileBarChart,
   GitBranch,
   Layers,
-  MinusCircle,
   Network,
   ShieldCheck,
   Sliders,
@@ -43,8 +40,9 @@ import {
   TrendingUp,
   Wallet,
   Wrench,
-  Zap,
+  Zap
 } from "lucide-react";
+import * as React from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";

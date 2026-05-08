@@ -2,7 +2,7 @@
  * L1.5 widget harness — order-entry-widget
  *
  * Pattern: unified-trading-pm/codex/06-coding-standards/ui-testing-layers.md (L1.5)
- * Plan: unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan.md Phase 5
+ * Plan: unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan Phase 5
  *
  * Scope:
  * - Render: form widget mounts, loading state, error state, batch-mode advisory.
@@ -14,8 +14,8 @@
  *
  * Out of scope: real route (L2), multi-widget flow (L3b), visual regression (L4).
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { buildMockTerminalData } from "../_helpers/mock-terminal-context";
 
 const mockData = buildMockTerminalData();

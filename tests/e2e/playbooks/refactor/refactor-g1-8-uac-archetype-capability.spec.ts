@@ -25,7 +25,7 @@ import { clearPersona, seedPersona } from "../seed-persona";
  * 6. Orphan-reachability — every archetype_id from the UAC manifest appears in
  *    the rendered coverage.ts mapping.
  *
- * Plan: unified-trading-pm/plans/active/refactor_g1_8_uac_archetype_capability_v2_2026_04_20.plan.md
+ * Plan: unified-trading-pm/plans/active/refactor_g1_8_uac_archetype_capability_v2_2026_04_20.md
  * UAC SSOT: unified-api-contracts/unified_api_contracts/internal/architecture_v2/archetype_capability_manifest.json
  * Codex narrative: unified-trading-pm/codex/09-strategy/architecture-v2/category-instrument-coverage.md
  */

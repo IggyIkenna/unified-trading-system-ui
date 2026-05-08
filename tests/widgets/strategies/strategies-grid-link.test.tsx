@@ -7,10 +7,10 @@
  * - Button text mentions "DimensionalGrid" / "Batch Analysis".
  * - No data-context dependencies (static CTA widget).
  *
- * Per unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan.md Phase 5.
+ * Per unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan Phase 5.
  */
-import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 
 vi.mock("next/link", () => ({
   default: ({ href, children, className }: { href: string; children: React.ReactNode; className?: string }) => (
@@ -20,8 +20,8 @@ vi.mock("next/link", () => ({
   ),
 }));
 
-import * as React from "react";
 import { StrategiesGridLinkWidget } from "@/components/widgets/strategies/strategies-grid-link-widget";
+import * as React from "react";
 
 describe("strategies-grid-link — L1.5 harness", () => {
   describe("render", () => {

@@ -1,7 +1,7 @@
 # Phase Gate Checklist — Pre-Live-Trading Gates
 
 **Last updated:** 2026-03-08 **Target:** First live trade week of March 20, 2026 **Source of truth:**
-`master_pre_deployment_plan_chain.plan.md`
+`master_pre_deployment_plan_chain.md`
 
 ---
 
@@ -14,7 +14,7 @@ blocks all gates that follow it.
 
 ## Gate 1 — Phase 0: Environment Clean
 
-**Status: DONE** **Owner:** N/A (completed) **Plan:** `archive/phase0_audit_remediation.plan.md`
+**Status: DONE** **Owner:** N/A (completed) **Plan:** `archive/phase0_audit_remediation.md`
 
 | Check                                      | Status |
 | ------------------------------------------ | ------ |
@@ -30,7 +30,7 @@ blocks all gates that follow it.
 
 ## Gate 2 — Phase 0b: Audit Standards
 
-**Status: DONE** **Owner:** N/A (completed) **Plan:** `workspace_audit_remediation_2026_03_07.plan.md`
+**Status: DONE** **Owner:** N/A (completed) **Plan:** `workspace_audit_remediation_2026_03_07.md`
 
 | Check                                   | Status                                   |
 | --------------------------------------- | ---------------------------------------- |
@@ -45,7 +45,7 @@ blocks all gates that follow it.
 
 ## Gate 3 — Phase 1: Foundation Infrastructure
 
-**Status: DONE** **Owner:** N/A (completed) **Plan:** `archive/phase1_foundation_prep.plan.md`
+**Status: DONE** **Owner:** N/A (completed) **Plan:** `archive/phase1_foundation_prep.md`
 
 | Check                                                                    | Status |
 | ------------------------------------------------------------------------ | ------ |
@@ -70,7 +70,7 @@ blocks all gates that follow it.
 
 ## Gate 4 — Phase 2: Library Tier Hardening (T0→T3)
 
-**Status: IN_PROGRESS** **Owner:** Person A (T0–T2) / Person B (T2–T3) **Plan:** `phase2_library_tier_hardening.plan.md`
+**Status: IN_PROGRESS** **Owner:** Person A (T0–T2) / Person B (T2–T3) **Plan:** `phase2_library_tier_hardening.md`
 **Blocked by:** None — T0 work active now
 
 | Check                                                          | Status  | Notes                                                  |
@@ -96,7 +96,7 @@ D4/D5.
 ## Gate 5 — Phase 3: Service Hardening
 
 **Status: PENDING** **Owner:** Person A + Person B (all services) **Plan:**
-`phase3_service_hardening_integration.plan.md` **Blocked by:** Gate 4 (Phase 2 T0–T3 all green)
+`phase3_service_hardening_integration.md` **Blocked by:** Gate 4 (Phase 2 T0–T3 all green)
 
 | Check                                                        | Status  | Notes                     |
 | ------------------------------------------------------------ | ------- | ------------------------- |
@@ -134,7 +134,7 @@ D4/D5.
 | ----------------------------------------------- | ------- | ------------------------------------------- |
 | GCS buckets provisioned + IAM verified          | PENDING | Owner: DevOps                               |
 | PubSub topics + subscriptions provisioned       | PENDING | Owner: DevOps                               |
-| Secret Manager entries populated (all API keys) | PENDING | Owner: Person A (api_keys_and_auth.plan.md) |
+| Secret Manager entries populated (all API keys) | PENDING | Owner: Person A (api_keys_and_auth.md) |
 | Cloud Run services deployed (all T4 services)   | PENDING | Owner: deployment-service + deployment-api  |
 | GET /infra/health returns 200 for all services  | PENDING | verify_infra.py passes                      |
 
@@ -142,7 +142,7 @@ D4/D5.
 
 ## Gate 8 — Phase 6: Cloud Build
 
-**Status: PENDING** **Owner:** Person B **Plan:** `aws_migration.plan.md` **Partially complete:** `buildspec.aws.yaml`
+**Status: PENDING** **Owner:** Person B **Plan:** `aws_migration.md` **Partially complete:** `buildspec.aws.yaml`
 added to all 45 repos (DONE 2026-03-06)
 
 | Check                                            | Status  | Notes                                     |
@@ -157,7 +157,7 @@ added to all 45 repos (DONE 2026-03-06)
 
 ## Gate 9 — Phase 7: Final Audit
 
-**Status: IN_PROGRESS** **Owner:** Person A (audit runner) **Plan:** `trading_system_audit_prompt.plan.md`
+**Status: IN_PROGRESS** **Owner:** Person A (audit runner) **Plan:** `trading_system_audit_prompt.md`
 
 | Check                                                    | Status  | Notes                             |
 | -------------------------------------------------------- | ------- | --------------------------------- |
@@ -202,7 +202,7 @@ added to all 45 repos (DONE 2026-03-06)
 | Gate 4 | T0 deploy structure + code rewrite    | Not yet started                          | Person A |
 | Gate 5 | All T4–T6 service hardening           | Phase 2 not yet complete                 | A + B    |
 | Gate 7 | GCS/PubSub/SecretManager provisioning | Cloud infra not yet provisioned          | DevOps   |
-| Gate 7 | API keys in Secret Manager            | api_keys_and_auth.plan.md pending        | Person A |
+| Gate 7 | API keys in Secret Manager            | api_keys_and_auth.md pending        | Person A |
 | Gate 8 | AWS CodeBuild triggers                | AWS account access needed                | DevOps   |
 | Gate 9 | Sections 2–10 audit                   | Phase 2 must complete first              | Person A |
 

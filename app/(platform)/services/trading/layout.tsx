@@ -1,8 +1,8 @@
 "use client";
 
 import { ErrorBoundary } from "@/components/shared/error-boundary";
-import "@/components/widgets/register-all";
 import { AllWidgetProviders } from "@/components/widgets/all-widget-providers";
+import "@/components/widgets/register-all";
 
 /**
  * /services/trading/* layout — minimal shell for the surviving deep-link
@@ -15,7 +15,7 @@ import { AllWidgetProviders } from "@/components/widgets/all-widget-providers";
  *   - /services/trading/strategies/[id]/versions
  *   - /services/trading/custom/[id]       (user-defined custom panel)
  *
- * Per dart_ux_cockpit_refactor_2026_04_29.plan.md §15 + §22: per-strategy
+ * Per dart_ux_cockpit_refactor_2026_04_29.plan §15 + §22: per-strategy
  * detail surfaces and user-customisable panels are explicitly preserved
  * outside the cockpit grid.
  *

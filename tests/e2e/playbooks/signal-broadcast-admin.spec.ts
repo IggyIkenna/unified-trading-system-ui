@@ -13,7 +13,7 @@ import { seedPersona } from "./seed-persona";
  *   5. Non-admin personas see the admin-only gate
  *
  * Plan SSOT:
- *   unified-trading-pm/plans/active/signal_leasing_broadcast_architecture_2026_04_20.plan.md
+ *   unified-trading-pm/plans/active/signal_leasing_broadcast_architecture_2026_04_20.md
  */
 
 test.describe("signal broadcast — admin counterparties surface", () => {

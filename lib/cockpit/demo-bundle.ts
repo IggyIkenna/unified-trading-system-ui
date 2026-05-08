@@ -1,7 +1,7 @@
 /**
  * Demo StrategyReleaseBundle + RuntimeOverride fixture for the cockpit shell.
  *
- * Per dart_ux_cockpit_refactor_2026_04_29.plan.md §13 (mock-mode liveness):
+ * Per dart_ux_cockpit_refactor_2026_04_29.md §13 (mock-mode liveness):
  * the cockpit needs a representative bundle + override to demo "this is
  * the operating system, not just a dashboard". This fixture is rendered
  * inside the ReleaseBundlePanel so a buyer sees an actual bundle + audit
@@ -13,8 +13,8 @@
 
 import type { AccountConnectivityConfig } from "@/lib/architecture-v2/account-connectivity-config";
 import type { AssumptionDriftReport, AssumptionStack } from "@/lib/architecture-v2/assumption-stack";
-import { DEFAULT_BUNDLE_GUARDRAILS, type StrategyReleaseBundle } from "@/lib/architecture-v2/strategy-release-bundle";
 import type { RuntimeOverride } from "@/lib/architecture-v2/runtime-override";
+import { DEFAULT_BUNDLE_GUARDRAILS, type StrategyReleaseBundle } from "@/lib/architecture-v2/strategy-release-bundle";
 import type { TreasuryOperationalConfig } from "@/lib/architecture-v2/treasury-config";
 import { EMPTY_WORKSPACE_SCOPE } from "@/lib/architecture-v2/workspace-scope";
 

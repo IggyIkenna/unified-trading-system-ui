@@ -19,7 +19,7 @@
  * (stub in dev; real JWT flow wires at onboarding).
  *
  * Plan reference:
- *   unified-trading-pm/plans/active/signal_leasing_broadcast_architecture_2026_04_20.plan.md
+ *   unified-trading-pm/plans/active/signal_leasing_broadcast_architecture_2026_04_20.plan
  *   § Phase 9 — live wiring + paper column (follow-up 2026-04-20)
  */
 

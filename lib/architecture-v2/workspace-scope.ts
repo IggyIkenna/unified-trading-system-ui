@@ -1,7 +1,7 @@
 /**
  * WorkspaceScope — the unified control-plane state for the DART cockpit.
  *
- * Per dart_ux_cockpit_refactor_2026_04_29.plan.md §4 + §4.4:
+ * Per dart_ux_cockpit_refactor_2026_04_29.md §4 + §4.4:
  *   - Five filter axes (asset_group / instrument_type / family / archetype / strategy)
  *   - Share class (real product dimension for BTC-neutral / ETH-native / USD funds)
  *   - Surface (Terminal / Research / Reports / Signals / Ops / Dashboard)
@@ -20,8 +20,8 @@
  * buyer-facing copy-paste links but always serializable for admin / QA debug.
  */
 
-import type { ProductRouting, StrategyMaturityPhase, VenueSetVariantId } from "./lifecycle";
 import type { ShareClass, StrategyArchetype, StrategyFamily, VenueAssetGroupV2 } from "./enums";
+import type { ProductRouting, StrategyMaturityPhase, VenueSetVariantId } from "./lifecycle";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Type definitions

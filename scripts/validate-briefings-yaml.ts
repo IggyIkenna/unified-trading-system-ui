@@ -22,7 +22,7 @@
  * Usage:
  *   tsx scripts/validate-briefings-yaml.ts
  *
- * Plan: unified-trading-pm/plans/active/refactor_g3_3_briefings_cms_migration_2026_04_20.plan.md
+ * Plan: unified-trading-pm/plans/active/refactor_g3_3_briefings_cms_migration_2026_04_20.md
  */
 
 import * as fs from "node:fs";

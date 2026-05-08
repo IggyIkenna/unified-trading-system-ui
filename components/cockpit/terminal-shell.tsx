@@ -3,7 +3,7 @@
 /**
  * TerminalShell — the cockpit-wide chrome for the DART Terminal surface.
  *
- * Per dart_ux_cockpit_refactor_2026_04_29.plan.md §5.2 + Phase 3 of §17.
+ * Per dart_ux_cockpit_refactor_2026_04_29.md §5.2 + Phase 3 of §17.
  *
  * Renders the 5-mode TerminalModeTabs primitive above the Terminal layout's
  * existing chrome. The TradingVerticalNav (legacy 24-tab sprawl) stays as

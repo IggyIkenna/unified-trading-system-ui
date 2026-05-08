@@ -1,7 +1,7 @@
 /**
  * ResearchStage ↔ route mapping.
  *
- * Per dart_ux_cockpit_refactor_2026_04_29.plan.md §5.3 + Phase 4 of §17.
+ * Per dart_ux_cockpit_refactor_2026_04_29.plan §5.3 + Phase 4 of §17.
  *
  * The Research surface collapses behind a 6-stage journey rail:
  *

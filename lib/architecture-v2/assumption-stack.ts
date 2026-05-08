@@ -1,7 +1,7 @@
 /**
  * AssumptionStack — the Odum backtest-to-live USP.
  *
- * Per dart_ux_cockpit_refactor_2026_04_29.plan.md §4.9 (the assumption-stack
+ * Per dart_ux_cockpit_refactor_2026_04_29.plan §4.9 (the assumption-stack
  * layer). The Odum claim:
  *
  *   "Most platforms backtest signals. DART simulates the operating system

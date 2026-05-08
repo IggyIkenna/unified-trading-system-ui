@@ -17,9 +17,10 @@
  * SSOT for schema:
  *   unified-api-contracts/unified_api_contracts/internal/domain/signal_broadcast/
  * SSOT for plan:
- *   unified-trading-pm/plans/active/signal_leasing_broadcast_architecture_2026_04_20.plan.md
+ *   unified-trading-pm/plans/active/signal_leasing_broadcast_architecture_2026_04_20.md
  */
 
+import type { PropsWithChildren } from "react";
 import {
   createContext,
   useCallback,
@@ -29,7 +30,6 @@ import {
   useRef,
   useState,
 } from "react";
-import type { PropsWithChildren } from "react";
 
 import type { Counterparty, DeliveryHealth } from "./types";
 

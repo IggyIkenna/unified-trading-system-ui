@@ -10,12 +10,12 @@
  * locked-preview hide-when-empty rule, and the per-preset visibility badge
  * all read from one canonical decision pipeline.
  *
- * Per dart_ux_cockpit_refactor_2026_04_29.plan.md §4.5 + §4.6 four-state
+ * Per dart_ux_cockpit_refactor_2026_04_29.plan §4.5 + §4.6 four-state
  * taxonomy.
  */
 
+import { CheckCircle2, ExternalLink, EyeOff, Lock, ShieldQuestion } from "lucide-react";
 import * as React from "react";
-import { CheckCircle2, EyeOff, ExternalLink, Lock, ShieldQuestion } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";

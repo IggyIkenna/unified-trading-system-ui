@@ -1,7 +1,7 @@
 /**
  * ExternalSignalStrategyVersion — the Signals-In path.
  *
- * Per dart_ux_cockpit_refactor_2026_04_29.plan.md §4.8.5.
+ * Per dart_ux_cockpit_refactor_2026_04_29.plan §4.8.5.
  *
  * Signals-In clients bring their own research. DART does NOT train their
  * models, does NOT own their feature library, does NOT run their backtests.

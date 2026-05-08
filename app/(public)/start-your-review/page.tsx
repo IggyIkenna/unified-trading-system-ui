@@ -4,7 +4,7 @@ import { StartYourReviewClient } from "./_client";
 /**
  * `/start-your-review` — context page sitting between the homepage CTA and
  * the questionnaire. Per Phase 3 of
- * `marketing_site_three_route_consolidation_2026_04_26.plan.md`, the public
+ * `marketing_site_three_route_consolidation_2026_04_26.md`, the public
  * homepage no longer links directly to the questionnaire; the institutional
  * funnel is:
  *

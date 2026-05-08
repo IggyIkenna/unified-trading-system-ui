@@ -1,7 +1,7 @@
 /**
  * Phase 2 — DartScopeBar mount + interactions on every cockpit-tier surface.
  *
- * Per dart_ux_cockpit_refactor_2026_04_29.plan.md §6 + Phase 2 of §17.
+ * Per dart_ux_cockpit_refactor_2026_04_29.plan §6 + Phase 2 of §17.
  *
  * Acceptance:
  *   1. The bar renders on Dashboard, Trading, Observe, Research, Strategy

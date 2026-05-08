@@ -1,7 +1,7 @@
 /**
  * TerminalMode ↔ route mapping.
  *
- * Per dart_ux_cockpit_refactor_2026_04_29.plan.md §5.2 + Phase 3 of §17.
+ * Per dart_ux_cockpit_refactor_2026_04_29.plan §5.2 + Phase 3 of §17.
  *
  * The 24-tab `TRADING_TABS` sprawl in `components/shell/service-tabs.tsx`
  * collapses behind 5 buyer-facing modes:

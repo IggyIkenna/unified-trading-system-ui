@@ -1,7 +1,7 @@
 /**
  * LockedPreview model — scope-specific FOMO copy.
  *
- * Per dart_ux_cockpit_refactor_2026_04_29.plan.md §12 + Phase 7 of §17.
+ * Per dart_ux_cockpit_refactor_2026_04_29.plan §12 + Phase 7 of §17.
  *
  * Cockpit FOMO ≠ Catalogue FOMO:
  *   - Cockpit FOMO = workflow / capability FOMO. "What I could do with my

@@ -169,7 +169,7 @@ served via CDN or mounted in the `deployment-api` container. The Python orchestr
 | `settlement-ui`          | Shell exists — not wired           | `ui-local-dev-setup` |
 | `onboarding-ui`          | Shell exists — not wired           | `ui-local-dev-setup` |
 
-See `unified-trading-pm/plans/cursor-plans/consolidated_remaining_work.plan.md` for task details.
+See `unified-trading-pm/plans/cursor-plans/consolidated_remaining_work.md` for task details.
 
 ---
 

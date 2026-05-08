@@ -2,7 +2,7 @@
  * L1.5 widget harness — price-chart-widget
  *
  * Pattern: unified-trading-pm/codex/06-coding-standards/ui-testing-layers.md (L1.5)
- * Plan: unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan.md Phase 5
+ * Plan: unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan Phase 5
  *
  * Scope:
  * - Render: loading state, error state, empty-candle state, chart container mounts.
@@ -13,8 +13,8 @@
  *
  * Out of scope: real canvas rendering (browser-only), route wiring (L2), L4 visual.
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { buildMockTerminalData } from "../_helpers/mock-terminal-context";
 
 const mockData = buildMockTerminalData();

@@ -3,7 +3,7 @@
 /**
  * Strategy Lifecycle Editor — Tier-2 admin maturity + routing editor.
  *
- * Plan B Phase 2 (plans/active/strategy_catalogue_3tier_surface_2026_04_21.plan.md).
+ * Plan B Phase 2 (plans/active/strategy_catalogue_3tier_surface_2026_04_21.plan).
  * Surface: /admin/strategy-lifecycle-editor → mounts
  * `<StrategyCatalogueSurface viewMode="admin-editor" />`.
  *
@@ -16,8 +16,8 @@
 
 import { useState } from "react";
 
-import { Badge } from "@/components/ui/badge";
 import { StrategyCatalogueSurface } from "@/components/strategy-catalogue/StrategyCatalogueSurface";
+import { Badge } from "@/components/ui/badge";
 import {
   EMPTY_CATALOGUE_FILTER,
   type StrategyCatalogueFilter,

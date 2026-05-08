@@ -25,7 +25,7 @@ import { seedPersona } from "../seed-persona";
  *   5. Visibility-slicing stub (upgrades when G1.6 `access_control` lands):
  *      admin sees every remaining ML sub-page without an auth gate.
  *
- * Plan: plans/active/refactor_g1_5_ml_catalogue_broken_hrefs_cleanup_2026_04_20.plan.md
+ * Plan: plans/active/refactor_g1_5_ml_catalogue_broken_hrefs_cleanup_2026_04_20.md
  * Codex SSOT:
  *   unified-trading-pm/codex/14-playbooks/page-triage/broken-links.md (resolved block)
  *   unified-trading-pm/codex/14-playbooks/cross-cutting/catalogue-ml-model.md

@@ -7,7 +7,7 @@
  *   POST /api/v1/strategy-versions/{vid}/reject
  *   POST /api/v1/strategy-versions/{vid}/rollout
  *
- * SSOT: plans/active/dart_exclusive_subscription_research_fork_2026_04_21.plan.md
+ * SSOT: plans/active/dart_exclusive_subscription_research_fork_2026_04_21.md
  */
 
 const UTA_BASE = process.env.NEXT_PUBLIC_UTA_BASE_URL || "/api/uta";

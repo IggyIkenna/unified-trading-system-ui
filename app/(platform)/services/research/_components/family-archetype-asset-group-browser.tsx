@@ -24,17 +24,17 @@
  * SSOT: codex/14-playbooks/dart/dart-terminal-vs-research.md.
  */
 
-import * as React from "react";
-import { ChevronDown, ChevronRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import type { StrategyArchetype, StrategyFamily } from "@/lib/architecture-v2/enums";
 import {
   type StrategyInstrumentsSlot,
   instancesByFamilyArchetypeAssetGroup,
 } from "@/lib/architecture-v2/envelope-loader";
-import type { StrategyArchetype, StrategyFamily } from "@/lib/architecture-v2/enums";
 import { useWorkspaceScope, useWorkspaceScopeStore } from "@/lib/stores/workspace-scope-store";
+import { cn } from "@/lib/utils";
+import { ChevronDown, ChevronRight } from "lucide-react";
+import * as React from "react";
 
 interface FamilyArchetypeAssetGroupBrowserProps {
   /** When set, restricts the top-level family list to this family only —
@@ -57,7 +57,7 @@ export function FamilyArchetypeAssetGroupBrowser({
   const [error, setError] = React.useState<string | null>(null);
   const [collapsed, setCollapsed] = React.useState(false);
 
-  // Phase 1 of dart_ux_cockpit_refactor_2026_04_29.plan.md §17:
+  // Phase 1 of dart_ux_cockpit_refactor_2026_04_29.md §17:
   // lift family/archetype state out of local React state into the unified
   // WorkspaceScope so a selection on `/services/research/strategies` follows
   // the user into `/services/research/strategy/families/{family}` etc.

@@ -161,7 +161,7 @@ String `arch_tier` values (e.g., `"T0"`, `"tier-0"`) are deprecated; all repos s
 ## Known Tier Violations
 
 **Known T2→T3 violation:** `unified-market-interface` (UMI, T2) currently imports from `unified-domain-client` (UDC,
-T3). Task: `cohesion-umi-udc-dep-violation` in `phase2_library_tier_hardening.plan.md`. Resolution: move whatever UMI
+T3). Task: `cohesion-umi-udc-dep-violation` in `phase2_library_tier_hardening.md`. Resolution: move whatever UMI
 imports from UDC into a T1 library or a shared T0 protocol. This violation must be fixed in Phase 2 T2 hardening step
 before Phase 3 begins.
 

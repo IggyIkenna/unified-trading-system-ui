@@ -3,7 +3,7 @@
 /**
  * Strategy Catalogue — Tier-3 client view.
  *
- * Per plans/active/strategy_catalogue_3tier_surface_2026_04_21.plan.md Phase 3.
+ * Per plans/active/strategy_catalogue_3tier_surface_2026_04_21.plan Phase 3.
  * Two-tab surface: "Your Subscriptions" (Reality) + "Explore" (FOMO).
  *
  * Route /services/strategy-catalogue remains mounted (was a DART sub-route
@@ -19,15 +19,18 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { readPersistedSeed } from "@/lib/questionnaire/seed-catalogue-filters";
-import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   StrategyCatalogueSurface,
   type StrategyCatalogueViewMode,
 } from "@/components/strategy-catalogue/StrategyCatalogueSurface";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAuth } from "@/hooks/use-auth";
+import { listSubscriptionsForOrg } from "@/lib/api/strategy-subscriptions";
+import { VENUE_ASSET_GROUPS_V2, type VenueAssetGroupV2 } from "@/lib/architecture-v2";
 import {
   EMPTY_CATALOGUE_FILTER,
   parseCatalogueFilter,
@@ -40,9 +43,6 @@ import {
   type StrategyFamily,
 } from "@/lib/architecture-v2/enums";
 import { loadStrategyCatalogue } from "@/lib/architecture-v2/lifecycle";
-import { VENUE_ASSET_GROUPS_V2, type VenueAssetGroupV2 } from "@/lib/architecture-v2";
-import { listSubscriptionsForOrg } from "@/lib/api/strategy-subscriptions";
-import { useAuth } from "@/hooks/use-auth";
 import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 
 type CatalogueTab = "reality" | "explore";

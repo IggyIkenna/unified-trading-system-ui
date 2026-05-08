@@ -2,7 +2,7 @@
 
 /**
  * Admin persona-override surface (Phase 4 of
- * `ui_unification_v2_sanitisation_2026_04_20.plan.md`, `p4-persona-admin-override`).
+ * `ui_unification_v2_sanitisation_2026_04_20.plan`, `p4-persona-admin-override`).
  *
  * Lets an admin stamp a user with a specific resolved persona — typically used
  * to fast-forward a prospect onto a targeted demo flow without making them
@@ -45,37 +45,37 @@ const PERSONA_OPTIONS: readonly {
   label: string;
   description: string;
 }[] = [
-  {
-    id: "prospect-dart",
-    label: "DART Full prospect",
-    description: "Research + ML + strategy promotion + execution visibility.",
-  },
-  {
-    id: "prospect-signals-only",
-    label: "DART Signals-In prospect",
-    description: "Execution + reporting only — client brings own signals.",
-  },
-  {
-    id: "prospect-im-sma",
-    label: "IM SMA prospect",
-    description: "Investment Management on Separately Managed Account.",
-  },
-  {
-    id: "prospect-im-pooled",
-    label: "IM Pooled-Fund prospect",
-    description: "Investment Management on pooled-fund share class.",
-  },
-  {
-    id: "prospect-regulatory",
-    label: "Regulatory Umbrella prospect",
-    description: "FCA wrapper + reporting; no research / ML / promote.",
-  },
-  {
-    id: "prospect-generic",
-    label: "Generic prospect (safe default)",
-    description: "Broadest public visibility slice; no IM-reserved content.",
-  },
-];
+    {
+      id: "prospect-dart",
+      label: "DART Full prospect",
+      description: "Research + ML + strategy promotion + execution visibility.",
+    },
+    {
+      id: "prospect-signals-only",
+      label: "DART Signals-In prospect",
+      description: "Execution + reporting only — client brings own signals.",
+    },
+    {
+      id: "prospect-im-sma",
+      label: "IM SMA prospect",
+      description: "Investment Management on Separately Managed Account.",
+    },
+    {
+      id: "prospect-im-pooled",
+      label: "IM Pooled-Fund prospect",
+      description: "Investment Management on pooled-fund share class.",
+    },
+    {
+      id: "prospect-regulatory",
+      label: "Regulatory Umbrella prospect",
+      description: "FCA wrapper + reporting; no research / ML / promote.",
+    },
+    {
+      id: "prospect-generic",
+      label: "Generic prospect (safe default)",
+      description: "Broadest public visibility slice; no IM-reserved content.",
+    },
+  ];
 
 export interface PersonaOverrideCardProps {
   readonly targetUserId: string;

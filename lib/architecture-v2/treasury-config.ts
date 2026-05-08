@@ -1,7 +1,7 @@
 /**
  * Treasury config — policy / operational split.
  *
- * Per dart_ux_cockpit_refactor_2026_04_29.plan.md §4.8.6 + the §10.5 Treasury
+ * Per dart_ux_cockpit_refactor_2026_04_29.md §4.8.6 + the §10.5 Treasury
  * subsection in `unified-trading-system-ui/docs/reference/automation-common-tools.md`.
  *
  * The split is non-negotiable:

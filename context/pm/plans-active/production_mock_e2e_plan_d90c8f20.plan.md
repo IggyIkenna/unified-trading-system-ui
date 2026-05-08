@@ -406,7 +406,7 @@ WebSockets covered.
 - Add cassette orphan check to UAC (or codex step).
 - Add `tests/integration/` presence check for services and APIs (or extend existing).
 - Ensure `CLOUD_MOCK_MODE=true` in all Python repo workflows (per
-  [mft_audit_full_remediation_2026_03_11.plan.md](unified-trading-pm/plans/active/mft_audit_full_remediation_2026_03_11.plan.md)).
+  [mft_audit_full_remediation_2026_03_11.md](unified-trading-pm/plans/active/mft_audit_full_remediation_2026_03_11.md)).
 - UI repos: ensure `VITE_MOCK_API` is set in CI for test runs.
 
 ### 6.2 Rollout Order
@@ -503,7 +503,7 @@ silently diverge from real exchange APIs.
 - **New file:** `unified-cloud-interface/tests/integration/test_aws_mode.py`
   - `@mock_aws` wrapping all S3StorageClient, AWSSecretClient, SQS queue tests
   - Protocol-faithful: real bucket/key semantics in memory
-- **Gate for** `aws_migration.plan.md` `codebuild-canary-run` todo: moto tests must pass first
+- **Gate for** `aws_migration.md` `codebuild-canary-run` todo: moto tests must pass first
 
 ### 7.4 GCP Pub/Sub Emulator (H1.1) — P1
 
@@ -525,7 +525,7 @@ silently diverge from real exchange APIs.
 - **Docker:** `fsouza/fake-gcs-server:latest` port `4443`
 - **Env:** `STORAGE_EMULATOR_HOST=http://localhost:4443`
 - **Scope:** bucket lifecycle, ACLs, signed URL generation — not covered by UCI LocalStorageProvider
-- Required by `cloud_infra_bucket_auth_2026_03_10.plan.md` tests
+- Required by `cloud_infra_bucket_auth_2026_03_10.md` tests
 
 ### 7.7 WebSocket Feed Simulator (H3) — P2
 
@@ -556,7 +556,7 @@ silently diverge from real exchange APIs.
 - **New file:** `unified-trading-pm/scripts/dev/fixtures/tick_replay.py`
   - `TickReplayEngine` reads from `mock_data_dev_project` seed fixtures
   - `freezegun` for deterministic time; UAC `Tick` schema validation
-- **Depends on:** `mock_data_dev_project_seeding_2026_03_10.plan.md` seed fixtures
+- **Depends on:** `mock_data_dev_project_seeding_2026_03_10.md` seed fixtures
 
 ### 7.11 BigQuery Emulator (H1.3) — P3
 

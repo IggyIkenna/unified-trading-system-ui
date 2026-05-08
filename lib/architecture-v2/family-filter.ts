@@ -25,11 +25,11 @@
  * ./workspace-scope.ts. This file's predicate covers the narrow
  * family/archetype axis used by legacy trading surfaces.
  *
- * Plan SSOT: dart_ux_cockpit_refactor_2026_04_29.plan.md §17 Phase 1.
+ * Plan SSOT: dart_ux_cockpit_refactor_2026_04_29.md §17 Phase 1.
  */
+import type { StrategyArchetype, StrategyFamily } from "./enums";
 import { ARCHETYPE_TO_FAMILY } from "./enums";
 import { FAMILY_METADATA } from "./families";
-import type { StrategyArchetype, StrategyFamily } from "./enums";
 
 // Re-export the canonical scope predicate so callers that only need the
 // generalised matcher can import it from this file (avoids deep imports

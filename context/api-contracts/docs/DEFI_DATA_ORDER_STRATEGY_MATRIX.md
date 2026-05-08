@@ -4,7 +4,7 @@
 
 Aligned with: [CROSS_VENUE_MATRIX.md](CROSS_VENUE_MATRIX.md), [VENUE_DATA_TYPES.md](VENUE_DATA_TYPES.md), [TRANSPORT_AND_ENDPOINTS.md](TRANSPORT_AND_ENDPOINTS.md)
 
-Plan reference: `unified-trading-pm/plans/active/defi_dev_testnet_data_rollout_2026_03_13.plan.md`
+Plan reference: `unified-trading-pm/plans/active/defi_dev_testnet_data_rollout_2026_03_13.md`
 
 ---
 
@@ -105,8 +105,8 @@ Both `unified-defi-execution-interface` (orders) and `unified-position-interface
 
 ## References
 
-- `unified-trading-pm/plans/active/defi_dev_testnet_data_rollout_2026_03_13.plan.md` — master plan
-- `unified-trading-pm/plans/active/ai/api_keys_and_auth.plan.md` — SM secret tracking per venue
+- `unified-trading-pm/plans/active/defi_dev_testnet_data_rollout_2026_03_13.md` — master plan
+- `unified-trading-pm/plans/active/ai/api_keys_and_auth.md` — SM secret tracking per venue
 - [CROSS_VENUE_MATRIX.md](CROSS_VENUE_MATRIX.md) — CeFi/TradFi/Sports venue comparison
 - [VENUE_DATA_TYPES.md](VENUE_DATA_TYPES.md) — per-venue data type availability
 - [MOCKS_AND_VCR.md](MOCKS_AND_VCR.md) — VCR cassette recording protocol

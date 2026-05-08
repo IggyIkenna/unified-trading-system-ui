@@ -3,7 +3,7 @@
  *
  * Pattern reference for rollout per
  *   unified-trading-pm/codex/06-coding-standards/ui-testing-layers.md (L1.5)
- *   unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan.md
+ *   unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan
  *
  * Scope:
  * - Render with mocked data-context; assert testid mounts.

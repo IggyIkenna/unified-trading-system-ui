@@ -39,7 +39,7 @@ export const TILE_LOCK_STATE_LABEL: Readonly<Record<TileLockState, string>> = {
  * Canonical tooltip copy shown on hover of a padlocked tile.
  *
  * Sourced verbatim from the padlock affordance row of the Decisions table in
- * `plans/active/refactor_g1_3_locked_visible_ui_service_tile_mode_2026_04_20.plan.md`.
+ * `plans/active/refactor_g1_3_locked_visible_ui_service_tile_mode_2026_04_20.plan`.
  * The "<package>" placeholder is filled in by callers that know the audience's
  * entitlement package (keeps this module pure).
  */

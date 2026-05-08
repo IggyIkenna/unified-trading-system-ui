@@ -3,15 +3,15 @@
 /**
  * SystemMap — buyer-facing IA explainer.
  *
- * Per dart_ux_cockpit_refactor_2026_04_29.plan.md §15.2 + Phase 7 of §17.
+ * Per dart_ux_cockpit_refactor_2026_04_29.plan §15.2 + Phase 7 of §17.
  *
  * Single shared renderer used by the Phase 6 wizard step 0 + the
  * /help/system-map page. Sources from `lib/cockpit/ia-explainer-content.ts`
  * so wording can't drift between the two surfaces.
  */
 
-import * as React from "react";
 import { ArrowRight } from "lucide-react";
+import * as React from "react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import {

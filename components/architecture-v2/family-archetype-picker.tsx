@@ -5,7 +5,7 @@
  * dropdown used across trading terminal, strategy catalogue, research, signals
  * dashboard, and order / position / P&L surfaces.
  *
- * Phase 3 of `ui_unification_v2_sanitisation_2026_04_20.plan.md`.
+ * Phase 3 of `ui_unification_v2_sanitisation_2026_04_20.md`.
  *
  * Props:
  *   - value:                  current {family, archetype, strategyId} selection
@@ -20,7 +20,7 @@
  *   - showAllOption:          when true, includes an "(All)" option for each
  *                             dropdown — the default for filter surfaces
  *
- * Consumers: see `ui_unification_v2_sanitisation_2026_04_20.plan.md` phase 3.
+ * Consumers: see `ui_unification_v2_sanitisation_2026_04_20.md` phase 3.
  */
 
 import { useContext, useMemo } from "react";
@@ -32,20 +32,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  ARCHETYPE_COVERAGE,
-  ARCHETYPE_TO_FAMILY,
-  AvailabilityStoreContext,
-  FAMILY_METADATA,
-  STRATEGY_FAMILIES_V2,
-} from "@/lib/architecture-v2";
+import { useAuth } from "@/hooks/use-auth";
 import type {
   StrategyArchetype,
   StrategyAvailabilityEntry,
   StrategyFamily,
 } from "@/lib/architecture-v2";
+import {
+  ARCHETYPE_COVERAGE,
+  ARCHETYPE_TO_FAMILY,
+  AvailabilityStoreContext,
+  STRATEGY_FAMILIES_V2
+} from "@/lib/architecture-v2";
 import { audienceForPersonaId } from "@/lib/auth/audience-from-persona";
-import { useAuth } from "@/hooks/use-auth";
 import { formatArchetype, formatFamily, formatSlotLabel } from "@/lib/strategy-display";
 
 export interface FamilyArchetypeSelection {

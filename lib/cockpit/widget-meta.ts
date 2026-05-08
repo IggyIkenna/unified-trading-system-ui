@@ -1,7 +1,7 @@
 /**
  * DartWidgetMeta — cockpit-axis metadata extension for the widget registry.
  *
- * Per dart_ux_cockpit_refactor_2026_04_29.plan.md §10 + Phase 5 of §17.
+ * Per dart_ux_cockpit_refactor_2026_04_29.md §10 + Phase 5 of §17.
  *
  * The existing `WidgetDefinition` already carries asset-group / family /
  * archetype tags. Phase 5 adds the cockpit-axis (surface / mode / stage /

@@ -1,7 +1,7 @@
 /**
  * Phase 9 — soft route collapse via mode-anchored deep links.
  *
- * Per dart_ux_cockpit_refactor_2026_04_29.plan.md §14 + Phase 9 of §17.
+ * Per dart_ux_cockpit_refactor_2026_04_29.md §14 + Phase 9 of §17.
  *
  * The plan's rule for Phase 9: "Old single-purpose pages REDIRECT into
  * `/services/workspace?surface=terminal&tm=command` etc. Existing pages

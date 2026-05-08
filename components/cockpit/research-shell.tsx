@@ -3,7 +3,7 @@
 /**
  * ResearchShell — the cockpit-wide chrome for the DART Research surface.
  *
- * Per dart_ux_cockpit_refactor_2026_04_29.plan.md §5.3 + Phase 4 of §17.
+ * Per dart_ux_cockpit_refactor_2026_04_29.md §5.3 + Phase 4 of §17.
  *
  * Renders the 6-stage ResearchJourneyRail above the Research layout's
  * existing chrome (BUILD_TABS / ML_SUB_TABS / STRATEGY_SUB_TABS still

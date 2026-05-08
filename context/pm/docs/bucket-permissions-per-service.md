@@ -59,7 +59,7 @@ with narrower permissions (principle of least privilege)
 
 Per-service bucket permission smoke tests (real GCS read/write against test buckets in `quality-gates.sh`) are tracked
 separately. See plan:
-[`unified-trading-pm/plans/active/cloud_infra_bucket_auth_2026_03_10.plan.md`](../plans/active/cloud_infra_bucket_auth_2026_03_10.plan.md)
+[`unified-trading-pm/plans/active/cloud_infra_bucket_auth_2026_03_10.md`](../plans/active/cloud_infra_bucket_auth_2026_03_10.md)
 (todo `per-repo-bucket-permissions-check`).
 
 The decision to defer per-repo QG integration: modifying all ~20 service `quality-gates.sh` files is a large

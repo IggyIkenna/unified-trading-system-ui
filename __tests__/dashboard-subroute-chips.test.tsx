@@ -1,6 +1,6 @@
 /**
  * Per-persona dashboard sub-route chip test — Phase 6 of
- * plans/active/dashboard_services_grid_collapse_2026_04_21.plan.md.
+ * plans/active/dashboard_services_grid_collapse_2026_04_21.md.
  *
  * Contract (from the plan):
  *   - prospect-signals-only sees DART with ONLY "Signal Intake" chip (others hidden/locked)
@@ -14,13 +14,13 @@
  * tests are the strongest invariant.
  */
 
-import { describe, expect, it } from "vitest";
 import {
-  personaDashboardSubRoutes,
   personaDashboardShape,
+  personaDashboardSubRoutes,
   type DashboardSubRouteVisibility,
   type DashboardTileId,
 } from "@/lib/auth/persona-dashboard-shape";
+import { describe, expect, it } from "vitest";
 
 function visibleChips(tileId: DashboardTileId, subRoutes: DashboardSubRouteVisibility): string[] {
   return Object.entries(subRoutes[tileId] ?? {})

@@ -1,7 +1,7 @@
 /**
  * Compact summary text for the DartScopeBar.
  *
- * Per dart_ux_cockpit_refactor_2026_04_29.plan.md §6:
+ * Per dart_ux_cockpit_refactor_2026_04_29.plan §6:
  *
  *   "Scope: Cross-asset · Arbitrage · Price Dispersion · BTC/ETH ·
  *    CeFi + DeFi · Monitor · Paper"
@@ -12,8 +12,8 @@
  * families" / "All archetypes" rather than showing as gaps.
  */
 
-import { formatArchetype, formatFamily } from "@/lib/strategy-display";
 import type { WorkspaceScope } from "@/lib/architecture-v2/workspace-scope";
+import { formatArchetype, formatFamily } from "@/lib/strategy-display";
 
 const ASSET_GROUP_DISPLAY: Record<string, string> = {
   CEFI: "CeFi",

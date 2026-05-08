@@ -277,4 +277,4 @@ Add `tests/test_batch_live_parity.py`:
 - `docs/SCHEMA_AUDIT_MATRIX.md`
 - `docs/RATE_LIMIT_HANDLING_GAPS.md`
 - `unified-trading-codex/04-architecture/batch-live-symmetry.md`
-- `unified-trading-pm/plans/active/uac_schema_normalization_complete.plan.md`
+- `unified-trading-pm/plans/active/uac_schema_normalization_complete.md`

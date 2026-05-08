@@ -1,7 +1,7 @@
 /**
  * AccountConnectivityConfig — API keys, wallets, signers, and venue accounts.
  *
- * Per dart_ux_cockpit_refactor_2026_04_29.plan.md §4.8.6.
+ * Per dart_ux_cockpit_refactor_2026_04_29.md §4.8.6.
  *
  * Connectivity is its OWN config layer — distinct from execution config,
  * risk config, or treasury config. The reason: rotating an API key shouldn't

@@ -4,7 +4,7 @@
  * WorkspaceScopeProvider — hydrates the WorkspaceScopeStore from URL search
  * params on mount, then leaves the Zustand store as the source of truth.
  *
- * Per dart_ux_cockpit_refactor_2026_04_29.plan.md §7:
+ * Per dart_ux_cockpit_refactor_2026_04_29.plan §7:
  *   1. URL params beat localStorage.
  *   2. localStorage beats defaults.
  *   3. browser back/forward restores previous scope.
@@ -15,8 +15,8 @@
  * `<DashboardFilterProvider>`.
  */
 
-import * as React from "react";
 import { useSearchParams } from "next/navigation";
+import * as React from "react";
 
 import { useAuth } from "@/hooks/use-auth";
 import { hydrateScopeFromUrl } from "@/lib/stores/workspace-scope-store";

@@ -3,7 +3,7 @@
 /**
  * /help/system-map — buyer-facing IA explainer page.
  *
- * Per dart_ux_cockpit_refactor_2026_04_29.plan.md §15.2 + Phase 7 of §17.
+ * Per dart_ux_cockpit_refactor_2026_04_29.md §15.2 + Phase 7 of §17.
  *
  * Authenticated, platform-scoped page reachable from:
  *   - The "?" button next to the DartScopeBar (Phase 7 follow-up wiring).

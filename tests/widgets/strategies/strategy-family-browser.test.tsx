@@ -10,10 +10,10 @@
  * - Domain filter click passes correct domain to hook.
  * - Strategy count badge shows correct number.
  *
- * Per unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan.md Phase 5.
+ * Per unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.md Phase 5.
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 interface MockCatalogEntry {
   id: string;
@@ -114,8 +114,8 @@ vi.mock("@/components/ui/table", () => ({
   ),
 }));
 
-import * as React from "react";
 import { StrategyFamilyBrowserWidget } from "@/components/widgets/strategies/strategy-family-browser-widget";
+import * as React from "react";
 
 describe("strategy-family-browser — L1.5 harness", () => {
   beforeEach(() => {

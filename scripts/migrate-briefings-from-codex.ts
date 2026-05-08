@@ -18,12 +18,12 @@
  *   tsx scripts/migrate-briefings-from-codex.ts           # dry-run (stdout diff)
  *   tsx scripts/migrate-briefings-from-codex.ts --write   # write YAML files
  *
- * Plan: unified-trading-pm/plans/active/refactor_g3_3_briefings_cms_migration_2026_04_20.plan.md
+ * Plan: unified-trading-pm/plans/active/refactor_g3_3_briefings_cms_migration_2026_04_20.md
  */
 
+import * as yaml from "js-yaml";
 import * as fs from "node:fs";
 import * as path from "node:path";
-import * as yaml from "js-yaml";
 import type { BriefingHub, BriefingPillar, BriefingPillarSlug } from "../lib/briefings/types";
 
 /**

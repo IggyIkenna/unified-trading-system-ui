@@ -15,7 +15,7 @@ import { clearPersona, seedPersona } from "../seed-persona";
  * surface as a benign default. Audience-claim routing via
  * ``resolveAllocatorRoute`` in ``lib/auth/allocator-routing.ts``.
  *
- * Plan: unified-trading-pm/plans/active/refactor_g2_10_allocator_ui_split_2026_04_20.plan.md
+ * Plan: unified-trading-pm/plans/active/refactor_g2_10_allocator_ui_split_2026_04_20.plan
  * Rule 03: unified-trading-pm/codex/14-playbooks/_ssot-rules/03-same-system-principle.md
  */
 

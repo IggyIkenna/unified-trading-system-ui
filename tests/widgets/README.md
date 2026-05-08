@@ -129,6 +129,6 @@ npx vitest tests/widgets/<domain>/<widget-id>.test.tsx
 
 ## Rollout plan
 
-See [`unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan.md`](../../../unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan.md)
+See [`unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.md`](../../../unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.md)
 for the wave order (common tabs → DeFi → terminal/markets → risk/strategies)
 and the explicit out-of-scope list (predictions, sports, CeFi).

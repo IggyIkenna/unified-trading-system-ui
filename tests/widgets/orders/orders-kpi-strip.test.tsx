@@ -4,7 +4,7 @@
  * Pattern reference:
  *   tests/widgets/defi/defi-lending-widget.test.tsx
  *   codex/06-coding-standards/ui-testing-layers.md (L1.5)
- *   plans/ai/ui_widget_test_rollout_2026_04_24.plan.md (Phase 2 Wave 1)
+ *   plans/ai/ui_widget_test_rollout_2026_04_24.md (Phase 2 Wave 1)
  *
  * Scope:
  * - Render with mocked OrdersData; assert the six metric labels mount.

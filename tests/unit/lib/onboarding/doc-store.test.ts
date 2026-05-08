@@ -1,7 +1,7 @@
 /**
  * Phase-4 tests for the onboarding doc-store dispatcher.
  *
- * Plan: unified-trading-pm/plans/active/reg_umbrella_questionnaire_and_onboarding_docs_2026_04_21.plan.md
+ * Plan: unified-trading-pm/plans/active/reg_umbrella_questionnaire_and_onboarding_docs_2026_04_21.md
  *
  * Covers:
  *   - resolveDocStore() returns the local backend in mock / dev.

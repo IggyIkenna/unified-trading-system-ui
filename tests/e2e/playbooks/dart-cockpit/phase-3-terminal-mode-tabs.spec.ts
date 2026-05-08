@@ -1,7 +1,7 @@
 /**
  * Phase 3 — TerminalModeTabs mount + interactions on cockpit-tier surfaces.
  *
- * Per dart_ux_cockpit_refactor_2026_04_29.plan.md §5.2 + Phase 3 of §17.
+ * Per dart_ux_cockpit_refactor_2026_04_29.plan §5.2 + Phase 3 of §17.
  *
  * Acceptance:
  *   1. The 5-mode tabs render on every Trading + Observe route (the cockpit

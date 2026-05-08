@@ -3,7 +3,7 @@
 /**
  * StrategyCatalogueSurface — shared Tier-1 / Tier-2 / Tier-3 primitive.
  *
- * Per plans/active/strategy_catalogue_3tier_surface_2026_04_21.plan.md. Single
+ * Per plans/active/strategy_catalogue_3tier_surface_2026_04_21.md. Single
  * component, four view modes driven by the `viewMode` prop:
  *
  *   - admin-universe   read-only catalogue of the full UAC-expressed universe
@@ -19,16 +19,14 @@
  * lifecycle doc; performance overlay is Plan C's problem.
  */
 
-import { useMemo, useState } from "react";
 import Link from "next/link";
+import { useMemo, useState } from "react";
 
-import { FamilyArchetypePicker } from "@/components/architecture-v2/family-archetype-picker";
 import type { FamilyArchetypeSelection } from "@/components/architecture-v2/family-archetype-picker";
+import { FamilyArchetypePicker } from "@/components/architecture-v2/family-archetype-picker";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
-import { getArchetypePlanTier } from "@/lib/strategy-display";
-import { resolveSlotAccess, type StrategyAccess } from "@/lib/entitlements/strategy-route";
 import {
   EMPTY_CATALOGUE_FILTER,
   matchesFilter,
@@ -37,9 +35,9 @@ import {
 import {
   allowsAllocationCta,
   legalMaturityTargets,
+  LIFECYCLE_UNKNOWN,
   loadStrategyCatalogue,
   lookupVenueSetVariant,
-  LIFECYCLE_UNKNOWN,
   MATURITY_PHASE_LABEL,
   PRODUCT_ROUTING_LABEL,
   PRODUCT_ROUTINGS,
@@ -49,6 +47,8 @@ import {
   type StrategyInstance,
   type StrategyMaturityPhase,
 } from "@/lib/architecture-v2/lifecycle";
+import { resolveSlotAccess, type StrategyAccess } from "@/lib/entitlements/strategy-route";
+import { getArchetypePlanTier } from "@/lib/strategy-display";
 
 import { useLifecycleEditor } from "./use-lifecycle-editor";
 
@@ -251,25 +251,25 @@ export function StrategyCatalogueSurface({
         <>
           {isSignalsInMode
             ? (() => {
-                const fullOnlyCount = visible.filter((i) => getArchetypePlanTier(i.archetype) === "full-only").length;
-                const availableCount = visible.length - fullOnlyCount;
-                return fullOnlyCount > 0 ? (
-                  <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-                    <span>
-                      Viewing as <strong>Signals-In</strong>: {availableCount}/{visible.length} strategies available.{" "}
-                      {fullOnlyCount} more unlock with DART Full.
-                    </span>
-                    <div className="flex shrink-0 gap-2">
-                      <Link
-                        href="/contact?service=dart-full&action=upgrade"
-                        className="inline-flex items-center rounded-md bg-amber-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-amber-700 transition-colors"
-                      >
-                        Upgrade to DART Full
-                      </Link>
-                    </div>
+              const fullOnlyCount = visible.filter((i) => getArchetypePlanTier(i.archetype) === "full-only").length;
+              const availableCount = visible.length - fullOnlyCount;
+              return fullOnlyCount > 0 ? (
+                <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                  <span>
+                    Viewing as <strong>Signals-In</strong>: {availableCount}/{visible.length} strategies available.{" "}
+                    {fullOnlyCount} more unlock with DART Full.
+                  </span>
+                  <div className="flex shrink-0 gap-2">
+                    <Link
+                      href="/contact?service=dart-full&action=upgrade"
+                      className="inline-flex items-center rounded-md bg-amber-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-amber-700 transition-colors"
+                    >
+                      Upgrade to DART Full
+                    </Link>
                   </div>
-                ) : null;
-              })()
+                </div>
+              ) : null;
+            })()
             : null}
           <FomoGrid
             instances={visible}
@@ -727,4 +727,4 @@ function FomoGrid({
 
 // Re-exports for consumers that want the synth helpers without re-importing
 // from internals. `allowsAllocationCta` is re-exposed for the Phase-5 tests.
-export { LIFECYCLE_UNKNOWN, STRATEGY_MATURITY_PHASES, allowsAllocationCta, synthesiseMaturity, synthesiseRouting };
+export { allowsAllocationCta, LIFECYCLE_UNKNOWN, STRATEGY_MATURITY_PHASES, synthesiseMaturity, synthesiseRouting };

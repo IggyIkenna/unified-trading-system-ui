@@ -16,7 +16,7 @@
  * lifecycle-route-mappings.ts; hidden-from-nav stages never render but route
  * mappings still resolve.
  *
- * SSOT: Phase 11 of plans/active/ui_unification_v2_sanitisation_2026_04_20.plan.md
+ * SSOT: Phase 11 of plans/active/ui_unification_v2_sanitisation_2026_04_20.md
  */
 
 import type { LifecycleStage } from "@/lib/lifecycle-types";

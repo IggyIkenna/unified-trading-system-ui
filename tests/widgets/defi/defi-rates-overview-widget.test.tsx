@@ -4,7 +4,7 @@
  * Pattern reference:
  *   tests/widgets/defi/defi-lending-widget.test.tsx
  *   codex/06-coding-standards/ui-testing-layers.md (L1.5)
- *   plans/ai/ui_widget_test_rollout_2026_04_24.plan.md (Phase 3 Wave 2 DeFi — metrics)
+ *   plans/ai/ui_widget_test_rollout_2026_04_24.plan (Phase 3 Wave 2 DeFi — metrics)
  *
  * Scope:
  * - Render rows derived from lendingProtocols / stakingProtocols / liquidityPools.
@@ -13,10 +13,10 @@
  * - KPI strip reports total row count and max APY.
  * - Empty branch: all three source lists empty.
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
-import { buildMockDeFiData, buildMockLendingProtocol } from "../_helpers/mock-defi-context";
 import type { LiquidityPool, StakingProtocol } from "@/lib/types/defi";
+import { render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { buildMockDeFiData, buildMockLendingProtocol } from "../_helpers/mock-defi-context";
 
 function buildMockStakingProtocol(overrides: Partial<StakingProtocol> = {}): StakingProtocol {
   return {

@@ -4,7 +4,7 @@
  * PromoteBundleForm — author a `StrategyReleaseBundle` from a research
  * experiment.
  *
- * Per dart_ux_cockpit_refactor_2026_04_29.plan.md §4.8 (configuration
+ * Per dart_ux_cockpit_refactor_2026_04_29.md §4.8 (configuration
  * lifecycle) + Phase 4 (Research/Promote stage UI).
  *
  * Surfaced inline in Research/Promote alongside the (read-only) demo
@@ -18,15 +18,14 @@
  * the buyer sees the pre-flight gate in action.
  */
 
-import * as React from "react";
 import { CheckCircle2, FileSignature, GitBranch, ShieldCheck, XCircle } from "lucide-react";
+import * as React from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
   hasCefiAccountsForVenues,
   hasDefiWalletsForProtocols,

@@ -3,7 +3,7 @@
 /**
  * CockpitWidgetGrid — the scope-reactive widget grid for /services/workspace.
  *
- * Per dart_ux_cockpit_refactor_2026_04_29.plan.md §10 + §11 + Phase 5/Phase 9.
+ * Per dart_ux_cockpit_refactor_2026_04_29.plan §10 + §11 + Phase 5/Phase 9.
  *
  * Reads the active `WorkspaceScope` and renders:
  *   - `primary` widgets (matching scope) at full visual weight
@@ -20,10 +20,10 @@ import * as React from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import "@/components/widgets/register-all";
 import { getWidget, widgetsForScopeWithVisibility, type WidgetDefinition } from "@/components/widgets/widget-registry";
 import { useStrategyVisibility } from "@/lib/cockpit/use-strategy-visibility";
 import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
-import "@/components/widgets/register-all";
 
 import { cn } from "@/lib/utils";
 

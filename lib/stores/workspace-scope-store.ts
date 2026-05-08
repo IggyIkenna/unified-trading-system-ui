@@ -3,7 +3,7 @@
 /**
  * WorkspaceScopeStore — the unified Zustand store for DART cockpit scope.
  *
- * Per dart_ux_cockpit_refactor_2026_04_29.plan.md §4 / §4.1 / §4.2 / §4.3 / §17.
+ * Per dart_ux_cockpit_refactor_2026_04_29.md §4 / §4.1 / §4.2 / §4.3 / §17.
  *
  * Replaces (clean cut, no compatibility shims):
  *   - lib/stores/global-scope-store.ts (deleted)
@@ -23,23 +23,23 @@
  */
 
 import { create, type StoreApi, type UseBoundStore } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
+import { createJSONStorage, persist } from "zustand/middleware";
 
+import { trackScopeChange } from "@/lib/analytics/track";
 import {
   EMPTY_WORKSPACE_SCOPE,
   parseWorkspaceScope,
   serializeWorkspaceScope,
+  type ResearchStage,
   type ScopeChangeEvent,
   type ScopeChangeSource,
+  type TerminalMode,
   type WorkspaceEngagement,
   type WorkspaceExecutionStream,
+  type WorkspaceMode,
   type WorkspaceScope,
   type WorkspaceSurface,
-  type TerminalMode,
-  type ResearchStage,
-  type WorkspaceMode,
 } from "@/lib/architecture-v2/workspace-scope";
-import { trackScopeChange } from "@/lib/analytics/track";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Store shape
@@ -183,8 +183,8 @@ export const useWorkspaceScopeStore: UseBoundStore<StoreApi<WorkspaceScopeStore>
           // SSR-safe noop storage; client hydrate will populate.
           return {
             getItem: () => null,
-            setItem: () => {},
-            removeItem: () => {},
+            setItem: () => { },
+            removeItem: () => { },
           };
         }
         return window.localStorage;

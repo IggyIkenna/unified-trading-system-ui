@@ -31,7 +31,7 @@ import { clearPersona, seedPersona } from "../seed-persona";
  *    both personas landed via G1.4 persona combinatorial expansion
  *    (unblocks TODO(G1.10) deferrals).
  *
- * Plan: unified-trading-pm/plans/active/refactor_g1_11_service_family_scope_rules_2026_04_20.plan.md
+ * Plan: unified-trading-pm/plans/active/refactor_g1_11_service_family_scope_rules_2026_04_20.plan
  * Rule: unified-trading-pm/codex/14-playbooks/_ssot-rules/12-service-family-scope-rules.md
  * UAC: unified-api-contracts/unified_api_contracts/internal/architecture_v2/service_family_scope.py
  */

@@ -1,7 +1,7 @@
 # Service Hardening Checklist — D1→D5 Validation
 
 **Owner:** Phase 3 — Service Hardening & Integration **SSOT:**
-`unified-trading-pm/plans/active/phase3_service_hardening_integration.plan.md` **Invariant:** Never advance a tier until
+`unified-trading-pm/plans/active/phase3_service_hardening_integration.md` **Invariant:** Never advance a tier until
 all items for the previous tier are green.
 
 ---
@@ -211,8 +211,8 @@ Every repo must have:
 
 ## Cross-references
 
-- Phase 2 plan: `unified-trading-pm/plans/active/phase2_library_tier_hardening.plan.md`
-- Phase 3 plan: `unified-trading-pm/plans/active/phase3_service_hardening_integration.plan.md`
+- Phase 2 plan: `unified-trading-pm/plans/active/phase2_library_tier_hardening.md`
+- Phase 3 plan: `unified-trading-pm/plans/active/phase3_service_hardening_integration.md`
 - Quality gates template: `unified-trading-codex/06-coding-standards/quality-gates-service-template.sh`
 - Integration testing layers: `unified-trading-codex/06-coding-standards/integration-testing-layers.md`
 - Error handling standards: `unified-trading-codex/06-coding-standards/error-handling.md`

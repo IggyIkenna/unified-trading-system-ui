@@ -7,7 +7,7 @@
  * against the strategy-service API once it lands.
  *
  * Plan reference:
- *   unified-trading-pm/plans/active/signal_leasing_broadcast_architecture_2026_04_20.plan.md
+ *   unified-trading-pm/plans/active/signal_leasing_broadcast_architecture_2026_04_20.plan
  *   § Phase 5 — counterparty observability UI
  */
 

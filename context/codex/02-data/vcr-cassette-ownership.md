@@ -289,7 +289,7 @@ See: `dep-enforcement` and `dep-enforcement-cloud-sdks` quality gates.
 
 ## References
 
-- Plan: `.cursor/plans/schema_ownership_three_tiers_267ab636.plan.md`
+- Plan: `.cursor/plans/schema_ownership_three_tiers_267ab636.md`
 - unified-api-contracts restructure: `unified_api_contracts/external/`, `unified_api_contracts/canonical/`
 - Testing standards: `06-coding-standards/testing.md`
 - Schema governance: `02-data/schema-governance.md`

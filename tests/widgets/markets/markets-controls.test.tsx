@@ -3,7 +3,7 @@
  *
  * Pattern reference:
  *   unified-trading-pm/codex/06-coding-standards/ui-testing-layers.md (L1.5)
- *   unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan.md Phase 5
+ *   unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan Phase 5
  *
  * Scope:
  * - Render with mocked MarketsDataContext; assert visible controls mount.

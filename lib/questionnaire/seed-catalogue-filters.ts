@@ -3,7 +3,7 @@
  * → catalogue-filter shape.
  *
  * Funnel Coherence plan Workstream E4 (absorbed from
- * dart_ui_strategy_filtering_and_onboarding_2026_04_24.plan.md Phase 3).
+ * dart_ui_strategy_filtering_and_onboarding_2026_04_24.md Phase 3).
  *
  * Maps the prospect's questionnaire / strategy-evaluation answers (asset
  * groups, instrument types, market_neutral preference, risk profile,

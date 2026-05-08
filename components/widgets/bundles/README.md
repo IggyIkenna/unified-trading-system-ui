@@ -11,7 +11,7 @@ The atomic bundle builder is a single widget on the `bundles` tab. State lives i
 
 ## History
 
-`bundle-templates`, `bundle-steps`, `bundle-pnl`, `bundle-actions` were merged into `bundle-builder` on 2026-04-22 — all four wrote to the same shared `useBundlesData()` context and only made sense together (P&L read the steps; actions fired based on steps; templates loaded into steps). See `docs/audits/live-review-findings.md` row #17 and `unified-trading-pm/plans/active/trading_widget_merge_audit_2026_04_22.plan.md` WU-2.
+`bundle-templates`, `bundle-steps`, `bundle-pnl`, `bundle-actions` were merged into `bundle-builder` on 2026-04-22 — all four wrote to the same shared `useBundlesData()` context and only made sense together (P&L read the steps; actions fired based on steps; templates loaded into steps). See `docs/audits/live-review-findings.md` row #17 and `unified-trading-pm/plans/active/trading_widget_merge_audit_2026_04_22.md` WU-2.
 
 ## Data and fixtures
 

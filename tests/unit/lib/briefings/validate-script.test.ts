@@ -1,6 +1,6 @@
-import { describe, expect, test } from "vitest";
 import { execSync } from "node:child_process";
 import * as path from "node:path";
+import { describe, expect, test } from "vitest";
 
 /**
  * CI parity gate for G3.3: runs the `validate-briefings-yaml.ts` script
@@ -11,7 +11,7 @@ import * as path from "node:path";
  * does not yet expose. When the rollout template grows a hook (tracked
  * against the questionnaire-sync plan), this test becomes redundant.
  *
- * Plan: unified-trading-pm/plans/active/refactor_g3_3_briefings_cms_migration_2026_04_20.plan.md
+ * Plan: unified-trading-pm/plans/active/refactor_g3_3_briefings_cms_migration_2026_04_20.md
  */
 
 const REPO_ROOT = path.resolve(__dirname, "..", "..", "..", "..");

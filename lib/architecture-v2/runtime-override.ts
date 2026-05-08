@@ -2,7 +2,7 @@
  * RuntimeOverride — typed, audited, bounded live mutations on top of a
  * running `StrategyReleaseBundle`.
  *
- * Per dart_ux_cockpit_refactor_2026_04_29.plan.md §4.8.3.
+ * Per dart_ux_cockpit_refactor_2026_04_29.plan §4.8.3.
  *
  * DART Full users do not change strategy logic on the fly. They DO sometimes
  * need to: pause a venue, scale to 50% size, switch to a more conservative

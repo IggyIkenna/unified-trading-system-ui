@@ -12,7 +12,7 @@
  *     `/api/dashboard/quick-stats/filtered?family=&archetype=&venue_set_variant=&share_class=&instrument_type=`
  *     — the gateway endpoint accepts every dimension as an optional query
  *     param (unified-trading-api add is tracked in
- *     `unified-trading-pm/plans/active/dashboard_services_grid_collapse_2026_04_21.plan.md`
+ *     `unified-trading-pm/plans/active/dashboard_services_grid_collapse_2026_04_21.md`
  *     → `p4-filter-real-data-wiring` + Plan A Phase 3 PATCH). When the
  *     endpoint is absent or errors, we fall back to the deterministic mock so
  *     the tile never renders blank.

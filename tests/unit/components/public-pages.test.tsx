@@ -14,7 +14,7 @@ vi.mock("next/link", () => ({
 }));
 
 // Public homepage was rebuilt 2026-04-26 as a React composition (Phase 3 of
-// `marketing_site_three_route_consolidation_2026_04_26.plan.md`). It no longer
+// `marketing_site_three_route_consolidation_2026_04_26.md`). It no longer
 // loads `public/homepage.html` via shadow-DOM. Tests now assert the React
 // component tree directly: hero headline, three engagement-route cards, and
 // the canonical CTA strings.

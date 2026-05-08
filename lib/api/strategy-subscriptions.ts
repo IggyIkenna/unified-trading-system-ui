@@ -6,7 +6,7 @@
  *   DELETE /api/v1/strategy-instances/{id}/subscribe
  *   POST   /api/v1/strategy-instances/{id}/fork
  *
- * SSOT: plans/active/dart_exclusive_subscription_research_fork_2026_04_21.plan.md
+ * SSOT: plans/active/dart_exclusive_subscription_research_fork_2026_04_21.plan
  */
 
 export type SubscriptionType = "dart_exclusive" | "im_allocation" | "signals_in";

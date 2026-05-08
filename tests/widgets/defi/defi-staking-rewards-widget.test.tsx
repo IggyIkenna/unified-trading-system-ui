@@ -4,7 +4,7 @@
  * Pattern reference:
  *   tests/widgets/defi/defi-lending-widget.test.tsx
  *   codex/06-coding-standards/ui-testing-layers.md (L1.5)
- *   plans/ai/ui_widget_test_rollout_2026_04_24.plan.md (Phase 3 Wave 2 DeFi — metrics)
+ *   plans/ai/ui_widget_test_rollout_2026_04_24.md (Phase 3 Wave 2 DeFi — metrics)
  *
  * Scope:
  * - Summary strip: Accrued/Claimed/Sold totals from stakingRewards reduction.
@@ -16,10 +16,10 @@
  * - Buttons hidden when accrued_amount === 0.
  * - Reward P&L section sums rewardPnl amounts.
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import type { RewardPnLBreakdown, StakingReward } from "@/lib/types/defi";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { buildMockDeFiData } from "../_helpers/mock-defi-context";
-import type { StakingReward, RewardPnLBreakdown } from "@/lib/types/defi";
 
 function buildMockStakingReward(overrides: Partial<StakingReward> = {}): StakingReward {
   return {

@@ -3,7 +3,7 @@
 /**
  * DartScopeBar — the persistent control plane for DART cockpit scope.
  *
- * Per dart_ux_cockpit_refactor_2026_04_29.plan.md §6 + Phase 2 of §17.
+ * Per dart_ux_cockpit_refactor_2026_04_29.plan §6 + Phase 2 of §17.
  *
  * Mounts on every cockpit-tier surface: Dashboard, Terminal, Research,
  * Strategy Catalogue, Reports, Signals. Compact by default (a one-line
@@ -27,8 +27,8 @@
  * toggle is unconditionally visible.
  */
 
-import * as React from "react";
 import { Check, ChevronDown, Filter, Lock, Plus, RotateCcw, X } from "lucide-react";
+import * as React from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

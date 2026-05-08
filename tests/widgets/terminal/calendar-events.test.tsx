@@ -2,7 +2,7 @@
  * L1.5 widget harness — calendar-events-widget.
  *
  * Pattern: unified-trading-pm/codex/06-coding-standards/ui-testing-layers.md (L1.5)
- * Plan:    unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan.md Phase 5
+ * Plan:    unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.md Phase 5
  *
  * Scope:
  * - Render with mocked calendar hooks (no network calls).
@@ -21,8 +21,8 @@
  * - Visual regression (L4 — deferred)
  * - Calendar hook network calls (hermetic: mocked below)
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // Build today's UTC date string for isTodayUtc() to accept events as "today"
 function todayUtcIso(): string {

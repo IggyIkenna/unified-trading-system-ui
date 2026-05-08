@@ -4,7 +4,7 @@
  * Pattern reference:
  *   tests/widgets/defi/defi-lending-widget.test.tsx
  *   codex/06-coding-standards/ui-testing-layers.md (L1.5)
- *   plans/ai/ui_widget_test_rollout_2026_04_24.plan.md (Phase 3 Wave 2 DeFi — metrics)
+ *   plans/ai/ui_widget_test_rollout_2026_04_24.plan (Phase 3 Wave 2 DeFi — metrics)
  *
  * Scope:
  * - Render root testid; Pillar 1 coin labels + % columns.
@@ -15,10 +15,10 @@
  * - Restricted venues banner renders when `restricted_venues` is non-empty.
  * - Restricted venue gets a "Restricted" badge inside Pillar 2 rows.
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
-import { buildMockDeFiData } from "../_helpers/mock-defi-context";
 import type { WaterfallWeights } from "@/lib/types/defi";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { buildMockDeFiData } from "../_helpers/mock-defi-context";
 
 function buildMockWaterfallWeights(overrides: Partial<WaterfallWeights> = {}): WaterfallWeights {
   return {

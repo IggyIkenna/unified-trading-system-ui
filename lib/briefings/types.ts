@@ -12,7 +12,7 @@
  * <Term> tooltips without widening BriefingSection/BriefingPillar to
  * ReactNode.
  *
- * Plan: unified-trading-pm/plans/active/refactor_g3_3_briefings_cms_migration_2026_04_20.plan.md
+ * Plan: unified-trading-pm/plans/active/refactor_g3_3_briefings_cms_migration_2026_04_20.plan
  */
 
 export interface BriefingCta {

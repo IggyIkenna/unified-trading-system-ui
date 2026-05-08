@@ -3,7 +3,7 @@
  *
  * Pattern reference:
  *   unified-trading-pm/codex/06-coding-standards/ui-testing-layers.md (L1.5)
- *   unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan.md Phase 5
+ *   unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.md Phase 5
  *
  * Scope:
  * - Render with mocked RiskData context; assert table structure mounts.
@@ -23,8 +23,8 @@
  * - Visual regression (L4 — deferred)
  * - TableWidget column sorting (covered by TableWidget unit tests)
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { buildMockRiskData } from "../_helpers/mock-risk-context";
 
 const mockRiskData = buildMockRiskData();

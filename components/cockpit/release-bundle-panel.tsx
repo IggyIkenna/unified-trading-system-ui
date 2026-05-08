@@ -4,7 +4,7 @@
  * ReleaseBundlePanel — visualises the StrategyReleaseBundle + active
  * RuntimeOverride layer for a single strategy.
  *
- * Per dart_ux_cockpit_refactor_2026_04_29.plan.md §4.8 + §4.9.
+ * Per dart_ux_cockpit_refactor_2026_04_29.plan §4.8 + §4.9.
  *
  * The panel embodies the "operating rule" of the cockpit:
  *   StrategyReleaseBundle decides what's approved to run.
@@ -19,17 +19,17 @@
  * embed.
  */
 
-import * as React from "react";
 import { CheckCircle2, GitBranch, History, Lock, Shield } from "lucide-react";
+import * as React from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { type RuntimeOverride } from "@/lib/architecture-v2/runtime-override";
 import {
   PROMOTION_STATUS_TO_MATURITY,
   type ReleaseBundlePromotionStatus,
   type StrategyReleaseBundle,
 } from "@/lib/architecture-v2/strategy-release-bundle";
-import { type RuntimeOverride } from "@/lib/architecture-v2/runtime-override";
 import { useCockpitOpsStore } from "@/lib/mocks/cockpit-ops-store";
 import { cn } from "@/lib/utils";
 

@@ -30,7 +30,7 @@ A burst of commits on **2026-04-25** materially extended the model since the ini
 - **Admin lock-state page gated**: `/services/strategy-catalogue/admin/lock-state` now wraps `AdminOnlyGate`; `STRATEGY_CATALOGUE_SUB_TABS` "Admin · Lock state" tab requires `admin` entitlement. `restriction-profiles.ts` synced from PM YAMLs. Legacy "Elysium —" prefix dropped from 4 venue-set-variant labels (Base/Premium/Multi-EVM/Multi-EVM+Solana — they're generic ladder names, not Elysium-specific). (UI: `fc2b15af`.)
 - **Path D (Odum Signals — outbound)** added to strategy-eval as **fourth commercial path** alongside DART Full / Signals-In / Reg Umbrella. New step-7 conditional section captures delivery mechanism (webhook / REST pull / batch), schema preference, latency tolerance, exec context. Section L₂ links to `/briefings/signals-out`. (UI: `40f49173`.)
 - **Strategy-eval = 8-step wizard** (was 16-section scroll page) with stepper + per-step validation + `holdingPeriod` axis (intraday / overnight-STBT / positional / long-term / mixed). Server-side draft save + cross-device resume via Firestore (`strategy_evaluation_drafts/{sha256(email)}`). Magic-link confirmation + status page. (UI: `76c3c46b`, `1442230d`, `148f044b`, `e5f7abda`, `1a10bed6`.)
-- **PM Phase 9-11 plan** [`plans/active/dart_ui_strategy_filtering_and_onboarding_2026_04_24.plan.md`](../../../unified-trading-pm/plans/active/dart_ui_strategy_filtering_and_onboarding_2026_04_24.plan.md) is now the SSOT for all the above. Phase 9 = envelope + admin locking/routing/org-attach. Phase 10 = strategy-instruments resolver + 4-level cascade + demo-persona link. Phase 11 = 5k catalogue UI + `asset_class→asset_group` rename + access-aware lock states. (PM: `f70926c`.)
+- **PM Phase 9-11 plan** [`plans/active/dart_ui_strategy_filtering_and_onboarding_2026_04_24.md`](../../../unified-trading-pm/plans/active/dart_ui_strategy_filtering_and_onboarding_2026_04_24.md) is now the SSOT for all the above. Phase 9 = envelope + admin locking/routing/org-attach. Phase 10 = strategy-instruments resolver + 4-level cascade + demo-persona link. Phase 11 = 5k catalogue UI + `asset_class→asset_group` rename + access-aware lock states. (PM: `f70926c`.)
 - **PM codex additions today**: `instruments-resolver-architecture.md`, `terminology-ssot.md`, `data-status-drilldown.md` (strict mode = production default). (PM: `20c4532`, `baaacb2`, `e3c0d97`.)
 
 ---
@@ -458,8 +458,8 @@ instrumentsByCategory (grouped by watchlistInstruments[n].category)
 | P10.7.1 — `instruments-resolver-architecture.md` codex doc                    | Teammate         | **Done**    | Commit `20c4532` — canonical SSOT for strategy→instruments join                                                                    |
 | P10.7.2 — Update `strategy-catalogue-3tier.md` with 4-level filter            | Teammate         | **Open**    | Doc update only                                                                                                                    |
 
-**All UI-side Phase 10 tasks complete.** Only P10.6.x remains and is blocked on teammate's P10.1.x.  
-**What is blocked:** P10.6.x (waiting on teammate's P10.1.x — real parquet resolver + Cloud Scheduler).  
+**All UI-side Phase 10 tasks complete.** Only P10.6.x remains and is blocked on teammate's P10.1.x.
+**What is blocked:** P10.6.x (waiting on teammate's P10.1.x — real parquet resolver + Cloud Scheduler).
 **Do NOT start:** the instruments finder page wiring (Data service `/services/data/instruments`) — that is a separate track from our own audit, not part of Phase 10 at all.
 
 ### 10.5 Decisions locked (2026-04-25)

@@ -157,7 +157,7 @@
       "status": "pass",
       "by": "agent+tests",
       "date": "2026-04-24",
-      "notes": "L1.5 harness spec: tests/widgets/risk/risk-what-if-slider.test.tsx — 17 tests covering loading/error/default render, slider onChange propagation to setBtcPriceChangePct, +/- prefix label logic, delta/gamma display from portfolioGreeks and portfolioGreeksData override. Per ui_widget_test_rollout_2026_04_24.plan.md Phase 5."
+      "notes": "L1.5 harness spec: tests/widgets/risk/risk-what-if-slider.test.tsx — 17 tests covering loading/error/default render, slider onChange propagation to setBtcPriceChangePct, +/- prefix label logic, delta/gamma display from portfolioGreeks and portfolioGreeksData override. Per ui_widget_test_rollout_2026_04_24.md Phase 5."
     },
     "l7": {
       "status": "pass",
@@ -236,7 +236,9 @@
     "notes": "btcPriceChangePct and estimatedPnl are context state shared with other risk widgets (Greeks used in calculation)."
   },
   "dataContract": {
-    "channels": ["rest"],
+    "channels": [
+      "rest"
+    ],
     "primary": "rest",
     "cadence": "on-demand",
     "staleness": "seconds",
@@ -245,9 +247,17 @@
     "notes": "portfolioGreeks from usePortfolioGreeks() hook or fallback computed Greeks. btcSpot hardcoded at 65000 \u2014 should be API-sourced."
   },
   "coverage": {
-    "assetClasses": ["defi", "cefi"],
-    "strategies": ["defi-basis-trade", "cefi-options-spread"],
-    "venues": ["all"],
+    "assetClasses": [
+      "defi",
+      "cefi"
+    ],
+    "strategies": [
+      "defi-basis-trade",
+      "cefi-options-spread"
+    ],
+    "venues": [
+      "all"
+    ],
     "commonTabs": null,
     "verifiedOn": [],
     "gaps": [

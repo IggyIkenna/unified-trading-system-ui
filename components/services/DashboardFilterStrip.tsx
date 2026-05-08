@@ -13,21 +13,21 @@
  * `dashboardFilter.changed` CustomEvent on every change via the context.
  *
  * SSOTs:
- *   - plans/active/dashboard_services_grid_collapse_2026_04_21.plan.md Phase 4
+ *   - plans/active/dashboard_services_grid_collapse_2026_04_21.plan Phase 4
  *   - codex/09-strategy/architecture-v2/dashboard-services-grid.md §4
  */
 
-import * as React from "react";
 import { ChevronDown, Filter, X } from "lucide-react";
+import * as React from "react";
 
 import { FamilyArchetypePicker } from "@/components/architecture-v2/family-archetype-picker";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/hooks/use-auth";
+import { INSTRUMENT_TYPES_V2, type InstrumentTypeV2 } from "@/lib/architecture-v2/coverage";
 import { ARCHETYPE_TO_FAMILY, type StrategyArchetype, type StrategyFamily } from "@/lib/architecture-v2/enums";
 import { SHARE_CLASS_LABEL, loadVenueSetVariants, type VenueSetVariant } from "@/lib/architecture-v2/lifecycle";
-import { INSTRUMENT_TYPES_V2, type InstrumentTypeV2 } from "@/lib/architecture-v2/coverage";
 import { useWorkspaceScope, useWorkspaceScopeStore } from "@/lib/stores/workspace-scope-store";
 import { cn } from "@/lib/utils";
 

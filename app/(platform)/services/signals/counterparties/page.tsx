@@ -1,8 +1,8 @@
 "use client";
 
+import { RotateCcw, ShieldAlert, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { RotateCcw, ShieldAlert, ShieldCheck } from "lucide-react";
 
 import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
@@ -12,9 +12,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useAuth } from "@/hooks/use-auth";
-import { COUNTERPARTY_SLOT_VOCABULARY, CounterpartyStoreProvider, useCounterpartyStore } from "@/lib/signal-broadcast";
 import type { CounterpartyRecord } from "@/lib/signal-broadcast";
-import { MOCK_SIGNAL_EMISSIONS } from "@/lib/signal-broadcast";
+import { COUNTERPARTY_SLOT_VOCABULARY, CounterpartyStoreProvider, MOCK_SIGNAL_EMISSIONS, useCounterpartyStore } from "@/lib/signal-broadcast";
 
 const DEFAULT_ACTOR_ID = "admin-1";
 
@@ -31,7 +30,7 @@ const DEFAULT_ACTOR_ID = "admin-1";
  * for audit-trail continuity with the Python `log_event` path.
  *
  * Plan SSOT:
- *   unified-trading-pm/plans/active/signal_leasing_broadcast_architecture_2026_04_20.plan.md
+ *   unified-trading-pm/plans/active/signal_leasing_broadcast_architecture_2026_04_20.plan
  *   § Phase 5 — admin surface + counterparty persona
  */
 

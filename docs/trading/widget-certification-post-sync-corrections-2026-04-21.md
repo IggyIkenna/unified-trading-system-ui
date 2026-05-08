@@ -161,7 +161,7 @@ may be pure over-reach — needs a product call before deleting rows. The `rewar
 the coverage-matrix table as a new column, but that's a codex edit I should not do unilaterally.
 
 **Unblock path:** this ticket starts with a question, not code. Ask the product owner of the Patrick persona
-(check `plans/ai/patrick_persona_entitlement_lockdown_2026_04_14.plan.md` in PM repo for scope) whether Kelp / Renzo /
+(check `plans/ai/patrick_persona_entitlement_lockdown_2026_04_14.md` in PM repo for scope) whether Kelp / Renzo /
 Lombard are in-scope for the persona. If yes → annotate-and-keep branch below. If no → trim branch. Only then start
 editing fixtures.
 

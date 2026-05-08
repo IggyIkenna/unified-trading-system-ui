@@ -3,7 +3,7 @@
  * "how is DART laid out?" copy that renders in the wizard step 0 +
  * /help/system-map page.
  *
- * Per dart_ux_cockpit_refactor_2026_04_29.plan.md §15.2 + Phase 7 of §17.
+ * Per dart_ux_cockpit_refactor_2026_04_29.md §15.2 + Phase 7 of §17.
  *
  * The two surfaces source from this module so wording can't drift between
  * the wizard and the help page.

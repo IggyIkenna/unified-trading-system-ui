@@ -6,9 +6,9 @@ import {
   MATRIX_CELLS,
   MATRIX_SIZE,
   ORPHAN_REACHABILITY_CASES,
+  PERSONA_ROWS,
   PHASE_CELLS,
   PHASE_MATRIX_SIZE,
-  PERSONA_ROWS,
   ROUTE_ROWS,
   isStagingFirebaseUnavailable,
 } from "./visibility-slicing-fixtures";
@@ -312,8 +312,8 @@ test.describe("G3.6 — dev/staging parity run", () => {
     test.skip(
       isStagingFirebaseUnavailable(),
       "TODO(G2.6): staging Firebase project not provisioned yet — " +
-        "tracked in plans/active/refactor_g2_6_staging_firebase_provisioning_*.plan.md. " +
-        "Set STAGING_FIREBASE_BASE_URL + NEXT_PUBLIC_USE_FIREBASE_AUTH=true to enable.",
+      "tracked in plans/active/refactor_g2_6_staging_firebase_provisioning_*.md. " +
+      "Set STAGING_FIREBASE_BASE_URL + NEXT_PUBLIC_USE_FIREBASE_AUTH=true to enable.",
     );
 
     // When the staging environment is live, the test above flips from skip to

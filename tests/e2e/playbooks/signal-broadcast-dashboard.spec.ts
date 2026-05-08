@@ -11,7 +11,7 @@ import { expect, test } from "@playwright/test";
  *    components with their canonical data-testid attributes.
  *
  * Plan SSOT:
- *   unified-trading-pm/plans/active/signal_leasing_broadcast_architecture_2026_04_20.plan.md
+ *   unified-trading-pm/plans/active/signal_leasing_broadcast_architecture_2026_04_20.plan
  *   § Phase 5 — counterparty observability UI
  */
 

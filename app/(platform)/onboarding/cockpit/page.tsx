@@ -3,7 +3,7 @@
 /**
  * Onboarding wizard — four-step "build my cockpit" flow.
  *
- * Per dart_ux_cockpit_refactor_2026_04_29.plan.md §9 + audit polish #4.
+ * Per dart_ux_cockpit_refactor_2026_04_29.md §9 + audit polish #4.
  *
  * Steps:
  *   0. System map        — read the IA explainer (Discover→Promote / Command→Ops)
@@ -22,10 +22,10 @@
  *   - lib/architecture-v2/workspace-scope.ts    (scope shape)
  */
 
-import * as React from "react";
+import { ArrowLeft, ArrowRight, CheckCircle2, ChevronRight, Lock, Map, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, ArrowRight, CheckCircle2, ChevronRight, Lock, Map, Sparkles } from "lucide-react";
+import * as React from "react";
 
 import { SystemMap } from "@/components/cockpit/system-map";
 import { Badge } from "@/components/ui/badge";
@@ -33,19 +33,19 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
 import {
-  VENUE_ASSET_GROUPS_V2,
   STRATEGY_FAMILIES_V2,
+  VENUE_ASSET_GROUPS_V2,
   type ShareClass,
   type StrategyFamily,
   type VenueAssetGroupV2,
 } from "@/lib/architecture-v2/enums";
-import { applyPresetToScope, COCKPIT_PRESETS, getPreset } from "@/lib/cockpit/presets";
-import { recommendPresetForPersona } from "@/lib/cockpit/derive-preset-from-persona";
 import {
   type WorkspaceEngagement,
   type WorkspaceExecutionStream,
   type WorkspaceScope,
 } from "@/lib/architecture-v2/workspace-scope";
+import { recommendPresetForPersona } from "@/lib/cockpit/derive-preset-from-persona";
+import { applyPresetToScope, COCKPIT_PRESETS, getPreset } from "@/lib/cockpit/presets";
 import { useWorkspaceScope, useWorkspaceScopeStore } from "@/lib/stores/workspace-scope-store";
 import { cn } from "@/lib/utils";
 
@@ -551,8 +551,8 @@ function SegmentedToggle({ axis, options, value, onChange }: SegmentedToggleProp
               "px-3 py-1 rounded text-xs border transition-colors inline-flex items-center gap-1",
               isActive && !isDisabled && "border-primary/50 bg-primary/10 text-primary",
               !isActive &&
-                !isDisabled &&
-                "border-border/40 bg-muted/10 text-muted-foreground hover:text-foreground hover:border-border",
+              !isDisabled &&
+              "border-border/40 bg-muted/10 text-muted-foreground hover:text-foreground hover:border-border",
               isDisabled && "border-border/30 bg-muted/5 text-muted-foreground/40 cursor-not-allowed",
             )}
           >

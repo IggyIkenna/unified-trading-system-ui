@@ -2,7 +2,7 @@
  * L1.5 widget harness — terminal-watchlist-widget
  *
  * Pattern: unified-trading-pm/codex/06-coding-standards/ui-testing-layers.md (L1.5)
- * Plan: unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan.md Phase 5
+ * Plan: unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan Phase 5
  *
  * Scope:
  * - Render: symbols from context appear in the panel.
@@ -14,9 +14,9 @@
  * Out of scope: WatchlistPanel internals (scroll virtualization → Playwright ct),
  *   route wiring (L2), multi-widget selection propagation (L3b).
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
-import { buildMockTerminalData, buildMockInstrument } from "../_helpers/mock-terminal-context";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { buildMockInstrument, buildMockTerminalData } from "../_helpers/mock-terminal-context";
 
 const mockData = buildMockTerminalData();
 

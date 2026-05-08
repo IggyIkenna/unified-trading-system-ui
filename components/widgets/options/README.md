@@ -19,7 +19,7 @@ The trading **Options** route (`/services/trading/options`) uses a widget grid w
 
 ## History
 
-`options-trade-panel`, `futures-trade-panel`, `options-scenario` were merged into their host widgets on 2026-04-22 (WU-3) — all three were pure readers of context state set by another widget (`selectedInstrument`, `selectedFuture`, asset class). Hosting them as embedded panes removes the "dead half-widget" UX (empty trade panel until another widget is selected) and preserves the same user flow in fewer grid slots. See `docs/audits/live-review-findings.md` row #17 and `unified-trading-pm/plans/active/trading_widget_merge_audit_2026_04_22.plan.md` WU-3.
+`options-trade-panel`, `futures-trade-panel`, `options-scenario` were merged into their host widgets on 2026-04-22 (WU-3) — all three were pure readers of context state set by another widget (`selectedInstrument`, `selectedFuture`, asset class). Hosting them as embedded panes removes the "dead half-widget" UX (empty trade panel until another widget is selected) and preserves the same user flow in fewer grid slots. See `docs/audits/live-review-findings.md` row #17 and `unified-trading-pm/plans/active/trading_widget_merge_audit_2026_04_22.md` WU-3.
 
 ## Presets
 

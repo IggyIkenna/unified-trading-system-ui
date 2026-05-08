@@ -3,7 +3,7 @@
 **Purpose:** Enable up to 20 parallel agents to implement `external/{source}/normalize.py` for providers that lack it.
 Each agent gets domain, reference normalizer, canonical types, and schema mapping.
 
-**Plan:** `plans/active/uac_citadel_remediation.plan.md` todo `c1-missing-normalize-py`
+**Plan:** `plans/active/uac_citadel_remediation.md` todo `c1-missing-normalize-py`
 
 ---
 

@@ -49,7 +49,7 @@ merge_level=2), which is inverted. **Correct merge_level ordering:**
 #### A1.4 — 1.13 WARN: `completion_path` uses plan file paths instead of vertical scope tokens
 
 **What:** 43/59 repos have `completion_path` pointing to plan file paths (e.g.
-`plans/active/phase2_library_tier_hardening.plan.md`) rather than vertical scope tokens (cefi / defi / sports / tradfi /
+`plans/active/phase2_library_tier_hardening.md`) rather than vertical scope tokens (cefi / defi / sports / tradfi /
 all). **Fix:** Update the 43 repos to use vertical scope tokens. Libraries and infra → `"all"`. CeFi services →
 `"cefi"`. DeFi services → `"defi"`. Sports services → `"sports"`. Cross-vertical → `"all"`. Keep plan file paths as a
 separate field `completion_plan` if needed.

@@ -1,14 +1,19 @@
 "use client";
 
-import * as React from "react";
-import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { EmailStatusBanner } from "@/components/email/email-status-banner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { getFirebaseDb } from "@/lib/auth/firebase-config";
+import { PUBLIC_ROUTE_PATHS, SERVICE_LABELS } from "@/lib/copy/service-labels";
+import { dispatchEmail } from "@/lib/email/client";
+import type { EmailDispatchOutcome } from "@/lib/email/email-result";
+import { trackEvent } from "@/lib/marketing/analytics";
+import { CALENDLY_URL } from "@/lib/marketing/calendly";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import {
   ArrowRight,
   Building2,
@@ -22,18 +27,13 @@ import {
   Send,
   UserCheck,
 } from "lucide-react";
-import { CALENDLY_URL } from "@/lib/marketing/calendly";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import { getFirebaseDb } from "@/lib/auth/firebase-config";
-import { dispatchEmail } from "@/lib/email/client";
-import type { EmailDispatchOutcome } from "@/lib/email/email-result";
-import { EmailStatusBanner } from "@/components/email/email-status-banner";
-import { SERVICE_LABELS, PUBLIC_ROUTE_PATHS } from "@/lib/copy/service-labels";
-import { trackEvent } from "@/lib/marketing/analytics";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import * as React from "react";
 
 /**
  * Contact page — restructured per Phase 6 of
- * `marketing_site_three_route_consolidation_2026_04_26.plan.md`.
+ * `marketing_site_three_route_consolidation_2026_04_26.md`.
  *
  * The page is human-routing, not funnel-bypass:
  *   - Primary CTA at the top routes through `/start-your-review` so the lead

@@ -3,7 +3,7 @@
  *
  * Pattern reference:
  *   unified-trading-pm/codex/06-coding-standards/ui-testing-layers.md (L1.5)
- *   unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan.md Phase 5
+ *   unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.md Phase 5
  *
  * Scope:
  * - Loading state renders spinner (via TableWidget → LiveFeedWidget).
@@ -18,10 +18,10 @@
  * - Column sorting click interactions (L4).
  * - Visual regression (L4 — deferred).
  */
+import type { OrderFlowEntry } from "@/lib/types/markets";
 import { render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { buildMockMarketsData, buildMockOrderFlowEntry } from "../_helpers/mock-markets-context";
-import type { OrderFlowEntry } from "@/lib/types/markets";
 
 const mockMarketsData = buildMockMarketsData();
 

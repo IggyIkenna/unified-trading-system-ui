@@ -2,7 +2,7 @@
  * Admin permission model.
  *
  * SSOT: `unified-trading-pm/codex/14-playbooks/cross-cutting/admin-permissions.md`.
- * Plan: `plans/active/ui_unification_v2_sanitisation_2026_04_20.plan.md` Phase 6.
+ * Plan: `plans/active/ui_unification_v2_sanitisation_2026_04_20.md` Phase 6.
  *
  * Gates destructive admin-only actions that binary `role === "admin"` must not
  * be sufficient for. Bootstrap admins (ikenna / femi seed users) carry

@@ -3,7 +3,7 @@
 /**
  * TerminalModeTabs — the 5-mode primary nav for the DART Terminal cockpit.
  *
- * Per dart_ux_cockpit_refactor_2026_04_29.plan.md §5.2 + Phase 3 of §17:
+ * Per dart_ux_cockpit_refactor_2026_04_29.plan §5.2 + Phase 3 of §17:
  * collapses the 24-tab `TRADING_TABS` sprawl into 5 buyer-facing modes
  * (Command · Markets · Strategies · Explain · Ops). The old per-route
  * pages stay as deep links — this component is the new "category" layer.
@@ -21,17 +21,17 @@
  * stays — Phase 9 collapses the legacy per-route pages.
  */
 
-import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import * as React from "react";
 
+import type { TerminalMode } from "@/lib/architecture-v2/workspace-scope";
 import {
   TERMINAL_MODES,
   TERMINAL_MODE_META,
   defaultTerminalMode,
   terminalModeForPath,
 } from "@/lib/cockpit/terminal-modes";
-import type { TerminalMode } from "@/lib/architecture-v2/workspace-scope";
 import { useWorkspaceScope, useWorkspaceScopeStore } from "@/lib/stores/workspace-scope-store";
 import { cn } from "@/lib/utils";
 

@@ -1,7 +1,7 @@
 /**
  * Lightweight analytics helper for marketing-page CTAs.
  *
- * Plan: `marketing_site_three_route_consolidation_2026_04_26.plan.md`
+ * Plan: `marketing_site_three_route_consolidation_2026_04_26.md`
  * (Completion Patch §I — Analytics / instrumentation).
  *
  * Phase 3 ships the event taxonomy and call sites; the actual SDK wiring

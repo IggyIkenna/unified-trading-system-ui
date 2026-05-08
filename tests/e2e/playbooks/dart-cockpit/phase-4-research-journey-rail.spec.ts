@@ -1,7 +1,7 @@
 /**
  * Phase 4 — ResearchJourneyRail mount + interactions on Research surfaces.
  *
- * Per dart_ux_cockpit_refactor_2026_04_29.plan.md §5.3 + Phase 4 of §17.
+ * Per dart_ux_cockpit_refactor_2026_04_29.md §5.3 + Phase 4 of §17.
  *
  * Acceptance:
  *   1. The 6-stage rail (Discover · Build · Train · Validate · Allocate ·

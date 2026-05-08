@@ -5,7 +5,7 @@
  * the unified WorkspaceScope must persist across navigate + refresh + copied
  * URL. This spec exercises the three flows.
  *
- * Plan-of-record: dart_ux_cockpit_refactor_2026_04_29.plan.md §17 Phase 1.
+ * Plan-of-record: dart_ux_cockpit_refactor_2026_04_29.plan §17 Phase 1.
  *
  * Hydration contract under test (lib/architecture-v2/workspace-scope.ts §7):
  *   - URL params beat localStorage on mount

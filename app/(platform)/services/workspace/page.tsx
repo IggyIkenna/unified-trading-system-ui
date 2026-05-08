@@ -3,7 +3,7 @@
 /**
  * /services/workspace — the unified cockpit shell.
  *
- * Per dart_ux_cockpit_refactor_2026_04_29.plan.md §5 + §17 + §22.
+ * Per dart_ux_cockpit_refactor_2026_04_29.md §5 + §17 + §22.
  *
  * This is the "wow-factor" surface. The dashboard tile for DART Terminal /
  * DART Research routes here; the user lands inside the cockpit and the
@@ -19,18 +19,17 @@
  * links restore the cockpit shape on a fresh tab.
  */
 
-import * as React from "react";
 
 import { AdminOperationalConfigPanel } from "@/components/cockpit/admin-operational-config-panel";
 import { AssumptionStackPanel } from "@/components/cockpit/assumption-stack-panel";
 import { BacktestVsOperatingPanel } from "@/components/cockpit/backtest-vs-operating-panel";
-import { CockpitWidgetGrid } from "@/components/cockpit/cockpit-widget-grid";
 import {
   BacktestRunsPanel,
   CockpitToastDock,
   MlTrainingRunsPanel,
   OrderTicketPanel,
 } from "@/components/cockpit/cockpit-ops-panels";
+import { CockpitWidgetGrid } from "@/components/cockpit/cockpit-widget-grid";
 import { ContextualLockedPreview } from "@/components/cockpit/contextual-locked-preview";
 import { ExplainAttributionPanel } from "@/components/cockpit/explain-attribution-panel";
 import { PromoteBundleForm } from "@/components/cockpit/promote-bundle-form";
@@ -48,10 +47,10 @@ import { StrategyScenarioTapePanel } from "@/components/cockpit/strategy-scenari
 import { StrategyVisibilitySummary } from "@/components/cockpit/strategy-visibility-summary";
 import { TerminalModeTabs } from "@/components/cockpit/terminal-mode-tabs";
 import { WorkspaceUrlSync } from "@/components/cockpit/workspace-url-sync";
-import { AllWidgetProviders } from "@/components/widgets/all-widget-providers";
+import { DartScopeBar } from "@/components/shell/dart-scope-bar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { DartScopeBar } from "@/components/shell/dart-scope-bar";
+import { AllWidgetProviders } from "@/components/widgets/all-widget-providers";
 import {
   DEMO_ASSUMPTION_STACK,
   DEMO_BUNDLE,
@@ -110,7 +109,7 @@ export default function WorkspaceShellPage() {
             <ScopedBacktestsPanel />
           ) : null}
           {(scope.surface === "research" && scope.researchStage === "promote") ||
-          (scope.surface === "terminal" && scope.terminalMode === "strategies") ? (
+            (scope.surface === "terminal" && scope.terminalMode === "strategies") ? (
             <ScopedReleaseBundlesPanel />
           ) : null}
           {/* Plan §4.9 — assumption-stack USP. Renders on every cockpit
@@ -151,7 +150,7 @@ export default function WorkspaceShellPage() {
           <CockpitWidgetGrid />
           {(scope.surface === "terminal" &&
             (scope.terminalMode === "strategies" || scope.terminalMode === "explain")) ||
-          (scope.surface === "research" && scope.researchStage === "promote") ? (
+            (scope.surface === "research" && scope.researchStage === "promote") ? (
             <ReleaseBundlePanel bundle={DEMO_BUNDLE} activeOverrides={DEMO_OVERRIDES} />
           ) : null}
           {/* Promote bundle-creation form — only on Research/Promote. Pairs with

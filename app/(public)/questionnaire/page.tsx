@@ -30,7 +30,7 @@
  * response so `/admin/organizations/[id]` can join on email / firm name.
  *
  * SSOT: lib/questionnaire/types.ts + UAC QuestionnaireResponse.
- * Plan: unified-trading-pm/plans/active/reg_umbrella_questionnaire_and_onboarding_docs_2026_04_21.plan.md
+ * Plan: unified-trading-pm/plans/active/reg_umbrella_questionnaire_and_onboarding_docs_2026_04_21.md
  */
 
 "use client";
@@ -43,7 +43,6 @@ import { Term } from "@/components/marketing/term";
 import { setBriefingSessionActive } from "@/lib/briefings/session";
 import { persistResolvedPersona, resolvePersonaFromQuestionnaire } from "@/lib/questionnaire/resolve-persona";
 import { fingerprintAccessCode, submitQuestionnaire, type SubmitResult } from "@/lib/questionnaire/submit";
-import { validateRequired, type ValidationFailure } from "@/lib/questionnaire/validate-required";
 import type {
   QuestionnaireCategory,
   QuestionnaireEnvelope,
@@ -65,6 +64,7 @@ import {
   QUESTIONNAIRE_SERVICE_FAMILIES,
   QUESTIONNAIRE_STRATEGY_STYLES,
 } from "@/lib/questionnaire/types";
+import { validateRequired, type ValidationFailure } from "@/lib/questionnaire/validate-required";
 import { Lock } from "lucide-react";
 import Link from "next/link";
 
@@ -170,9 +170,9 @@ function buildResponse(state: FormState): QuestionnaireResponse {
     state.venue_scope_mode === "all"
       ? ("all" as const)
       : state.venue_scope_csv
-          .split(",")
-          .map((v) => v.trim())
-          .filter((v) => v.length > 0);
+        .split(",")
+        .map((v) => v.trim())
+        .filter((v) => v.length > 0);
 
   const sharpeVal = parseFloat(state.target_sharpe_min_str);
   const strategyPrefs: Pick<
@@ -364,10 +364,10 @@ function QuestionnaireForm() {
     const envelope: QuestionnaireEnvelope | null =
       state.email.trim() || state.firm_name.trim()
         ? {
-            email: state.email.trim(),
-            firm_name: state.firm_name.trim(),
-            access_code_fingerprint: await fingerprintAccessCode(readStoredAccessCode() ?? ""),
-          }
+          email: state.email.trim(),
+          firm_name: state.firm_name.trim(),
+          access_code_fingerprint: await fingerprintAccessCode(readStoredAccessCode() ?? ""),
+        }
         : null;
 
     const outcome = await submitQuestionnaire(response, envelope);
@@ -407,9 +407,9 @@ function QuestionnaireForm() {
             state.venue_scope_mode === "all"
               ? "all"
               : state.venue_scope_csv
-                  .split(",")
-                  .map((v) => v.trim())
-                  .filter((v) => v.length > 0),
+                .split(",")
+                .map((v) => v.trim())
+                .filter((v) => v.length > 0),
           strategyStyle: [...state.strategy_style],
           fundStructure: [...state.fund_structure],
           marketNeutral: state.market_neutral,
@@ -1156,15 +1156,15 @@ function QuestionnaireForm() {
               state.firm_location === "us" ||
               state.firm_location === "other" ||
               state.firm_location === "exploring") && (
-              <input
-                type="text"
-                name="firm_location_notes"
-                className="mt-2 w-full rounded border px-3 py-2"
-                placeholder="e.g. Luxembourg / Delaware / planning UK FCA Q3"
-                value={state.firm_location_notes}
-                onChange={(e) => setState((s) => ({ ...s, firm_location_notes: e.target.value }))}
-              />
-            )}
+                <input
+                  type="text"
+                  name="firm_location_notes"
+                  className="mt-2 w-full rounded border px-3 py-2"
+                  placeholder="e.g. Luxembourg / Delaware / planning UK FCA Q3"
+                  value={state.firm_location_notes}
+                  onChange={(e) => setState((s) => ({ ...s, firm_location_notes: e.target.value }))}
+                />
+              )}
           </div>
           <div className="mt-3 text-sm">
             <p className="font-medium">How did you hear about us?</p>
@@ -1197,23 +1197,23 @@ function QuestionnaireForm() {
               state.referral_source === "event" ||
               state.referral_source === "publication" ||
               state.referral_source === "other") && (
-              <input
-                type="text"
-                name="referral_source_notes"
-                className="mt-2 w-full rounded border px-3 py-2"
-                placeholder={
-                  state.referral_source === "referral"
-                    ? "Who introduced you?"
-                    : state.referral_source === "event"
-                      ? "Which event?"
-                      : state.referral_source === "publication"
-                        ? "Which publication?"
-                        : "Tell us a bit more"
-                }
-                value={state.referral_source_notes}
-                onChange={(e) => setState((s) => ({ ...s, referral_source_notes: e.target.value }))}
-              />
-            )}
+                <input
+                  type="text"
+                  name="referral_source_notes"
+                  className="mt-2 w-full rounded border px-3 py-2"
+                  placeholder={
+                    state.referral_source === "referral"
+                      ? "Who introduced you?"
+                      : state.referral_source === "event"
+                        ? "Which event?"
+                        : state.referral_source === "publication"
+                          ? "Which publication?"
+                          : "Tell us a bit more"
+                  }
+                  value={state.referral_source_notes}
+                  onChange={(e) => setState((s) => ({ ...s, referral_source_notes: e.target.value }))}
+                />
+              )}
           </div>
         </fieldset>
 

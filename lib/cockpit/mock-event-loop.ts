@@ -1,7 +1,7 @@
 /**
  * MockEventLoop — drives the Tier-0 demo's "alive" feel.
  *
- * Per dart_ux_cockpit_refactor_2026_04_29.plan.md §13 + Phase 8 of §17.
+ * Per dart_ux_cockpit_refactor_2026_04_29.plan §13 + Phase 8 of §17.
  *
  * The Tier-0 demo cockpit needs to feel alive so a buyer doesn't write
  * the demo off as "frozen mock". This module provides a controlled

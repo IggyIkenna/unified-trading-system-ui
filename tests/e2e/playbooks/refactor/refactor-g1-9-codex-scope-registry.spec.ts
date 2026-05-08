@@ -33,7 +33,7 @@ import { clearPersona, seedPersona } from "../seed-persona";
  *    so it is discoverable from the codex root. Assert the index file
  *    mentions `11-codex-scope-registry.md`.
  *
- * Plan: unified-trading-pm/plans/active/refactor_g1_9_codex_scope_registry_2026_04_20.plan.md
+ * Plan: unified-trading-pm/plans/active/refactor_g1_9_codex_scope_registry_2026_04_20.md
  * Rule SSOT: unified-trading-pm/codex/14-playbooks/_ssot-rules/11-codex-scope-registry.md
  * Infra spec reference: unified-trading-pm/codex/14-playbooks/infra-spec/stage-3e-refactor-plan.md §1.9
  */

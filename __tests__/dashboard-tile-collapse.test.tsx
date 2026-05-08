@@ -1,6 +1,6 @@
 /**
  * Per-persona dashboard tile-count test — Phase 6 of
- * plans/active/dashboard_services_grid_collapse_2026_04_21.plan.md.
+ * plans/active/dashboard_services_grid_collapse_2026_04_21.md.
  *
  * Contract (from the plan):
  *   For each of 19 personas:
@@ -16,9 +16,9 @@
  * already exercised by dashboard-filter-propagation.test.tsx.
  */
 
-import { describe, expect, it } from "vitest";
 import { personaDashboardShape, type DashboardTileVisibility } from "@/lib/auth/persona-dashboard-shape";
 import { SERVICE_REGISTRY } from "@/lib/config/services";
+import { describe, expect, it } from "vitest";
 
 // Post-2026-04-28 the legacy single `dart` tile was split into `dart-terminal` +
 // `dart-research` (commit a36a9889). The product-axis collapse invariant became

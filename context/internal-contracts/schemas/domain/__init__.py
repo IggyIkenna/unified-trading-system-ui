@@ -4,7 +4,7 @@ unified_internal_contracts.domain
 Service domain data schemas — SSOT for all cross-repo data contracts that describe
 the primary output shape of a service.
 
-Layout rule (from schema_contracts_full_audit.plan.md + SCHEMA_CONTRACTS_AUDIT.md):
+Layout rule (from schema_contracts_full_audit.md + SCHEMA_CONTRACTS_AUDIT.md):
   Each service that publishes a canonical domain schema gets its own subdirectory:
 
     unified_internal_contracts/domain/<service-name>/__init__.py

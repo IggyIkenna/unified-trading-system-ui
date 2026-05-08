@@ -3,7 +3,7 @@
 /**
  * RuntimeOverrideAuthoring — typed, audited live override form.
  *
- * Per dart_ux_cockpit_refactor_2026_04_29.plan.md §4.8.3 (configuration
+ * Per dart_ux_cockpit_refactor_2026_04_29.md §4.8.3 (configuration
  * lifecycle — runtime overrides).
  *
  * This is the daily-trader configuration surface. The user does not edit the
@@ -35,8 +35,8 @@
  *      this to the override-store API.
  */
 
-import * as React from "react";
 import { AlertTriangle, CheckCircle2, ShieldAlert, ShieldCheck } from "lucide-react";
+import * as React from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -45,6 +45,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useAuth } from "@/hooks/use-auth";
 import {
   GUARDRAIL_REJECTION_MESSAGE,
   RUNTIME_OVERRIDE_TYPES,
@@ -58,7 +59,6 @@ import {
 import type { StrategyReleaseBundle } from "@/lib/architecture-v2/strategy-release-bundle";
 import { EMPTY_WORKSPACE_SCOPE } from "@/lib/architecture-v2/workspace-scope";
 import { useCockpitOpsStore } from "@/lib/mocks/cockpit-ops-store";
-import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 
 const OVERRIDE_LABEL: Record<RuntimeOverrideType, string> = {

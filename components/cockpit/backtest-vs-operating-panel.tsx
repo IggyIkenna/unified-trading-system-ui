@@ -3,7 +3,7 @@
 /**
  * BacktestVsOperatingPanel — visualises the Odum USP claim.
  *
- * Per dart_ux_cockpit_refactor_2026_04_29.plan.md §4.9:
+ * Per dart_ux_cockpit_refactor_2026_04_29.md §4.9:
  *
  *   "A normal backtest answers 'did the signal make money on historical
  *    prices?'. DART must answer 'would this strategy still work after
@@ -19,7 +19,6 @@
  * the simulation-service stream.
  */
 
-import * as React from "react";
 import { ArrowRight, Sigma, TrendingDown, TrendingUp } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";

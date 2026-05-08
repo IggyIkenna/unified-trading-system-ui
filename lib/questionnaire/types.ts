@@ -7,7 +7,7 @@
  * enums are small and the drift risk is low.
  *
  * 2026-04-21 Reg-Umbrella extension
- * (`plans/active/reg_umbrella_questionnaire_and_onboarding_docs_2026_04_21.plan.md`):
+ * (`plans/active/reg_umbrella_questionnaire_and_onboarding_docs_2026_04_21.plan`):
  * the 7 new axes are optional. Responses authored before this date remain
  * valid — every downstream consumer must treat the new fields as
  * `undefined`-tolerant.

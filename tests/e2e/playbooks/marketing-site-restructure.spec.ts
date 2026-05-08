@@ -9,7 +9,7 @@ import { clearPersona } from "./seed-persona";
  *   unified-trading-pm/codex/14-playbooks/experience/marketing-journey.md
  *   unified-trading-pm/codex/14-playbooks/authentication/light-auth-briefings.md
  *   unified-trading-pm/codex/14-playbooks/implementation-mapping/route-mapping.md
- *   unified-trading-pm/plans/active/marketing_site_restructure_2026_04_20.plan.md
+ *   unified-trading-pm/plans/active/marketing_site_restructure_2026_04_20.plan
  */
 
 const FIVE_PATH_NAV: readonly string[] = [

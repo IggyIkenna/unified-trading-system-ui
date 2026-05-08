@@ -12,7 +12,7 @@
  *              Details → /services/trading/strategies/[id]
  * - Grouped rendering: each assetClass group heading appears.
  *
- * Per unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan.md Phase 5.
+ * Per unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan Phase 5.
  */
 import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";

@@ -1,5 +1,5 @@
-import { describe, expect, test } from "vitest";
 import { getAllBriefings, getBriefing, getBriefingsHub, VALID_PILLAR_SLUGS } from "@/lib/briefings/loader";
+import { describe, expect, test } from "vitest";
 
 /**
  * Unit tests for the briefings YAML loader. Asserts:
@@ -8,7 +8,7 @@ import { getAllBriefings, getBriefing, getBriefingsHub, VALID_PILLAR_SLUGS } fro
  *  - hub file parses and displayOrder references real pillars
  *  - getAllBriefings() returns pillars in the hub displayOrder
  *
- * Plan: unified-trading-pm/plans/active/refactor_g3_3_briefings_cms_migration_2026_04_20.plan.md
+ * Plan: unified-trading-pm/plans/active/refactor_g3_3_briefings_cms_migration_2026_04_20.md
  */
 
 describe("lib/briefings/loader", () => {

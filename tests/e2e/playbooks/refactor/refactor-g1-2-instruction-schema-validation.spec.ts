@@ -40,7 +40,7 @@ import { clearPersona, seedPersona } from "../seed-persona";
  * follow-up notes — they will light up once the UI adds an instruction
  * submission form.
  *
- * Plan: unified-trading-pm/plans/active/refactor_g1_2_instruction_schema_validation_service_2026_04_20.plan.md
+ * Plan: unified-trading-pm/plans/active/refactor_g1_2_instruction_schema_validation_service_2026_04_20.plan
  * UAC SSOT: unified-api-contracts/unified_api_contracts/internal/validation/instruction.py
  * Stage-3b: unified-trading-pm/codex/14-playbooks/infra-spec/stage-3b-instruction-schema-contract.md
  * Rule 10: unified-trading-pm/codex/14-playbooks/_ssot-rules/10-strategy-instruction-schema-principles.md

@@ -3,7 +3,7 @@
 /**
  * useScopedData — the unified scope-reactive data hook for widgets.
  *
- * Per dart_ux_cockpit_refactor_2026_04_29.plan.md §10 + §11 + Phase 5 of §17.
+ * Per dart_ux_cockpit_refactor_2026_04_29.plan §10 + §11 + Phase 5 of §17.
  *
  * Replaces the per-asset-group hooks (`useOptionsData`, `useDeFiData`,
  * `useSportsData`, `usePredictionsData`, etc.) with a single hook that

@@ -1,7 +1,7 @@
 /**
  * StrategyAvailabilityResolver — the bridge between scope and visibility.
  *
- * Per dart_ux_cockpit_refactor_2026_04_29.plan.md §4.5:
+ * Per dart_ux_cockpit_refactor_2026_04_29.md §4.5:
  *
  *   Scope decides relevance.
  *   This resolver decides visibility.
@@ -22,9 +22,9 @@
  *   6. Prospect → PUBLIC FOMO-safe subset only
  */
 
-import type { ProductRouting, StrategyMaturityPhase } from "./lifecycle";
 import type { ShareClass } from "./enums";
-import type { AvailabilityState, CoverageStatus, WorkspaceScope, WorkspaceSurface } from "./workspace-scope";
+import type { ProductRouting, StrategyMaturityPhase } from "./lifecycle";
+import type { AvailabilityState, CoverageStatus, WorkspaceSurface } from "./workspace-scope";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Type definitions

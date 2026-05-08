@@ -1,7 +1,7 @@
 /**
  * StrategyReleaseBundle — the immutable promotion artifact.
  *
- * Per dart_ux_cockpit_refactor_2026_04_29.plan.md §4.8.2.
+ * Per dart_ux_cockpit_refactor_2026_04_29.md §4.8.2.
  *
  * Every strategy that runs in DART Terminal MUST be backed by a release
  * bundle. The bundle pins every dimension that affects strategy behaviour

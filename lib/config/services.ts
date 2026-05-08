@@ -1,7 +1,7 @@
 /**
  * Service registry — 5 top-level product tiles shown on /dashboard.
  *
- * 2026-04-21 collapse (plans/active/dashboard_services_grid_collapse_2026_04_21.plan.md):
+ * 2026-04-21 collapse (plans/active/dashboard_services_grid_collapse_2026_04_21.md):
  *   - 11 tiles → 5 tiles
  *   - Folded-away as DART sub-routes: data · research · promote · observe · strategy-catalogue
  *   - Odum Signals disambiguated: top-level tile = COUNTERPARTY-OUTBOUND broadcast only;
@@ -50,7 +50,7 @@ export interface ServiceDefinition {
 export const SERVICE_REGISTRY: readonly ServiceDefinition[] = [
   // ─── DART Terminal (FIRST — Buyer-demo cockpit anchor) ─────────────────────
   // 2026-04-30 audit fix #3: DART Terminal listed BEFORE DART Research per
-  // dart_ux_cockpit_refactor_2026_04_29.plan.md §22 locked decision —
+  // dart_ux_cockpit_refactor_2026_04_29.md §22 locked decision —
   // "Dashboard tile order: DART Terminal LEFT, DART Research RIGHT. Buyer
   // demo leads with the live cockpit / FOMO surface. Research is deep but
   // doesn't deliver the wow hit on first load."

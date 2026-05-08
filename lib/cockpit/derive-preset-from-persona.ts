@@ -1,7 +1,7 @@
 /**
  * Persona → recommended cockpit preset.
  *
- * Per dart_ux_cockpit_refactor_2026_04_29.plan.md §9 (Phase 6).
+ * Per dart_ux_cockpit_refactor_2026_04_29.plan §9 (Phase 6).
  *
  * Inputs: persona id, role, entitlements, optional questionnaire-derived
  * scope. Output: a recommended preset id from `COCKPIT_PRESETS` plus a

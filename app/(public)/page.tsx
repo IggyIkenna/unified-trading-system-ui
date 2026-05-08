@@ -4,7 +4,7 @@ import { HomePageClient } from "./_home-client";
 /**
  * Public homepage — React composition.
  *
- * Plan: `marketing_site_three_route_consolidation_2026_04_26.plan.md`,
+ * Plan: `marketing_site_three_route_consolidation_2026_04_26.md`,
  * Phase 3. Replaces the prior `<MarketingStaticFromFile file="homepage.html" />`
  * shadow-DOM render with a typed React component tree.
  *

@@ -9,12 +9,12 @@
  * selected organisations" without duplicating the lookup logic.
  *
  * Inputs are `readonly string[]` to match the unified `WorkspaceScope` shape
- * (Phase 1 of dart_ux_cockpit_refactor_2026_04_29.plan.md).
+ * (Phase 1 of dart_ux_cockpit_refactor_2026_04_29.plan).
  */
 
-import { CLIENTS } from "@/lib/mocks/fixtures/trading-data";
-import { STRATEGIES } from "@/lib/mocks/fixtures/strategy-instances";
 import type { WorkspaceScope } from "@/lib/architecture-v2/workspace-scope";
+import { STRATEGIES } from "@/lib/mocks/fixtures/strategy-instances";
+import { CLIENTS } from "@/lib/mocks/fixtures/trading-data";
 
 /** Return client IDs that belong to the given organisation IDs. */
 export function getClientIdsForOrgs(orgIds: readonly string[]): string[] {

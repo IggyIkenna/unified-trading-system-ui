@@ -3,7 +3,7 @@
  *
  * Pattern reference:
  *   unified-trading-pm/codex/06-coding-standards/ui-testing-layers.md (L1.5)
- *   unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan.md Phase 5
+ *   unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.md Phase 5
  *
  * Scope:
  * - Root testid mounts.
@@ -22,13 +22,13 @@
  *
  * Out of scope: DnD internals, Simulate backend stub, real route wiring (L2), visual regression (L4).
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   buildMockBundlesData,
   buildMockBundleStep,
-  buildMockSellStep,
   buildMockBundleTemplate,
+  buildMockSellStep,
 } from "../_helpers/mock-bundles-context";
 
 const mockData = buildMockBundlesData();

@@ -2,7 +2,7 @@
  * L1.5 widget harness — terminal-options-widget
  *
  * Pattern: unified-trading-pm/codex/06-coding-standards/ui-testing-layers.md (L1.5)
- * Plan: unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan.md Phase 5
+ * Plan: unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.md Phase 5
  *
  * Scope:
  * - Widget mounts and renders OptionsChain + VolSurfaceChart stubs.
@@ -14,9 +14,9 @@
  *
  * Out of scope: real canvas, strike table interaction (Playwright ct), route (L2), L4 visual.
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
-import { buildMockTerminalData, buildMockInstrument } from "../_helpers/mock-terminal-context";
+import { render } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { buildMockInstrument, buildMockTerminalData } from "../_helpers/mock-terminal-context";
 
 const mockData = buildMockTerminalData();
 

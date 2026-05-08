@@ -9,11 +9,11 @@
  * - Position direction badge (LONG/SHORT).
  * - Regime badge variants (Trending → success, Transitioning → warning, Mean-Reverting → pending).
  *
- * Per unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan.md Phase 5.
+ * Per unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan Phase 5.
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { buildMockStrategiesData, buildMockCommodityRegime } from "../_helpers/mock-strategies-context";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { buildMockCommodityRegime, buildMockStrategiesData } from "../_helpers/mock-strategies-context";
 
 const mockStrategiesData = buildMockStrategiesData();
 
@@ -56,8 +56,8 @@ vi.mock("@/components/ui/table", () => ({
   ),
 }));
 
-import * as React from "react";
 import { CommodityRegimeWidget } from "@/components/widgets/strategies/commodity-regime-widget";
+import * as React from "react";
 
 describe("commodity-regime — L1.5 harness", () => {
   beforeEach(() => {

@@ -8,11 +8,11 @@
  * - Empty state (no rows).
  * - Spread badge variant: >50 bps → success badge.
  *
- * Per unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan.md Phase 5.
+ * Per unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan Phase 5.
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { buildMockStrategiesData, buildMockLendingArbRow } from "../_helpers/mock-strategies-context";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { buildMockLendingArbRow, buildMockStrategiesData } from "../_helpers/mock-strategies-context";
 
 const mockStrategiesData = buildMockStrategiesData();
 
@@ -56,8 +56,8 @@ vi.mock("@/components/shared/kpi-strip", () => ({
   ),
 }));
 
-import * as React from "react";
 import { LendingArbDashboardWidget } from "@/components/widgets/strategies/lending-arb-dashboard-widget";
+import * as React from "react";
 
 describe("lending-arb-dashboard — L1.5 harness", () => {
   beforeEach(() => {

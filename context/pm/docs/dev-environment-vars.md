@@ -233,5 +233,5 @@ env vars below. With `VCR_MODE=playback`, placeholder values are sufficient.
    unit-test any service. This is the required dev baseline.
 
 3. VCR cassettes are committed to `unified-trading-pm/scripts/dev/vcr_cassettes/` (planned; see Phase 3 of
-   `dev_environment_automated_onboarding_2026_03_10.plan.md`). Until cassettes exist, `VCR_MODE=disabled` and testnet
+   `dev_environment_automated_onboarding_2026_03_10.md`). Until cassettes exist, `VCR_MODE=disabled` and testnet
    keys are needed for integration tests.

@@ -2,7 +2,7 @@
  * L1.5 widget harness — markets-live-book-widget.
  *
  * Pattern: unified-trading-pm/codex/06-coding-standards/ui-testing-layers.md (L1.5)
- * Plan:    unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan.md Phase 5
+ * Plan:    unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan Phase 5
  *
  * Scope:
  * - Renders with mocked context (no crash, key structure visible).
@@ -16,10 +16,10 @@
  * - Real WebSocket, live routes (L2).
  * - Chart internals, screenshot diffs (L4).
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
-import { buildMockMarketsData, buildMockOrderFlowEntry } from "../_helpers/mock-markets-context";
 import type { LiveBookUpdate } from "@/lib/types/markets";
+import { render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { buildMockMarketsData } from "../_helpers/mock-markets-context";
 
 // ---------------------------------------------------------------------------
 // Inline fixture extensions (mock-markets-context owns ownOrders/liveBookUpdates)

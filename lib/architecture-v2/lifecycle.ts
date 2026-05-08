@@ -30,7 +30,7 @@ import type { ShareClass, StrategyArchetype, StrategyFamily } from "./enums";
  * 11 forward-only maturity phases + orthogonal `retired` terminal state.
  *
  * 2026-04-29 (Phase 1B): `pilot` added between `paper_stable` and `live_early`
- * per dart_ux_cockpit_refactor_2026_04_29.plan.md §4.8.7. Pilot = real money,
+ * per dart_ux_cockpit_refactor_2026_04_29.plan §4.8.7. Pilot = real money,
  * capped at 1-5% of target size; bridges paper (simulated fills) and live
  * (full target capital). The bundle promotion-status taxonomy in
  * `lib/architecture-v2/strategy-release-bundle.ts` maps onto this canonical

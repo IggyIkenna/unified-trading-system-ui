@@ -4,7 +4,7 @@
  * AdminOperationalConfigPanel — surfaces the unversioned, audited operational
  * config that lives outside the immutable bundle.
  *
- * Per dart_ux_cockpit_refactor_2026_04_29.plan.md §4.8 (configuration
+ * Per dart_ux_cockpit_refactor_2026_04_29.md §4.8 (configuration
  * lifecycle) — the "everything not in the bundle" surface:
  *
  *   - TreasuryOperationalConfig — wallet routing (mutable, audited, no version
@@ -17,8 +17,8 @@
  * admin route group. This is the "Ops & Controls" buyer-facing surface.
  */
 
-import * as React from "react";
 import { Activity, Database, KeyRound, Network, Wallet } from "lucide-react";
+import * as React from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
