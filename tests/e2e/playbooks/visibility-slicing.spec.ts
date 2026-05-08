@@ -24,7 +24,7 @@ import {
  * `restriction_profiles.resolve_profile`.
  *
  * SSOTs:
- *   - codex/14-playbooks/infra-spec/stage-3e-refactor-plan.md §3.6
+ *   - codex/16-strategy-playbooks/infra-spec/stage-3e-refactor-plan.md §3.6
  *   - codex/14-playbooks/cross-cutting/visibility-slicing.md
  *   - codex/14-playbooks/_ssot-rules/06-show-dont-show-discipline.md
  *   - codex/14-playbooks/demo-ops/profiles/*.yaml (per-persona YAML)

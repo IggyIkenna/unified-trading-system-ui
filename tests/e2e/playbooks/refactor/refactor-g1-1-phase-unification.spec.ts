@@ -29,7 +29,7 @@
  *
  * SSOTs:
  *   - unified-trading-pm/plans/active/refactor_g1_1_phase_unification_2026_04_20.plan
- *   - codex/14-playbooks/infra-spec/stage-3e-refactor-plan.md §1.1
+ *   - codex/16-strategy-playbooks/infra-spec/stage-3e-refactor-plan.md §1.1
  *   - codex/14-playbooks/_ssot-rules/03-same-system-principle.md
  *   - codex/09-strategy/TIER_ZERO_UI_DEMO_AND_PARITY.md
  */

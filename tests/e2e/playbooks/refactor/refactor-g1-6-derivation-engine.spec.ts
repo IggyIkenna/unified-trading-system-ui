@@ -5,7 +5,7 @@ import { clearPersona, seedPersona } from "../seed-persona";
  * Refactor G1.6 — Derivation engine reference spec.
  *
  * Stage 3E §1.6 shipped the five pure-function derivations specified in
- * `codex/14-playbooks/infra-spec/stage-3c-derivation-engine.md` §1.1-§1.5
+ * `codex/16-strategy-playbooks/infra-spec/stage-3c-derivation-engine.md` §1.1-§1.5
  * as a Python module at
  * `unified-api-contracts/unified_api_contracts/internal/architecture_v2/derivation.py`
  * (re-exported via `unified_api_contracts.strategy`):
@@ -45,7 +45,7 @@ import { clearPersona, seedPersona } from "../seed-persona";
  *
  * Plan: unified-trading-pm/plans/active/refactor_g1_6_derivation_engine_ship_to_strategy_service_availability_2026_04_20.plan
  * UAC SSOT: unified-api-contracts/unified_api_contracts/internal/architecture_v2/derivation.py
- * Stage-3C spec: unified-trading-pm/codex/14-playbooks/infra-spec/stage-3c-derivation-engine.md
+ * Stage-3C spec: unified-trading-pm/codex/16-strategy-playbooks/infra-spec/stage-3c-derivation-engine.md
  */
 
 const CATALOGUE_ROUTE = "/services/strategy-catalogue/";

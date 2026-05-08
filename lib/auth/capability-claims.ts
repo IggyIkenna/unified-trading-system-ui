@@ -5,7 +5,7 @@
 // `setCapabilityClaim` Cloud Function writes this shape; Firestore
 // security rules and service middleware read it.
 //
-// SSOT: codex/14-playbooks/infra-spec/stage-3e-g2-env-split.md § 4.
+// SSOT: codex/16-strategy-playbooks/infra-spec/stage-3e-g2-env-split.md § 4.
 
 export type ClientAudience =
   | "admin"

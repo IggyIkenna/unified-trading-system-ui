@@ -8,7 +8,7 @@
  *   - "hidden"           — tile is not rendered at all (returns null).
  *
  * SSOTs:
- *   - codex/14-playbooks/infra-spec/stage-3e-refactor-plan.md §1.3
+ *   - codex/16-strategy-playbooks/infra-spec/stage-3e-refactor-plan.md §1.3
  *   - codex/14-playbooks/_ssot-rules/06-show-dont-show-discipline.md
  *   - codex/14-playbooks/cross-cutting/visibility-slicing.md
  *   - codex/14-playbooks/demo-ops/demo-restriction-profiles.md

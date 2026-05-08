@@ -9,7 +9,7 @@
  *   firebase deploy --only functions --project staging
  *   firebase deploy --only functions --project prod
  *
- * SSOT: codex/14-playbooks/infra-spec/stage-3e-g2-env-split.md § 4.
+ * SSOT: codex/16-strategy-playbooks/infra-spec/stage-3e-g2-env-split.md § 4.
  */
 
 export { setCapabilityClaim } from "./setCapabilityClaim";

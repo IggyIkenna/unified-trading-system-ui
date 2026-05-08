@@ -8,7 +8,7 @@ import { clearPersona, seedPersona } from "../seed-persona";
  * Refactor G1.2 — Instruction-schema validator middleware (stage-3e §1.2).
  *
  * Stage-3b defines the 8-field client-instruction schema
- * (`codex/14-playbooks/infra-spec/stage-3b-instruction-schema-contract.md` §2).
+ * (`codex/16-strategy-playbooks/infra-spec/stage-3b-instruction-schema-contract.md` §2).
  * G1.2 ships a UAC-owned validator
  * (`unified-api-contracts/unified_api_contracts/internal/validation/instruction.py`,
  *  re-exported via `unified_api_contracts.instruction`) wired through an
@@ -42,7 +42,7 @@ import { clearPersona, seedPersona } from "../seed-persona";
  *
  * Plan: unified-trading-pm/plans/active/refactor_g1_2_instruction_schema_validation_service_2026_04_20.plan
  * UAC SSOT: unified-api-contracts/unified_api_contracts/internal/validation/instruction.py
- * Stage-3b: unified-trading-pm/codex/14-playbooks/infra-spec/stage-3b-instruction-schema-contract.md
+ * Stage-3b: unified-trading-pm/codex/16-strategy-playbooks/infra-spec/stage-3b-instruction-schema-contract.md
  * Rule 10: unified-trading-pm/codex/14-playbooks/_ssot-rules/10-strategy-instruction-schema-principles.md
  */
 
