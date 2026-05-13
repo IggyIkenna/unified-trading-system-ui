@@ -21,34 +21,27 @@ test.describe("Phase C — DART Terminal landing", () => {
     await clearPersona(page);
   });
 
-  test("renders the terminal page heading + archetypes section for DART-Full personas", async ({
-    page,
-  }) => {
+  test("renders the terminal page heading + archetypes section for DART-Full personas", async ({ page }) => {
     await seedPersona(page, "client-full");
     await page.goto("/services/dart/terminal");
 
     await expect(page.getByTestId("dart-terminal-page")).toBeVisible({ timeout: 30_000 });
-    await expect(
-      page.getByTestId("dart-terminal-archetypes-section"),
-    ).toBeVisible();
+    await expect(page.getByTestId("dart-terminal-archetypes-section")).toBeVisible();
     // At least one archetype row from ARCHETYPE_METADATA renders.
-    await expect(
-      page.getByTestId("dart-terminal-archetype-row").first(),
-    ).toBeVisible();
+    await expect(page.getByTestId("dart-terminal-archetype-row").first()).toBeVisible();
   });
 
-  test("manual-trade panel link routes to /services/trading/overview", async ({ page }) => {
+  test("manual-trade link routes to /services/dart/terminal/manual", async ({ page }) => {
     await seedPersona(page, "client-full");
     await page.goto("/services/dart/terminal");
 
     await expect(page.getByTestId("dart-terminal-page")).toBeVisible({ timeout: 30_000 });
     const tradeLink = page.getByTestId("dart-terminal-trade-link").locator("a");
-    await expect(tradeLink).toHaveAttribute("href", "/services/trading/overview");
+    // Phase C route refactor: link now points to dedicated manual route (not Sheet overlay)
+    await expect(tradeLink).toHaveAttribute("href", "/services/dart/terminal/manual");
   });
 
-  test("each archetype row mounts an AutomationToggle in MANUAL mode by default", async ({
-    page,
-  }) => {
+  test("each archetype row mounts an AutomationToggle in MANUAL mode by default", async ({ page }) => {
     await seedPersona(page, "client-full");
     await page.goto("/services/dart/terminal");
 
