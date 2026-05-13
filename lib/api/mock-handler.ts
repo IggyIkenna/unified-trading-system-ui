@@ -93,6 +93,12 @@ import {
 import { MOCK_TRANSFER_HISTORY } from "@/lib/mocks/fixtures/transfer-history";
 import { ALL_INSTRUMENTS, SNAPSHOT_META, type Instrument } from "@/lib/registry/instruments";
 import { isMockDataMode } from "@/lib/runtime/data-mode";
+import {
+  mockInstructionStatus,
+  mockModeTransition,
+  mockPreviewResponse,
+  mockSubmitResponse,
+} from "@/lib/api/mocks/dart";
 
 export const MOCK_MODE = typeof window !== "undefined" && isMockDataMode();
 
@@ -982,6 +988,76 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       as_of: null,
     });
   }
+  // ─── DART manual-trade endpoints ─────────────────────────────────────────────
+  // POST /api/archetypes/:archetypeId/preview
+  const previewMatch = /^\/api\/archetypes\/([^/]+)\/preview$/.exec(route);
+  if (previewMatch && opts?.method?.toUpperCase() === "POST") {
+    const archetypeId = decodeURIComponent(previewMatch[1] ?? "");
+    const body = parseMockJsonBody(opts) as { side?: string; size_pct_nav?: number; venue?: string };
+    const mockResult = mockPreviewResponse(archetypeId, body);
+    if (!mockResult.risk_check_passed) {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(
+            new Response(JSON.stringify(mockResult), {
+              status: 422,
+              headers: { "Content-Type": "application/json" },
+            }),
+          );
+        }, 80);
+      });
+    }
+    return json(mockResult, 80);
+  }
+
+  // POST /api/manual/submit
+  if (route === "/api/manual/submit" && opts?.method?.toUpperCase() === "POST") {
+    const body = parseMockJsonBody(opts) as {
+      correlation_id?: string;
+      archetype?: string;
+      venue?: string;
+      side?: string;
+      strategy_id?: string;
+    };
+    const archetypeId = body.archetype ?? "CARRY_BASIS_PERP";
+    return json(mockSubmitResponse(archetypeId, {
+      correlation_id: body.correlation_id ?? "corr-mock",
+      venue: body.venue,
+      side: body.side,
+      strategy_id: body.strategy_id,
+    }), 120);
+  }
+
+  // GET /api/instructions/:instructionId/status
+  const instructionStatusMatch = /^\/api\/instructions\/([^/]+)\/status$/.exec(route);
+  if (instructionStatusMatch) {
+    const instructionId = decodeURIComponent(instructionStatusMatch[1] ?? "");
+    return json(mockInstructionStatus(instructionId), 60);
+  }
+
+  // POST /api/archetypes/:archetypeId/operational-mode
+  const modeMatch = /^\/api\/archetypes\/([^/]+)\/operational-mode$/.exec(route);
+  if (modeMatch && opts?.method?.toUpperCase() === "POST") {
+    const archetypeId = decodeURIComponent(modeMatch[1] ?? "");
+    const body = parseMockJsonBody(opts) as { operational_mode?: string };
+    const targetMode = (body.operational_mode ?? "MANUAL") as import("@/lib/api/dart-client").OperationalMode;
+    const result = mockModeTransition(archetypeId, targetMode);
+    if ("status" in result && result.status === 409) {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(
+            new Response(JSON.stringify({ detail: result.detail }), {
+              status: 409,
+              headers: { "Content-Type": "application/json" },
+            }),
+          );
+        }, 80);
+      });
+    }
+    return json(result, 80);
+  }
+  // ─────────────────────────────────────────────────────────────────────────────
+
   if (route === "/api/compliance/pre-trade-check") {
     const body = opts?.body ? JSON.parse(opts.body as string) : {};
     const instrument = (body.instrument ?? "") as string;

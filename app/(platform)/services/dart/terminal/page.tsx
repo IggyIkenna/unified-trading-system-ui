@@ -108,8 +108,8 @@ export default function DartTerminalPage() {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Button variant="outline" size="sm" asChild data-testid="dart-terminal-trade-link">
-            <Link href="/services/trading/overview">
-              Manual trade panel
+            <Link href="/services/dart/terminal/manual">
+              Manual trade
               <ChevronRight className="ml-1 size-4" aria-hidden />
             </Link>
           </Button>
