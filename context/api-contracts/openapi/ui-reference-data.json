@@ -753,7 +753,7 @@
         "protocol": "camelot_v3",
         "chain": "ARBITRUM"
       },
-      "TRADERJOEV2-AVALANCHE": {
+      "TRADER_JOEV2-AVALANCHE": {
         "protocol": "trader_joe_v2",
         "chain": "AVALANCHE"
       },
@@ -5403,7 +5403,7 @@
         "adapter_key": "camelot_v3",
         "chain": "ARBITRUM"
       },
-      "TRADERJOEV2-AVALANCHE": {
+      "TRADER_JOEV2-AVALANCHE": {
         "adapter_key": "trader_joe_v2",
         "chain": "AVALANCHE"
       },

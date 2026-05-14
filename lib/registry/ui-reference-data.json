@@ -135,379 +135,120 @@
       "MYBOOKIEAG": "sports"
     },
     "instrument_types_by_venue": {
-      "BINANCE-SPOT": [
-        "SPOT_PAIR"
-      ],
-      "COINBASE-SPOT": [
-        "SPOT_PAIR"
-      ],
-      "OKX-SPOT": [
-        "SPOT_PAIR"
-      ],
-      "OKX-FUTURES": [
-        "OPTION",
-        "PERPETUAL",
-        "FUTURE"
-      ],
-      "OKX": [
-        "OPTION",
-        "PERPETUAL",
-        "SPOT_PAIR",
-        "FUTURE"
-      ],
-      "BYBIT-SPOT": [
-        "SPOT_PAIR"
-      ],
-      "BYBIT-FUTURES": [
-        "PERPETUAL",
-        "FUTURE"
-      ],
-      "BYBIT": [
-        "PERPETUAL",
-        "SPOT_PAIR",
-        "FUTURE"
-      ],
-      "UPBIT": [
-        "SPOT_PAIR"
-      ],
-      "BINANCE-FUTURES": [
-        "PERPETUAL",
-        "FUTURE"
-      ],
-      "DERIBIT": [
-        "OPTION",
-        "PERPETUAL",
-        "FUTURE"
-      ],
-      "HYPERLIQUID": [
-        "PERPETUAL"
-      ],
-      "ASTER": [
-        "PERPETUAL"
-      ],
-      "NASDAQ": [
-        "ETF",
-        "EQUITY",
-        "INDEX"
-      ],
-      "NYSE": [
-        "ETF",
-        "EQUITY",
-        "INDEX"
-      ],
-      "CME": [
-        "OPTION",
-        "BOND",
-        "INDEX",
-        "FUTURE"
-      ],
-      "CBOT": [
-        "OPTION",
-        "BOND",
-        "FUTURE"
-      ],
-      "NYMEX": [
-        "OPTION",
-        "COMMODITY",
-        "FUTURE"
-      ],
-      "COMEX": [
-        "OPTION",
-        "COMMODITY",
-        "FUTURE"
-      ],
-      "ICE": [
-        "OPTION",
-        "COMMODITY",
-        "FUTURE"
-      ],
-      "CBOE": [
-        "ETF",
-        "EQUITY",
-        "OPTION",
-        "INDEX"
-      ],
-      "XNAS": [
-        "ETF",
-        "EQUITY"
-      ],
-      "XNYS": [
-        "ETF",
-        "EQUITY"
-      ],
-      "UNISWAPV2-ETHEREUM": [
-        "POOL"
-      ],
-      "UNISWAPV3-ETHEREUM": [
-        "POOL"
-      ],
-      "UNISWAPV4-ETHEREUM": [
-        "POOL"
-      ],
-      "CURVE-ETHEREUM": [
-        "POOL"
-      ],
-      "AERODROME-BASE": [
-        "POOL"
-      ],
-      "AAVE_V3": [
-        "LENDING"
-      ],
-      "AAVEV3-ETHEREUM": [
-        "LENDING"
-      ],
-      "MORPHO-ETHEREUM": [
-        "LENDING"
-      ],
-      "FLUID-PLASMA": [
-        "LENDING"
-      ],
-      "AAVE-PLASMA": [
-        "LENDING"
-      ],
-      "LIDO": [
-        "STAKING"
-      ],
-      "ETHERFI": [
-        "STAKING"
-      ],
-      "ETHENA": [
-        "STAKING"
-      ],
-      "BETFAIR": [
-        "EXCHANGE_ODDS"
-      ],
-      "BETDAQ": [
-        "EXCHANGE_ODDS"
-      ],
-      "MATCHBOOK": [
-        "EXCHANGE_ODDS"
-      ],
-      "SMARKETS": [
-        "EXCHANGE_ODDS"
-      ],
-      "KALSHI": [
-        "PREDICTION_MARKET"
-      ],
-      "POLYMARKET": [
-        "PREDICTION_MARKET"
-      ],
-      "BETOPENLY": [
-        "PREDICTION_MARKET"
-      ],
-      "PROPHETX": [
-        "PREDICTION_MARKET"
-      ],
-      "NOVIG": [
-        "PREDICTION_MARKET"
-      ],
-      "ONEXBET": [
-        "FIXED_ODDS"
-      ],
-      "PINNACLE": [
-        "FIXED_ODDS"
-      ],
-      "BETFRED": [
-        "FIXED_ODDS"
-      ],
-      "CORAL": [
-        "FIXED_ODDS"
-      ],
-      "UNIBET": [
-        "FIXED_ODDS"
-      ],
-      "TAB": [
-        "FIXED_ODDS"
-      ],
-      "LOWVIG": [
-        "FIXED_ODDS"
-      ],
-      "CODERE": [
-        "FIXED_ODDS"
-      ],
-      "CAESARS": [
-        "FIXED_ODDS"
-      ],
-      "LADBROKES": [
-        "FIXED_ODDS"
-      ],
-      "BETSSON": [
-        "FIXED_ODDS"
-      ],
-      "FANDUEL": [
-        "FIXED_ODDS"
-      ],
-      "BOYLESPORTS": [
-        "FIXED_ODDS"
-      ],
-      "NEDS": [
-        "FIXED_ODDS"
-      ],
-      "REBET": [
-        "FIXED_ODDS"
-      ],
-      "NETBET": [
-        "FIXED_ODDS"
-      ],
-      "BETMGM": [
-        "FIXED_ODDS"
-      ],
-      "BETVICTOR": [
-        "FIXED_ODDS"
-      ],
-      "VIRGINBET": [
-        "FIXED_ODDS"
-      ],
-      "EVERYGAME": [
-        "FIXED_ODDS"
-      ],
-      "BETANYSPORTS": [
-        "FIXED_ODDS"
-      ],
-      "NORDICBET": [
-        "FIXED_ODDS"
-      ],
-      "LEOVEGAS": [
-        "FIXED_ODDS"
-      ],
-      "SUPRABETS": [
-        "FIXED_ODDS"
-      ],
-      "TIPICO": [
-        "FIXED_ODDS"
-      ],
-      "BETR_AU": [
-        "FIXED_ODDS"
-      ],
-      "TABTOUCH": [
-        "FIXED_ODDS"
-      ],
-      "DRAFTKINGS": [
-        "FIXED_ODDS"
-      ],
-      "PARIONSSPORT": [
-        "FIXED_ODDS"
-      ],
-      "MRGREEN": [
-        "FIXED_ODDS"
-      ],
-      "BALLYBET": [
-        "FIXED_ODDS"
-      ],
-      "PLAYUP": [
-        "FIXED_ODDS"
-      ],
-      "SKYBET": [
-        "FIXED_ODDS"
-      ],
-      "WINAMAX": [
-        "FIXED_ODDS"
-      ],
-      "PADDYPOWER": [
-        "FIXED_ODDS"
-      ],
-      "SPORTSBET_AU": [
-        "FIXED_ODDS"
-      ],
-      "COOLBET": [
-        "FIXED_ODDS"
-      ],
-      "BET365": [
-        "FIXED_ODDS"
-      ],
-      "BETONLINEAG": [
-        "FIXED_ODDS"
-      ],
-      "BETWAY": [
-        "FIXED_ODDS"
-      ],
-      "WILLIAMHILL": [
-        "FIXED_ODDS"
-      ],
-      "CASUMO": [
-        "FIXED_ODDS"
-      ],
-      "SBOBET": [
-        "FIXED_ODDS"
-      ],
-      "GROSVENOR": [
-        "FIXED_ODDS"
-      ],
-      "BETRIGHT": [
-        "FIXED_ODDS"
-      ],
-      "LIVESCOREBET": [
-        "FIXED_ODDS"
-      ],
-      "HARDROCKBET": [
-        "FIXED_ODDS"
-      ],
-      "BETCLIC": [
-        "FIXED_ODDS"
-      ],
-      "ESPNBET": [
-        "FIXED_ODDS"
-      ],
-      "ATG": [
-        "FIXED_ODDS"
-      ],
-      "BETPARX": [
-        "FIXED_ODDS"
-      ],
-      "BETRIVERS": [
-        "FIXED_ODDS"
-      ],
-      "FANATICS": [
-        "FIXED_ODDS"
-      ],
-      "BETUS": [
-        "FIXED_ODDS"
-      ],
-      "PMU": [
-        "FIXED_ODDS"
-      ],
-      "BOVADA": [
-        "FIXED_ODDS"
-      ],
-      "MARATHONBET": [
-        "FIXED_ODDS"
-      ],
-      "GTBETS": [
-        "FIXED_ODDS"
-      ],
-      "FLIFF": [
-        "FIXED_ODDS"
-      ],
-      "BWIN": [
-        "FIXED_ODDS"
-      ],
-      "BET888SPORT": [
-        "FIXED_ODDS"
-      ],
-      "SVENSKASPEL": [
-        "FIXED_ODDS"
-      ],
-      "POINTSBET": [
-        "FIXED_ODDS"
-      ],
-      "DABBLE": [
-        "FIXED_ODDS"
-      ],
-      "MYBOOKIEAG": [
-        "FIXED_ODDS"
-      ],
-      "DRAFTKINGS_PICK6": [
-        "PROP"
-      ],
-      "BETR_DFS": [
-        "PROP"
-      ],
-      "UNDERDOG": [
-        "PROP"
-      ],
-      "PRIZEPICKS": [
-        "PROP"
-      ]
+      "BINANCE-SPOT": ["SPOT_PAIR"],
+      "COINBASE-SPOT": ["SPOT_PAIR"],
+      "OKX-SPOT": ["SPOT_PAIR"],
+      "OKX-FUTURES": ["OPTION", "PERPETUAL", "FUTURE"],
+      "OKX": ["OPTION", "PERPETUAL", "SPOT_PAIR", "FUTURE"],
+      "BYBIT-SPOT": ["SPOT_PAIR"],
+      "BYBIT-FUTURES": ["PERPETUAL", "FUTURE"],
+      "BYBIT": ["PERPETUAL", "SPOT_PAIR", "FUTURE"],
+      "UPBIT": ["SPOT_PAIR"],
+      "BINANCE-FUTURES": ["PERPETUAL", "FUTURE"],
+      "DERIBIT": ["OPTION", "PERPETUAL", "FUTURE"],
+      "HYPERLIQUID": ["PERPETUAL"],
+      "ASTER": ["PERPETUAL"],
+      "NASDAQ": ["ETF", "EQUITY", "INDEX"],
+      "NYSE": ["ETF", "EQUITY", "INDEX"],
+      "CME": ["OPTION", "BOND", "INDEX", "FUTURE"],
+      "CBOT": ["OPTION", "BOND", "FUTURE"],
+      "NYMEX": ["OPTION", "COMMODITY", "FUTURE"],
+      "COMEX": ["OPTION", "COMMODITY", "FUTURE"],
+      "ICE": ["OPTION", "COMMODITY", "FUTURE"],
+      "CBOE": ["ETF", "EQUITY", "OPTION", "INDEX"],
+      "XNAS": ["ETF", "EQUITY"],
+      "XNYS": ["ETF", "EQUITY"],
+      "UNISWAPV2-ETHEREUM": ["POOL"],
+      "UNISWAPV3-ETHEREUM": ["POOL"],
+      "UNISWAPV4-ETHEREUM": ["POOL"],
+      "CURVE-ETHEREUM": ["POOL"],
+      "AERODROME-BASE": ["POOL"],
+      "AAVE_V3": ["LENDING"],
+      "AAVEV3-ETHEREUM": ["LENDING"],
+      "MORPHO-ETHEREUM": ["LENDING"],
+      "FLUID-PLASMA": ["LENDING"],
+      "AAVE-PLASMA": ["LENDING"],
+      "LIDO": ["STAKING"],
+      "ETHERFI": ["STAKING"],
+      "ETHENA": ["STAKING"],
+      "BETFAIR": ["EXCHANGE_ODDS"],
+      "BETDAQ": ["EXCHANGE_ODDS"],
+      "MATCHBOOK": ["EXCHANGE_ODDS"],
+      "SMARKETS": ["EXCHANGE_ODDS"],
+      "KALSHI": ["PREDICTION_MARKET"],
+      "POLYMARKET": ["PREDICTION_MARKET"],
+      "BETOPENLY": ["PREDICTION_MARKET"],
+      "PROPHETX": ["PREDICTION_MARKET"],
+      "NOVIG": ["PREDICTION_MARKET"],
+      "ONEXBET": ["FIXED_ODDS"],
+      "PINNACLE": ["FIXED_ODDS"],
+      "BETFRED": ["FIXED_ODDS"],
+      "CORAL": ["FIXED_ODDS"],
+      "UNIBET": ["FIXED_ODDS"],
+      "TAB": ["FIXED_ODDS"],
+      "LOWVIG": ["FIXED_ODDS"],
+      "CODERE": ["FIXED_ODDS"],
+      "CAESARS": ["FIXED_ODDS"],
+      "LADBROKES": ["FIXED_ODDS"],
+      "BETSSON": ["FIXED_ODDS"],
+      "FANDUEL": ["FIXED_ODDS"],
+      "BOYLESPORTS": ["FIXED_ODDS"],
+      "NEDS": ["FIXED_ODDS"],
+      "REBET": ["FIXED_ODDS"],
+      "NETBET": ["FIXED_ODDS"],
+      "BETMGM": ["FIXED_ODDS"],
+      "BETVICTOR": ["FIXED_ODDS"],
+      "VIRGINBET": ["FIXED_ODDS"],
+      "EVERYGAME": ["FIXED_ODDS"],
+      "BETANYSPORTS": ["FIXED_ODDS"],
+      "NORDICBET": ["FIXED_ODDS"],
+      "LEOVEGAS": ["FIXED_ODDS"],
+      "SUPRABETS": ["FIXED_ODDS"],
+      "TIPICO": ["FIXED_ODDS"],
+      "BETR_AU": ["FIXED_ODDS"],
+      "TABTOUCH": ["FIXED_ODDS"],
+      "DRAFTKINGS": ["FIXED_ODDS"],
+      "PARIONSSPORT": ["FIXED_ODDS"],
+      "MRGREEN": ["FIXED_ODDS"],
+      "BALLYBET": ["FIXED_ODDS"],
+      "PLAYUP": ["FIXED_ODDS"],
+      "SKYBET": ["FIXED_ODDS"],
+      "WINAMAX": ["FIXED_ODDS"],
+      "PADDYPOWER": ["FIXED_ODDS"],
+      "SPORTSBET_AU": ["FIXED_ODDS"],
+      "COOLBET": ["FIXED_ODDS"],
+      "BET365": ["FIXED_ODDS"],
+      "BETONLINEAG": ["FIXED_ODDS"],
+      "BETWAY": ["FIXED_ODDS"],
+      "WILLIAMHILL": ["FIXED_ODDS"],
+      "CASUMO": ["FIXED_ODDS"],
+      "SBOBET": ["FIXED_ODDS"],
+      "GROSVENOR": ["FIXED_ODDS"],
+      "BETRIGHT": ["FIXED_ODDS"],
+      "LIVESCOREBET": ["FIXED_ODDS"],
+      "HARDROCKBET": ["FIXED_ODDS"],
+      "BETCLIC": ["FIXED_ODDS"],
+      "ESPNBET": ["FIXED_ODDS"],
+      "ATG": ["FIXED_ODDS"],
+      "BETPARX": ["FIXED_ODDS"],
+      "BETRIVERS": ["FIXED_ODDS"],
+      "FANATICS": ["FIXED_ODDS"],
+      "BETUS": ["FIXED_ODDS"],
+      "PMU": ["FIXED_ODDS"],
+      "BOVADA": ["FIXED_ODDS"],
+      "MARATHONBET": ["FIXED_ODDS"],
+      "GTBETS": ["FIXED_ODDS"],
+      "FLIFF": ["FIXED_ODDS"],
+      "BWIN": ["FIXED_ODDS"],
+      "BET888SPORT": ["FIXED_ODDS"],
+      "SVENSKASPEL": ["FIXED_ODDS"],
+      "POINTSBET": ["FIXED_ODDS"],
+      "DABBLE": ["FIXED_ODDS"],
+      "MYBOOKIEAG": ["FIXED_ODDS"],
+      "DRAFTKINGS_PICK6": ["PROP"],
+      "BETR_DFS": ["PROP"],
+      "UNDERDOG": ["PROP"],
+      "PRIZEPICKS": ["PROP"]
     },
     "instrument_type_folder_map": {
       "PERPETUAL": "perpetuals",
@@ -753,7 +494,7 @@
         "protocol": "camelot_v3",
         "chain": "ARBITRUM"
       },
-      "TRADERJOEV2-AVALANCHE": {
+      "TRADER_JOEV2-AVALANCHE": {
         "protocol": "trader_joe_v2",
         "chain": "AVALANCHE"
       },
@@ -1148,22 +889,8 @@
     }
   },
   "uac_enums": {
-    "AccessMode": [
-      "rest_polling",
-      "streaming_websocket",
-      "streaming_sse",
-      "batch_file",
-      "graphql",
-      "on_chain"
-    ],
-    "AccountVerificationLevel": [
-      "none",
-      "email",
-      "phone",
-      "kyc_basic",
-      "kyc_enhanced",
-      "kyc_full"
-    ],
+    "AccessMode": ["rest_polling", "streaming_websocket", "streaming_sse", "batch_file", "graphql", "on_chain"],
+    "AccountVerificationLevel": ["none", "email", "phone", "kyc_basic", "kyc_enhanced", "kyc_full"],
     "AlternativeDataType": [
       "sentiment",
       "satellite",
@@ -1175,37 +902,11 @@
       "blockchain_metrics",
       "insider_transactions"
     ],
-    "AntiDetectionLevel": [
-      "none",
-      "basic",
-      "moderate",
-      "aggressive",
-      "extreme"
-    ],
-    "ArbitrageStatus": [
-      "detected",
-      "stale",
-      "executed",
-      "missed"
-    ],
-    "AssetClass": [
-      "crypto",
-      "equity",
-      "fx",
-      "commodity",
-      "fixed_income"
-    ],
-    "BenchmarkType": [
-      "arrival",
-      "vwap",
-      "twap",
-      "close",
-      "mid"
-    ],
-    "BetSide": [
-      "back",
-      "lay"
-    ],
+    "AntiDetectionLevel": ["none", "basic", "moderate", "aggressive", "extreme"],
+    "ArbitrageStatus": ["detected", "stale", "executed", "missed"],
+    "AssetClass": ["crypto", "equity", "fx", "commodity", "fixed_income"],
+    "BenchmarkType": ["arrival", "vwap", "twap", "close", "mid"],
+    "BetSide": ["back", "lay"],
     "BetStatus": [
       "pending",
       "placed",
@@ -1217,23 +918,9 @@
       "cancelled",
       "rejected"
     ],
-    "BookmakerCategory": [
-      "exchange",
-      "bookmaker_api",
-      "aggregator",
-      "streaming_api",
-      "scraper"
-    ],
-    "CassetteStatus": [
-      "recorded",
-      "auth_blocked",
-      "not_applicable",
-      "pending"
-    ],
-    "CloudProvider": [
-      "gcp",
-      "aws"
-    ],
+    "BookmakerCategory": ["exchange", "bookmaker_api", "aggregator", "streaming_api", "scraper"],
+    "CassetteStatus": ["recorded", "auth_blocked", "not_applicable", "pending"],
+    "CloudProvider": ["gcp", "aws"],
     "ComboStrategyType": [
       "calendar_spread",
       "risk_reversal",
@@ -1255,15 +942,8 @@
       "low_vig_exchange",
       "exchange_commission"
     ],
-    "ComputeTarget": [
-      "cloud_service",
-      "cloud_job",
-      "vm"
-    ],
-    "ComputeType": [
-      "vm",
-      "cloud_run"
-    ],
+    "ComputeTarget": ["cloud_service", "cloud_job", "vm"],
+    "ComputeType": ["vm", "cloud_run"],
     "CredentialType": [
       "api_key",
       "api_key_secret",
@@ -1273,17 +953,8 @@
       "certificate",
       "wallet_private_key"
     ],
-    "DataAvailability": [
-      "historical_only",
-      "live_only",
-      "both"
-    ],
-    "DataProtocol": [
-      "rest",
-      "websocket",
-      "sse",
-      "pubsub"
-    ],
+    "DataAvailability": ["historical_only", "live_only", "both"],
+    "DataProtocol": ["rest", "websocket", "sse", "pubsub"],
     "DefiAlertType": [
       "health_factor_critical",
       "position_liquidated",
@@ -1294,33 +965,10 @@
       "tx_simulation_failed",
       "rate_deviation"
     ],
-    "ErrorAction": [
-      "retry",
-      "reconnect",
-      "skip",
-      "fail"
-    ],
-    "ExecutionMethod": [
-      "rest_api",
-      "websocket_api",
-      "fix_protocol",
-      "browser_automation",
-      "hybrid"
-    ],
-    "ExecutionStatus": [
-      "pending",
-      "submitted",
-      "partial",
-      "completed",
-      "failed",
-      "cancelled",
-      "timeout"
-    ],
-    "FeeType": [
-      "maker",
-      "taker",
-      "other"
-    ],
+    "ErrorAction": ["retry", "reconnect", "skip", "fail"],
+    "ExecutionMethod": ["rest_api", "websocket_api", "fix_protocol", "browser_automation", "hybrid"],
+    "ExecutionStatus": ["pending", "submitted", "partial", "completed", "failed", "cancelled", "timeout"],
+    "FeeType": ["maker", "taker", "other"],
     "InstructionType": [
       "TRADE",
       "SWAP",
@@ -1370,42 +1018,11 @@
       "network_receive",
       "fill_decode"
     ],
-    "MarginType": [
-      "linear",
-      "inverse",
-      "quanto"
-    ],
-    "MarketState": [
-      "normal",
-      "halted",
-      "auction",
-      "pre_market",
-      "post_market",
-      "closed"
-    ],
-    "MarketStatus": [
-      "active",
-      "suspended",
-      "closed",
-      "settled"
-    ],
-    "MatchPeriod": [
-      "pre_match",
-      "1H",
-      "HT",
-      "2H",
-      "ET1",
-      "ET2",
-      "PEN",
-      "FT",
-      "abandoned",
-      "postponed"
-    ],
-    "OddsFormat": [
-      "decimal",
-      "american",
-      "fractional"
-    ],
+    "MarginType": ["linear", "inverse", "quanto"],
+    "MarketState": ["normal", "halted", "auction", "pre_market", "post_market", "closed"],
+    "MarketStatus": ["active", "suspended", "closed", "settled"],
+    "MatchPeriod": ["pre_match", "1H", "HT", "2H", "ET1", "ET2", "PEN", "FT", "abandoned", "postponed"],
+    "OddsFormat": ["decimal", "american", "fractional"],
     "OddsType": [
       "h2h",
       "over_under",
@@ -1445,58 +1062,13 @@
       "TRADE",
       "REBALANCE"
     ],
-    "OptionType": [
-      "call",
-      "put"
-    ],
-    "OrderSide": [
-      "buy",
-      "sell"
-    ],
-    "OrderStatus": [
-      "pending",
-      "open",
-      "partially_filled",
-      "filled",
-      "cancelled",
-      "rejected",
-      "expired"
-    ],
-    "OrderType": [
-      "market",
-      "limit",
-      "stop",
-      "stop_limit",
-      "trailing_stop",
-      "twap",
-      "vwap"
-    ],
-    "OutcomeType": [
-      "home",
-      "draw",
-      "away",
-      "over",
-      "under",
-      "yes",
-      "no"
-    ],
-    "PredictionMarketCategory": [
-      "politics",
-      "financial",
-      "sports",
-      "crypto",
-      "weather",
-      "entertainment",
-      "other"
-    ],
-    "PrimeBrokerProvider": [
-      "hidden_road",
-      "talos",
-      "falconx",
-      "genesis",
-      "cumberland",
-      "other"
-    ],
+    "OptionType": ["call", "put"],
+    "OrderSide": ["buy", "sell"],
+    "OrderStatus": ["pending", "open", "partially_filled", "filled", "cancelled", "rejected", "expired"],
+    "OrderType": ["market", "limit", "stop", "stop_limit", "trailing_stop", "twap", "vwap"],
+    "OutcomeType": ["home", "draw", "away", "over", "under", "yes", "no"],
+    "PredictionMarketCategory": ["politics", "financial", "sports", "crypto", "weather", "entertainment", "other"],
+    "PrimeBrokerProvider": ["hidden_road", "talos", "falconx", "genesis", "cumberland", "other"],
     "ResponseFormat": [
       "json",
       "ndjson",
@@ -1513,13 +1085,7 @@
       "html",
       "text"
     ],
-    "RiskCategory": [
-      "first_order",
-      "second_order",
-      "structural",
-      "operational",
-      "domain_specific"
-    ],
+    "RiskCategory": ["first_order", "second_order", "structural", "operational", "domain_specific"],
     "RiskType": [
       "delta",
       "vega",
@@ -1563,25 +1129,10 @@
       "health",
       "reports"
     ],
-    "ScalingMode": [
-      "always_on",
-      "auto_scale",
-      "scale_to_zero",
-      "manual"
-    ],
-    "ShareClass": [
-      "USDT",
-      "ETH",
-      "BTC"
-    ],
-    "SignalSource": [
-      "arbitrage",
-      "ml_model"
-    ],
-    "SourceControlProvider": [
-      "github",
-      "gitlab"
-    ],
+    "ScalingMode": ["always_on", "auto_scale", "scale_to_zero", "manual"],
+    "ShareClass": ["USDT", "ETH", "BTC"],
+    "SignalSource": ["arbitrage", "ml_model"],
+    "SourceControlProvider": ["github", "gitlab"],
     "Sport": [
       "FOOTBALL",
       "BASKETBALL",
@@ -1603,28 +1154,9 @@
       "ESPORTS",
       "SOCCER"
     ],
-    "TimeInForce": [
-      "GTC",
-      "IOC",
-      "FOK",
-      "GTD",
-      "POST_ONLY"
-    ],
-    "VenueCategory": [
-      "exchange",
-      "bookmaker_api",
-      "scraper"
-    ],
-    "WebSocketEvent": [
-      "connect",
-      "disconnect",
-      "ping",
-      "pong",
-      "subscribe",
-      "unsubscribe",
-      "error",
-      "reconnect"
-    ]
+    "TimeInForce": ["GTC", "IOC", "FOK", "GTD", "POST_ONLY"],
+    "VenueCategory": ["exchange", "bookmaker_api", "scraper"],
+    "WebSocketEvent": ["connect", "disconnect", "ping", "pong", "subscribe", "unsubscribe", "error", "reconnect"]
   },
   "uic_enums": {
     "AlertType": [
@@ -1637,13 +1169,7 @@
       "DRAWDOWN_LIMIT",
       "CONCENTRATION_LIMIT"
     ],
-    "AssetClass": [
-      "crypto",
-      "equity",
-      "fx",
-      "commodity",
-      "fixed_income"
-    ],
+    "AssetClass": ["crypto", "equity", "fx", "commodity", "fixed_income"],
     "AutoReconcileReason": [
       "fee_rounding",
       "margin_interest",
@@ -1652,57 +1178,15 @@
       "staking_reward",
       "funding_rate_accrual"
     ],
-    "BalanceReconciliationStatus": [
-      "match",
-      "discrepancy",
-      "critical"
-    ],
-    "BenchmarkType": [
-      "ORACLE",
-      "TWAP",
-      "ARRIVAL",
-      "VWAP",
-      "CLOSE"
-    ],
-    "BookType": [
-      "L0_TOB",
-      "L1_MBP",
-      "L2_MBP",
-      "AMM",
-      "ALPHA_ZERO"
-    ],
-    "CalibrationMethod": [
-      "platt",
-      "isotonic",
-      "beta",
-      "none"
-    ],
-    "CloudProvider": [
-      "gcp",
-      "aws",
-      "local"
-    ],
-    "ComputeType": [
-      "cloud_run",
-      "vm",
-      "batch",
-      "ec2"
-    ],
-    "CorrelationRegime": [
-      "low",
-      "normal",
-      "high",
-      "crisis"
-    ],
-    "CustomRiskEvaluationMethod": [
-      "rate_sensitivity",
-      "scenario_pnl",
-      "threshold_breach"
-    ],
-    "DataMode": [
-      "mock",
-      "real"
-    ],
+    "BalanceReconciliationStatus": ["match", "discrepancy", "critical"],
+    "BenchmarkType": ["ORACLE", "TWAP", "ARRIVAL", "VWAP", "CLOSE"],
+    "BookType": ["L0_TOB", "L1_MBP", "L2_MBP", "AMM", "ALPHA_ZERO"],
+    "CalibrationMethod": ["platt", "isotonic", "beta", "none"],
+    "CloudProvider": ["gcp", "aws", "local"],
+    "ComputeType": ["cloud_run", "vm", "batch", "ec2"],
+    "CorrelationRegime": ["low", "normal", "high", "crisis"],
+    "CustomRiskEvaluationMethod": ["rate_sensitivity", "scenario_pnl", "threshold_breach"],
+    "DataMode": ["mock", "real"],
     "DataType": [
       "trades",
       "book_snapshot_5",
@@ -1725,49 +1209,13 @@
       "sports_odds_snapshot",
       "sports_odds_movement"
     ],
-    "DeploymentStatus": [
-      "pending",
-      "running",
-      "completed",
-      "failed",
-      "cancelled",
-      "timed_out"
-    ],
-    "DeviationStatus": [
-      "transient",
-      "confirmed",
-      "auto_reconciled",
-      "escalated",
-      "resolved"
-    ],
-    "DeviationType": [
-      "position",
-      "balance",
-      "pnl"
-    ],
-    "DividendType": [
-      "REGULAR",
-      "SPECIAL",
-      "QUALIFIED",
-      "UNSPECIFIED"
-    ],
-    "DriftMarketType": [
-      "perp",
-      "spot"
-    ],
-    "DriftOrderSide": [
-      "long",
-      "short"
-    ],
-    "DurationBucket": [
-      "overnight",
-      "1w",
-      "1m",
-      "3m",
-      "6m",
-      "1y",
-      "2y+"
-    ],
+    "DeploymentStatus": ["pending", "running", "completed", "failed", "cancelled", "timed_out"],
+    "DeviationStatus": ["transient", "confirmed", "auto_reconciled", "escalated", "resolved"],
+    "DeviationType": ["position", "balance", "pnl"],
+    "DividendType": ["REGULAR", "SPECIAL", "QUALIFIED", "UNSPECIFIED"],
+    "DriftMarketType": ["perp", "spot"],
+    "DriftOrderSide": ["long", "short"],
+    "DurationBucket": ["overnight", "1w", "1m", "3m", "6m", "1y", "2y+"],
     "EmergencyExitType": [
       "market_close",
       "atomic_unwind",
@@ -1790,13 +1238,7 @@
       "reporting",
       "investor-relations"
     ],
-    "EnvironmentMode": [
-      "dev",
-      "development",
-      "staging",
-      "prod",
-      "production"
-    ],
+    "EnvironmentMode": ["dev", "development", "staging", "prod", "production"],
     "ErrorCategory": [
       "rate_limit",
       "authentication",
@@ -1817,35 +1259,10 @@
       "compliance",
       "configuration"
     ],
-    "ErrorRecoveryStrategy": [
-      "retry",
-      "retry_with_backoff",
-      "fallback",
-      "fail_fast",
-      "skip",
-      "alert",
-      "dead_letter"
-    ],
-    "ErrorSeverity": [
-      "low",
-      "medium",
-      "high",
-      "critical"
-    ],
-    "EventSeverity": [
-      "DEBUG",
-      "INFO",
-      "WARNING",
-      "ERROR",
-      "CRITICAL"
-    ],
-    "ExecutionMode": [
-      "AGGRESSIVE",
-      "PASSIVE",
-      "NEUTRAL",
-      "TWAP",
-      "VWAP"
-    ],
+    "ErrorRecoveryStrategy": ["retry", "retry_with_backoff", "fallback", "fail_fast", "skip", "alert", "dead_letter"],
+    "ErrorSeverity": ["low", "medium", "high", "critical"],
+    "EventSeverity": ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
+    "ExecutionMode": ["AGGRESSIVE", "PASSIVE", "NEUTRAL", "TWAP", "VWAP"],
     "FactorType": [
       "momentum",
       "value",
@@ -1860,17 +1277,8 @@
       "sentiment",
       "technical"
     ],
-    "FeeLineType": [
-      "TRADER_FEE",
-      "ODUM_FEE",
-      "INTRODUCER_FEE",
-      "SERVER_COST"
-    ],
-    "FeeType": [
-      "exchange",
-      "prime_broker",
-      "clearing"
-    ],
+    "FeeLineType": ["TRADER_FEE", "ODUM_FEE", "INTRODUCER_FEE", "SERVER_COST"],
+    "FeeType": ["exchange", "prime_broker", "clearing"],
     "GasCostAction": [
       "SWAP",
       "SUPPLY",
@@ -1901,12 +1309,7 @@
       "SPORTS_BET",
       "SPORTS_EXCHANGE"
     ],
-    "InstrumentStatus": [
-      "active",
-      "halted",
-      "expired",
-      "delisted"
-    ],
+    "InstrumentStatus": ["active", "halted", "expired", "delisted"],
     "InstrumentType": [
       "SPOT_PAIR",
       "PERPETUAL",
@@ -1956,29 +1359,9 @@
       "risk-group-updates",
       "eod-settlement"
     ],
-    "InvoiceStatus": [
-      "DRAFT",
-      "ISSUED",
-      "ACCEPTED",
-      "DISPUTED",
-      "PAID",
-      "VOIDED"
-    ],
-    "LegRole": [
-      "PRIMARY",
-      "HEDGE",
-      "AUTO"
-    ],
-    "LegStatus": [
-      "PENDING",
-      "SUBMITTED",
-      "PARTIALLY_FILLED",
-      "FILLED",
-      "CANCELLED",
-      "FAILED",
-      "SKIPPED",
-      "UNWOUND"
-    ],
+    "InvoiceStatus": ["DRAFT", "ISSUED", "ACCEPTED", "DISPUTED", "PAID", "VOIDED"],
+    "LegRole": ["PRIMARY", "HEDGE", "AUTO"],
+    "LegStatus": ["PENDING", "SUBMITTED", "PARTIALLY_FILLED", "FILLED", "CANCELLED", "FAILED", "SKIPPED", "UNWOUND"],
     "LifecycleEventType": [
       "STARTED",
       "VALIDATION_STARTED",
@@ -2025,49 +1408,13 @@
       "AGENT_FIX_APPLIED",
       "AGENT_FIX_FAILED"
     ],
-    "LogLevel": [
-      "DEBUG",
-      "INFO",
-      "WARNING",
-      "ERROR",
-      "CRITICAL"
-    ],
-    "ManualExecutionMode": [
-      "execute",
-      "record_only"
-    ],
-    "MarginType": [
-      "linear",
-      "inverse",
-      "quanto"
-    ],
-    "MarketCategory": [
-      "CEFI",
-      "TRADFI",
-      "DEFI",
-      "SPORTS",
-      "PREDICTION"
-    ],
-    "MarketState": [
-      "normal",
-      "halted",
-      "auction",
-      "pre_market",
-      "post_market",
-      "closed"
-    ],
-    "MatchingFeeType": [
-      "asymmetric",
-      "symmetric",
-      "pool",
-      "lending",
-      "none"
-    ],
-    "MessagingScope": [
-      "in_process",
-      "same_vm",
-      "cross_vm"
-    ],
+    "LogLevel": ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
+    "ManualExecutionMode": ["execute", "record_only"],
+    "MarginType": ["linear", "inverse", "quanto"],
+    "MarketCategory": ["CEFI", "TRADFI", "DEFI", "SPORTS", "PREDICTION"],
+    "MarketState": ["normal", "halted", "auction", "pre_market", "post_market", "closed"],
+    "MatchingFeeType": ["asymmetric", "symmetric", "pool", "lending", "none"],
+    "MessagingScope": ["in_process", "same_vm", "cross_vm"],
     "MessagingTopic": [
       "fill-events-{venue}",
       "order-requests",
@@ -2118,28 +1465,10 @@
       "signal_vector_meta",
       "meta_cascade"
     ],
-    "MultiLegExecutionMode": [
-      "SEQUENTIAL",
-      "LEADER_FOLLOWER",
-      "PARALLEL",
-      "LIQUIDITY_AWARE"
-    ],
-    "NAVSnapshotFrequency": [
-      "HOURLY",
-      "DAILY",
-      "WEEKLY",
-      "ON_DEMAND"
-    ],
-    "NAVSnapshotStatus": [
-      "PENDING",
-      "DELIVERED",
-      "FAILED",
-      "ACKNOWLEDGED"
-    ],
-    "OHLCVSource": [
-      "NATIVE_CANDLE",
-      "COMPUTED_FROM_TICKS"
-    ],
+    "MultiLegExecutionMode": ["SEQUENTIAL", "LEADER_FOLLOWER", "PARALLEL", "LIQUIDITY_AWARE"],
+    "NAVSnapshotFrequency": ["HOURLY", "DAILY", "WEEKLY", "ON_DEMAND"],
+    "NAVSnapshotStatus": ["PENDING", "DELIVERED", "FAILED", "ACKNOWLEDGED"],
+    "OHLCVSource": ["NATIVE_CANDLE", "COMPUTED_FROM_TICKS"],
     "OperationType": [
       "LEND",
       "BORROW",
@@ -2166,16 +1495,8 @@
       "CLAIM_REWARD",
       "SELL_REWARD"
     ],
-    "OperationalMode": [
-      "live",
-      "manual",
-      "backtest",
-      "paper"
-    ],
-    "OptionType": [
-      "call",
-      "put"
-    ],
+    "OperationalMode": ["live", "manual", "backtest", "paper"],
+    "OptionType": ["call", "put"],
     "OrderType": [
       "MARKET",
       "LIMIT",
@@ -2189,10 +1510,7 @@
       "TWAP",
       "VWAP"
     ],
-    "OrgType": [
-      "internal",
-      "external"
-    ],
+    "OrgType": ["internal", "external"],
     "Permission": [
       "trade:view",
       "trade:execute",
@@ -2216,16 +1534,8 @@
       "system:health_view",
       "system:admin"
     ],
-    "PhaseMode": [
-      "phase1",
-      "phase2",
-      "phase3"
-    ],
-    "PositionSide": [
-      "LONG",
-      "SHORT",
-      "NEUTRAL"
-    ],
+    "PhaseMode": ["phase1", "phase2", "phase3"],
+    "PositionSide": ["LONG", "SHORT", "NEUTRAL"],
     "PositionType": [
       "SPOT",
       "SPOT_ASSET",
@@ -2238,11 +1548,7 @@
       "LP_POSITION",
       "POOL"
     ],
-    "PredictionMarketUseCase": [
-      "binary_outcome",
-      "multi_outcome",
-      "conditional"
-    ],
+    "PredictionMarketUseCase": ["binary_outcome", "multi_outcome", "conditional"],
     "ProvisioningRole": [
       "admin",
       "collaborator",
@@ -2253,11 +1559,7 @@
       "operations",
       "investor"
     ],
-    "ReconciliationAction": [
-      "accept",
-      "reject",
-      "investigate"
-    ],
+    "ReconciliationAction": ["accept", "reject", "investigate"],
     "RegimeState": [
       "HIGH_VOL_TRENDING",
       "LOW_VOL_MEAN_REVERTING",
@@ -2267,23 +1569,9 @@
       "VOLATILE",
       "UNKNOWN"
     ],
-    "RiskAggregationLevel": [
-      "company",
-      "client",
-      "account",
-      "strategy",
-      "underlying",
-      "instrument"
-    ],
-    "RiskStatus": [
-      "OK",
-      "WARNING",
-      "CRITICAL"
-    ],
-    "RuntimeMode": [
-      "live",
-      "batch"
-    ],
+    "RiskAggregationLevel": ["company", "client", "account", "strategy", "underlying", "instrument"],
+    "RiskStatus": ["OK", "WARNING", "CRITICAL"],
+    "RuntimeMode": ["live", "batch"],
     "ServiceExecutionStatus": [
       "PENDING",
       "VALIDATED",
@@ -2299,10 +1587,7 @@
       "REJECTED_AUCTION_ONLY",
       "REJECTED_CIRCUIT_BREAKER"
     ],
-    "ServiceMode": [
-      "batch",
-      "live"
-    ],
+    "ServiceMode": ["batch", "live"],
     "SettlementType": [
       "funding_8h",
       "funding_continuous",
@@ -2333,20 +1618,8 @@
       "SPORTS_HALFTIME_ML",
       "PREDICTION_ARB"
     ],
-    "StressScenarioType": [
-      "GFC_2008",
-      "COVID_2020",
-      "CRYPTO_BLACK_THURSDAY_2020"
-    ],
-    "SubscriptionTier": [
-      "free",
-      "data-basic",
-      "data-pro",
-      "ml-pro",
-      "execution-basic",
-      "execution-pro",
-      "enterprise"
-    ],
+    "StressScenarioType": ["GFC_2008", "COVID_2020", "CRYPTO_BLACK_THURSDAY_2020"],
+    "SubscriptionTier": ["free", "data-basic", "data-pro", "ml-pro", "execution-basic", "execution-pro", "enterprise"],
     "TargetType": [
       "direction",
       "return",
@@ -2363,42 +1636,11 @@
       "clv_meta",
       "xg_meta"
     ],
-    "TestingStage": [
-      "MOCK",
-      "HISTORICAL",
-      "LIVE_MOCK",
-      "LIVE_TESTNET",
-      "STAGING",
-      "LIVE_REAL"
-    ],
-    "TestnetMode": [
-      "mainnet",
-      "testnet"
-    ],
-    "Timeframe": [
-      "15s",
-      "30s",
-      "1m",
-      "5m",
-      "15m",
-      "30m",
-      "1h",
-      "4h",
-      "24h",
-      "1d"
-    ],
-    "TradeSide": [
-      "BUY",
-      "SELL"
-    ],
-    "TradeType": [
-      "MARKET",
-      "LIMIT",
-      "STOP",
-      "LIQUIDATION",
-      "FUNDING",
-      "TRANSFER"
-    ],
+    "TestingStage": ["MOCK", "HISTORICAL", "LIVE_MOCK", "LIVE_TESTNET", "STAGING", "LIVE_REAL"],
+    "TestnetMode": ["mainnet", "testnet"],
+    "Timeframe": ["15s", "30s", "1m", "5m", "15m", "30m", "1h", "4h", "24h", "1d"],
+    "TradeSide": ["BUY", "SELL"],
+    "TradeType": ["MARKET", "LIMIT", "STOP", "LIQUIDATION", "FUNDING", "TRANSFER"],
     "TrainingPhase": [
       "feature_selection",
       "hyperparameter_tuning",
@@ -2407,11 +1649,7 @@
       "meta_results",
       "cross_pipeline"
     ],
-    "TrainingScope": [
-      "single_asset",
-      "cross_asset",
-      "universe"
-    ],
+    "TrainingScope": ["single_asset", "cross_asset", "universe"],
     "TriggerEventType": [
       "FEATURE_UPDATE",
       "ODDS_CHANGE",
@@ -2423,18 +1661,8 @@
       "MARKET_TICK",
       "CUSTOM"
     ],
-    "UrgencyLevel": [
-      "LOW",
-      "MEDIUM",
-      "HIGH",
-      "CRITICAL"
-    ],
-    "UserRole": [
-      "viewer",
-      "operator",
-      "admin",
-      "super_admin"
-    ],
+    "UrgencyLevel": ["LOW", "MEDIUM", "HIGH", "CRITICAL"],
+    "UserRole": ["viewer", "operator", "admin", "super_admin"],
     "VMEventType": [
       "VM_PREEMPTED",
       "VM_DELETED",
@@ -2452,18 +1680,8 @@
       "LIVE_HEALTH_CHECK_FAILED",
       "LIVE_ROLLBACK_EXECUTED"
     ],
-    "VaRMethod": [
-      "historical",
-      "parametric",
-      "monte_carlo",
-      "filtered_historical"
-    ],
-    "VenueCategory": [
-      "cefi",
-      "tradfi",
-      "defi",
-      "onchain_perps"
-    ]
+    "VaRMethod": ["historical", "parametric", "monte_carlo", "filtered_historical"],
+    "VenueCategory": ["cefi", "tradfi", "defi", "onchain_perps"]
   },
   "config_schemas": {
     "UnifiedCloudConfig": {
@@ -2892,32 +2110,10 @@
         "MAX_SLIPPAGE",
         "BENCHMARK_FILL"
       ],
-      "valid_categories": [
-        "cefi",
-        "tradfi",
-        "defi"
-      ],
-      "valid_modes": [
-        "SCE",
-        "HUF"
-      ],
-      "valid_timeframes": [
-        "1M",
-        "5M",
-        "15M",
-        "30M",
-        "1H",
-        "4H",
-        "8H",
-        "24H"
-      ],
-      "valid_book_types": [
-        "L1_MBP",
-        "L2_MBP",
-        "AMM",
-        "LENDING_POOL",
-        "STAKING_POOL"
-      ],
+      "valid_categories": ["cefi", "tradfi", "defi"],
+      "valid_modes": ["SCE", "HUF"],
+      "valid_timeframes": ["1M", "5M", "15M", "30M", "1H", "4H", "8H", "24H"],
+      "valid_book_types": ["L1_MBP", "L2_MBP", "AMM", "LENDING_POOL", "STAKING_POOL"],
       "valid_instruction_types": [
         "TRADE",
         "SWAP",
@@ -2970,23 +2166,9 @@
       "api-real": "Test APIs against real cloud data",
       "real": "Staging-like, needs credentials + OAuth"
     },
-    "testing_stages": [
-      "MOCK",
-      "HISTORICAL",
-      "LIVE_MOCK",
-      "LIVE_TESTNET",
-      "STAGING",
-      "LIVE_REAL"
-    ],
-    "runtime_modes": [
-      "LIVE",
-      "BATCH"
-    ],
-    "cloud_providers": [
-      "GCP",
-      "AWS",
-      "LOCAL"
-    ]
+    "testing_stages": ["MOCK", "HISTORICAL", "LIVE_MOCK", "LIVE_TESTNET", "STAGING", "LIVE_REAL"],
+    "runtime_modes": ["LIVE", "BATCH"],
+    "cloud_providers": ["GCP", "AWS", "LOCAL"]
   },
   "service_port_registry": {
     "deployment": {
@@ -3043,16 +2225,9 @@
       "category": "CEFI",
       "subcategory": "MOMENTUM",
       "domain": "cefi",
-      "asset_groupes": [
-        "PERPETUAL"
-      ],
-      "venues": [
-        "BINANCE-FUTURES",
-        "BYBIT"
-      ],
-      "instruments": [
-        "BINANCE-FUTURES:PERPETUAL:BTC-USDT@LIN"
-      ],
+      "asset_groupes": ["PERPETUAL"],
+      "venues": ["BINANCE-FUTURES", "BYBIT"],
+      "instruments": ["BINANCE-FUTURES:PERPETUAL:BTC-USDT@LIN"],
       "batch_capable": true,
       "live_capable": true,
       "testnet_capable": false
@@ -3063,16 +2238,9 @@
       "category": "CEFI",
       "subcategory": "MOMENTUM",
       "domain": "cefi",
-      "asset_groupes": [
-        "PERPETUAL"
-      ],
-      "venues": [
-        "BINANCE-FUTURES",
-        "BYBIT"
-      ],
-      "instruments": [
-        "BINANCE-FUTURES:PERPETUAL:ETH-USDT@LIN"
-      ],
+      "asset_groupes": ["PERPETUAL"],
+      "venues": ["BINANCE-FUTURES", "BYBIT"],
+      "instruments": ["BINANCE-FUTURES:PERPETUAL:ETH-USDT@LIN"],
       "batch_capable": true,
       "live_capable": true,
       "testnet_capable": false
@@ -3083,16 +2251,9 @@
       "category": "CEFI",
       "subcategory": "MOMENTUM",
       "domain": "cefi",
-      "asset_groupes": [
-        "PERPETUAL"
-      ],
-      "venues": [
-        "BINANCE-FUTURES",
-        "BYBIT"
-      ],
-      "instruments": [
-        "BINANCE-FUTURES:PERPETUAL:SOL-USDT@LIN"
-      ],
+      "asset_groupes": ["PERPETUAL"],
+      "venues": ["BINANCE-FUTURES", "BYBIT"],
+      "instruments": ["BINANCE-FUTURES:PERPETUAL:SOL-USDT@LIN"],
       "batch_capable": true,
       "live_capable": true,
       "testnet_capable": false
@@ -3103,15 +2264,9 @@
       "category": "TRADFI",
       "subcategory": "MOMENTUM",
       "domain": "tradfi",
-      "asset_groupes": [
-        "EQUITY"
-      ],
-      "venues": [
-        "NASDAQ"
-      ],
-      "instruments": [
-        "NASDAQ:EQUITY:SPY"
-      ],
+      "asset_groupes": ["EQUITY"],
+      "venues": ["NASDAQ"],
+      "instruments": ["NASDAQ:EQUITY:SPY"],
       "batch_capable": true,
       "live_capable": true,
       "testnet_capable": false
@@ -3122,15 +2277,9 @@
       "category": "DEFI",
       "subcategory": "LENDING",
       "domain": "defi",
-      "asset_groupes": [
-        "A_TOKEN"
-      ],
-      "venues": [
-        "AAVEV3-ETHEREUM"
-      ],
-      "instruments": [
-        "AAVEV3-ETHEREUM:A_TOKEN:AUSDT@ETHEREUM"
-      ],
+      "asset_groupes": ["A_TOKEN"],
+      "venues": ["AAVEV3-ETHEREUM"],
+      "instruments": ["AAVEV3-ETHEREUM:A_TOKEN:AUSDT@ETHEREUM"],
       "batch_capable": true,
       "live_capable": true,
       "testnet_capable": false
@@ -3141,21 +2290,9 @@
       "category": "DEFI",
       "subcategory": "BASIS",
       "domain": "defi",
-      "asset_groupes": [
-        "SPOT_ASSET",
-        "PERPETUAL"
-      ],
-      "venues": [
-        "WALLET",
-        "HYPERLIQUID",
-        "UNISWAPV3-ETHEREUM",
-        "CURVE-ETHEREUM",
-        "BALANCER-ETH"
-      ],
-      "instruments": [
-        "WALLET:SPOT_ASSET:ETH",
-        "HYPERLIQUID:PERPETUAL:ETH-USDC@LIN@HYPERLIQUID"
-      ],
+      "asset_groupes": ["SPOT_ASSET", "PERPETUAL"],
+      "venues": ["WALLET", "HYPERLIQUID", "UNISWAPV3-ETHEREUM", "CURVE-ETHEREUM", "BALANCER-ETH"],
+      "instruments": ["WALLET:SPOT_ASSET:ETH", "HYPERLIQUID:PERPETUAL:ETH-USDC@LIN@HYPERLIQUID"],
       "batch_capable": true,
       "live_capable": true,
       "testnet_capable": false
@@ -3166,21 +2303,9 @@
       "category": "DEFI",
       "subcategory": "STAKED_BASIS",
       "domain": "defi",
-      "asset_groupes": [
-        "LST",
-        "PERPETUAL"
-      ],
-      "venues": [
-        "ETHERFI-ETHEREUM",
-        "HYPERLIQUID",
-        "UNISWAPV3-ETHEREUM",
-        "CURVE-ETHEREUM",
-        "BALANCER-ETH"
-      ],
-      "instruments": [
-        "ETHERFI-ETHEREUM:LST:WEETH@ETHEREUM",
-        "HYPERLIQUID:PERPETUAL:ETH-USDC@LIN@HYPERLIQUID"
-      ],
+      "asset_groupes": ["LST", "PERPETUAL"],
+      "venues": ["ETHERFI-ETHEREUM", "HYPERLIQUID", "UNISWAPV3-ETHEREUM", "CURVE-ETHEREUM", "BALANCER-ETH"],
+      "instruments": ["ETHERFI-ETHEREUM:LST:WEETH@ETHEREUM", "HYPERLIQUID:PERPETUAL:ETH-USDC@LIN@HYPERLIQUID"],
       "batch_capable": true,
       "live_capable": true,
       "testnet_capable": false
@@ -3191,16 +2316,8 @@
       "category": "DEFI",
       "subcategory": "RECURSIVE_STAKED_BASIS",
       "domain": "defi",
-      "asset_groupes": [
-        "A_TOKEN",
-        "DEBT_TOKEN",
-        "PERPETUAL"
-      ],
-      "venues": [
-        "AAVEV3-ETHEREUM",
-        "HYPERLIQUID",
-        "MORPHO-ETHEREUM"
-      ],
+      "asset_groupes": ["A_TOKEN", "DEBT_TOKEN", "PERPETUAL"],
+      "venues": ["AAVEV3-ETHEREUM", "HYPERLIQUID", "MORPHO-ETHEREUM"],
       "instruments": [
         "AAVEV3-ETHEREUM:A_TOKEN:AWEETH@ETHEREUM",
         "AAVEV3-ETHEREUM:DEBT_TOKEN:DEBTWETH@ETHEREUM",
@@ -3216,14 +2333,8 @@
       "category": "SPORTS",
       "subcategory": "ARBITRAGE",
       "domain": "sports",
-      "asset_groupes": [
-        "FIXED_ODDS"
-      ],
-      "venues": [
-        "BETFAIR",
-        "PINNACLE",
-        "BET365"
-      ],
+      "asset_groupes": ["FIXED_ODDS"],
+      "venues": ["BETFAIR", "PINNACLE", "BET365"],
       "instruments": [],
       "batch_capable": false,
       "live_capable": true,
@@ -3235,14 +2346,8 @@
       "category": "SPORTS",
       "subcategory": "KELLY",
       "domain": "sports",
-      "asset_groupes": [
-        "FIXED_ODDS"
-      ],
-      "venues": [
-        "BETFAIR",
-        "PINNACLE",
-        "BET365"
-      ],
+      "asset_groupes": ["FIXED_ODDS"],
+      "venues": ["BETFAIR", "PINNACLE", "BET365"],
       "instruments": [],
       "batch_capable": false,
       "live_capable": true,
@@ -3254,14 +2359,8 @@
       "category": "SPORTS",
       "subcategory": "ML_SPORTS",
       "domain": "sports",
-      "asset_groupes": [
-        "FIXED_ODDS"
-      ],
-      "venues": [
-        "BETFAIR",
-        "PINNACLE",
-        "BET365"
-      ],
+      "asset_groupes": ["FIXED_ODDS"],
+      "venues": ["BETFAIR", "PINNACLE", "BET365"],
       "instruments": [],
       "batch_capable": false,
       "live_capable": true,
@@ -3273,14 +2372,8 @@
       "category": "SPORTS",
       "subcategory": "MARKET_MAKING",
       "domain": "sports",
-      "asset_groupes": [
-        "FIXED_ODDS"
-      ],
-      "venues": [
-        "BETFAIR",
-        "SMARKETS",
-        "MATCHBOOK"
-      ],
+      "asset_groupes": ["FIXED_ODDS"],
+      "venues": ["BETFAIR", "SMARKETS", "MATCHBOOK"],
       "instruments": [],
       "batch_capable": false,
       "live_capable": true,
@@ -3292,16 +2385,9 @@
       "category": "QUANT",
       "subcategory": "STAT_ARB",
       "domain": "cefi",
-      "asset_groupes": [
-        "SPOT_PAIR"
-      ],
-      "venues": [
-        "BINANCE"
-      ],
-      "instruments": [
-        "BINANCE:SPOT_PAIR:BTCUSDT",
-        "BINANCE:SPOT_PAIR:ETHUSDT"
-      ],
+      "asset_groupes": ["SPOT_PAIR"],
+      "venues": ["BINANCE"],
+      "instruments": ["BINANCE:SPOT_PAIR:BTCUSDT", "BINANCE:SPOT_PAIR:ETHUSDT"],
       "batch_capable": true,
       "live_capable": true,
       "testnet_capable": false
@@ -3312,16 +2398,9 @@
       "category": "QUANT",
       "subcategory": "REL_VOL",
       "domain": "cefi",
-      "asset_groupes": [
-        "SPOT_PAIR"
-      ],
-      "venues": [
-        "BINANCE"
-      ],
-      "instruments": [
-        "BINANCE:SPOT_PAIR:BTCUSDT",
-        "BINANCE:SPOT_PAIR:ETHUSDT"
-      ],
+      "asset_groupes": ["SPOT_PAIR"],
+      "venues": ["BINANCE"],
+      "instruments": ["BINANCE:SPOT_PAIR:BTCUSDT", "BINANCE:SPOT_PAIR:ETHUSDT"],
       "batch_capable": true,
       "live_capable": true,
       "testnet_capable": false
@@ -3332,15 +2411,9 @@
       "category": "QUANT",
       "subcategory": "CROSS_EXCHANGE",
       "domain": "cefi",
-      "asset_groupes": [
-        "SPOT_PAIR"
-      ],
-      "venues": [
-        "BINANCE"
-      ],
-      "instruments": [
-        "BINANCE:SPOT_PAIR:BTCUSDT"
-      ],
+      "asset_groupes": ["SPOT_PAIR"],
+      "venues": ["BINANCE"],
+      "instruments": ["BINANCE:SPOT_PAIR:BTCUSDT"],
       "batch_capable": true,
       "live_capable": true,
       "testnet_capable": false
@@ -3351,13 +2424,8 @@
       "category": "QUANT",
       "subcategory": "PREDICTION_ARB",
       "domain": "prediction",
-      "asset_groupes": [
-        "PREDICTION_MARKET"
-      ],
-      "venues": [
-        "POLYMARKET",
-        "KALSHI"
-      ],
+      "asset_groupes": ["PREDICTION_MARKET"],
+      "venues": ["POLYMARKET", "KALSHI"],
       "instruments": [],
       "batch_capable": false,
       "live_capable": true,
@@ -3369,13 +2437,8 @@
       "category": "QUANT",
       "subcategory": "VOL_SURFACE",
       "domain": "cefi",
-      "asset_groupes": [
-        "OPTION",
-        "PERPETUAL"
-      ],
-      "venues": [
-        "DERIBIT"
-      ],
+      "asset_groupes": ["OPTION", "PERPETUAL"],
+      "venues": ["DERIBIT"],
       "instruments": [],
       "batch_capable": true,
       "live_capable": true,
@@ -3387,15 +2450,9 @@
       "category": "TRADFI",
       "subcategory": "MEAN_REVERSION",
       "domain": "tradfi",
-      "asset_groupes": [
-        "EQUITY"
-      ],
-      "venues": [
-        "NASDAQ"
-      ],
-      "instruments": [
-        "NASDAQ:EQUITY:SPY"
-      ],
+      "asset_groupes": ["EQUITY"],
+      "venues": ["NASDAQ"],
+      "instruments": ["NASDAQ:EQUITY:SPY"],
       "batch_capable": true,
       "live_capable": true,
       "testnet_capable": false
@@ -3406,15 +2463,9 @@
       "category": "CEFI",
       "subcategory": "MEAN_REVERSION",
       "domain": "cefi",
-      "asset_groupes": [
-        "PERPETUAL"
-      ],
-      "venues": [
-        "BINANCE-FUTURES"
-      ],
-      "instruments": [
-        "BINANCE-FUTURES:PERPETUAL:BTC-USDT@LIN"
-      ],
+      "asset_groupes": ["PERPETUAL"],
+      "venues": ["BINANCE-FUTURES"],
+      "instruments": ["BINANCE-FUTURES:PERPETUAL:BTC-USDT@LIN"],
       "batch_capable": true,
       "live_capable": true,
       "testnet_capable": false
@@ -3425,15 +2476,9 @@
       "category": "CEFI",
       "subcategory": "MEAN_REVERSION",
       "domain": "cefi",
-      "asset_groupes": [
-        "PERPETUAL"
-      ],
-      "venues": [
-        "BINANCE-FUTURES"
-      ],
-      "instruments": [
-        "BINANCE-FUTURES:PERPETUAL:ETH-USDT@LIN"
-      ],
+      "asset_groupes": ["PERPETUAL"],
+      "venues": ["BINANCE-FUTURES"],
+      "instruments": ["BINANCE-FUTURES:PERPETUAL:ETH-USDT@LIN"],
       "batch_capable": true,
       "live_capable": true,
       "testnet_capable": false
@@ -3444,15 +2489,9 @@
       "category": "CEFI",
       "subcategory": "MEAN_REVERSION",
       "domain": "cefi",
-      "asset_groupes": [
-        "PERPETUAL"
-      ],
-      "venues": [
-        "BINANCE-FUTURES"
-      ],
-      "instruments": [
-        "BINANCE-FUTURES:PERPETUAL:SOL-USDT@LIN"
-      ],
+      "asset_groupes": ["PERPETUAL"],
+      "venues": ["BINANCE-FUTURES"],
+      "instruments": ["BINANCE-FUTURES:PERPETUAL:SOL-USDT@LIN"],
       "batch_capable": true,
       "live_capable": true,
       "testnet_capable": false
@@ -3463,15 +2502,9 @@
       "category": "TRADFI",
       "subcategory": "MEAN_REVERSION",
       "domain": "tradfi",
-      "asset_groupes": [
-        "CURRENCY"
-      ],
-      "venues": [
-        "CME"
-      ],
-      "instruments": [
-        "CME:FUTURES:6E"
-      ],
+      "asset_groupes": ["CURRENCY"],
+      "venues": ["CME"],
+      "instruments": ["CME:FUTURES:6E"],
       "batch_capable": true,
       "live_capable": true,
       "testnet_capable": false
@@ -3482,16 +2515,9 @@
       "category": "TRADFI",
       "subcategory": "MEAN_REVERSION",
       "domain": "tradfi",
-      "asset_groupes": [
-        "COMMODITY"
-      ],
-      "venues": [
-        "CME",
-        "NYMEX"
-      ],
-      "instruments": [
-        "NYMEX:FUTURES:CL"
-      ],
+      "asset_groupes": ["COMMODITY"],
+      "venues": ["CME", "NYMEX"],
+      "instruments": ["NYMEX:FUTURES:CL"],
       "batch_capable": true,
       "live_capable": true,
       "testnet_capable": false
@@ -3502,15 +2528,9 @@
       "category": "TRADFI",
       "subcategory": "ML_SWING",
       "domain": "tradfi",
-      "asset_groupes": [
-        "EQUITY"
-      ],
-      "venues": [
-        "NASDAQ"
-      ],
-      "instruments": [
-        "NASDAQ:EQUITY:SPY"
-      ],
+      "asset_groupes": ["EQUITY"],
+      "venues": ["NASDAQ"],
+      "instruments": ["NASDAQ:EQUITY:SPY"],
       "batch_capable": true,
       "live_capable": true,
       "testnet_capable": false
@@ -3521,15 +2541,9 @@
       "category": "TRADFI",
       "subcategory": "ML_SWING",
       "domain": "tradfi",
-      "asset_groupes": [
-        "CURRENCY"
-      ],
-      "venues": [
-        "CME"
-      ],
-      "instruments": [
-        "CME:FUTURES:6E"
-      ],
+      "asset_groupes": ["CURRENCY"],
+      "venues": ["CME"],
+      "instruments": ["CME:FUTURES:6E"],
       "batch_capable": true,
       "live_capable": true,
       "testnet_capable": false
@@ -3540,16 +2554,9 @@
       "category": "TRADFI",
       "subcategory": "ML_SWING",
       "domain": "tradfi",
-      "asset_groupes": [
-        "COMMODITY"
-      ],
-      "venues": [
-        "CME",
-        "NYMEX"
-      ],
-      "instruments": [
-        "NYMEX:FUTURES:CL"
-      ],
+      "asset_groupes": ["COMMODITY"],
+      "venues": ["CME", "NYMEX"],
+      "instruments": ["NYMEX:FUTURES:CL"],
       "batch_capable": true,
       "live_capable": true,
       "testnet_capable": false
@@ -3560,15 +2567,9 @@
       "category": "OPTIONS",
       "subcategory": "STRIKE_SELECTION",
       "domain": "cefi",
-      "asset_groupes": [
-        "OPTION"
-      ],
-      "venues": [
-        "DERIBIT"
-      ],
-      "instruments": [
-        "DERIBIT:OPTION:BTC-*"
-      ],
+      "asset_groupes": ["OPTION"],
+      "venues": ["DERIBIT"],
+      "instruments": ["DERIBIT:OPTION:BTC-*"],
       "batch_capable": true,
       "live_capable": true,
       "testnet_capable": false
@@ -3579,15 +2580,9 @@
       "category": "OPTIONS",
       "subcategory": "DELTA_CONVERSION",
       "domain": "tradfi",
-      "asset_groupes": [
-        "OPTION"
-      ],
-      "venues": [
-        "CBOE"
-      ],
-      "instruments": [
-        "CBOE:OPTION:SPY-*"
-      ],
+      "asset_groupes": ["OPTION"],
+      "venues": ["CBOE"],
+      "instruments": ["CBOE:OPTION:SPY-*"],
       "batch_capable": true,
       "live_capable": true,
       "testnet_capable": false
@@ -3598,15 +2593,9 @@
       "category": "OPTIONS",
       "subcategory": "VOLATILITY_COMBO",
       "domain": "cefi",
-      "asset_groupes": [
-        "OPTION"
-      ],
-      "venues": [
-        "DERIBIT"
-      ],
-      "instruments": [
-        "DERIBIT:OPTION:ETH-*"
-      ],
+      "asset_groupes": ["OPTION"],
+      "venues": ["DERIBIT"],
+      "instruments": ["DERIBIT:OPTION:ETH-*"],
       "batch_capable": true,
       "live_capable": true,
       "testnet_capable": false
@@ -3617,15 +2606,9 @@
       "category": "OPTIONS",
       "subcategory": "DELTA_CONVERSION",
       "domain": "cefi",
-      "asset_groupes": [
-        "OPTION"
-      ],
-      "venues": [
-        "DERIBIT"
-      ],
-      "instruments": [
-        "DERIBIT:OPTION:BTC-*"
-      ],
+      "asset_groupes": ["OPTION"],
+      "venues": ["DERIBIT"],
+      "instruments": ["DERIBIT:OPTION:BTC-*"],
       "batch_capable": true,
       "live_capable": true,
       "testnet_capable": false
@@ -3636,13 +2619,8 @@
       "category": "SPORTS",
       "subcategory": "HALFTIME_ML",
       "domain": "sports",
-      "asset_groupes": [
-        "FIXED_ODDS"
-      ],
-      "venues": [
-        "BETFAIR",
-        "PINNACLE"
-      ],
+      "asset_groupes": ["FIXED_ODDS"],
+      "venues": ["BETFAIR", "PINNACLE"],
       "instruments": [],
       "batch_capable": true,
       "live_capable": true,
@@ -3654,18 +2632,9 @@
       "category": "DEFI",
       "subcategory": "BTC_BASIS",
       "domain": "defi",
-      "asset_groupes": [
-        "SPOT_ASSET",
-        "PERPETUAL"
-      ],
-      "venues": [
-        "WALLET",
-        "HYPERLIQUID"
-      ],
-      "instruments": [
-        "WALLET:SPOT_ASSET:WBTC",
-        "HYPERLIQUID:PERPETUAL:BTC-USDC@LIN@HYPERLIQUID"
-      ],
+      "asset_groupes": ["SPOT_ASSET", "PERPETUAL"],
+      "venues": ["WALLET", "HYPERLIQUID"],
+      "instruments": ["WALLET:SPOT_ASSET:WBTC", "HYPERLIQUID:PERPETUAL:BTC-USDC@LIN@HYPERLIQUID"],
       "batch_capable": true,
       "live_capable": true,
       "testnet_capable": false
@@ -3676,15 +2645,9 @@
       "category": "DEFI",
       "subcategory": "BTC_LENDING",
       "domain": "defi",
-      "asset_groupes": [
-        "A_TOKEN"
-      ],
-      "venues": [
-        "AAVEV3-ETHEREUM"
-      ],
-      "instruments": [
-        "AAVEV3-ETHEREUM:A_TOKEN:AWBTC@ETHEREUM"
-      ],
+      "asset_groupes": ["A_TOKEN"],
+      "venues": ["AAVEV3-ETHEREUM"],
+      "instruments": ["AAVEV3-ETHEREUM:A_TOKEN:AWBTC@ETHEREUM"],
       "batch_capable": true,
       "live_capable": true,
       "testnet_capable": false
@@ -3695,18 +2658,9 @@
       "category": "DEFI",
       "subcategory": "SOL_STAKED_BASIS",
       "domain": "defi",
-      "asset_groupes": [
-        "LST",
-        "PERPETUAL"
-      ],
-      "venues": [
-        "MARINADE-SOLANA",
-        "HYPERLIQUID"
-      ],
-      "instruments": [
-        "MARINADE-SOLANA:LST:MSOL@SOLANA",
-        "HYPERLIQUID:PERPETUAL:SOL-USDC@LIN@HYPERLIQUID"
-      ],
+      "asset_groupes": ["LST", "PERPETUAL"],
+      "venues": ["MARINADE-SOLANA", "HYPERLIQUID"],
+      "instruments": ["MARINADE-SOLANA:LST:MSOL@SOLANA", "HYPERLIQUID:PERPETUAL:SOL-USDC@LIN@HYPERLIQUID"],
       "batch_capable": true,
       "live_capable": true,
       "testnet_capable": false
@@ -3717,18 +2671,9 @@
       "category": "DEFI",
       "subcategory": "SOL_BASIS",
       "domain": "defi",
-      "asset_groupes": [
-        "SPOT_ASSET",
-        "PERPETUAL"
-      ],
-      "venues": [
-        "WALLET",
-        "HYPERLIQUID"
-      ],
-      "instruments": [
-        "WALLET:SPOT_ASSET:SOL",
-        "HYPERLIQUID:PERPETUAL:SOL-USDC@LIN@HYPERLIQUID"
-      ],
+      "asset_groupes": ["SPOT_ASSET", "PERPETUAL"],
+      "venues": ["WALLET", "HYPERLIQUID"],
+      "instruments": ["WALLET:SPOT_ASSET:SOL", "HYPERLIQUID:PERPETUAL:SOL-USDC@LIN@HYPERLIQUID"],
       "batch_capable": true,
       "live_capable": true,
       "testnet_capable": false
@@ -3739,15 +2684,9 @@
       "category": "DEFI",
       "subcategory": "SOL_LENDING",
       "domain": "defi",
-      "asset_groupes": [
-        "A_TOKEN"
-      ],
-      "venues": [
-        "KAMINO-SOLANA"
-      ],
-      "instruments": [
-        "KAMINO-SOLANA:A_TOKEN:KSOL@SOLANA"
-      ],
+      "asset_groupes": ["A_TOKEN"],
+      "venues": ["KAMINO-SOLANA"],
+      "instruments": ["KAMINO-SOLANA:A_TOKEN:KSOL@SOLANA"],
       "batch_capable": true,
       "live_capable": true,
       "testnet_capable": false
@@ -3758,13 +2697,8 @@
       "category": "DEFI",
       "subcategory": "CONCENTRATED_LP",
       "domain": "defi",
-      "asset_groupes": [
-        "LP_TOKEN"
-      ],
-      "venues": [
-        "ORCA-SOLANA",
-        "RAYDIUM-SOLANA"
-      ],
+      "asset_groupes": ["LP_TOKEN"],
+      "venues": ["ORCA-SOLANA", "RAYDIUM-SOLANA"],
       "instruments": [],
       "batch_capable": true,
       "live_capable": true,
@@ -3776,14 +2710,8 @@
       "category": "DEFI",
       "subcategory": "AMM_LP",
       "domain": "defi",
-      "asset_groupes": [
-        "LP_TOKEN"
-      ],
-      "venues": [
-        "UNISWAPV3-ETHEREUM",
-        "CURVE-ETHEREUM",
-        "BALANCER-ETH"
-      ],
+      "asset_groupes": ["LP_TOKEN"],
+      "venues": ["UNISWAPV3-ETHEREUM", "CURVE-ETHEREUM", "BALANCER-ETH"],
       "instruments": [],
       "batch_capable": true,
       "live_capable": true,
@@ -3795,12 +2723,8 @@
       "category": "DEFI",
       "subcategory": "ACTIVE_LP",
       "domain": "defi",
-      "asset_groupes": [
-        "LP_TOKEN"
-      ],
-      "venues": [
-        "UNISWAPV3-ETHEREUM"
-      ],
+      "asset_groupes": ["LP_TOKEN"],
+      "venues": ["UNISWAPV3-ETHEREUM"],
       "instruments": [],
       "batch_capable": true,
       "live_capable": true,
@@ -3812,17 +2736,8 @@
       "category": "DEFI",
       "subcategory": "ENHANCED_BASIS",
       "domain": "defi",
-      "asset_groupes": [
-        "SPOT_ASSET",
-        "PERPETUAL",
-        "LST"
-      ],
-      "venues": [
-        "WALLET",
-        "HYPERLIQUID",
-        "UNISWAPV3-ETHEREUM",
-        "CURVE-ETHEREUM"
-      ],
+      "asset_groupes": ["SPOT_ASSET", "PERPETUAL", "LST"],
+      "venues": ["WALLET", "HYPERLIQUID", "UNISWAPV3-ETHEREUM", "CURVE-ETHEREUM"],
       "instruments": [],
       "batch_capable": true,
       "live_capable": true,
@@ -3834,15 +2749,9 @@
       "category": "DEFI",
       "subcategory": "ETHENA_BENCHMARK",
       "domain": "defi",
-      "asset_groupes": [
-        "SPOT_ASSET"
-      ],
-      "venues": [
-        "ETHENA-ETHEREUM"
-      ],
-      "instruments": [
-        "ETHENA-ETHEREUM:SPOT_ASSET:SUSDE@ETHEREUM"
-      ],
+      "asset_groupes": ["SPOT_ASSET"],
+      "venues": ["ETHENA-ETHEREUM"],
+      "instruments": ["ETHENA-ETHEREUM:SPOT_ASSET:SUSDE@ETHEREUM"],
       "batch_capable": true,
       "live_capable": true,
       "testnet_capable": false
@@ -3853,14 +2762,8 @@
       "category": "DEFI",
       "subcategory": "L2_BASIS",
       "domain": "defi",
-      "asset_groupes": [
-        "SPOT_ASSET",
-        "PERPETUAL"
-      ],
-      "venues": [
-        "WALLET",
-        "HYPERLIQUID"
-      ],
+      "asset_groupes": ["SPOT_ASSET", "PERPETUAL"],
+      "venues": ["WALLET", "HYPERLIQUID"],
       "instruments": [],
       "batch_capable": true,
       "live_capable": true,
@@ -3872,14 +2775,8 @@
       "category": "DEFI",
       "subcategory": "LENDING_ARB",
       "domain": "defi",
-      "asset_groupes": [
-        "A_TOKEN"
-      ],
-      "venues": [
-        "AAVEV3-ETHEREUM",
-        "COMPOUNDV3-ETHEREUM",
-        "MORPHO-ETHEREUM"
-      ],
+      "asset_groupes": ["A_TOKEN"],
+      "venues": ["AAVEV3-ETHEREUM", "COMPOUNDV3-ETHEREUM", "MORPHO-ETHEREUM"],
       "instruments": [],
       "batch_capable": true,
       "live_capable": true,
@@ -3891,14 +2788,8 @@
       "category": "DEFI",
       "subcategory": "MULTI_CHAIN_LENDING",
       "domain": "defi",
-      "asset_groupes": [
-        "A_TOKEN"
-      ],
-      "venues": [
-        "AAVEV3-ETHEREUM",
-        "COMPOUNDV3-ETHEREUM",
-        "KAMINO-SOLANA"
-      ],
+      "asset_groupes": ["A_TOKEN"],
+      "venues": ["AAVEV3-ETHEREUM", "COMPOUNDV3-ETHEREUM", "KAMINO-SOLANA"],
       "instruments": [],
       "batch_capable": true,
       "live_capable": true,
@@ -3910,14 +2801,8 @@
       "category": "DEFI",
       "subcategory": "CROSS_CHAIN_SOR",
       "domain": "defi",
-      "asset_groupes": [
-        "SPOT_ASSET"
-      ],
-      "venues": [
-        "UNISWAPV3-ETHEREUM",
-        "ORCA-SOLANA",
-        "RAYDIUM-SOLANA"
-      ],
+      "asset_groupes": ["SPOT_ASSET"],
+      "venues": ["UNISWAPV3-ETHEREUM", "ORCA-SOLANA", "RAYDIUM-SOLANA"],
       "instruments": [],
       "batch_capable": true,
       "live_capable": true,
@@ -3929,13 +2814,8 @@
       "category": "DEFI",
       "subcategory": "CROSS_CHAIN_YIELD_ARB",
       "domain": "defi",
-      "asset_groupes": [
-        "A_TOKEN"
-      ],
-      "venues": [
-        "AAVEV3-ETHEREUM",
-        "KAMINO-SOLANA"
-      ],
+      "asset_groupes": ["A_TOKEN"],
+      "venues": ["AAVEV3-ETHEREUM", "KAMINO-SOLANA"],
       "instruments": [],
       "batch_capable": true,
       "live_capable": true,
@@ -3947,12 +2827,8 @@
       "category": "DEFI",
       "subcategory": "OMNICHAIN_TRANSFER",
       "domain": "defi",
-      "asset_groupes": [
-        "SPOT_ASSET"
-      ],
-      "venues": [
-        "WALLET"
-      ],
+      "asset_groupes": ["SPOT_ASSET"],
+      "venues": ["WALLET"],
       "instruments": [],
       "batch_capable": true,
       "live_capable": true,
@@ -3964,14 +2840,8 @@
       "category": "DEFI",
       "subcategory": "LIQUIDATION_CAPTURE",
       "domain": "defi",
-      "asset_groupes": [
-        "SPOT_ASSET",
-        "PERPETUAL"
-      ],
-      "venues": [
-        "AAVEV3-ETHEREUM",
-        "HYPERLIQUID"
-      ],
+      "asset_groupes": ["SPOT_ASSET", "PERPETUAL"],
+      "venues": ["AAVEV3-ETHEREUM", "HYPERLIQUID"],
       "instruments": [],
       "batch_capable": false,
       "live_capable": true,
@@ -3983,18 +2853,9 @@
       "category": "CEFI",
       "subcategory": "MARKET_MAKING",
       "domain": "cefi",
-      "asset_groupes": [
-        "SPOT_PAIR",
-        "PERPETUAL"
-      ],
-      "venues": [
-        "BINANCE",
-        "BINANCE-FUTURES"
-      ],
-      "instruments": [
-        "BINANCE:SPOT_PAIR:BTCUSDT",
-        "BINANCE-FUTURES:PERPETUAL:BTC-USDT@LIN"
-      ],
+      "asset_groupes": ["SPOT_PAIR", "PERPETUAL"],
+      "venues": ["BINANCE", "BINANCE-FUTURES"],
+      "instruments": ["BINANCE:SPOT_PAIR:BTCUSDT", "BINANCE-FUTURES:PERPETUAL:BTC-USDT@LIN"],
       "batch_capable": false,
       "live_capable": true,
       "testnet_capable": false
@@ -4005,16 +2866,9 @@
       "category": "CEFI",
       "subcategory": "ML_DIRECTIONAL",
       "domain": "cefi",
-      "asset_groupes": [
-        "PERPETUAL"
-      ],
-      "venues": [
-        "BINANCE-FUTURES",
-        "BYBIT"
-      ],
-      "instruments": [
-        "BINANCE-FUTURES:PERPETUAL:BTC-USDT@LIN"
-      ],
+      "asset_groupes": ["PERPETUAL"],
+      "venues": ["BINANCE-FUTURES", "BYBIT"],
+      "instruments": ["BINANCE-FUTURES:PERPETUAL:BTC-USDT@LIN"],
       "batch_capable": true,
       "live_capable": true,
       "testnet_capable": false
@@ -4025,16 +2879,9 @@
       "category": "OPTIONS",
       "subcategory": "OPTIONS_MM",
       "domain": "cefi",
-      "asset_groupes": [
-        "OPTION",
-        "PERPETUAL"
-      ],
-      "venues": [
-        "DERIBIT"
-      ],
-      "instruments": [
-        "DERIBIT:OPTION:BTC-*"
-      ],
+      "asset_groupes": ["OPTION", "PERPETUAL"],
+      "venues": ["DERIBIT"],
+      "instruments": ["DERIBIT:OPTION:BTC-*"],
       "batch_capable": false,
       "live_capable": true,
       "testnet_capable": false
@@ -4045,16 +2892,9 @@
       "category": "TRADFI",
       "subcategory": "COMMODITY_REGIME",
       "domain": "tradfi",
-      "asset_groupes": [
-        "COMMODITY"
-      ],
-      "venues": [
-        "CME",
-        "NYMEX"
-      ],
-      "instruments": [
-        "NYMEX:FUTURES:CL"
-      ],
+      "asset_groupes": ["COMMODITY"],
+      "venues": ["CME", "NYMEX"],
+      "instruments": ["NYMEX:FUTURES:CL"],
       "batch_capable": true,
       "live_capable": true,
       "testnet_capable": false
@@ -4065,14 +2905,8 @@
       "category": "TRADFI",
       "subcategory": "EVENT_MACRO",
       "domain": "tradfi",
-      "asset_groupes": [
-        "PERPETUAL",
-        "EQUITY"
-      ],
-      "venues": [
-        "BINANCE-FUTURES",
-        "NASDAQ"
-      ],
+      "asset_groupes": ["PERPETUAL", "EQUITY"],
+      "venues": ["BINANCE-FUTURES", "NASDAQ"],
       "instruments": [],
       "batch_capable": true,
       "live_capable": true,
@@ -4095,28 +2929,9 @@
       "MAX_SLIPPAGE",
       "BENCHMARK_FILL"
     ],
-    "book_types": [
-      "L1_MBP",
-      "L2_MBP",
-      "AMM",
-      "LENDING_POOL",
-      "STAKING_POOL"
-    ],
-    "instruction_types": [
-      "TRADE",
-      "SWAP",
-      "LEND",
-      "BORROW",
-      "STAKE",
-      "UNSTAKE",
-      "TRANSFER",
-      "WITHDRAW",
-      "REPAY"
-    ],
-    "oms_types": [
-      "NETTING",
-      "HEDGING"
-    ]
+    "book_types": ["L1_MBP", "L2_MBP", "AMM", "LENDING_POOL", "STAKING_POOL"],
+    "instruction_types": ["TRADE", "SWAP", "LEND", "BORROW", "STAKE", "UNSTAKE", "TRANSFER", "WITHDRAW", "REPAY"],
+    "oms_types": ["NETTING", "HEDGING"]
   },
   "sports_bookmaker_registry": {
     "betfair": {
@@ -5027,7 +3842,7 @@
         "adapter_key": "camelot_v3",
         "chain": "ARBITRUM"
       },
-      "TRADERJOEV2-AVALANCHE": {
+      "TRADER_JOEV2-AVALANCHE": {
         "adapter_key": "trader_joe_v2",
         "chain": "AVALANCHE"
       },
@@ -9594,19 +8409,7 @@
       "end": "2024-07-31"
     }
   ],
-  "mvp_cme_exchange_codes": [
-    "E1A",
-    "E2A",
-    "E3A",
-    "E4A",
-    "E5A",
-    "EOM",
-    "ES",
-    "EW",
-    "EW1",
-    "EW2",
-    "EW4"
-  ],
+  "mvp_cme_exchange_codes": ["E1A", "E2A", "E3A", "E4A", "E5A", "EOM", "ES", "EW", "EW1", "EW2", "EW4"],
   "strategy_registry": {
     "strategies": [
       {
@@ -10268,15 +9071,8 @@
         "DEFI_ETH_STAKED_BASIS_HUF_1H",
         "CEFI_BTC_BASIS_SCE_1H"
       ],
-      "RECURSIVE_STAKED_BASIS": [
-        "DEFI_ETH_REC_STAKE_HUF_1H",
-        "DEFI_ETH_RECURSIVE_STAKED_HUF_BLOCK"
-      ],
-      "LP_PROVISION": [
-        "DEFI_UNI_LP_HUF_1H",
-        "DEFI_ARB_AMM_LP_HUF_4H",
-        "DEFI_MATIC_AMM_LP_HUF_2H"
-      ],
+      "RECURSIVE_STAKED_BASIS": ["DEFI_ETH_REC_STAKE_HUF_1H", "DEFI_ETH_RECURSIVE_STAKED_HUF_BLOCK"],
+      "LP_PROVISION": ["DEFI_UNI_LP_HUF_1H", "DEFI_ARB_AMM_LP_HUF_4H", "DEFI_MATIC_AMM_LP_HUF_2H"],
       "LENDING": [
         "DEFI_AAVE_LEND_HUF_1D",
         "DEFI_MORPHO_LEND_HUF_1D",
@@ -10284,11 +9080,7 @@
         "DEFI_DAI_AAVE_LEND_HUF_8H",
         "DEFI_AAVE_SUPPLY_USDC_HUF_1H"
       ],
-      "MARKET_MAKING": [
-        "CEFI_BTC_MM_EVT_TICK",
-        "CEFI_DOGE_MM_HUF_30S",
-        "CEFI_XRP_MM_HUF_1M"
-      ],
+      "MARKET_MAKING": ["CEFI_BTC_MM_EVT_TICK", "CEFI_DOGE_MM_HUF_30S", "CEFI_XRP_MM_HUF_1M"],
       "OPTIONS_VOL": [
         "CEFI_ETH_OPT_MM_EVT_TICK",
         "TRADFI_SPY_OPTIONS_ML_EVT_1D",
@@ -10313,42 +9105,15 @@
         "CEFI_MATIC_MOMENTUM_SCE_2H",
         "CEFI_SUI_MOMENTUM_HUF_1H"
       ],
-      "ARBITRAGE": [
-        "CEFI_MULTI_ARB_SCE_TICK"
-      ],
-      "MEAN_REVERSION": [
-        "CEFI_ETH_MEAN_REV_SCE_4H",
-        "CEFI_ARB_MEAN_REV_HUF_15M"
-      ],
-      "SPORTS_ARB": [
-        "SPORTS_NFL_ARB_SCE_GAME",
-        "SPORTS_EPL_ARB_EVT_MATCH",
-        "SPORTS_SERIE_A_ARB_EVT_MATCH"
-      ],
-      "SPORTS_ML": [
-        "SPORTS_NBA_ML_HUF_GAME",
-        "SPORTS_LALIGA_ML_EVT_MATCH"
-      ],
-      "SPORTS_MM": [
-        "SPORTS_NBA_MM_EVT_QUARTER",
-        "SPORTS_BETFAIR_MM_EVT_TICK"
-      ],
-      "PREDICTION_ARB": [
-        "PRED_POLY_ARB_SCE_1M",
-        "PRED_BTC_CEFI_ARB_SCE_5M",
-        "PREDICTION_POLY_ARB_EVT_1H"
-      ],
-      "PREDICTION_ML": [
-        "PREDICTION_POLY_ML_DIR_EVT_4H"
-      ]
+      "ARBITRAGE": ["CEFI_MULTI_ARB_SCE_TICK"],
+      "MEAN_REVERSION": ["CEFI_ETH_MEAN_REV_SCE_4H", "CEFI_ARB_MEAN_REV_HUF_15M"],
+      "SPORTS_ARB": ["SPORTS_NFL_ARB_SCE_GAME", "SPORTS_EPL_ARB_EVT_MATCH", "SPORTS_SERIE_A_ARB_EVT_MATCH"],
+      "SPORTS_ML": ["SPORTS_NBA_ML_HUF_GAME", "SPORTS_LALIGA_ML_EVT_MATCH"],
+      "SPORTS_MM": ["SPORTS_NBA_MM_EVT_QUARTER", "SPORTS_BETFAIR_MM_EVT_TICK"],
+      "PREDICTION_ARB": ["PRED_POLY_ARB_SCE_1M", "PRED_BTC_CEFI_ARB_SCE_5M", "PREDICTION_POLY_ARB_EVT_1H"],
+      "PREDICTION_ML": ["PREDICTION_POLY_ML_DIR_EVT_4H"]
     },
-    "categories": [
-      "CEFI",
-      "DEFI",
-      "TRADFI",
-      "SPORTS",
-      "PREDICTION"
-    ],
+    "categories": ["CEFI", "DEFI", "TRADFI", "SPORTS", "PREDICTION"],
     "archetypes": [
       "BASIS_TRADE",
       "RECURSIVE_STAKED_BASIS",
@@ -10364,11 +9129,7 @@
       "SPORTS_ARB",
       "PREDICTION_ARB"
     ],
-    "execution_modes": [
-      "HUF",
-      "SCE",
-      "EVT"
-    ]
+    "execution_modes": ["HUF", "SCE", "EVT"]
   },
   "client_registry": {
     "clients": [
@@ -10376,20 +9137,14 @@
         "client_id": "acme-fund",
         "name": "Acme Fund",
         "entity": "Acme Capital Management",
-        "share_classes": [
-          "USDC"
-        ],
+        "share_classes": ["USDC"],
         "is_active": true
       },
       {
         "client_id": "internal-prop",
         "name": "Internal Prop",
         "entity": "Internal Proprietary Trading",
-        "share_classes": [
-          "USDT",
-          "ETH",
-          "BTC"
-        ],
+        "share_classes": ["USDT", "ETH", "BTC"],
         "is_active": true
       }
     ]
@@ -10401,11 +9156,7 @@
         "family": "CARRY_AND_YIELD",
         "archetype": "CARRY_BASIS_PERP",
         "venue_set_variant_id": "ely_base_3cex",
-        "instrument_type_set": [
-          "spot",
-          "perp",
-          "dated_future"
-        ],
+        "instrument_type_set": ["spot", "perp", "dated_future"],
         "share_class": "BTC",
         "coverage_status": "SUPPORTED"
       },
@@ -10414,11 +9165,7 @@
         "family": "CARRY_AND_YIELD",
         "archetype": "CARRY_BASIS_PERP",
         "venue_set_variant_id": "ely_base_3cex",
-        "instrument_type_set": [
-          "spot",
-          "perp",
-          "dated_future"
-        ],
+        "instrument_type_set": ["spot", "perp", "dated_future"],
         "share_class": "ETH",
         "coverage_status": "SUPPORTED"
       },
@@ -10427,11 +9174,7 @@
         "family": "CARRY_AND_YIELD",
         "archetype": "CARRY_BASIS_PERP",
         "venue_set_variant_id": "ely_base_3cex",
-        "instrument_type_set": [
-          "spot",
-          "perp",
-          "dated_future"
-        ],
+        "instrument_type_set": ["spot", "perp", "dated_future"],
         "share_class": "USD",
         "coverage_status": "SUPPORTED"
       },
@@ -10440,11 +9183,7 @@
         "family": "CARRY_AND_YIELD",
         "archetype": "CARRY_BASIS_PERP",
         "venue_set_variant_id": "ely_base_3cex",
-        "instrument_type_set": [
-          "spot",
-          "perp",
-          "dated_future"
-        ],
+        "instrument_type_set": ["spot", "perp", "dated_future"],
         "share_class": "USDT",
         "coverage_status": "SUPPORTED"
       },
@@ -10453,11 +9192,7 @@
         "family": "CARRY_AND_YIELD",
         "archetype": "CARRY_BASIS_PERP",
         "venue_set_variant_id": "ely_premium_6cex",
-        "instrument_type_set": [
-          "spot",
-          "perp",
-          "dated_future"
-        ],
+        "instrument_type_set": ["spot", "perp", "dated_future"],
         "share_class": "BTC",
         "coverage_status": "SUPPORTED"
       },
@@ -10466,11 +9201,7 @@
         "family": "CARRY_AND_YIELD",
         "archetype": "CARRY_BASIS_PERP",
         "venue_set_variant_id": "ely_premium_6cex",
-        "instrument_type_set": [
-          "spot",
-          "perp",
-          "dated_future"
-        ],
+        "instrument_type_set": ["spot", "perp", "dated_future"],
         "share_class": "ETH",
         "coverage_status": "SUPPORTED"
       },
@@ -10479,11 +9210,7 @@
         "family": "CARRY_AND_YIELD",
         "archetype": "CARRY_BASIS_PERP",
         "venue_set_variant_id": "ely_premium_6cex",
-        "instrument_type_set": [
-          "spot",
-          "perp",
-          "dated_future"
-        ],
+        "instrument_type_set": ["spot", "perp", "dated_future"],
         "share_class": "USD",
         "coverage_status": "SUPPORTED"
       },
@@ -10492,11 +9219,7 @@
         "family": "CARRY_AND_YIELD",
         "archetype": "CARRY_BASIS_PERP",
         "venue_set_variant_id": "ely_premium_6cex",
-        "instrument_type_set": [
-          "spot",
-          "perp",
-          "dated_future"
-        ],
+        "instrument_type_set": ["spot", "perp", "dated_future"],
         "share_class": "USDT",
         "coverage_status": "SUPPORTED"
       },
@@ -10505,11 +9228,7 @@
         "family": "CARRY_AND_YIELD",
         "archetype": "CARRY_BASIS_PERP",
         "venue_set_variant_id": "ely_multi_evm",
-        "instrument_type_set": [
-          "spot",
-          "perp",
-          "dated_future"
-        ],
+        "instrument_type_set": ["spot", "perp", "dated_future"],
         "share_class": "BTC",
         "coverage_status": "SUPPORTED"
       },
@@ -10518,11 +9237,7 @@
         "family": "CARRY_AND_YIELD",
         "archetype": "CARRY_BASIS_PERP",
         "venue_set_variant_id": "ely_multi_evm",
-        "instrument_type_set": [
-          "spot",
-          "perp",
-          "dated_future"
-        ],
+        "instrument_type_set": ["spot", "perp", "dated_future"],
         "share_class": "ETH",
         "coverage_status": "SUPPORTED"
       },
@@ -10531,11 +9246,7 @@
         "family": "CARRY_AND_YIELD",
         "archetype": "CARRY_BASIS_PERP",
         "venue_set_variant_id": "ely_multi_evm",
-        "instrument_type_set": [
-          "spot",
-          "perp",
-          "dated_future"
-        ],
+        "instrument_type_set": ["spot", "perp", "dated_future"],
         "share_class": "USD",
         "coverage_status": "SUPPORTED"
       },
@@ -10544,11 +9255,7 @@
         "family": "CARRY_AND_YIELD",
         "archetype": "CARRY_BASIS_PERP",
         "venue_set_variant_id": "ely_multi_evm",
-        "instrument_type_set": [
-          "spot",
-          "perp",
-          "dated_future"
-        ],
+        "instrument_type_set": ["spot", "perp", "dated_future"],
         "share_class": "USDT",
         "coverage_status": "SUPPORTED"
       },
@@ -10557,11 +9264,7 @@
         "family": "CARRY_AND_YIELD",
         "archetype": "CARRY_BASIS_PERP",
         "venue_set_variant_id": "ely_multi_evm_plus_sol",
-        "instrument_type_set": [
-          "spot",
-          "perp",
-          "dated_future"
-        ],
+        "instrument_type_set": ["spot", "perp", "dated_future"],
         "share_class": "BTC",
         "coverage_status": "SUPPORTED"
       },
@@ -10570,11 +9273,7 @@
         "family": "CARRY_AND_YIELD",
         "archetype": "CARRY_BASIS_PERP",
         "venue_set_variant_id": "ely_multi_evm_plus_sol",
-        "instrument_type_set": [
-          "spot",
-          "perp",
-          "dated_future"
-        ],
+        "instrument_type_set": ["spot", "perp", "dated_future"],
         "share_class": "ETH",
         "coverage_status": "SUPPORTED"
       },
@@ -10583,11 +9282,7 @@
         "family": "CARRY_AND_YIELD",
         "archetype": "CARRY_BASIS_PERP",
         "venue_set_variant_id": "ely_multi_evm_plus_sol",
-        "instrument_type_set": [
-          "spot",
-          "perp",
-          "dated_future"
-        ],
+        "instrument_type_set": ["spot", "perp", "dated_future"],
         "share_class": "USD",
         "coverage_status": "SUPPORTED"
       },
@@ -10596,11 +9291,7 @@
         "family": "CARRY_AND_YIELD",
         "archetype": "CARRY_BASIS_PERP",
         "venue_set_variant_id": "ely_multi_evm_plus_sol",
-        "instrument_type_set": [
-          "spot",
-          "perp",
-          "dated_future"
-        ],
+        "instrument_type_set": ["spot", "perp", "dated_future"],
         "share_class": "USDT",
         "coverage_status": "SUPPORTED"
       },
@@ -10609,12 +9300,7 @@
         "family": "ML_DIRECTIONAL",
         "archetype": "ML_DIRECTIONAL_CONTINUOUS",
         "venue_set_variant_id": "ml_directional_continuous_default",
-        "instrument_type_set": [
-          "dated_future",
-          "option",
-          "perp",
-          "spot"
-        ],
+        "instrument_type_set": ["dated_future", "option", "perp", "spot"],
         "share_class": "BTC",
         "coverage_status": "SUPPORTED"
       },
@@ -10623,12 +9309,7 @@
         "family": "ML_DIRECTIONAL",
         "archetype": "ML_DIRECTIONAL_CONTINUOUS",
         "venue_set_variant_id": "ml_directional_continuous_default",
-        "instrument_type_set": [
-          "dated_future",
-          "option",
-          "perp",
-          "spot"
-        ],
+        "instrument_type_set": ["dated_future", "option", "perp", "spot"],
         "share_class": "ETH",
         "coverage_status": "SUPPORTED"
       },
@@ -10637,12 +9318,7 @@
         "family": "ML_DIRECTIONAL",
         "archetype": "ML_DIRECTIONAL_CONTINUOUS",
         "venue_set_variant_id": "ml_directional_continuous_default",
-        "instrument_type_set": [
-          "dated_future",
-          "option",
-          "perp",
-          "spot"
-        ],
+        "instrument_type_set": ["dated_future", "option", "perp", "spot"],
         "share_class": "USD",
         "coverage_status": "SUPPORTED"
       },
@@ -10651,12 +9327,7 @@
         "family": "ML_DIRECTIONAL",
         "archetype": "ML_DIRECTIONAL_CONTINUOUS",
         "venue_set_variant_id": "ml_directional_continuous_default",
-        "instrument_type_set": [
-          "dated_future",
-          "option",
-          "perp",
-          "spot"
-        ],
+        "instrument_type_set": ["dated_future", "option", "perp", "spot"],
         "share_class": "USDT",
         "coverage_status": "SUPPORTED"
       },
@@ -10665,9 +9336,7 @@
         "family": "ML_DIRECTIONAL",
         "archetype": "ML_DIRECTIONAL_EVENT_SETTLED",
         "venue_set_variant_id": "ml_directional_event_settled_default",
-        "instrument_type_set": [
-          "event_settled"
-        ],
+        "instrument_type_set": ["event_settled"],
         "share_class": "BTC",
         "coverage_status": "SUPPORTED"
       },
@@ -10676,9 +9345,7 @@
         "family": "ML_DIRECTIONAL",
         "archetype": "ML_DIRECTIONAL_EVENT_SETTLED",
         "venue_set_variant_id": "ml_directional_event_settled_default",
-        "instrument_type_set": [
-          "event_settled"
-        ],
+        "instrument_type_set": ["event_settled"],
         "share_class": "ETH",
         "coverage_status": "SUPPORTED"
       },
@@ -10687,9 +9354,7 @@
         "family": "ML_DIRECTIONAL",
         "archetype": "ML_DIRECTIONAL_EVENT_SETTLED",
         "venue_set_variant_id": "ml_directional_event_settled_default",
-        "instrument_type_set": [
-          "event_settled"
-        ],
+        "instrument_type_set": ["event_settled"],
         "share_class": "USD",
         "coverage_status": "SUPPORTED"
       },
@@ -10698,9 +9363,7 @@
         "family": "ML_DIRECTIONAL",
         "archetype": "ML_DIRECTIONAL_EVENT_SETTLED",
         "venue_set_variant_id": "ml_directional_event_settled_default",
-        "instrument_type_set": [
-          "event_settled"
-        ],
+        "instrument_type_set": ["event_settled"],
         "share_class": "USDT",
         "coverage_status": "SUPPORTED"
       },
@@ -10709,12 +9372,7 @@
         "family": "RULES_DIRECTIONAL",
         "archetype": "RULES_DIRECTIONAL_CONTINUOUS",
         "venue_set_variant_id": "rules_directional_continuous_default",
-        "instrument_type_set": [
-          "dated_future",
-          "option",
-          "perp",
-          "spot"
-        ],
+        "instrument_type_set": ["dated_future", "option", "perp", "spot"],
         "share_class": "BTC",
         "coverage_status": "SUPPORTED"
       },
@@ -10723,12 +9381,7 @@
         "family": "RULES_DIRECTIONAL",
         "archetype": "RULES_DIRECTIONAL_CONTINUOUS",
         "venue_set_variant_id": "rules_directional_continuous_default",
-        "instrument_type_set": [
-          "dated_future",
-          "option",
-          "perp",
-          "spot"
-        ],
+        "instrument_type_set": ["dated_future", "option", "perp", "spot"],
         "share_class": "ETH",
         "coverage_status": "SUPPORTED"
       },
@@ -10737,12 +9390,7 @@
         "family": "RULES_DIRECTIONAL",
         "archetype": "RULES_DIRECTIONAL_CONTINUOUS",
         "venue_set_variant_id": "rules_directional_continuous_default",
-        "instrument_type_set": [
-          "dated_future",
-          "option",
-          "perp",
-          "spot"
-        ],
+        "instrument_type_set": ["dated_future", "option", "perp", "spot"],
         "share_class": "USD",
         "coverage_status": "SUPPORTED"
       },
@@ -10751,12 +9399,7 @@
         "family": "RULES_DIRECTIONAL",
         "archetype": "RULES_DIRECTIONAL_CONTINUOUS",
         "venue_set_variant_id": "rules_directional_continuous_default",
-        "instrument_type_set": [
-          "dated_future",
-          "option",
-          "perp",
-          "spot"
-        ],
+        "instrument_type_set": ["dated_future", "option", "perp", "spot"],
         "share_class": "USDT",
         "coverage_status": "SUPPORTED"
       },
@@ -10765,9 +9408,7 @@
         "family": "RULES_DIRECTIONAL",
         "archetype": "RULES_DIRECTIONAL_EVENT_SETTLED",
         "venue_set_variant_id": "rules_directional_event_settled_default",
-        "instrument_type_set": [
-          "event_settled"
-        ],
+        "instrument_type_set": ["event_settled"],
         "share_class": "BTC",
         "coverage_status": "PARTIAL"
       },
@@ -10776,9 +9417,7 @@
         "family": "RULES_DIRECTIONAL",
         "archetype": "RULES_DIRECTIONAL_EVENT_SETTLED",
         "venue_set_variant_id": "rules_directional_event_settled_default",
-        "instrument_type_set": [
-          "event_settled"
-        ],
+        "instrument_type_set": ["event_settled"],
         "share_class": "ETH",
         "coverage_status": "PARTIAL"
       },
@@ -10787,9 +9426,7 @@
         "family": "RULES_DIRECTIONAL",
         "archetype": "RULES_DIRECTIONAL_EVENT_SETTLED",
         "venue_set_variant_id": "rules_directional_event_settled_default",
-        "instrument_type_set": [
-          "event_settled"
-        ],
+        "instrument_type_set": ["event_settled"],
         "share_class": "USD",
         "coverage_status": "PARTIAL"
       },
@@ -10798,9 +9435,7 @@
         "family": "RULES_DIRECTIONAL",
         "archetype": "RULES_DIRECTIONAL_EVENT_SETTLED",
         "venue_set_variant_id": "rules_directional_event_settled_default",
-        "instrument_type_set": [
-          "event_settled"
-        ],
+        "instrument_type_set": ["event_settled"],
         "share_class": "USDT",
         "coverage_status": "PARTIAL"
       },
@@ -10809,10 +9444,7 @@
         "family": "CARRY_AND_YIELD",
         "archetype": "CARRY_BASIS_DATED",
         "venue_set_variant_id": "carry_basis_dated_default",
-        "instrument_type_set": [
-          "dated_future",
-          "option"
-        ],
+        "instrument_type_set": ["dated_future", "option"],
         "share_class": "BTC",
         "coverage_status": "SUPPORTED"
       },
@@ -10821,10 +9453,7 @@
         "family": "CARRY_AND_YIELD",
         "archetype": "CARRY_BASIS_DATED",
         "venue_set_variant_id": "carry_basis_dated_default",
-        "instrument_type_set": [
-          "dated_future",
-          "option"
-        ],
+        "instrument_type_set": ["dated_future", "option"],
         "share_class": "ETH",
         "coverage_status": "SUPPORTED"
       },
@@ -10833,10 +9462,7 @@
         "family": "CARRY_AND_YIELD",
         "archetype": "CARRY_BASIS_DATED",
         "venue_set_variant_id": "carry_basis_dated_default",
-        "instrument_type_set": [
-          "dated_future",
-          "option"
-        ],
+        "instrument_type_set": ["dated_future", "option"],
         "share_class": "USD",
         "coverage_status": "SUPPORTED"
       },
@@ -10845,10 +9471,7 @@
         "family": "CARRY_AND_YIELD",
         "archetype": "CARRY_BASIS_DATED",
         "venue_set_variant_id": "carry_basis_dated_default",
-        "instrument_type_set": [
-          "dated_future",
-          "option"
-        ],
+        "instrument_type_set": ["dated_future", "option"],
         "share_class": "USDT",
         "coverage_status": "SUPPORTED"
       },
@@ -10857,9 +9480,7 @@
         "family": "CARRY_AND_YIELD",
         "archetype": "CARRY_STAKED_BASIS",
         "venue_set_variant_id": "carry_staked_basis_default",
-        "instrument_type_set": [
-          "staking"
-        ],
+        "instrument_type_set": ["staking"],
         "share_class": "BTC",
         "coverage_status": "SUPPORTED"
       },
@@ -10868,9 +9489,7 @@
         "family": "CARRY_AND_YIELD",
         "archetype": "CARRY_STAKED_BASIS",
         "venue_set_variant_id": "carry_staked_basis_default",
-        "instrument_type_set": [
-          "staking"
-        ],
+        "instrument_type_set": ["staking"],
         "share_class": "ETH",
         "coverage_status": "SUPPORTED"
       },
@@ -10879,9 +9498,7 @@
         "family": "CARRY_AND_YIELD",
         "archetype": "CARRY_STAKED_BASIS",
         "venue_set_variant_id": "carry_staked_basis_default",
-        "instrument_type_set": [
-          "staking"
-        ],
+        "instrument_type_set": ["staking"],
         "share_class": "USD",
         "coverage_status": "SUPPORTED"
       },
@@ -10890,9 +9507,7 @@
         "family": "CARRY_AND_YIELD",
         "archetype": "CARRY_STAKED_BASIS",
         "venue_set_variant_id": "carry_staked_basis_default",
-        "instrument_type_set": [
-          "staking"
-        ],
+        "instrument_type_set": ["staking"],
         "share_class": "USDT",
         "coverage_status": "SUPPORTED"
       },
@@ -10901,9 +9516,7 @@
         "family": "CARRY_AND_YIELD",
         "archetype": "CARRY_RECURSIVE_STAKED",
         "venue_set_variant_id": "carry_recursive_staked_default",
-        "instrument_type_set": [
-          "staking"
-        ],
+        "instrument_type_set": ["staking"],
         "share_class": "BTC",
         "coverage_status": "SUPPORTED"
       },
@@ -10912,9 +9525,7 @@
         "family": "CARRY_AND_YIELD",
         "archetype": "CARRY_RECURSIVE_STAKED",
         "venue_set_variant_id": "carry_recursive_staked_default",
-        "instrument_type_set": [
-          "staking"
-        ],
+        "instrument_type_set": ["staking"],
         "share_class": "ETH",
         "coverage_status": "SUPPORTED"
       },
@@ -10923,9 +9534,7 @@
         "family": "CARRY_AND_YIELD",
         "archetype": "CARRY_RECURSIVE_STAKED",
         "venue_set_variant_id": "carry_recursive_staked_default",
-        "instrument_type_set": [
-          "staking"
-        ],
+        "instrument_type_set": ["staking"],
         "share_class": "USD",
         "coverage_status": "SUPPORTED"
       },
@@ -10934,9 +9543,7 @@
         "family": "CARRY_AND_YIELD",
         "archetype": "CARRY_RECURSIVE_STAKED",
         "venue_set_variant_id": "carry_recursive_staked_default",
-        "instrument_type_set": [
-          "staking"
-        ],
+        "instrument_type_set": ["staking"],
         "share_class": "USDT",
         "coverage_status": "SUPPORTED"
       },
@@ -10945,9 +9552,7 @@
         "family": "CARRY_AND_YIELD",
         "archetype": "YIELD_ROTATION_LENDING",
         "venue_set_variant_id": "yield_rotation_lending_default",
-        "instrument_type_set": [
-          "lending"
-        ],
+        "instrument_type_set": ["lending"],
         "share_class": "BTC",
         "coverage_status": "SUPPORTED"
       },
@@ -10956,9 +9561,7 @@
         "family": "CARRY_AND_YIELD",
         "archetype": "YIELD_ROTATION_LENDING",
         "venue_set_variant_id": "yield_rotation_lending_default",
-        "instrument_type_set": [
-          "lending"
-        ],
+        "instrument_type_set": ["lending"],
         "share_class": "ETH",
         "coverage_status": "SUPPORTED"
       },
@@ -10967,9 +9570,7 @@
         "family": "CARRY_AND_YIELD",
         "archetype": "YIELD_ROTATION_LENDING",
         "venue_set_variant_id": "yield_rotation_lending_default",
-        "instrument_type_set": [
-          "lending"
-        ],
+        "instrument_type_set": ["lending"],
         "share_class": "USD",
         "coverage_status": "SUPPORTED"
       },
@@ -10978,9 +9579,7 @@
         "family": "CARRY_AND_YIELD",
         "archetype": "YIELD_ROTATION_LENDING",
         "venue_set_variant_id": "yield_rotation_lending_default",
-        "instrument_type_set": [
-          "lending"
-        ],
+        "instrument_type_set": ["lending"],
         "share_class": "USDT",
         "coverage_status": "SUPPORTED"
       },
@@ -10989,9 +9588,7 @@
         "family": "CARRY_AND_YIELD",
         "archetype": "YIELD_STAKING_SIMPLE",
         "venue_set_variant_id": "yield_staking_simple_default",
-        "instrument_type_set": [
-          "staking"
-        ],
+        "instrument_type_set": ["staking"],
         "share_class": "BTC",
         "coverage_status": "SUPPORTED"
       },
@@ -11000,9 +9597,7 @@
         "family": "CARRY_AND_YIELD",
         "archetype": "YIELD_STAKING_SIMPLE",
         "venue_set_variant_id": "yield_staking_simple_default",
-        "instrument_type_set": [
-          "staking"
-        ],
+        "instrument_type_set": ["staking"],
         "share_class": "ETH",
         "coverage_status": "SUPPORTED"
       },
@@ -11011,9 +9606,7 @@
         "family": "CARRY_AND_YIELD",
         "archetype": "YIELD_STAKING_SIMPLE",
         "venue_set_variant_id": "yield_staking_simple_default",
-        "instrument_type_set": [
-          "staking"
-        ],
+        "instrument_type_set": ["staking"],
         "share_class": "USD",
         "coverage_status": "SUPPORTED"
       },
@@ -11022,9 +9615,7 @@
         "family": "CARRY_AND_YIELD",
         "archetype": "YIELD_STAKING_SIMPLE",
         "venue_set_variant_id": "yield_staking_simple_default",
-        "instrument_type_set": [
-          "staking"
-        ],
+        "instrument_type_set": ["staking"],
         "share_class": "USDT",
         "coverage_status": "SUPPORTED"
       },
@@ -11033,14 +9624,7 @@
         "family": "ARBITRAGE_STRUCTURAL",
         "archetype": "ARBITRAGE_PRICE_DISPERSION",
         "venue_set_variant_id": "arbitrage_price_dispersion_default",
-        "instrument_type_set": [
-          "dated_future",
-          "event_settled",
-          "lp",
-          "option",
-          "perp",
-          "spot"
-        ],
+        "instrument_type_set": ["dated_future", "event_settled", "lp", "option", "perp", "spot"],
         "share_class": "BTC",
         "coverage_status": "SUPPORTED"
       },
@@ -11049,14 +9633,7 @@
         "family": "ARBITRAGE_STRUCTURAL",
         "archetype": "ARBITRAGE_PRICE_DISPERSION",
         "venue_set_variant_id": "arbitrage_price_dispersion_default",
-        "instrument_type_set": [
-          "dated_future",
-          "event_settled",
-          "lp",
-          "option",
-          "perp",
-          "spot"
-        ],
+        "instrument_type_set": ["dated_future", "event_settled", "lp", "option", "perp", "spot"],
         "share_class": "ETH",
         "coverage_status": "SUPPORTED"
       },
@@ -11065,14 +9642,7 @@
         "family": "ARBITRAGE_STRUCTURAL",
         "archetype": "ARBITRAGE_PRICE_DISPERSION",
         "venue_set_variant_id": "arbitrage_price_dispersion_default",
-        "instrument_type_set": [
-          "dated_future",
-          "event_settled",
-          "lp",
-          "option",
-          "perp",
-          "spot"
-        ],
+        "instrument_type_set": ["dated_future", "event_settled", "lp", "option", "perp", "spot"],
         "share_class": "USD",
         "coverage_status": "SUPPORTED"
       },
@@ -11081,14 +9651,7 @@
         "family": "ARBITRAGE_STRUCTURAL",
         "archetype": "ARBITRAGE_PRICE_DISPERSION",
         "venue_set_variant_id": "arbitrage_price_dispersion_default",
-        "instrument_type_set": [
-          "dated_future",
-          "event_settled",
-          "lp",
-          "option",
-          "perp",
-          "spot"
-        ],
+        "instrument_type_set": ["dated_future", "event_settled", "lp", "option", "perp", "spot"],
         "share_class": "USDT",
         "coverage_status": "SUPPORTED"
       },
@@ -11097,10 +9660,7 @@
         "family": "ARBITRAGE_STRUCTURAL",
         "archetype": "LIQUIDATION_CAPTURE",
         "venue_set_variant_id": "liquidation_capture_default",
-        "instrument_type_set": [
-          "lending",
-          "perp"
-        ],
+        "instrument_type_set": ["lending", "perp"],
         "share_class": "BTC",
         "coverage_status": "SUPPORTED"
       },
@@ -11109,10 +9669,7 @@
         "family": "ARBITRAGE_STRUCTURAL",
         "archetype": "LIQUIDATION_CAPTURE",
         "venue_set_variant_id": "liquidation_capture_default",
-        "instrument_type_set": [
-          "lending",
-          "perp"
-        ],
+        "instrument_type_set": ["lending", "perp"],
         "share_class": "ETH",
         "coverage_status": "SUPPORTED"
       },
@@ -11121,10 +9678,7 @@
         "family": "ARBITRAGE_STRUCTURAL",
         "archetype": "LIQUIDATION_CAPTURE",
         "venue_set_variant_id": "liquidation_capture_default",
-        "instrument_type_set": [
-          "lending",
-          "perp"
-        ],
+        "instrument_type_set": ["lending", "perp"],
         "share_class": "USD",
         "coverage_status": "SUPPORTED"
       },
@@ -11133,10 +9687,7 @@
         "family": "ARBITRAGE_STRUCTURAL",
         "archetype": "LIQUIDATION_CAPTURE",
         "venue_set_variant_id": "liquidation_capture_default",
-        "instrument_type_set": [
-          "lending",
-          "perp"
-        ],
+        "instrument_type_set": ["lending", "perp"],
         "share_class": "USDT",
         "coverage_status": "SUPPORTED"
       },
@@ -11145,14 +9696,7 @@
         "family": "MARKET_MAKING",
         "archetype": "MARKET_MAKING_CONTINUOUS",
         "venue_set_variant_id": "market_making_continuous_default",
-        "instrument_type_set": [
-          "dated_future",
-          "event_settled",
-          "lp",
-          "option",
-          "perp",
-          "spot"
-        ],
+        "instrument_type_set": ["dated_future", "event_settled", "lp", "option", "perp", "spot"],
         "share_class": "BTC",
         "coverage_status": "SUPPORTED"
       },
@@ -11161,14 +9705,7 @@
         "family": "MARKET_MAKING",
         "archetype": "MARKET_MAKING_CONTINUOUS",
         "venue_set_variant_id": "market_making_continuous_default",
-        "instrument_type_set": [
-          "dated_future",
-          "event_settled",
-          "lp",
-          "option",
-          "perp",
-          "spot"
-        ],
+        "instrument_type_set": ["dated_future", "event_settled", "lp", "option", "perp", "spot"],
         "share_class": "ETH",
         "coverage_status": "SUPPORTED"
       },
@@ -11177,14 +9714,7 @@
         "family": "MARKET_MAKING",
         "archetype": "MARKET_MAKING_CONTINUOUS",
         "venue_set_variant_id": "market_making_continuous_default",
-        "instrument_type_set": [
-          "dated_future",
-          "event_settled",
-          "lp",
-          "option",
-          "perp",
-          "spot"
-        ],
+        "instrument_type_set": ["dated_future", "event_settled", "lp", "option", "perp", "spot"],
         "share_class": "USD",
         "coverage_status": "SUPPORTED"
       },
@@ -11193,14 +9723,7 @@
         "family": "MARKET_MAKING",
         "archetype": "MARKET_MAKING_CONTINUOUS",
         "venue_set_variant_id": "market_making_continuous_default",
-        "instrument_type_set": [
-          "dated_future",
-          "event_settled",
-          "lp",
-          "option",
-          "perp",
-          "spot"
-        ],
+        "instrument_type_set": ["dated_future", "event_settled", "lp", "option", "perp", "spot"],
         "share_class": "USDT",
         "coverage_status": "SUPPORTED"
       },
@@ -11209,9 +9732,7 @@
         "family": "MARKET_MAKING",
         "archetype": "MARKET_MAKING_EVENT_SETTLED",
         "venue_set_variant_id": "market_making_event_settled_default",
-        "instrument_type_set": [
-          "event_settled"
-        ],
+        "instrument_type_set": ["event_settled"],
         "share_class": "BTC",
         "coverage_status": "SUPPORTED"
       },
@@ -11220,9 +9741,7 @@
         "family": "MARKET_MAKING",
         "archetype": "MARKET_MAKING_EVENT_SETTLED",
         "venue_set_variant_id": "market_making_event_settled_default",
-        "instrument_type_set": [
-          "event_settled"
-        ],
+        "instrument_type_set": ["event_settled"],
         "share_class": "ETH",
         "coverage_status": "SUPPORTED"
       },
@@ -11231,9 +9750,7 @@
         "family": "MARKET_MAKING",
         "archetype": "MARKET_MAKING_EVENT_SETTLED",
         "venue_set_variant_id": "market_making_event_settled_default",
-        "instrument_type_set": [
-          "event_settled"
-        ],
+        "instrument_type_set": ["event_settled"],
         "share_class": "USD",
         "coverage_status": "SUPPORTED"
       },
@@ -11242,9 +9759,7 @@
         "family": "MARKET_MAKING",
         "archetype": "MARKET_MAKING_EVENT_SETTLED",
         "venue_set_variant_id": "market_making_event_settled_default",
-        "instrument_type_set": [
-          "event_settled"
-        ],
+        "instrument_type_set": ["event_settled"],
         "share_class": "USDT",
         "coverage_status": "SUPPORTED"
       },
@@ -11253,15 +9768,7 @@
         "family": "EVENT_DRIVEN",
         "archetype": "EVENT_DRIVEN",
         "venue_set_variant_id": "event_driven_default",
-        "instrument_type_set": [
-          "dated_future",
-          "event_settled",
-          "lending",
-          "option",
-          "perp",
-          "spot",
-          "staking"
-        ],
+        "instrument_type_set": ["dated_future", "event_settled", "lending", "option", "perp", "spot", "staking"],
         "share_class": "BTC",
         "coverage_status": "PARTIAL"
       },
@@ -11270,15 +9777,7 @@
         "family": "EVENT_DRIVEN",
         "archetype": "EVENT_DRIVEN",
         "venue_set_variant_id": "event_driven_default",
-        "instrument_type_set": [
-          "dated_future",
-          "event_settled",
-          "lending",
-          "option",
-          "perp",
-          "spot",
-          "staking"
-        ],
+        "instrument_type_set": ["dated_future", "event_settled", "lending", "option", "perp", "spot", "staking"],
         "share_class": "ETH",
         "coverage_status": "PARTIAL"
       },
@@ -11287,15 +9786,7 @@
         "family": "EVENT_DRIVEN",
         "archetype": "EVENT_DRIVEN",
         "venue_set_variant_id": "event_driven_default",
-        "instrument_type_set": [
-          "dated_future",
-          "event_settled",
-          "lending",
-          "option",
-          "perp",
-          "spot",
-          "staking"
-        ],
+        "instrument_type_set": ["dated_future", "event_settled", "lending", "option", "perp", "spot", "staking"],
         "share_class": "USD",
         "coverage_status": "PARTIAL"
       },
@@ -11304,15 +9795,7 @@
         "family": "EVENT_DRIVEN",
         "archetype": "EVENT_DRIVEN",
         "venue_set_variant_id": "event_driven_default",
-        "instrument_type_set": [
-          "dated_future",
-          "event_settled",
-          "lending",
-          "option",
-          "perp",
-          "spot",
-          "staking"
-        ],
+        "instrument_type_set": ["dated_future", "event_settled", "lending", "option", "perp", "spot", "staking"],
         "share_class": "USDT",
         "coverage_status": "PARTIAL"
       },
@@ -11321,9 +9804,7 @@
         "family": "VOL_TRADING",
         "archetype": "VOL_TRADING_OPTIONS",
         "venue_set_variant_id": "vol_trading_options_default",
-        "instrument_type_set": [
-          "option"
-        ],
+        "instrument_type_set": ["option"],
         "share_class": "BTC",
         "coverage_status": "SUPPORTED"
       },
@@ -11332,9 +9813,7 @@
         "family": "VOL_TRADING",
         "archetype": "VOL_TRADING_OPTIONS",
         "venue_set_variant_id": "vol_trading_options_default",
-        "instrument_type_set": [
-          "option"
-        ],
+        "instrument_type_set": ["option"],
         "share_class": "ETH",
         "coverage_status": "SUPPORTED"
       },
@@ -11343,9 +9822,7 @@
         "family": "VOL_TRADING",
         "archetype": "VOL_TRADING_OPTIONS",
         "venue_set_variant_id": "vol_trading_options_default",
-        "instrument_type_set": [
-          "option"
-        ],
+        "instrument_type_set": ["option"],
         "share_class": "USD",
         "coverage_status": "SUPPORTED"
       },
@@ -11354,9 +9831,7 @@
         "family": "VOL_TRADING",
         "archetype": "VOL_TRADING_OPTIONS",
         "venue_set_variant_id": "vol_trading_options_default",
-        "instrument_type_set": [
-          "option"
-        ],
+        "instrument_type_set": ["option"],
         "share_class": "USDT",
         "coverage_status": "SUPPORTED"
       },
@@ -11365,11 +9840,7 @@
         "family": "STAT_ARB_PAIRS",
         "archetype": "STAT_ARB_PAIRS_FIXED",
         "venue_set_variant_id": "stat_arb_pairs_fixed_default",
-        "instrument_type_set": [
-          "dated_future",
-          "perp",
-          "spot"
-        ],
+        "instrument_type_set": ["dated_future", "perp", "spot"],
         "share_class": "BTC",
         "coverage_status": "SUPPORTED"
       },
@@ -11378,11 +9849,7 @@
         "family": "STAT_ARB_PAIRS",
         "archetype": "STAT_ARB_PAIRS_FIXED",
         "venue_set_variant_id": "stat_arb_pairs_fixed_default",
-        "instrument_type_set": [
-          "dated_future",
-          "perp",
-          "spot"
-        ],
+        "instrument_type_set": ["dated_future", "perp", "spot"],
         "share_class": "ETH",
         "coverage_status": "SUPPORTED"
       },
@@ -11391,11 +9858,7 @@
         "family": "STAT_ARB_PAIRS",
         "archetype": "STAT_ARB_PAIRS_FIXED",
         "venue_set_variant_id": "stat_arb_pairs_fixed_default",
-        "instrument_type_set": [
-          "dated_future",
-          "perp",
-          "spot"
-        ],
+        "instrument_type_set": ["dated_future", "perp", "spot"],
         "share_class": "USD",
         "coverage_status": "SUPPORTED"
       },
@@ -11404,11 +9867,7 @@
         "family": "STAT_ARB_PAIRS",
         "archetype": "STAT_ARB_PAIRS_FIXED",
         "venue_set_variant_id": "stat_arb_pairs_fixed_default",
-        "instrument_type_set": [
-          "dated_future",
-          "perp",
-          "spot"
-        ],
+        "instrument_type_set": ["dated_future", "perp", "spot"],
         "share_class": "USDT",
         "coverage_status": "SUPPORTED"
       },
@@ -11417,11 +9876,7 @@
         "family": "STAT_ARB_PAIRS",
         "archetype": "STAT_ARB_CROSS_SECTIONAL",
         "venue_set_variant_id": "stat_arb_cross_sectional_default",
-        "instrument_type_set": [
-          "dated_future",
-          "perp",
-          "spot"
-        ],
+        "instrument_type_set": ["dated_future", "perp", "spot"],
         "share_class": "BTC",
         "coverage_status": "PARTIAL"
       },
@@ -11430,11 +9885,7 @@
         "family": "STAT_ARB_PAIRS",
         "archetype": "STAT_ARB_CROSS_SECTIONAL",
         "venue_set_variant_id": "stat_arb_cross_sectional_default",
-        "instrument_type_set": [
-          "dated_future",
-          "perp",
-          "spot"
-        ],
+        "instrument_type_set": ["dated_future", "perp", "spot"],
         "share_class": "ETH",
         "coverage_status": "PARTIAL"
       },
@@ -11443,11 +9894,7 @@
         "family": "STAT_ARB_PAIRS",
         "archetype": "STAT_ARB_CROSS_SECTIONAL",
         "venue_set_variant_id": "stat_arb_cross_sectional_default",
-        "instrument_type_set": [
-          "dated_future",
-          "perp",
-          "spot"
-        ],
+        "instrument_type_set": ["dated_future", "perp", "spot"],
         "share_class": "USD",
         "coverage_status": "PARTIAL"
       },
@@ -11456,11 +9903,7 @@
         "family": "STAT_ARB_PAIRS",
         "archetype": "STAT_ARB_CROSS_SECTIONAL",
         "venue_set_variant_id": "stat_arb_cross_sectional_default",
-        "instrument_type_set": [
-          "dated_future",
-          "perp",
-          "spot"
-        ],
+        "instrument_type_set": ["dated_future", "perp", "spot"],
         "share_class": "USDT",
         "coverage_status": "PARTIAL"
       }
@@ -11470,78 +9913,32 @@
     {
       "id": "ely_base_3cex",
       "archetype": "CARRY_BASIS_PERP",
-      "venues": [
-        "okx",
-        "binance",
-        "bybit"
-      ],
-      "instrument_types": [
-        "spot",
-        "perp",
-        "dated_future"
-      ],
+      "venues": ["okx", "binance", "bybit"],
+      "instrument_types": ["spot", "perp", "dated_future"],
       "label": "Base (3 CEX)",
       "pricing_tier": "base"
     },
     {
       "id": "ely_premium_6cex",
       "archetype": "CARRY_BASIS_PERP",
-      "venues": [
-        "okx",
-        "binance",
-        "bybit",
-        "deribit",
-        "hyperliquid",
-        "aster"
-      ],
-      "instrument_types": [
-        "spot",
-        "perp",
-        "dated_future"
-      ],
+      "venues": ["okx", "binance", "bybit", "deribit", "hyperliquid", "aster"],
+      "instrument_types": ["spot", "perp", "dated_future"],
       "label": "Premium (6 CEX)",
       "pricing_tier": "premium"
     },
     {
       "id": "ely_multi_evm",
       "archetype": "CARRY_BASIS_PERP",
-      "venues": [
-        "okx",
-        "binance",
-        "bybit",
-        "ethereum",
-        "arbitrum",
-        "optimism",
-        "base",
-        "polygon"
-      ],
-      "instrument_types": [
-        "spot",
-        "perp",
-        "dated_future"
-      ],
+      "venues": ["okx", "binance", "bybit", "ethereum", "arbitrum", "optimism", "base", "polygon"],
+      "instrument_types": ["spot", "perp", "dated_future"],
       "label": "Multi-EVM",
       "pricing_tier": "top_tier"
     },
     {
       "id": "ely_multi_evm_plus_sol",
       "archetype": "CARRY_BASIS_PERP",
-      "venues": [
-        "okx",
-        "binance",
-        "bybit",
-        "ethereum",
-        "arbitrum",
-        "optimism",
-        "base",
-        "polygon",
-        "solana"
-      ],
-      "instrument_types": [
-        "spot",
-        "perp",
-        "dated_future"
-      ],
+      "venues": ["okx", "binance", "bybit", "ethereum", "arbitrum", "optimism", "base", "polygon", "solana"],
+      "instrument_types": ["spot", "perp", "dated_future"],
       "label": "Multi-EVM + Solana",
       "pricing_tier": "apex"
     },
@@ -11563,29 +9960,15 @@
         "okx",
         "uniswap_v3"
       ],
-      "instrument_types": [
-        "dated_future",
-        "option",
-        "perp",
-        "spot"
-      ],
+      "instrument_types": ["dated_future", "option", "perp", "spot"],
       "label": "ML_DIRECTIONAL_CONTINUOUS \u2014 Default",
       "pricing_tier": "base"
     },
     {
       "id": "ml_directional_event_settled_default",
       "archetype": "ML_DIRECTIONAL_EVENT_SETTLED",
-      "venues": [
-        "betfair_direct",
-        "kalshi",
-        "matchbook_direct",
-        "polymarket",
-        "smarkets_direct",
-        "unity"
-      ],
-      "instrument_types": [
-        "event_settled"
-      ],
+      "venues": ["betfair_direct", "kalshi", "matchbook_direct", "polymarket", "smarkets_direct", "unity"],
+      "instrument_types": ["event_settled"],
       "label": "ML_DIRECTIONAL_EVENT_SETTLED \u2014 Default",
       "pricing_tier": "base"
     },
@@ -11605,114 +9988,55 @@
         "okx",
         "uniswap_v3"
       ],
-      "instrument_types": [
-        "dated_future",
-        "option",
-        "perp",
-        "spot"
-      ],
+      "instrument_types": ["dated_future", "option", "perp", "spot"],
       "label": "RULES_DIRECTIONAL_CONTINUOUS \u2014 Default",
       "pricing_tier": "base"
     },
     {
       "id": "rules_directional_event_settled_default",
       "archetype": "RULES_DIRECTIONAL_EVENT_SETTLED",
-      "venues": [
-        "betfair_direct",
-        "polymarket",
-        "smarkets_direct",
-        "unity"
-      ],
-      "instrument_types": [
-        "event_settled"
-      ],
+      "venues": ["betfair_direct", "polymarket", "smarkets_direct", "unity"],
+      "instrument_types": ["event_settled"],
       "label": "RULES_DIRECTIONAL_EVENT_SETTLED \u2014 Default",
       "pricing_tier": "base"
     },
     {
       "id": "carry_basis_dated_default",
       "archetype": "CARRY_BASIS_DATED",
-      "venues": [
-        "binance",
-        "cme",
-        "coinbase",
-        "deribit",
-        "ibkr",
-        "ice"
-      ],
-      "instrument_types": [
-        "dated_future",
-        "option"
-      ],
+      "venues": ["binance", "cme", "coinbase", "deribit", "ibkr", "ice"],
+      "instrument_types": ["dated_future", "option"],
       "label": "CARRY_BASIS_DATED \u2014 Default",
       "pricing_tier": "base"
     },
     {
       "id": "carry_staked_basis_default",
       "archetype": "CARRY_STAKED_BASIS",
-      "venues": [
-        "aave_v3",
-        "drift",
-        "gmx_v2",
-        "hyperliquid",
-        "jito",
-        "kamino",
-        "lido",
-        "marinade",
-        "rocketpool"
-      ],
-      "instrument_types": [
-        "staking"
-      ],
+      "venues": ["aave_v3", "drift", "gmx_v2", "hyperliquid", "jito", "kamino", "lido", "marinade", "rocketpool"],
+      "instrument_types": ["staking"],
       "label": "CARRY_STAKED_BASIS \u2014 Default",
       "pricing_tier": "base"
     },
     {
       "id": "carry_recursive_staked_default",
       "archetype": "CARRY_RECURSIVE_STAKED",
-      "venues": [
-        "aave_v3",
-        "jito",
-        "kamino",
-        "lido",
-        "marinade",
-        "rocketpool"
-      ],
-      "instrument_types": [
-        "staking"
-      ],
+      "venues": ["aave_v3", "jito", "kamino", "lido", "marinade", "rocketpool"],
+      "instrument_types": ["staking"],
       "label": "CARRY_RECURSIVE_STAKED \u2014 Default",
       "pricing_tier": "base"
     },
     {
       "id": "yield_rotation_lending_default",
       "archetype": "YIELD_ROTATION_LENDING",
-      "venues": [
-        "aave_v3",
-        "compound_v3",
-        "euler",
-        "kamino",
-        "morpho"
-      ],
-      "instrument_types": [
-        "lending"
-      ],
+      "venues": ["aave_v3", "compound_v3", "euler", "kamino", "morpho"],
+      "instrument_types": ["lending"],
       "label": "YIELD_ROTATION_LENDING \u2014 Default",
       "pricing_tier": "base"
     },
     {
       "id": "yield_staking_simple_default",
       "archetype": "YIELD_STAKING_SIMPLE",
-      "venues": [
-        "etherfi",
-        "jito",
-        "lido",
-        "marinade",
-        "rocketpool"
-      ],
-      "instrument_types": [
-        "staking"
-      ],
+      "venues": ["etherfi", "jito", "lido", "marinade", "rocketpool"],
+      "instrument_types": ["staking"],
       "label": "YIELD_STAKING_SIMPLE \u2014 Default",
       "pricing_tier": "base"
     },
@@ -11740,30 +10064,15 @@
         "uniswap_v3",
         "unity"
       ],
-      "instrument_types": [
-        "dated_future",
-        "event_settled",
-        "lp",
-        "option",
-        "perp",
-        "spot"
-      ],
+      "instrument_types": ["dated_future", "event_settled", "lp", "option", "perp", "spot"],
       "label": "ARBITRAGE_PRICE_DISPERSION \u2014 Default",
       "pricing_tier": "base"
     },
     {
       "id": "liquidation_capture_default",
       "archetype": "LIQUIDATION_CAPTURE",
-      "venues": [
-        "aave_v3",
-        "gmx_v2",
-        "hyperliquid",
-        "kamino"
-      ],
-      "instrument_types": [
-        "lending",
-        "perp"
-      ],
+      "venues": ["aave_v3", "gmx_v2", "hyperliquid", "kamino"],
+      "instrument_types": ["lending", "perp"],
       "label": "LIQUIDATION_CAPTURE \u2014 Default",
       "pricing_tier": "base"
     },
@@ -11788,14 +10097,7 @@
         "uniswap_v4",
         "unity"
       ],
-      "instrument_types": [
-        "dated_future",
-        "event_settled",
-        "lp",
-        "option",
-        "perp",
-        "spot"
-      ],
+      "instrument_types": ["dated_future", "event_settled", "lp", "option", "perp", "spot"],
       "label": "MARKET_MAKING_CONTINUOUS \u2014 Default",
       "pricing_tier": "base"
     },
@@ -11811,9 +10113,7 @@
         "smarkets_direct",
         "unity"
       ],
-      "instrument_types": [
-        "event_settled"
-      ],
+      "instrument_types": ["event_settled"],
       "label": "MARKET_MAKING_EVENT_SETTLED \u2014 Default",
       "pricing_tier": "base"
     },
@@ -11836,71 +10136,31 @@
         "uniswap_v3",
         "unity"
       ],
-      "instrument_types": [
-        "dated_future",
-        "event_settled",
-        "lending",
-        "option",
-        "perp",
-        "spot",
-        "staking"
-      ],
+      "instrument_types": ["dated_future", "event_settled", "lending", "option", "perp", "spot", "staking"],
       "label": "EVENT_DRIVEN \u2014 Default",
       "pricing_tier": "base"
     },
     {
       "id": "vol_trading_options_default",
       "archetype": "VOL_TRADING_OPTIONS",
-      "venues": [
-        "cboe",
-        "deribit",
-        "okx"
-      ],
-      "instrument_types": [
-        "option"
-      ],
+      "venues": ["cboe", "deribit", "okx"],
+      "instrument_types": ["option"],
       "label": "VOL_TRADING_OPTIONS \u2014 Default",
       "pricing_tier": "base"
     },
     {
       "id": "stat_arb_pairs_fixed_default",
       "archetype": "STAT_ARB_PAIRS_FIXED",
-      "venues": [
-        "binance",
-        "bybit",
-        "cme",
-        "drift",
-        "gmx_v2",
-        "hyperliquid",
-        "ibkr",
-        "ice",
-        "okx",
-        "uniswap_v3"
-      ],
-      "instrument_types": [
-        "dated_future",
-        "perp",
-        "spot"
-      ],
+      "venues": ["binance", "bybit", "cme", "drift", "gmx_v2", "hyperliquid", "ibkr", "ice", "okx", "uniswap_v3"],
+      "instrument_types": ["dated_future", "perp", "spot"],
       "label": "STAT_ARB_PAIRS_FIXED \u2014 Default",
       "pricing_tier": "base"
     },
     {
       "id": "stat_arb_cross_sectional_default",
       "archetype": "STAT_ARB_CROSS_SECTIONAL",
-      "venues": [
-        "binance",
-        "bybit",
-        "drift",
-        "gmx_v2",
-        "hyperliquid",
-        "ibkr"
-      ],
-      "instrument_types": [
-        "dated_future",
-        "perp",
-        "spot"
-      ],
+      "venues": ["binance", "bybit", "drift", "gmx_v2", "hyperliquid", "ibkr"],
+      "instrument_types": ["dated_future", "perp", "spot"],
       "label": "STAT_ARB_CROSS_SECTIONAL \u2014 Default",
       "pricing_tier": "base"
     }
@@ -11918,15 +10178,7 @@
       "live_stable",
       "retired"
     ],
-    "product_routings": [
-      "dart_only",
-      "im_only",
-      "both",
-      "internal_only"
-    ],
-    "account_types": [
-      "live",
-      "paper"
-    ]
+    "product_routings": ["dart_only", "im_only", "both", "internal_only"],
+    "account_types": ["live", "paper"]
   }
 }
