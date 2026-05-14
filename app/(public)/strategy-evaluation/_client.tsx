@@ -2305,7 +2305,7 @@ export default function StrategyEvaluationFormClient({
                     {
                       key: "tradeLogCsv" as const,
                       label: "Trade log CSV",
-                      hint: "One row per trade or fill, ordered by timestamp. Required: timestamp (UTC), venue, instrument, side (buy/sell), size, price. Optional: fee, fee_ccy, trade_id.",
+                      hint: "One row per trade or fill, ordered by timestamp. Required: timestamp (UTC), venue, instrument_id (the exact venue-native symbol — e.g. BTCUSDT, BTC-29MAR24-50000-C, BTC-PERPETUAL — not just “BTC”), side (buy/sell), size, price. Optional: fee, fee_ccy, trade_id.",
                       accept: ".csv,.tsv,.parquet",
                       templateUrl: "/templates/strategy-evaluation/trade_log_template.csv",
                       templateLabel: "trade log CSV template",
