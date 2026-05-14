@@ -333,6 +333,22 @@ const FIELD_TO_STEP: Record<string, number> = {
   understandSignals: 2,
 };
 
+// File refs are dropped from any cross-session persistence (localStorage +
+// server-side draft mirror). The actual File objects live in pendingFilesRef
+// in-memory and can't survive a reload or device switch anyway; persisting
+// the metadata only creates a stale-blob trap where the saved doc lies about
+// having attachments. The picker re-attach flow is the source of truth.
+function stripFileRefs<T extends SerializedFormState>(s: T): T {
+  return {
+    ...s,
+    backtestMethodologyDoc: null,
+    assumptionsDoc: null,
+    tearSheet: null,
+    tradeLogCsv: null,
+    equityCurveCsv: null,
+  };
+}
+
 function serializeState(state: FormState): SerializedFormState {
   return {
     ...state,
@@ -605,8 +621,9 @@ export default function StrategyEvaluationFormClient({
   React.useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
+      const draftPayload = stripFileRefs(serializeState(form));
       try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(serializeState(form)));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(draftPayload));
         setDraftSavedAt(Date.now());
       } catch {
         // ignore storage errors
@@ -619,7 +636,7 @@ export default function StrategyEvaluationFormClient({
         fetch("/api/strategy-evaluation/save-draft", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: form.email, payload: serializeState(form) }),
+          body: JSON.stringify({ email: form.email, payload: draftPayload }),
           cache: "no-store",
         }).catch(() => {
           // non-critical
@@ -685,6 +702,27 @@ export default function StrategyEvaluationFormClient({
         const firstField = document.getElementById(firstFieldName);
         if (firstField) firstField.scrollIntoView({ behavior: "smooth", block: "center" });
       }
+      return;
+    }
+    // Block submit if any field carries a stale ref without a corresponding
+    // fresh File in pendingFilesRef. Lets the user re-pick before the form
+    // POSTs a doc with empty file URLs.
+    const fileFieldKeys: readonly FileFieldKey[] = [
+      "backtestMethodologyDoc",
+      "assumptionsDoc",
+      "tearSheet",
+      "tradeLogCsv",
+      "equityCurveCsv",
+    ];
+    const staleFields = fileFieldKeys.filter((k) => form[k]?.path === "stale" && !pendingFilesRef.current.has(k));
+    if (staleFields.length > 0) {
+      const errs: Partial<Record<FileFieldKey, string>> = {};
+      for (const k of staleFields) {
+        errs[k] = "Re-attach this file — the previous upload did not complete.";
+      }
+      setUploadErrors(errs);
+      setCurrentStep(5);
+      window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
     setSubmitting(true);

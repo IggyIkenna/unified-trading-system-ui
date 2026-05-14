@@ -60,15 +60,19 @@ export function FileUploadField({
     if (inputRef.current) inputRef.current.value = "";
   };
 
-  // Stale blob URL from a restored draft — prompt re-upload
-  const staleDraft = Boolean(value && value.url.startsWith("blob:") && value.path === "stale");
+  // Stale ref = the saved File reference is unusable. Two ways this happens:
+  //   1. Draft re-hydrated from localStorage with a dead blob: URL (browser cache cleared).
+  //   2. Doc loaded from the server where bytes never reached Storage on submit.
+  // Both end up with `path === "stale"`; surface the same re-pick prompt.
+  const stale = value?.path === "stale";
+  const mockOnly = Boolean(value && !value.url && value.path.startsWith("mock://"));
 
   return (
     <div className="space-y-1">
       <Label className="text-sm font-medium">{label}</Label>
       {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
 
-      {value && !staleDraft ? (
+      {value && !stale ? (
         <div className="mt-1 flex items-start justify-between gap-3 rounded-md border border-border bg-card/40 px-3 py-2">
           <div className="min-w-0 flex-1">
             <p className="text-sm font-medium truncate">{value.filename}</p>
@@ -80,9 +84,9 @@ export function FileUploadField({
                   cached: will upload on submit
                 </span>
               )}
-              {!value.url && (
+              {mockOnly && (
                 <span className="ml-2 rounded bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-medium text-amber-700 dark:text-amber-300">
-                  mock mode: file not stored
+                  local dev: bytes not stored
                 </span>
               )}
             </p>
@@ -110,10 +114,10 @@ export function FileUploadField({
         </div>
       ) : (
         <>
-          {staleDraft && (
+          {stale && (
             <p className="text-xs text-amber-700 dark:text-amber-300 mb-1">
-              Attachment &ldquo;{value?.filename}&rdquo; needs to be re-selected: the browser cache was cleared when you
-              reopened the form.
+              Attachment &ldquo;{value?.filename}&rdquo; needs to be re-selected — the file did not finish uploading
+              before your previous session ended.
             </p>
           )}
           <label className="mt-1 inline-flex cursor-pointer items-center gap-2 rounded-md border border-dashed border-border px-3 py-2 text-sm transition-colors hover:border-foreground hover:bg-muted/30">
