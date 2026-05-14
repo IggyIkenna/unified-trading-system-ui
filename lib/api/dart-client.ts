@@ -165,6 +165,73 @@ export async function fetchInstructionStatus(
   )) as InstructionStatusResponse;
 }
 
+// ─── Manual pending-queue endpoints (pvl-p23c) ───────────────────────────────
+
+export interface PendingPreviewData {
+  readonly margin_usd: number;
+  readonly position_limit_pct: number;
+  readonly worst_case_loss_usd: number;
+}
+
+export interface PendingInstruction {
+  readonly instruction_id: string;
+  readonly strategy_id: string;
+  readonly archetype: string;
+  readonly venue: string;
+  readonly instrument_id: string;
+  readonly side: string;
+  readonly quantity: number;
+  readonly price: number | null;
+  readonly algo: string | null;
+  readonly enqueued_at: string;
+  readonly timeout_at: string;
+  readonly seconds_remaining: number;
+  readonly pre_trade_preview: PendingPreviewData;
+}
+
+export interface ApproveRejectResponse {
+  readonly instruction_id: string;
+  readonly action: string;
+  readonly message: string;
+}
+
+export async function listPendingInstructions(
+  token: string | null,
+): Promise<readonly PendingInstruction[]> {
+  return (await apiFetch("/api/manual/pending", token)) as PendingInstruction[];
+}
+
+export async function approveInstruction(
+  instructionId: string,
+  token: string | null,
+): Promise<ApproveRejectResponse> {
+  return (await apiFetch(
+    `/api/manual/pending/${encodeURIComponent(instructionId)}/approve`,
+    token,
+    { method: "POST" },
+  )) as ApproveRejectResponse;
+}
+
+export interface RejectInstructionRequest {
+  readonly reason: string;
+}
+
+export async function rejectInstruction(
+  instructionId: string,
+  request: RejectInstructionRequest,
+  token: string | null,
+): Promise<ApproveRejectResponse> {
+  return (await apiFetch(
+    `/api/manual/pending/${encodeURIComponent(instructionId)}/reject`,
+    token,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(request),
+    },
+  )) as ApproveRejectResponse;
+}
+
 // ─── Operational-mode endpoint ────────────────────────────────────────────────
 
 export interface ModeTransitionRequest {

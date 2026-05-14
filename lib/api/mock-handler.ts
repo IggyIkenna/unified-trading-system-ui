@@ -94,9 +94,12 @@ import { MOCK_TRANSFER_HISTORY } from "@/lib/mocks/fixtures/transfer-history";
 import { ALL_INSTRUMENTS, SNAPSHOT_META, type Instrument } from "@/lib/registry/instruments";
 import { isMockDataMode } from "@/lib/runtime/data-mode";
 import {
+  mockApproveInstruction,
   mockInstructionStatus,
+  mockListPendingInstructions,
   mockModeTransition,
   mockPreviewResponse,
+  mockRejectInstruction,
   mockSubmitResponse,
 } from "@/lib/api/mocks/dart";
 
@@ -1056,6 +1059,40 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     }
     return json(result, 80);
   }
+  // GET /api/manual/pending
+  if (route === "/api/manual/pending" && !opts?.method || opts?.method?.toUpperCase() === "GET") {
+    return json(mockListPendingInstructions(), 60);
+  }
+
+  // POST /api/manual/pending/:instructionId/approve
+  const approveMatch = /^\/api\/manual\/pending\/([^/]+)\/approve$/.exec(route);
+  if (approveMatch && opts?.method?.toUpperCase() === "POST") {
+    const instructionId = decodeURIComponent(approveMatch[1] ?? "");
+    const result = mockApproveInstruction(instructionId);
+    if ("status" in result && result.status === 404) {
+      return new Response(JSON.stringify({ detail: result.detail }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    return json(result, 80);
+  }
+
+  // POST /api/manual/pending/:instructionId/reject
+  const rejectMatch = /^\/api\/manual\/pending\/([^/]+)\/reject$/.exec(route);
+  if (rejectMatch && opts?.method?.toUpperCase() === "POST") {
+    const instructionId = decodeURIComponent(rejectMatch[1] ?? "");
+    const body = parseMockJsonBody(opts) as { reason?: string };
+    const result = mockRejectInstruction(instructionId, body.reason ?? "operator rejected");
+    if ("status" in result && result.status === 404) {
+      return new Response(JSON.stringify({ detail: result.detail }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    return json(result, 80);
+  }
+
   // ─────────────────────────────────────────────────────────────────────────────
 
   if (route === "/api/compliance/pre-trade-check") {

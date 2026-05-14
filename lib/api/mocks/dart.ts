@@ -16,10 +16,12 @@
  */
 
 import type {
+  ApproveRejectResponse,
   InstructionStatusResponse,
   ManualInstructionStatus,
   ModeTransitionResponse,
   OperationalMode,
+  PendingInstruction,
   PreviewResponse,
   RiskCheckResult,
   SubmitResponse,
@@ -187,10 +189,109 @@ export function mockModeTransition(
   };
 }
 
+// ─── Pending queue fixtures (pvl-p23c) ───────────────────────────────────────
+
+const _pendingQueue: Map<string, PendingInstruction> = new Map();
+
+/** Seed queue with two realistic strategy-originated pending instructions. */
+function _seedPendingQueue(): void {
+  const now = Date.now();
+  const items: PendingInstruction[] = [
+    {
+      instruction_id: "pending-carry-001",
+      strategy_id: "carry_staked_basis_v1",
+      archetype: "carry_staked_basis",
+      venue: "BYBIT",
+      instrument_id: "ETH-PERP",
+      side: "SELL",
+      quantity: 1.5,
+      price: null,
+      algo: "MARKET",
+      enqueued_at: new Date(now - 45_000).toISOString(),
+      timeout_at: new Date(now + 255_000).toISOString(),
+      seconds_remaining: 255,
+      pre_trade_preview: {
+        margin_usd: 3_200,
+        position_limit_pct: 0.12,
+        worst_case_loss_usd: 480,
+      },
+    },
+    {
+      instruction_id: "pending-arb-002",
+      strategy_id: "arb_price_dispersion_v2",
+      archetype: "arbitrage_price_dispersion",
+      venue: "BINANCE",
+      instrument_id: "BTC-USDT-PERP",
+      side: "BUY",
+      quantity: 0.05,
+      price: 62_400,
+      algo: "TWAP",
+      enqueued_at: new Date(now - 20_000).toISOString(),
+      timeout_at: new Date(now + 280_000).toISOString(),
+      seconds_remaining: 280,
+      pre_trade_preview: {
+        margin_usd: 1_560,
+        position_limit_pct: 0.06,
+        worst_case_loss_usd: 94,
+      },
+    },
+  ];
+  for (const item of items) {
+    _pendingQueue.set(item.instruction_id, item);
+  }
+}
+
+_seedPendingQueue();
+
+export function mockListPendingInstructions(): readonly PendingInstruction[] {
+  const now = Date.now();
+  const live: PendingInstruction[] = [];
+  for (const item of _pendingQueue.values()) {
+    const remaining = Math.max(0, Math.floor((new Date(item.timeout_at).getTime() - now) / 1_000));
+    if (remaining > 0) {
+      live.push({ ...item, seconds_remaining: remaining });
+    } else {
+      _pendingQueue.delete(item.instruction_id);
+    }
+  }
+  return live.sort(
+    (a, b) => new Date(a.enqueued_at).getTime() - new Date(b.enqueued_at).getTime(),
+  );
+}
+
+export function mockApproveInstruction(instructionId: string): ApproveRejectResponse | { detail: string; status: 404 } {
+  if (!_pendingQueue.has(instructionId)) {
+    return { detail: `No pending instruction with id=${instructionId}`, status: 404 as const };
+  }
+  _pendingQueue.delete(instructionId);
+  return {
+    instruction_id: instructionId,
+    action: "approved",
+    message: `Instruction ${instructionId} approved and routed to execution.`,
+  };
+}
+
+export function mockRejectInstruction(
+  instructionId: string,
+  _reason: string,
+): ApproveRejectResponse | { detail: string; status: 404 } {
+  if (!_pendingQueue.has(instructionId)) {
+    return { detail: `No pending instruction with id=${instructionId}`, status: 404 as const };
+  }
+  _pendingQueue.delete(instructionId);
+  return {
+    instruction_id: instructionId,
+    action: "rejected",
+    message: `Instruction ${instructionId} rejected.`,
+  };
+}
+
 // ─── Store reset (for tests) ──────────────────────────────────────────────────
 
 export function resetDartMockStore(): void {
   _operationalModes.clear();
   _instructionStore.clear();
   _pollCounts.clear();
+  _pendingQueue.clear();
+  _seedPendingQueue();
 }
