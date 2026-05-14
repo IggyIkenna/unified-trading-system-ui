@@ -232,7 +232,7 @@ function DetailPanel({ row, onClose }: { row: EvalDoc; onClose: () => void }) {
           />
           <DetailRow label="Fund jurisdiction" value={row.fundJurisdiction} />
           <DetailRow label="Track-record timing" value={row.trackRecordTiming} />
-          <DetailRow label="Plans to raise" value={row.mdToRaiseExternalCapital} />
+          <DetailRow label="Plans to raise" value={row.planToRaiseExternalCapital} />
           <DetailRow label="Fundraising channels" value={(row.fundraisingChannels ?? []).join(", ") || undefined} />
           <DetailRow label="Fundraising notes" value={row.fundraisingNotes} />
           <DetailRow label="Investor classification" value={row.investorClassification} />
