@@ -24,6 +24,9 @@ interface FileUploadFieldProps {
   readonly onFileChange: (file: File | null) => void;
   /** Server-side upload failure surfaced from the parent's submit handler. */
   readonly errorMessage?: string | null;
+  /** Optional sample/template file the prospect can download to see the expected schema. */
+  readonly templateUrl?: string;
+  readonly templateLabel?: string;
 }
 
 export function FileUploadField({
@@ -34,6 +37,8 @@ export function FileUploadField({
   onChange,
   onFileChange,
   errorMessage,
+  templateUrl,
+  templateLabel,
 }: FileUploadFieldProps) {
   const inputRef = React.useRef<HTMLInputElement | null>(null);
 
@@ -71,6 +76,14 @@ export function FileUploadField({
     <div className="space-y-1">
       <Label className="text-sm font-medium">{label}</Label>
       {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
+      {templateUrl && (
+        <p className="text-xs text-muted-foreground">
+          <a href={templateUrl} download className="text-blue-600 underline hover:text-blue-800 dark:text-blue-400">
+            Download {templateLabel ?? "template"}
+          </a>{" "}
+          to see the expected columns.
+        </p>
+      )}
 
       {value && !stale ? (
         <div className="mt-1 flex items-start justify-between gap-3 rounded-md border border-border bg-card/40 px-3 py-2">

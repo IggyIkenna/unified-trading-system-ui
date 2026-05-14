@@ -2305,8 +2305,10 @@ export default function StrategyEvaluationFormClient({
                     {
                       key: "tradeLogCsv" as const,
                       label: "Trade log CSV",
-                      hint: "One row per trade or fill: at minimum timestamp, side, instrument, size, price",
+                      hint: "One row per trade or fill, ordered by timestamp. Required: timestamp (UTC), venue, instrument, side (buy/sell), size, price. Optional: fee, fee_ccy, trade_id.",
                       accept: ".csv,.tsv,.parquet",
+                      templateUrl: "/templates/strategy-evaluation/trade_log_template.csv",
+                      templateLabel: "trade log CSV template",
                     },
                     {
                       key: "equityCurveCsv" as const,
@@ -2319,8 +2321,10 @@ export default function StrategyEvaluationFormClient({
                     label: string;
                     hint: string;
                     accept: string;
+                    templateUrl?: string;
+                    templateLabel?: string;
                   }[]
-                ).map(({ key, label, hint, accept }) => (
+                ).map(({ key, label, hint, accept, templateUrl, templateLabel }) => (
                   <FileUploadField
                     key={key}
                     label={label}
@@ -2330,6 +2334,8 @@ export default function StrategyEvaluationFormClient({
                     onChange={(ref) => setField(key, ref)}
                     onFileChange={(file) => handleFileChange(key, file)}
                     errorMessage={uploadErrors[key] ?? null}
+                    templateUrl={templateUrl}
+                    templateLabel={templateLabel}
                   />
                 ))}
 
