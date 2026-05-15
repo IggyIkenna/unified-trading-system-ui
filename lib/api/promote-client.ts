@@ -62,6 +62,63 @@ export async function promoteCandidate(
   }) as Promise<PromoteResponse>;
 }
 
+export interface DemoteRequest {
+  demote_to_stage: string;
+  operator: string;
+  reason: string;
+}
+
+export interface DemoteResponse {
+  strategy_id: string;
+  manifest_id: string;
+  demoted_to_stage: string;
+  operator: string;
+  demoted_at: string;
+  event_emitted: string;
+}
+
+export interface OverrideRequest {
+  override_stage: string;
+  operator: string;
+  reason: string;
+  risk_ack: boolean;
+}
+
+export interface OverrideResponse {
+  strategy_id: string;
+  manifest_id: string;
+  override_stage: string;
+  operator: string;
+  overridden_at: string;
+  event_emitted: string;
+}
+
+export async function demoteCandidate(
+  strategyId: string,
+  manifestId: string,
+  request: DemoteRequest,
+  token: string | null,
+): Promise<DemoteResponse> {
+  return apiFetch(`/api/promote/${encodeURIComponent(strategyId)}/${encodeURIComponent(manifestId)}/demote`, token, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(request),
+  }) as Promise<DemoteResponse>;
+}
+
+export async function overrideCandidate(
+  strategyId: string,
+  manifestId: string,
+  request: OverrideRequest,
+  token: string | null,
+): Promise<OverrideResponse> {
+  return apiFetch(`/api/promote/${encodeURIComponent(strategyId)}/${encodeURIComponent(manifestId)}/override`, token, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(request),
+  }) as Promise<OverrideResponse>;
+}
+
 export async function fetchStrategyRuns(
   strategyId: string,
   mode: "batch" | "paper" | "live",
