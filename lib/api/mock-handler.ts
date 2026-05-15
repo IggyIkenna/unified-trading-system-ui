@@ -100,6 +100,7 @@ import {
   mockModeTransition,
   mockPreviewResponse,
   mockRejectInstruction,
+  mockStrategyRuns,
   mockSubmitResponse,
 } from "@/lib/api/mocks/dart";
 
@@ -1023,12 +1024,15 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       strategy_id?: string;
     };
     const archetypeId = body.archetype ?? "CARRY_BASIS_PERP";
-    return json(mockSubmitResponse(archetypeId, {
-      correlation_id: body.correlation_id ?? "corr-mock",
-      venue: body.venue,
-      side: body.side,
-      strategy_id: body.strategy_id,
-    }), 120);
+    return json(
+      mockSubmitResponse(archetypeId, {
+        correlation_id: body.correlation_id ?? "corr-mock",
+        venue: body.venue,
+        side: body.side,
+        strategy_id: body.strategy_id,
+      }),
+      120,
+    );
   }
 
   // GET /api/instructions/:instructionId/status
@@ -1060,7 +1064,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     return json(result, 80);
   }
   // GET /api/manual/pending
-  if (route === "/api/manual/pending" && !opts?.method || opts?.method?.toUpperCase() === "GET") {
+  if ((route === "/api/manual/pending" && !opts?.method) || opts?.method?.toUpperCase() === "GET") {
     return json(mockListPendingInstructions(), 60);
   }
 
@@ -1091,6 +1095,16 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       });
     }
     return json(result, 80);
+  }
+
+  // GET /api/strategy/:strategyId/runs?mode=batch|paper|live&limit=N (pvl-p23b)
+  const strategyRunsMatch = /^\/api\/strategy\/([^/]+)\/runs$/.exec(route);
+  if (strategyRunsMatch && (!opts?.method || opts?.method?.toUpperCase() === "GET")) {
+    const strategyId = decodeURIComponent(strategyRunsMatch[1] ?? "");
+    const urlObj = new URL(path, "http://localhost");
+    const mode = (urlObj.searchParams.get("mode") ?? "batch") as import("@/lib/api/dart-client").RunMode;
+    const limit = parseInt(urlObj.searchParams.get("limit") ?? "14", 10);
+    return json(mockStrategyRuns(strategyId, mode, limit), 60);
   }
 
   // ─────────────────────────────────────────────────────────────────────────────

@@ -17,6 +17,7 @@
 
 import type {
   ApproveRejectResponse,
+  FillRecord,
   InstructionStatusResponse,
   ManualInstructionStatus,
   ModeTransitionResponse,
@@ -24,6 +25,9 @@ import type {
   PendingInstruction,
   PreviewResponse,
   RiskCheckResult,
+  RunMode,
+  RunRecord,
+  StrategyRunsResponse,
   SubmitResponse,
 } from "@/lib/api/dart-client";
 
@@ -124,13 +128,7 @@ export function mockSubmitResponse(
 /** Progress the status lifecycle on each poll for a realistic mock. */
 const _pollCounts: Map<string, number> = new Map();
 
-const STATUS_PROGRESSION: readonly ManualInstructionStatus[] = [
-  "pending",
-  "pending",
-  "partial",
-  "partial",
-  "filled",
-];
+const STATUS_PROGRESSION: readonly ManualInstructionStatus[] = ["pending", "pending", "partial", "partial", "filled"];
 
 export function mockInstructionStatus(instructionId: string): InstructionStatusResponse {
   const existing = _instructionStore.get(instructionId);
@@ -141,7 +139,7 @@ export function mockInstructionStatus(instructionId: string): InstructionStatusR
   const status = STATUS_PROGRESSION[statusIndex] ?? "pending";
   const filledQty = status === "filled" ? 0.05 : status === "partial" ? 0.025 : 0;
   const avgFillPrice = status === "pending" ? null : 42_360.0;
-  const unrealizedPnl = status === "filled" ? 12.50 : status === "partial" ? 5.0 : null;
+  const unrealizedPnl = status === "filled" ? 12.5 : status === "partial" ? 5.0 : null;
 
   const updated: InstructionStatusResponse = {
     instruction_id: instructionId,
@@ -254,9 +252,7 @@ export function mockListPendingInstructions(): readonly PendingInstruction[] {
       _pendingQueue.delete(item.instruction_id);
     }
   }
-  return live.sort(
-    (a, b) => new Date(a.enqueued_at).getTime() - new Date(b.enqueued_at).getTime(),
-  );
+  return live.sort((a, b) => new Date(a.enqueued_at).getTime() - new Date(b.enqueued_at).getTime());
 }
 
 export function mockApproveInstruction(instructionId: string): ApproveRejectResponse | { detail: string; status: 404 } {
@@ -283,6 +279,60 @@ export function mockRejectInstruction(
     instruction_id: instructionId,
     action: "rejected",
     message: `Instruction ${instructionId} rejected.`,
+  };
+}
+
+// ─── Strategy runs fixtures (pvl-p23b) ───────────────────────────────────────
+
+const MODE_PNL: Record<RunMode, number> = {
+  batch: 1_840,
+  paper: 1_720,
+  live: 1_680,
+};
+const MODE_SLIPPAGE: Record<RunMode, number> = { batch: 1.2, paper: 2.4, live: 3.1 };
+const MODE_LATENCY: Record<RunMode, number> = { batch: 0, paper: 48, live: 62 };
+
+function _mockFill(mode: RunMode, i: number): FillRecord {
+  const price = 42_000 + i * 10 + (mode === "live" ? 15 : 0);
+  return {
+    fill_id: `fill-${mode}-${i}`,
+    instrument_id: "ETH-USDC",
+    side: i % 2 === 0 ? "buy" : "sell",
+    quantity: 0.25,
+    price,
+    fee_usd: price * 0.25 * 0.0005,
+    filled_at: new Date(Date.now() - (14 - i) * 86_400_000).toISOString(),
+  };
+}
+
+function _mockRun(strategyId: string, mode: RunMode, dayOffset: number): RunRecord {
+  const fills: FillRecord[] = [_mockFill(mode, dayOffset), _mockFill(mode, dayOffset + 1)];
+  const pnlVariance = (Math.random() - 0.5) * 80;
+  return {
+    run_id: `run-${mode}-${dayOffset}`,
+    strategy_id: strategyId,
+    mode,
+    run_date: new Date(Date.now() - dayOffset * 86_400_000).toISOString().slice(0, 10),
+    realized_pnl: MODE_PNL[mode] + pnlVariance,
+    unrealized_pnl: pnlVariance * 0.3,
+    fill_count: fills.length,
+    fills,
+    event_count: fills.length * 3,
+    slippage_bps_avg: MODE_SLIPPAGE[mode],
+    order_latency_p99_ms: MODE_LATENCY[mode],
+  };
+}
+
+export function mockStrategyRuns(strategyId: string, mode: RunMode, limit: number): StrategyRunsResponse {
+  const count = Math.min(limit, 14);
+  const runs: RunRecord[] = Array.from({ length: count }, (_, i) => _mockRun(strategyId, mode, i));
+  return {
+    strategy_id: strategyId,
+    mode,
+    runs,
+    total_count: count,
+    page: 1,
+    page_size: count,
   };
 }
 

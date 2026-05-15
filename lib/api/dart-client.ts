@@ -21,12 +21,7 @@ import { apiFetch } from "@/lib/api/fetch";
 
 // ─── Shared types ────────────────────────────────────────────────────────────
 
-export type ManualInstructionStatus =
-  | "pending"
-  | "partial"
-  | "filled"
-  | "cancelled"
-  | "rejected";
+export type ManualInstructionStatus = "pending" | "partial" | "filled" | "cancelled" | "rejected";
 
 export type OperationalMode = "MANUAL" | "PAPER" | "LIVE" | "BACKTEST";
 
@@ -89,15 +84,11 @@ export async function previewManualInstruction(
   request: PreviewRequest,
   token: string | null,
 ): Promise<PreviewResponse> {
-  const result = (await apiFetch(
-    `/api/archetypes/${encodeURIComponent(archetypeId)}/preview`,
-    token,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(request),
-    },
-  )) as PreviewResponse;
+  const result = (await apiFetch(`/api/archetypes/${encodeURIComponent(archetypeId)}/preview`, token, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(request),
+  })) as PreviewResponse;
 
   if (!result.risk_check_passed) {
     const failed = result.risk_checks.filter((c) => !c.passed);
@@ -131,10 +122,7 @@ export interface SubmitResponse {
   readonly strategy_id?: string;
 }
 
-export async function submitManualInstruction(
-  request: SubmitRequest,
-  token: string | null,
-): Promise<SubmitResponse> {
+export async function submitManualInstruction(request: SubmitRequest, token: string | null): Promise<SubmitResponse> {
   return (await apiFetch("/api/manual/submit", token, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -195,21 +183,14 @@ export interface ApproveRejectResponse {
   readonly message: string;
 }
 
-export async function listPendingInstructions(
-  token: string | null,
-): Promise<readonly PendingInstruction[]> {
+export async function listPendingInstructions(token: string | null): Promise<readonly PendingInstruction[]> {
   return (await apiFetch("/api/manual/pending", token)) as PendingInstruction[];
 }
 
-export async function approveInstruction(
-  instructionId: string,
-  token: string | null,
-): Promise<ApproveRejectResponse> {
-  return (await apiFetch(
-    `/api/manual/pending/${encodeURIComponent(instructionId)}/approve`,
-    token,
-    { method: "POST" },
-  )) as ApproveRejectResponse;
+export async function approveInstruction(instructionId: string, token: string | null): Promise<ApproveRejectResponse> {
+  return (await apiFetch(`/api/manual/pending/${encodeURIComponent(instructionId)}/approve`, token, {
+    method: "POST",
+  })) as ApproveRejectResponse;
 }
 
 export interface RejectInstructionRequest {
@@ -221,15 +202,61 @@ export async function rejectInstruction(
   request: RejectInstructionRequest,
   token: string | null,
 ): Promise<ApproveRejectResponse> {
+  return (await apiFetch(`/api/manual/pending/${encodeURIComponent(instructionId)}/reject`, token, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(request),
+  })) as ApproveRejectResponse;
+}
+
+// ─── Strategy runs endpoint (pvl-p23b) ───────────────────────────────────────
+
+export type RunMode = "batch" | "paper" | "live";
+
+export interface FillRecord {
+  readonly fill_id: string;
+  readonly instrument_id: string;
+  readonly side: string;
+  readonly quantity: number;
+  readonly price: number;
+  readonly fee_usd: number;
+  readonly filled_at: string;
+}
+
+export interface RunRecord {
+  readonly run_id: string;
+  readonly strategy_id: string;
+  readonly mode: RunMode;
+  readonly run_date: string;
+  readonly realized_pnl: number;
+  readonly unrealized_pnl: number;
+  readonly fill_count: number;
+  readonly fills: readonly FillRecord[];
+  readonly event_count: number;
+  readonly slippage_bps_avg: number;
+  readonly order_latency_p99_ms: number;
+}
+
+export interface StrategyRunsResponse {
+  readonly strategy_id: string;
+  readonly mode: RunMode;
+  readonly runs: readonly RunRecord[];
+  readonly total_count: number;
+  readonly page: number;
+  readonly page_size: number;
+}
+
+export async function fetchStrategyRuns(
+  strategyId: string,
+  mode: RunMode,
+  limit: number,
+  token: string | null,
+): Promise<StrategyRunsResponse> {
+  const params = new URLSearchParams({ mode, limit: String(limit) });
   return (await apiFetch(
-    `/api/manual/pending/${encodeURIComponent(instructionId)}/reject`,
+    `/api/strategy/${encodeURIComponent(strategyId)}/runs?${params.toString()}`,
     token,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(request),
-    },
-  )) as ApproveRejectResponse;
+  )) as StrategyRunsResponse;
 }
 
 // ─── Operational-mode endpoint ────────────────────────────────────────────────
@@ -249,13 +276,9 @@ export async function transitionOperationalMode(
   request: ModeTransitionRequest,
   token: string | null,
 ): Promise<ModeTransitionResponse> {
-  return (await apiFetch(
-    `/api/archetypes/${encodeURIComponent(archetypeId)}/operational-mode`,
-    token,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(request),
-    },
-  )) as ModeTransitionResponse;
+  return (await apiFetch(`/api/archetypes/${encodeURIComponent(archetypeId)}/operational-mode`, token, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(request),
+  })) as ModeTransitionResponse;
 }

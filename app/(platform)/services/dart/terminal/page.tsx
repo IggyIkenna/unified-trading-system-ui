@@ -37,15 +37,14 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  AutomationToggle,
-  type OperationalMode,
-} from "@/components/dart/automation-toggle";
+import { AutomationToggle, type OperationalMode } from "@/components/dart/automation-toggle";
+import { DartThreeWayView } from "@/components/dart/dart-three-way-view";
+import { ManualTradeGateDialog } from "@/components/dart/manual-trade-gate-dialog";
 import { TradeMonitor } from "@/components/dart/trade-monitor";
 import { useAuth } from "@/hooks/use-auth";
 import { ARCHETYPE_METADATA } from "@/lib/architecture-v2";
 import type { ArchetypeMetadata } from "@/lib/architecture-v2/archetypes";
-import { ChevronRight, Terminal } from "lucide-react";
+import { ChevronRight, ShieldAlert, Terminal } from "lucide-react";
 
 // Default OperationalMode for un-seeded archetypes. The route the
 // AutomationToggle hits returns the actual server-side state on first
@@ -86,7 +85,7 @@ export default function DartTerminalPage() {
     }
   }, [loading, router, user]);
 
-  const rows = React.useMemo(deriveArchetypeRows, []);
+  const rows = React.useMemo(() => deriveArchetypeRows(), []);
 
   if (loading || !user) {
     return null;
@@ -101,12 +100,18 @@ export default function DartTerminalPage() {
             DART Terminal
           </h1>
           <p className="mt-1 max-w-3xl text-sm text-muted-foreground">
-            Operator surface for the live archetype mesh. Switch any archetype between MANUAL,
-            PAPER, and LIVE modes; submit operator-driven manual trades via the trade panel; and
-            monitor in-flight instructions in real time.
+            Operator surface for the live archetype mesh. Switch any archetype between MANUAL, PAPER, and LIVE modes;
+            submit operator-driven manual trades via the trade panel; and monitor in-flight instructions in real time.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          {/* pvl-p23c: Manual trade gate — approval queue for MANUAL-mode instructions */}
+          <ManualTradeGateDialog>
+            <Button variant="outline" size="sm" data-testid="dart-terminal-gate-trigger">
+              <ShieldAlert className="mr-1.5 size-4" aria-hidden />
+              Trade gate
+            </Button>
+          </ManualTradeGateDialog>
           <Button variant="outline" size="sm" asChild data-testid="dart-terminal-trade-link">
             <Link href="/services/dart/terminal/manual">
               Manual trade
@@ -130,6 +135,11 @@ export default function DartTerminalPage() {
           <TradeMonitor instructionId={instructionId} />
         </section>
       ) : null}
+
+      {/* pvl-p23a: 3-way batch/paper/live comparison — shows latest run across all modes */}
+      <section className="mb-8" data-testid="dart-terminal-three-way-section">
+        <DartThreeWayView strategyId="carry_staked_basis/defi/v1" />
+      </section>
 
       <section data-testid="dart-terminal-archetypes-section">
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
