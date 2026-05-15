@@ -48,6 +48,8 @@ import {
   type PnLBreakdownData,
 } from "@/lib/mocks/fixtures/strategy-instances";
 import { useStrategyPerformance } from "@/hooks/api/use-strategies";
+import { useAuth } from "@/hooks/use-auth";
+import { promoteCandidate } from "@/lib/api/promote-client";
 import { ApiError } from "@/components/shared/api-error";
 import { Spinner } from "@/components/shared/spinner";
 import { MODEL_STRATEGY_MAP } from "./components/strategy-detail-constants";
@@ -77,6 +79,7 @@ export function StrategyDetailPageClient({ params }: { params: Promise<{ id: str
   const { id: rawId } = use(params);
   const id = decodeStrategyRouteId(rawId);
   const { mode, isLive, isBatch } = useExecutionMode();
+  const { token } = useAuth();
   const { data: perfData, isLoading, isError, error, refetch } = useStrategyPerformance();
   const perfRaw: any[] = (perfData as any)?.data ?? (perfData as any)?.strategies ?? [];
   const STRATEGIES: Strategy[] = perfRaw.length > 0 ? (perfRaw as Strategy[]) : DEFAULT_STRATEGIES;
@@ -296,8 +299,17 @@ export function StrategyDetailPageClient({ params }: { params: Promise<{ id: str
             strategyId={strategy.id}
             strategyName={strategy.name}
             currentStage={strategy.status === "live" ? "LIVE_REAL" : "STAGING"}
-            onPromote={async () => {
-              console.log("Promoting strategy:", strategy.id);
+            onPromote={async (targetStage) => {
+              await promoteCandidate(
+                strategy.id,
+                `candidate-${strategy.id}`,
+                {
+                  target_phase: targetStage === "LIVE_REAL" ? "live_early" : "paper_1d",
+                  promoter: "operator",
+                  reason: `Promoted from ${targetStage} via UI`,
+                },
+                token,
+              );
             }}
             trigger={
               <Button variant="outline" size="sm" className="gap-2">
