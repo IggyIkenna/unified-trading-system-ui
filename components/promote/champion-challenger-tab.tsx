@@ -3,8 +3,9 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import { fmtNum, fmtPct, statusBg } from "./helpers";
+import { fmtNum, fmtPct, fmtUsd, statusBg } from "./helpers";
 import { PromoteWorkflowActions } from "./promote-workflow-actions";
+import { useStrategyRuns } from "@/hooks/api/use-strategy-runs";
 import type { CandidateStrategy, StrategyMetrics } from "./types";
 
 function MetricRow({ label, champ, chall, delta }: { label: string; champ: string; chall: string; delta: string }) {
@@ -43,6 +44,7 @@ function fmtDeltaNum(a: number, b: number, digits = 2) {
 export function ChampionChallengerTab({ strategy }: { strategy: CandidateStrategy }) {
   const m = strategy.metrics;
   const chall = metricsRows(m);
+  const batchRunsQuery = useStrategyRuns(strategy.id, "batch");
 
   if (strategy.champion) {
     const cm = strategy.champion.metrics;
@@ -286,6 +288,50 @@ export function ChampionChallengerTab({ strategy }: { strategy: CandidateStrateg
               : "overlap with existing factors; size conservatively."}
           </p>
           <p>Liquidity score {strategy.riskProfile.liquidityScore} supports target ramp if execution gates clear.</p>
+        </CardContent>
+      </Card>
+
+      {/* Batch run history from real backend (Phase U2 endpoint) */}
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm">Batch run history (live backend)</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {batchRunsQuery.isPending ? (
+            <p className="text-xs text-muted-foreground font-mono">Loading runs…</p>
+          ) : batchRunsQuery.isError ? (
+            <p className="text-xs text-rose-400 font-mono">Failed to load batch runs</p>
+          ) : batchRunsQuery.data && batchRunsQuery.data.runs.length > 0 ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-xs">Date</TableHead>
+                  <TableHead className="text-xs text-right">Realized P&amp;L</TableHead>
+                  <TableHead className="text-xs text-right">Fills</TableHead>
+                  <TableHead className="text-xs text-right">Slippage (bps)</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {batchRunsQuery.data.runs.slice(0, 10).map((run) => (
+                  <TableRow key={run.run_id} className="text-xs">
+                    <TableCell className="font-mono text-muted-foreground">{run.run_date}</TableCell>
+                    <TableCell
+                      className={cn(
+                        "font-mono text-right",
+                        run.realized_pnl >= 0 ? "text-emerald-400" : "text-rose-400",
+                      )}
+                    >
+                      {fmtUsd(run.realized_pnl)}
+                    </TableCell>
+                    <TableCell className="font-mono text-right">{run.fill_count}</TableCell>
+                    <TableCell className="font-mono text-right">{fmtNum(run.slippage_bps_avg, 1)}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <p className="text-xs text-muted-foreground font-mono">No batch runs recorded yet</p>
+          )}
         </CardContent>
       </Card>
 

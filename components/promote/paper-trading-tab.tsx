@@ -6,10 +6,12 @@ import { cn } from "@/lib/utils";
 import { fmtNum, fmtPct, fmtUsd, statusBg } from "./helpers";
 import { MetricCard } from "@/components/shared/metric-card";
 import { PromoteWorkflowActions } from "./promote-workflow-actions";
+import { useStrategyRuns } from "@/hooks/api/use-strategy-runs";
 import type { CandidateStrategy } from "./types";
 
 export function PaperTradingTab({ strategy }: { strategy: CandidateStrategy }) {
   const pt = strategy.paperTrading;
+  const runsQuery = useStrategyRuns(strategy.id, "paper");
 
   if (!pt) {
     return (
@@ -204,30 +206,49 @@ export function PaperTradingTab({ strategy }: { strategy: CandidateStrategy }) {
         </Card>
       )}
 
-      {pt.dailyPnlUsd && pt.dailyPnlUsd.length > 0 ? (
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Daily shadow P&amp;L (USD)</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-end gap-0.5 h-24">
-              {pt.dailyPnlUsd.map((v, i) => {
-                const maxAbs = Math.max(...pt.dailyPnlUsd!.map((x) => Math.abs(x)), 1);
-                const h = Math.min(100, (Math.abs(v) / maxAbs) * 100);
-                return (
-                  <div
-                    key={i}
-                    className={cn("flex-1 min-w-0 rounded-t", v >= 0 ? "bg-emerald-500/60" : "bg-rose-500/60")}
-                    style={{ height: `${h}%` }}
-                    title={`Day ${i + 1}: ${fmtUsd(v)}`}
-                  />
-                );
-              })}
-            </div>
-            <p className="text-xs text-muted-foreground mt-2 font-mono">{pt.dailyPnlUsd.length} sessions shown</p>
-          </CardContent>
-        </Card>
-      ) : null}
+      {/* Live run history from real backend (Phase U2 endpoint) */}
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm">Paper run history (live backend)</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {runsQuery.isPending ? (
+            <p className="text-xs text-muted-foreground font-mono">Loading runs…</p>
+          ) : runsQuery.isError ? (
+            <p className="text-xs text-rose-400 font-mono">Failed to load run history</p>
+          ) : runsQuery.data && runsQuery.data.runs.length > 0 ? (
+            <>
+              <div className="flex items-end gap-0.5 h-24 mb-2">
+                {runsQuery.data.runs.map((run) => {
+                  const maxAbs = Math.max(...runsQuery.data!.runs.map((r) => Math.abs(r.realized_pnl)), 1);
+                  const h = Math.min(100, (Math.abs(run.realized_pnl) / maxAbs) * 100);
+                  return (
+                    <div
+                      key={run.run_id}
+                      className={cn(
+                        "flex-1 min-w-0 rounded-t",
+                        run.realized_pnl >= 0 ? "bg-emerald-500/60" : "bg-rose-500/60",
+                      )}
+                      style={{ height: `${h}%` }}
+                      title={`${run.run_date}: ${fmtUsd(run.realized_pnl)} · ${run.fill_count} fills`}
+                    />
+                  );
+                })}
+              </div>
+              <p className="text-xs text-muted-foreground font-mono">
+                {runsQuery.data.runs.length} sessions · avg slippage{" "}
+                {fmtNum(
+                  runsQuery.data.runs.reduce((s, r) => s + r.slippage_bps_avg, 0) / runsQuery.data.runs.length,
+                  1,
+                )}
+                bps
+              </p>
+            </>
+          ) : (
+            <p className="text-xs text-muted-foreground font-mono">No paper runs recorded yet</p>
+          )}
+        </CardContent>
+      </Card>
 
       <PromoteWorkflowActions
         strategyId={strategy.id}
