@@ -19,8 +19,8 @@
  * so audience-routing stays environment-agnostic.
  *
  * SSOT:
- *   plans/active/refactor_g2_10_allocator_ui_split_2026_04_20.plan.md
- *   plans/active/refactor_g2_1_org_scoped_jwt_claims_2026_04_20.plan.md
+ *   plans/active/refactor_g2_10_allocator_ui_split_2026_04_20.plan
+ *   plans/active/refactor_g2_1_org_scoped_jwt_claims_2026_04_20.plan
  */
 import type { Audience } from "@/lib/architecture-v2/availability";
 

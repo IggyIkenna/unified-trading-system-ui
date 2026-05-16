@@ -1,4 +1,5 @@
 import { FamilyGridClient } from "./_components/family-grid";
+import { FamilyArchetypeAssetGroupBrowser } from "../../_components/family-archetype-asset-group-browser";
 import { STRATEGY_CATALOG } from "@/lib/mocks/fixtures/strategy-catalog-data";
 
 export const dynamic = "force-static";
@@ -11,16 +12,20 @@ export default function FamilyOverviewPage() {
     <div className="min-h-screen bg-background text-foreground">
       <div className="platform-page-width space-y-6 p-6">
         <div className="space-y-2">
-          <h1 className="text-page-title font-semibold tracking-tight text-foreground">
-            Strategy families
-          </h1>
+          <h1 className="text-page-title font-semibold tracking-tight text-foreground">Strategy families</h1>
           <p className="text-body text-muted-foreground max-w-2xl">
-            8 orthogonal alpha families per the v2 architecture. Each strategy belongs to exactly
-            one family and exactly one of 18 archetype code paths. {count} strategies currently
-            catalogued.
+            8 orthogonal alpha families per the v2 architecture. Each strategy belongs to exactly one family and exactly
+            one of 18 archetype code paths. {count} strategies currently catalogued.
           </p>
         </div>
         <FamilyGridClient />
+        {/* 2026-04-28 DART tile-split D.6 page-level: research-side
+            family → archetype → asset_group drilldown backed by the live
+            strategy_instruments.json artefact. The FamilyGridClient above is
+            mock-fixture-driven for fast static render; this panel adds the
+            production hierarchy with archetype + asset_group filter chips
+            and per-asset-group instance counts. */}
+        <FamilyArchetypeAssetGroupBrowser title="Live hierarchy · family → archetype → asset_group" />
       </div>
     </div>
   );

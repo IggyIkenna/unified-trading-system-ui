@@ -1,7 +1,7 @@
 /**
  * Service registry — 5 top-level product tiles shown on /dashboard.
  *
- * 2026-04-21 collapse (plans/active/dashboard_services_grid_collapse_2026_04_21.plan.md):
+ * 2026-04-21 collapse (plans/active/dashboard_services_grid_collapse_2026_04_21.md):
  *   - 11 tiles → 5 tiles
  *   - Folded-away as DART sub-routes: data · research · promote · observe · strategy-catalogue
  *   - Odum Signals disambiguated: top-level tile = COUNTERPARTY-OUTBOUND broadcast only;
@@ -48,22 +48,24 @@ export interface ServiceDefinition {
 }
 
 export const SERVICE_REGISTRY: readonly ServiceDefinition[] = [
-  // ─── DART (absorbs Data · Research · Promote · Observe · Strategy Catalogue) ─
+  // ─── DART Terminal (FIRST — Buyer-demo cockpit anchor) ─────────────────────
+  // 2026-04-30 audit fix #3: DART Terminal listed BEFORE DART Research per
+  // dart_ux_cockpit_refactor_2026_04_29.md §22 locked decision —
+  // "Dashboard tile order: DART Terminal LEFT, DART Research RIGHT. Buyer
+  // demo leads with the live cockpit / FOMO surface. Research is deep but
+  // doesn't deliver the wow hit on first load."
+  // SSOT: unified-trading-pm/codex/14-playbooks/dart/dart-terminal-vs-research.md
   {
-    key: "dart",
-    label: "DART",
+    key: "dart-terminal",
+    label: "DART Terminal",
     description:
-      "Data-Analytics-Research-Trading — terminal, positions, orders, P&L, research, promote, observe, config.",
-    href: "/services/trading/overview",
+      "Live trading surfaces — terminal, positions, orders, P&L, observe, strategy catalogue, signal intake.",
+    // 2026-04-30 (Phase 9): tile routes into the unified workspace shell with
+    // surface=terminal + tm=command so the cockpit lands on the live
+    // command mode by default.
+    href: "/services/workspace?surface=terminal&tm=command",
     lifecycleStage: "run",
-    requiredEntitlements: [
-      "execution-basic",
-      "execution-full",
-      "strategy-full",
-      "ml-full",
-      "data-basic",
-      "data-pro",
-    ] as readonly Entitlement[],
+    requiredEntitlements: ["execution-basic", "execution-full", "data-basic", "data-pro"] as readonly Entitlement[],
     icon: "TrendingUp",
     internalOnly: false,
     subRoutes: [
@@ -74,22 +76,6 @@ export const SERVICE_REGISTRY: readonly ServiceDefinition[] = [
         icon: "Activity",
         requiredEntitlements: ["execution-basic", "execution-full"] as readonly Entitlement[],
         description: "Positions, orders, P&L, emergency manual intervention.",
-      },
-      {
-        key: "research",
-        label: "Research",
-        href: "/services/research/overview",
-        icon: "FlaskConical",
-        requiredEntitlements: ["strategy-full", "ml-full"] as readonly Entitlement[],
-        description: "ML training, backtesting, feature engineering.",
-      },
-      {
-        key: "promote",
-        label: "Promote",
-        href: "/services/research/strategy/candidates",
-        icon: "ArrowUpCircle",
-        requiredEntitlements: ["strategy-full", "ml-full"] as readonly Entitlement[],
-        description: "Candidate review + approval queue.",
       },
       {
         key: "observe",
@@ -122,6 +108,120 @@ export const SERVICE_REGISTRY: readonly ServiceDefinition[] = [
         icon: "Database",
         requiredEntitlements: ["*"],
         description: "Instrument catalogue + data freshness (admin/internal only).",
+      },
+    ],
+  },
+
+  // ─── DART Research (after Terminal) ────────────────────────────────────────
+  // SSOT: unified-trading-pm/codex/14-playbooks/dart/dart-terminal-vs-research.md
+  // Lifecycle stages: Develop / Train / Validate / Allocate / Promote.
+  // Strategy lists within each stage use family → archetype → asset_group.
+  {
+    key: "dart-research",
+    label: "DART Research",
+    description:
+      "Research workbench — feature engineering, ML training, backtesting, validation, allocator research, candidate promotion.",
+    // 2026-04-30 (Phase 9): tile routes into the unified workspace shell with
+    // surface=research seeded so the journey rail anchors at "discover".
+    href: "/services/workspace?surface=research&rs=discover",
+    lifecycleStage: "build",
+    requiredEntitlements: ["strategy-full", "ml-full"] as readonly Entitlement[],
+    icon: "FlaskConical",
+    internalOnly: false,
+    subRoutes: [
+      {
+        key: "research-overview",
+        label: "Overview",
+        href: "/services/research/overview",
+        icon: "FlaskConical",
+        requiredEntitlements: ["strategy-full", "ml-full"] as readonly Entitlement[],
+        description: "Research hub landing page.",
+      },
+      // ── Develop ───────────────────────────────────────────────────────────
+      {
+        key: "features",
+        label: "Features",
+        href: "/services/research/features",
+        icon: "Database",
+        requiredEntitlements: ["strategy-full", "ml-full"] as readonly Entitlement[],
+        description: "Feature catalogue + provenance (Develop).",
+      },
+      {
+        key: "feature-etl",
+        label: "Feature ETL",
+        href: "/services/research/feature-etl",
+        icon: "Workflow",
+        requiredEntitlements: ["strategy-full", "ml-full"] as readonly Entitlement[],
+        description: "Feature ETL pipeline (Develop).",
+      },
+      {
+        key: "quant",
+        label: "Quant Workspace",
+        href: "/services/research/quant",
+        icon: "Calculator",
+        requiredEntitlements: ["strategy-full", "ml-full"] as readonly Entitlement[],
+        description: "Quantitative research workbench (Develop).",
+      },
+      {
+        key: "strategies",
+        label: "Strategies",
+        href: "/services/research/strategies",
+        icon: "Layers",
+        requiredEntitlements: ["strategy-full", "ml-full"] as readonly Entitlement[],
+        description: "Strategy development — family → archetype → asset_group (Develop).",
+      },
+      // ── Train ─────────────────────────────────────────────────────────────
+      {
+        key: "ml",
+        label: "ML Pipeline",
+        href: "/services/research/ml",
+        icon: "Cpu",
+        requiredEntitlements: ["strategy-full", "ml-full"] as readonly Entitlement[],
+        description: "Model training, registry, monitoring, governance (Train).",
+      },
+      // ── Validate ──────────────────────────────────────────────────────────
+      {
+        key: "backtests",
+        label: "Backtests",
+        href: "/services/research/strategy/backtests",
+        icon: "PlayCircle",
+        requiredEntitlements: ["strategy-full", "ml-full"] as readonly Entitlement[],
+        description: "Strategy backtest runner (Validate).",
+      },
+      {
+        key: "signals",
+        label: "Signals (Validation)",
+        href: "/services/research/signals",
+        icon: "Radio",
+        requiredEntitlements: ["strategy-full", "ml-full"] as readonly Entitlement[],
+        description: "Signal monitor + validation — surfaced from previously-orphan path (Validate).",
+      },
+      {
+        key: "execution-research",
+        label: "Execution Research",
+        href: "/services/research/execution",
+        icon: "Zap",
+        requiredEntitlements: ["strategy-full", "ml-full"] as readonly Entitlement[],
+        description: "Execution algos, venue benchmarks, slippage simulation (Validate).",
+      },
+      // ── Allocate (Research) ───────────────────────────────────────────────
+      {
+        key: "allocate",
+        label: "Allocate (Research)",
+        href: "/services/research/allocate",
+        icon: "PieChart",
+        requiredEntitlements: ["strategy-full", "ml-full"] as readonly Entitlement[],
+        description:
+          "Research-time allocator workbench — regime-aware allocation backtests, model selection, shadow-vs-primary diff. Distinct from operational allocator at /services/investment-management/allocator.",
+      },
+      // ── Promote ───────────────────────────────────────────────────────────
+      {
+        key: "promote",
+        label: "Promote",
+        href: "/services/research/strategy/candidates",
+        icon: "ArrowUpCircle",
+        requiredEntitlements: ["strategy-full", "ml-full"] as readonly Entitlement[],
+        description: "Candidate review + approval queue + handoff to live (Promote).",
       },
     ],
   },
@@ -381,12 +481,38 @@ export const SERVICE_REGISTRY: readonly ServiceDefinition[] = [
         requiredEntitlements: ["*"],
         description: "System-wide audit trail.",
       },
+      // Plan D Phase 4 — pending approvals queue (onboarding requests +
+      // strategy-version request-approval). Single chip lands at the
+      // tabbed /approvals page, which routes between the two queues
+      // internally. Visible to admin + internal-trader personas.
+      {
+        key: "approvals",
+        label: "Approvals",
+        href: "/approvals",
+        icon: "ListChecks",
+        requiredEntitlements: ["*"],
+        description: "Onboarding + strategy-version approval queues.",
+      },
     ],
   },
 ] as const;
 
-/** Dashboard tile ids — mirrors SERVICE_REGISTRY keys. */
-export type DashboardTileId = "dart" | "odum-signals" | "reports" | "investor-relations" | "admin";
+/** Dashboard tile ids — mirrors SERVICE_REGISTRY keys.
+ *
+ * SSOT: unified-trading-pm/codex/14-playbooks/dart/dart-terminal-vs-research.md
+ * Legacy single `dart` tile was split 2026-04-28 into `dart-terminal`
+ * (Signals-In + DART-Full visible) and `dart-research` (DART-Full only;
+ * padlocked-visible for Signals-In). FOMO behavior is default-on for
+ * non-DART-Full users via the instrument-type gate (lib/architecture-v2/
+ * user-instrument-types.ts), not a separate tier id.
+ */
+export type DashboardTileId =
+  | "dart-terminal"
+  | "dart-research"
+  | "odum-signals"
+  | "reports"
+  | "investor-relations"
+  | "admin";
 
 /** Get services visible to a given set of entitlements. */
 export function getVisibleServices(entitlements: readonly string[], role: string): ServiceDefinition[] {

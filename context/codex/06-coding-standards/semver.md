@@ -81,7 +81,7 @@ This gate applies to ALL repos:
   - `semver-agent.yml` — automatic detection and issue creation
 - Admin script: `unified-trading-pm/scripts/approve-major-bump.sh`
 - Cursor rule: `unified-trading-pm/cursor-rules/core/major-bump-approval-required.mdc`
-- Plan #64: `unified-trading-pm/plans/active/major_version_bump_approval_gate_2026_03_11.plan.md`
+- Plan #64: `unified-trading-pm/plans/active/major_version_bump_approval_gate_2026_03_11.md`
 
 ## v1.0.0 Stability Gate
 

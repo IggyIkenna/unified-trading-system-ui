@@ -374,7 +374,7 @@ export default function AcquireOverviewPage() {
                     </Badge>
                   )}
                 </CardTitle>
-                <Link href="/services/observe/alerts">
+                <Link href="/services/workspace?surface=terminal&tm=command">
                   <Button variant="ghost" size="sm" className="h-7 text-xs">
                     View all in Observe
                     <ArrowRight className="ml-1 size-3" />

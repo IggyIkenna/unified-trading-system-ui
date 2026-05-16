@@ -157,7 +157,7 @@
       "status": "pass",
       "by": "agent+tests",
       "date": "2026-04-24",
-      "notes": "L1.5 harness spec: tests/widgets/risk/risk-term-structure.test.tsx — 10 tests covering loading/error/empty/populated states. Per ui_widget_test_rollout_2026_04_24.plan.md Phase 5."
+      "notes": "L1.5 harness spec: tests/widgets/risk/risk-term-structure.test.tsx — 10 tests covering loading/error/empty/populated states. Per ui_widget_test_rollout_2026_04_24.md Phase 5."
     },
     "l7": {
       "status": "pass",
@@ -236,7 +236,9 @@
     "notes": "Chart uses surface tokens for consistent asset-class color coding."
   },
   "dataContract": {
-    "channels": ["rest"],
+    "channels": [
+      "rest"
+    ],
     "primary": "rest",
     "cadence": "interval:60000",
     "staleness": "minutes",
@@ -245,9 +247,18 @@
     "notes": "termStructureData computed in use-risk-page-data.ts from positions bucketed by maturity."
   },
   "coverage": {
-    "assetClasses": ["defi", "cefi", "tradfi", "sports"],
-    "strategies": ["all"],
-    "venues": ["all"],
+    "assetClasses": [
+      "defi",
+      "cefi",
+      "tradfi",
+      "sports"
+    ],
+    "strategies": [
+      "all"
+    ],
+    "venues": [
+      "all"
+    ],
     "commonTabs": null,
     "verifiedOn": [],
     "gaps": [

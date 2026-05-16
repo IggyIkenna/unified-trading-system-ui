@@ -2,6 +2,7 @@ export const VENUES = [
   "Binance",
   "Deribit",
   "Hyperliquid",
+  "Aster",
   "Coinbase",
   "OKX",
   "Bybit",

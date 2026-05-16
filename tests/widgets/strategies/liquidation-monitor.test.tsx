@@ -9,11 +9,11 @@
  * - Empty state (no at-risk positions).
  * - High-risk position (HF < 1.5) reflected in at-risk count.
  *
- * Per unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan.md Phase 5.
+ * Per unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.md Phase 5.
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { buildMockStrategiesData, buildMockAtRiskPosition } from "../_helpers/mock-strategies-context";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { buildMockAtRiskPosition, buildMockStrategiesData } from "../_helpers/mock-strategies-context";
 
 const mockStrategiesData = buildMockStrategiesData();
 
@@ -65,8 +65,8 @@ vi.mock("@/components/shared/kpi-strip", () => ({
   ),
 }));
 
-import * as React from "react";
 import { LiquidationMonitorWidget } from "@/components/widgets/strategies/liquidation-monitor-widget";
+import * as React from "react";
 
 describe("liquidation-monitor — L1.5 harness", () => {
   beforeEach(() => {

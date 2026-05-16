@@ -9,7 +9,8 @@ import type { WidgetComponentProps } from "@/components/widgets/widget-registry"
 import { useStrategyHealth } from "@/hooks/api/use-strategies";
 import { useKillSwitch, type KillSwitchActionType } from "@/hooks/api/use-kill-switch";
 import { useAlertsData } from "./alerts-data-context";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useTierZeroScenario } from "@/lib/cockpit/use-tier-zero-scenario";
+import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 import { Pause, Power, Square, XCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
@@ -81,7 +82,7 @@ const VENUE_OPTIONS: ReadonlyArray<{ id: string; name: string }> = [
 export function AlertsKillSwitchWidget(_props: WidgetComponentProps) {
   const { filteredAlerts, isLoading: alertsLoading, isBatchMode } = useAlertsData();
   const { data: strategies = [], isLoading: strategiesLoading } = useStrategyHealth();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
   const killSwitch = useKillSwitch();
   const isLoading = alertsLoading || strategiesLoading;
   const [scopeType, setScopeType] = React.useState<KillSwitchScope>("strategy");
@@ -89,19 +90,31 @@ export function AlertsKillSwitchWidget(_props: WidgetComponentProps) {
   const [selectedAction, setSelectedAction] = React.useState<KillSwitchAction | null>(null);
   const [rationale, setRationale] = React.useState<string>("");
 
+  const tierZero = useTierZeroScenario();
+  const useTierZero = tierZero.status === "match" && tierZero.strategies.length > 0;
   const entityOptions = React.useMemo<ReadonlyArray<{ id: string; name: string }>>(() => {
     switch (scopeType) {
       case "strategy":
-        return strategies.map((s) => ({ id: s.id, name: s.name }));
+        // 2026-05-01 migration: when in cockpit + scope matches a tier-zero
+        // scenario, the strategy dropdown reflects the scope-filtered
+        // strategies. Otherwise fall back to legacy useStrategyHealth.
+        return useTierZero
+          ? tierZero.strategies.map((s) => ({ id: s.id, name: s.label }))
+          : strategies.map((s) => ({ id: s.id, name: s.name }));
       case "client":
         return scope.clientIds.map((id) => ({ id, name: id }));
       case "venue":
+        // Use the scope's selected venues if present (tighter than the
+        // hard-coded VENUE_OPTIONS); fall back to legacy when empty.
+        if (scope.venueOrProtocolIds && scope.venueOrProtocolIds.length > 0) {
+          return scope.venueOrProtocolIds.map((id) => ({ id, name: id }));
+        }
         return VENUE_OPTIONS;
       case "firm":
       default:
         return [];
     }
-  }, [scopeType, strategies, scope.clientIds]);
+  }, [scopeType, strategies, scope.clientIds, scope.venueOrProtocolIds, useTierZero, tierZero.strategies]);
 
   React.useEffect(() => {
     if (scopeType === "firm") {
@@ -183,7 +196,11 @@ export function AlertsKillSwitchWidget(_props: WidgetComponentProps) {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col gap-3 p-3">
+      <div
+        data-testid="alerts-kill-switch-widget"
+        data-source={useTierZero ? "tier-zero" : "legacy"}
+        className="flex flex-col gap-3 p-3"
+      >
         <Skeleton className="h-8 w-full" />
         <Skeleton className="h-8 w-full" />
         <Skeleton className="h-8 w-full" />
@@ -194,7 +211,11 @@ export function AlertsKillSwitchWidget(_props: WidgetComponentProps) {
   }
 
   return (
-    <div className="flex flex-col gap-2 h-full min-h-0 p-1">
+    <div
+      data-testid="alerts-kill-switch-widget"
+      data-source={useTierZero ? "tier-zero" : "legacy"}
+      className="flex flex-col gap-2 h-full min-h-0 p-1"
+    >
       <div className="px-2 pb-2 space-y-4">
         <div className="grid grid-cols-2 gap-2">
           <div className="space-y-1.5">

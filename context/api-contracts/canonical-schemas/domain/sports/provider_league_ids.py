@@ -728,6 +728,28 @@ def get_provider_league_id(canonical_league_id: str, provider: str) -> str | int
 # Derived from UNDERSTAT_NAMES keys — the 5 leagues Understat covers.
 _UNDERSTAT_LEAGUE_COVERAGE: frozenset[str] = frozenset(UNDERSTAT_NAMES.keys())
 
+# Public alias of ``_UNDERSTAT_LEAGUE_COVERAGE`` for callers that want the
+# Understat coverage set by name (e.g. ``legacy_reason_classifier._classify_sports``
+# emitting ``EXPECTED_SOURCE_DOES_NOT_COVER_LEAGUE`` when an understat shard's
+# league_id is outside this set). Derived from ``UNDERSTAT_NAMES.keys()`` — there
+# is exactly one SSOT (``UNDERSTAT_NAMES``); this is not a duplicate dict, just a
+# named view of its keys (per the workspace "no double SSOT" rule).
+UNDERSTAT_COVERED_LEAGUES: frozenset[str] = _UNDERSTAT_LEAGUE_COVERAGE
+"""Canonical league_ids that Understat actually covers (per the published Understat
+per-league index — Bundesliga / EPL / La Liga / Ligue 1 / Serie A as of 2026-05-08)."""
+
+
+def does_understat_cover(league_id: str) -> bool:
+    """Whether Understat publishes data for ``league_id``.
+
+    Use this in the sports per-source classifier: an understat ``empty_confirmed``
+    shard for a league outside this set is a *legitimate* "source doesn't cover
+    this league" absence (``EXPECTED_SOURCE_DOES_NOT_COVER_LEAGUE``), not a
+    coverage hole. Case-insensitive on the canonical league_id.
+    """
+    return league_id.upper() in UNDERSTAT_COVERED_LEAGUES
+
+
 SPORTS_ENTITY_LEAGUE_COVERAGE: dict[str, frozenset[str] | None] = {
     # Core entities — expected on all fixture dates
     "FIXTURES": None,
@@ -744,10 +766,9 @@ SPORTS_ENTITY_LEAGUE_COVERAGE: dict[str, frozenset[str] | None] = {
     "XG": _UNDERSTAT_LEAGUE_COVERAGE,  # Understat: 5 European leagues
     "MATCHES": None,  # FootyStats: all leagues
     "PREDICTIONS": None,  # FootyStats: all leagues
-    "TRANSFERMARKT_LEAGUES": None,  # Transfermarkt: all mapped leagues
+    # TRANSFERMARKT_LEAGUES + SFI_LEAGUES retired 2026-05-05 — provider catalog
+    # mappings live in UAC (TRANSFERMARKT_IDS / SOCCER_FOOTBALL_INFO_IDS).
     "PLAYER_VALUES": None,  # Transfermarkt: all mapped leagues
-    "SFI_LEAGUES": None,  # SFI: all mapped leagues
-    "SFI_STANDINGS": None,  # SFI: all mapped leagues
     "SFI_PROGRESSIVE_STATS": None,  # SFI: all mapped leagues
     "WEATHER": None,  # Open Meteo: all fixtures with coordinates
 }
@@ -773,10 +794,9 @@ def get_entity_league_coverage(entity: str) -> frozenset[str] | None:
 # Before these dates, the provider did not supply data — so pre-start
 # fixture dates should NOT count as "missing" in the denominator.
 SPORTS_ENTITY_START_DATES: dict[str, str] = {
-    # SFI progressive stats / xG — Ultra xG feature launched 2024-03-15
+    # SFI progressive stats — Ultra xG feature launched 2024-03-15.
+    # SFI_LEAGUES retired 2026-05-05 (catalog mapping in UAC, not captured data).
     "SFI_PROGRESSIVE_STATS": "2024-03-15",
-    "SFI_LEAGUES": "2024-03-15",
-    "SFI_STANDINGS": "2024-03-15",
     # Understat xG — backfilled from 2019-01-01
     "XG": "2019-01-01",
     # FootyStats entities — backfilled from 2019-01-01
@@ -784,8 +804,8 @@ SPORTS_ENTITY_START_DATES: dict[str, str] = {
     "PREDICTIONS": "2019-01-01",
     # Weather — collection started 2024-01-01
     "WEATHER": "2024-01-01",
-    # Transfermarkt entities — backfilled from 2019-01-01
-    "TRANSFERMARKT_LEAGUES": "2019-01-01",
+    # Transfermarkt entities — backfilled from 2019-01-01.
+    # TRANSFERMARKT_LEAGUES retired 2026-05-05 (same reason as SFI_LEAGUES).
     "PLAYER_VALUES": "2019-01-01",
     # API Football core entities — backfilled from 2019-01-01
     "FIXTURES": "2019-01-01",

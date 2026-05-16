@@ -120,6 +120,11 @@ const nextConfig = {
       { source: "/api/documents/:path*", destination: `${unifiedApiBase}/documents/:path*` },
       { source: "/api/chat/:path*", destination: `${unifiedApiBase}/chat/:path*` },
       { source: "/api/sports/:path*", destination: `${unifiedApiBase}/sports/:path*` },
+      // Plan D — strategy-subscriptions / fork / approve / rollout endpoints.
+      // Client uses lib/api/strategy-subscriptions.ts → UTA_BASE='/api/uta'.
+      // UTA mounts the router at /api/v1, so the proxy strips /api/uta and
+      // forwards the rest verbatim.
+      { source: "/api/uta/:path*", destination: `${unifiedApiBase}/:path*` },
     ];
   },
 
@@ -374,6 +379,256 @@ const nextConfig = {
       {
         source: "/services/observe",
         destination: "/services/observe/health",
+        permanent: false,
+      },
+      // Phase 9 (dart_ux_cockpit_refactor_2026_04_29) — collapse single-widget
+      // observe pages into the unified workspace cockpit. Each page maps to
+      // the terminal mode that owns the concept per §15 ownership rules:
+      //   risk / scenarios / position-recon → Explain (attribution + drift)
+      //   alerts                            → Command (live exceptions)
+      //   strategy-health                   → Strategies
+      //   system-health / event-audit / recovery → Ops
+      // Strategy Catalogue stays distinct (§22) and is NOT redirected.
+      {
+        source: "/services/observe/risk",
+        destination: "/services/workspace?surface=terminal&tm=explain",
+        permanent: false,
+      },
+      {
+        source: "/services/observe/scenarios",
+        destination: "/services/workspace?surface=terminal&tm=explain",
+        permanent: false,
+      },
+      {
+        source: "/services/observe/position-recon",
+        destination: "/services/workspace?surface=terminal&tm=explain",
+        permanent: false,
+      },
+      {
+        source: "/services/observe/alerts",
+        destination: "/services/workspace?surface=terminal&tm=command",
+        permanent: false,
+      },
+      {
+        source: "/services/observe/strategy-health",
+        destination: "/services/workspace?surface=terminal&tm=strategies",
+        permanent: false,
+      },
+      {
+        source: "/services/observe/system-health",
+        destination: "/services/workspace?surface=terminal&tm=ops",
+        permanent: false,
+      },
+      {
+        source: "/services/observe/event-audit",
+        destination: "/services/workspace?surface=terminal&tm=ops",
+        permanent: false,
+      },
+      {
+        source: "/services/observe/recovery",
+        destination: "/services/workspace?surface=terminal&tm=ops",
+        permanent: false,
+      },
+      // 2026-04-30 audit polish #5 — Trading shell-level routes redirect
+      // into the workspace cockpit. The cockpit owns positions / orders /
+      // risk / alerts / pnl / accounts as widgets. Per-widget pages stay
+      // for backwards compat as deep links, but the shell-level overview
+      // routes (the user-facing labels) lead users into the cockpit.
+      {
+        source: "/services/trading/overview",
+        destination: "/services/workspace?surface=terminal&tm=command",
+        permanent: false,
+      },
+      {
+        source: "/services/trading/positions/:path*",
+        destination: "/services/workspace?surface=terminal&tm=command",
+        permanent: false,
+      },
+      {
+        source: "/services/trading/positions",
+        destination: "/services/workspace?surface=terminal&tm=command",
+        permanent: false,
+      },
+      {
+        source: "/services/trading/orders",
+        destination: "/services/workspace?surface=terminal&tm=command",
+        permanent: false,
+      },
+      {
+        source: "/services/trading/risk",
+        destination: "/services/workspace?surface=terminal&tm=explain",
+        permanent: false,
+      },
+      {
+        source: "/services/trading/alerts",
+        destination: "/services/workspace?surface=terminal&tm=command",
+        permanent: false,
+      },
+      {
+        source: "/services/trading/pnl",
+        destination: "/services/workspace?surface=terminal&tm=explain",
+        permanent: false,
+      },
+      {
+        source: "/services/trading/accounts/:path*",
+        destination: "/services/workspace?surface=terminal&tm=command",
+        permanent: false,
+      },
+      {
+        source: "/services/trading/accounts",
+        destination: "/services/workspace?surface=terminal&tm=command",
+        permanent: false,
+      },
+      // Research overview redirects into the workspace research-discover
+      // anchor. Heavy specialist pages (ml/, strategy/backtests/, allocate/)
+      // intentionally NOT redirected — they remain as deep links per plan §22.
+      {
+        source: "/services/research/overview",
+        destination: "/services/workspace?surface=research&rs=discover",
+        permanent: false,
+      },
+      // 2026-05-01 Phase 9 wave 2 — Asset-group + single-purpose trading
+      // pages collapse into the workspace cockpit. Cockpit's
+      // widgetsForScopeWithVisibility() reaches all 207 registered widgets
+      // via assetGroup-derived scope synthesis (lib/cockpit/widget-meta.ts).
+      // Deletions reuse plan §15 ownership-rules mapping:
+      //   - asset-group surfaces (options/defi/sports/predictions/tradfi)
+      //     → terminal/command (the live cockpit anchored to that scope)
+      //   - terminal/markets/book → terminal/markets (market intelligence)
+      //   - instructions/strategy-config → terminal/strategies (config view)
+      //   - deployment → terminal/ops
+      // Strategy-catalogue stays distinct (§22). custom/[id] +
+      // strategies/[id]/* preserved as specialist deep links.
+      //
+      // Asset-group folders — every sub-route folds into command + scope axis.
+      {
+        source: "/services/trading/options/:path*",
+        destination: "/services/workspace?surface=terminal&tm=markets&fam=VOL_TRADING",
+        permanent: false,
+      },
+      {
+        source: "/services/trading/options",
+        destination: "/services/workspace?surface=terminal&tm=markets&fam=VOL_TRADING",
+        permanent: false,
+      },
+      {
+        source: "/services/trading/defi/:path*",
+        destination: "/services/workspace?surface=terminal&tm=command&ag=DEFI",
+        permanent: false,
+      },
+      {
+        source: "/services/trading/defi",
+        destination: "/services/workspace?surface=terminal&tm=command&ag=DEFI",
+        permanent: false,
+      },
+      {
+        source: "/services/trading/sports/:path*",
+        destination: "/services/workspace?surface=terminal&tm=command&ag=SPORTS",
+        permanent: false,
+      },
+      {
+        source: "/services/trading/sports",
+        destination: "/services/workspace?surface=terminal&tm=command&ag=SPORTS",
+        permanent: false,
+      },
+      {
+        source: "/services/trading/predictions/:path*",
+        destination: "/services/workspace?surface=terminal&tm=command&ag=PREDICTION",
+        permanent: false,
+      },
+      {
+        source: "/services/trading/predictions",
+        destination: "/services/workspace?surface=terminal&tm=command&ag=PREDICTION",
+        permanent: false,
+      },
+      {
+        source: "/services/trading/tradfi",
+        destination: "/services/workspace?surface=terminal&tm=command&ag=TRADFI",
+        permanent: false,
+      },
+      // Single-purpose trading shell pages.
+      {
+        source: "/services/trading/terminal",
+        destination: "/services/workspace?surface=terminal&tm=command",
+        permanent: false,
+      },
+      {
+        source: "/services/trading/markets",
+        destination: "/services/workspace?surface=terminal&tm=markets",
+        permanent: false,
+      },
+      {
+        source: "/services/trading/book",
+        destination: "/services/workspace?surface=terminal&tm=command",
+        permanent: false,
+      },
+      {
+        source: "/services/trading/instructions",
+        destination: "/services/workspace?surface=terminal&tm=strategies",
+        permanent: false,
+      },
+      {
+        source: "/services/trading/strategy-config",
+        destination: "/services/workspace?surface=terminal&tm=strategies",
+        permanent: false,
+      },
+      {
+        source: "/services/trading/deployment",
+        destination: "/services/workspace?surface=terminal&tm=ops",
+        permanent: false,
+      },
+      // Strategy list + preset rolls fold into the catalogue surface (the
+      // canonical universe per plan §22). Per-strategy detail pages
+      // (strategies/[id]/*) preserved as specialist deep links.
+      {
+        source: "/services/trading/strategies",
+        destination: "/services/strategy-catalogue",
+        permanent: false,
+      },
+      {
+        source: "/services/trading/strategies/grid",
+        destination: "/services/strategy-catalogue",
+        permanent: false,
+      },
+      {
+        source: "/services/trading/strategies/carry-basis",
+        destination: "/services/strategy-catalogue?fam=ARBITRAGE_STRUCTURAL",
+        permanent: false,
+      },
+      {
+        source: "/services/trading/strategies/staked-basis",
+        destination: "/services/strategy-catalogue?fam=CARRY_AND_YIELD",
+        permanent: false,
+      },
+      {
+        source: "/services/trading/strategies/model-portfolios",
+        destination: "/services/strategy-catalogue",
+        permanent: false,
+      },
+      // Observe — health/news/registry/reconciliation collapse to ops/explain.
+      {
+        source: "/services/observe/health/:path*",
+        destination: "/services/workspace?surface=terminal&tm=ops",
+        permanent: false,
+      },
+      {
+        source: "/services/observe/health",
+        destination: "/services/workspace?surface=terminal&tm=ops",
+        permanent: false,
+      },
+      {
+        source: "/services/observe/news",
+        destination: "/services/workspace?surface=terminal&tm=command",
+        permanent: false,
+      },
+      {
+        source: "/services/observe/registry",
+        destination: "/services/workspace?surface=terminal&tm=strategies",
+        permanent: false,
+      },
+      {
+        source: "/services/observe/reconciliation",
+        destination: "/services/workspace?surface=terminal&tm=explain",
         permanent: false,
       },
     ];

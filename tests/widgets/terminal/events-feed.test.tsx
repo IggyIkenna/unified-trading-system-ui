@@ -2,7 +2,7 @@
  * L1.5 widget harness — events-feed-widget.
  *
  * Pattern: unified-trading-pm/codex/06-coding-standards/ui-testing-layers.md (L1.5)
- * Plan:    unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan.md Phase 5
+ * Plan:    unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan Phase 5
  *
  * Scope:
  * - Render with mocked terminal data-context.
@@ -16,8 +16,8 @@
  * - WS/SSE event bus subscription (future live wiring)
  * - Visual regression (L4 — deferred)
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { buildMockTerminalData, buildMockTerminalEvent } from "../_helpers/mock-terminal-context";
 
 const mockData = buildMockTerminalData();

@@ -1,6 +1,6 @@
 /**
  * Per-persona dashboard sub-route chip test — Phase 6 of
- * plans/active/dashboard_services_grid_collapse_2026_04_21.plan.md.
+ * plans/active/dashboard_services_grid_collapse_2026_04_21.md.
  *
  * Contract (from the plan):
  *   - prospect-signals-only sees DART with ONLY "Signal Intake" chip (others hidden/locked)
@@ -14,13 +14,13 @@
  * tests are the strongest invariant.
  */
 
-import { describe, expect, it } from "vitest";
 import {
-  personaDashboardSubRoutes,
   personaDashboardShape,
+  personaDashboardSubRoutes,
   type DashboardSubRouteVisibility,
   type DashboardTileId,
 } from "@/lib/auth/persona-dashboard-shape";
+import { describe, expect, it } from "vitest";
 
 function visibleChips(tileId: DashboardTileId, subRoutes: DashboardSubRouteVisibility): string[] {
   return Object.entries(subRoutes[tileId] ?? {})
@@ -29,24 +29,21 @@ function visibleChips(tileId: DashboardTileId, subRoutes: DashboardSubRouteVisib
 }
 
 describe("dashboard sub-route chips — per-persona", () => {
-  it("prospect-signals-only DART shows signal-intake + observe; hides research/promote/strategy-catalogue", () => {
+  it("prospect-signals-only sees signal-intake + observe under dart-terminal; dart-research locked", () => {
     const persona = { id: "prospect-signals-only", role: "client" };
     const subs = personaDashboardSubRoutes(persona);
-    const dartChips = visibleChips("dart", subs);
+    const terminalChips = visibleChips("dart-terminal", subs);
 
-    expect(dartChips).toContain("signal-intake");
-    // Plan contract says "ONLY Signal Intake chip" but the shipped shape also
-    // exposes observe for operational visibility of inbound signals.
-    // Verify the other Plan-restricted chips are NOT visible.
-    expect(dartChips).not.toContain("research");
-    expect(dartChips).not.toContain("promote");
-    expect(dartChips).not.toContain("strategy-catalogue");
-    expect(dartChips).not.toContain("data");
+    expect(terminalChips).toContain("signal-intake");
+    // strategy-catalogue + data are admin/full-tier — must NOT be visible for
+    // signals-in. Research-side chips moved under dart-research; signals-in
+    // gets dart-research as `locked` (padlocked-visible UX), not visible.
+    expect(terminalChips).not.toContain("strategy-catalogue");
+    expect(terminalChips).not.toContain("data");
 
-    // Tile level: DART visible, Odum Signals hidden (Signals-In is inbound,
-    // not outbound counterparty broadcast).
     const tileShape = personaDashboardShape(persona);
-    expect(tileShape.dart).toBe("visible");
+    expect(tileShape["dart-terminal"]).toBe("visible");
+    expect(tileShape["dart-research"]).toBe("locked");
     expect(tileShape["odum-signals"]).toBe("hidden");
   });
 
@@ -54,7 +51,8 @@ describe("dashboard sub-route chips — per-persona", () => {
     const persona = { id: "prospect-odum-signals", role: "client" };
     const tileShape = personaDashboardShape(persona);
     expect(tileShape["odum-signals"]).toBe("visible");
-    expect(tileShape.dart).toBe("hidden");
+    expect(tileShape["dart-terminal"]).toBe("hidden");
+    expect(tileShape["dart-research"]).toBe("hidden");
 
     const subs = personaDashboardSubRoutes(persona);
     const odumChips = visibleChips("odum-signals", subs);
@@ -67,7 +65,8 @@ describe("dashboard sub-route chips — per-persona", () => {
     const persona = { id: "investor", role: "client" };
     const tileShape = personaDashboardShape(persona);
     expect(tileShape["investor-relations"]).toBe("visible");
-    expect(tileShape.dart).toBe("hidden");
+    expect(tileShape["dart-terminal"]).toBe("hidden");
+    expect(tileShape["dart-research"]).toBe("hidden");
     expect(tileShape.reports).toBe("hidden");
     expect(tileShape["odum-signals"]).toBe("hidden");
     expect(tileShape.admin).toBe("hidden");
@@ -77,12 +76,19 @@ describe("dashboard sub-route chips — per-persona", () => {
     expect(irChips).toEqual(expect.arrayContaining(["board", "dr-playbook", "security", "ir-briefings"]));
   });
 
-  it("admin sees all 5 tiles with all sub-route chips unlocked", () => {
+  it("admin sees all 6 tiles with all sub-route chips unlocked (post dart-split)", () => {
     const persona = { id: "admin", role: "admin" };
     const tileShape = personaDashboardShape(persona);
     const subs = personaDashboardSubRoutes(persona);
 
-    for (const tile of ["dart", "odum-signals", "reports", "investor-relations", "admin"] as const) {
+    for (const tile of [
+      "dart-terminal",
+      "dart-research",
+      "odum-signals",
+      "reports",
+      "investor-relations",
+      "admin",
+    ] as const) {
       expect(tileShape[tile], `admin tile ${tile}`).toBe("visible");
       const chips = subs[tile] ?? {};
       const hiddenOrLocked = Object.entries(chips).filter(([, vis]) => vis !== "visible");
@@ -93,49 +99,62 @@ describe("dashboard sub-route chips — per-persona", () => {
     }
   });
 
-  it("client-data-only sees Strategy Catalogue + Data; other DART chips hidden", () => {
+  it("client-data-only sees Strategy Catalogue + Data under dart-terminal; other terminal chips hidden", () => {
     const persona = { id: "client-data-only", role: "client" };
-    const chips = visibleChips("dart", personaDashboardSubRoutes(persona));
+    const chips = visibleChips("dart-terminal", personaDashboardSubRoutes(persona));
     expect(chips).toContain("strategy-catalogue");
     expect(chips).not.toContain("terminal");
-    expect(chips).not.toContain("research");
-    expect(chips).not.toContain("promote");
     expect(chips).not.toContain("signal-intake");
   });
 
   it("im-desk-operator sees DART terminal/observe/strategy-catalogue + Admin deployments + IR materials", () => {
     const persona = { id: "im-desk-operator", role: "internal" };
     const subs = personaDashboardSubRoutes(persona);
-    const dartChips = visibleChips("dart", subs);
+    const terminalChips = visibleChips("dart-terminal", subs);
     const adminChips = visibleChips("admin", subs);
     const irChips = visibleChips("investor-relations", subs);
 
-    expect(dartChips).toEqual(expect.arrayContaining(["terminal", "observe", "strategy-catalogue"]));
+    expect(terminalChips).toEqual(expect.arrayContaining(["terminal", "observe", "strategy-catalogue"]));
     expect(adminChips).toContain("deployments");
     expect(adminChips).toContain("audit-log");
     expect(irChips.length).toBeGreaterThan(0);
   });
 
-  it("client-full has full DART research + promote + terminal + observe chips", () => {
+  it("client-full has terminal+observe under dart-terminal AND research+promote under dart-research", () => {
     const persona = { id: "client-full", role: "client" };
-    const chips = visibleChips("dart", personaDashboardSubRoutes(persona));
-    for (const expected of ["terminal", "research", "promote", "observe", "strategy-catalogue"]) {
-      expect(chips, `client-full DART chip "${expected}"`).toContain(expected);
+    const subs = personaDashboardSubRoutes(persona);
+    const terminalChips = visibleChips("dart-terminal", subs);
+    const researchChips = visibleChips("dart-research", subs);
+
+    // Terminal-side chips after split — client-full is the full tier and gets
+    // every dart-terminal chip including signal-intake (the legacy comment
+    // "signals-in is a separate product" applied to the unified tile pre-split;
+    // post-split, signal-intake lives on dart-terminal and is unlocked for
+    // anyone with execution-full).
+    for (const expected of ["terminal", "observe", "strategy-catalogue", "signal-intake"]) {
+      expect(terminalChips, `client-full dart-terminal chip "${expected}"`).toContain(expected);
     }
-    expect(chips).not.toContain("signal-intake"); // signals-in is a separate product
+
+    // Research-side chips after split (fine-grained — the legacy "research"
+    // chip was broken into research-overview / features / etc.; "promote"
+    // still exists per the commit message).
+    expect(researchChips, `client-full dart-research chips`).toEqual(
+      expect.arrayContaining(["research-overview", "promote"]),
+    );
   });
 
   it("locked chips are distinct from hidden chips (tempt-logic preserved)", () => {
-    // prospect-dart has DART tile visible with most chips locked (upgrade tempt),
-    // not hidden.
+    // prospect-dart has dart-terminal visible with most chips locked (upgrade
+    // tempt), not hidden. Research-side may be locked entirely as the tile
+    // padlock; the tempt-logic still requires partial chip-level locking on
+    // dart-terminal.
     const persona = { id: "prospect-dart", role: "client" };
     const subs = personaDashboardSubRoutes(persona);
-    const dartChipEntries = Object.entries(subs.dart);
-    const lockedCount = dartChipEntries.filter(([, v]) => v === "locked").length;
-    // At least one chip must be locked (not all hidden, not all visible — the
-    // tempt-logic hinges on partial locking).
-    expect(lockedCount, "prospect-dart must have at least one DART chip in locked state (tempt-logic)").toBeGreaterThan(
-      0,
-    );
+    const terminalChipEntries = Object.entries(subs["dart-terminal"] ?? {});
+    const lockedCount = terminalChipEntries.filter(([, v]) => v === "locked").length;
+    expect(
+      lockedCount,
+      "prospect-dart must have at least one dart-terminal chip in locked state (tempt-logic)",
+    ).toBeGreaterThan(0);
   });
 });

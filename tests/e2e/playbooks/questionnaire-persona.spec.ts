@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 /**
  * Phase 4 — Questionnaire -> persona cascade e2e spec.
  *
- * SSOT (plan): `unified-trading-pm/plans/active/ui_unification_v2_sanitisation_2026_04_20.plan.md`
+ * SSOT (plan): `unified-trading-pm/plans/active/ui_unification_v2_sanitisation_2026_04_20.md`
  *              Phase 4 `p4-questionnaire-e2e-spec`.
  * SSOT (codex): `unified-trading-pm/codex/09-strategy/architecture-v2/restriction-policy.md` § 4.
  *

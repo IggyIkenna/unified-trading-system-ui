@@ -41,7 +41,7 @@ import { clearPersona, seedPersona } from "../seed-persona";
  *   - G1.13 tempt-logic overlay: sales-operator layering on top.
  *   - Dev-vs-staging parity end-to-end: Firebase staging not provisioned.
  *
- * Plan: unified-trading-pm/plans/active/refactor_g1_7_restriction_profile_engine_2026_04_20.plan.md
+ * Plan: unified-trading-pm/plans/active/refactor_g1_7_restriction_profile_engine_2026_04_20.md
  * SSOT: unified-trading-pm/codex/14-playbooks/demo-ops/profiles/*.yaml
  * UAC engine: unified-api-contracts/unified_api_contracts/internal/architecture_v2/restriction_profiles.py
  */

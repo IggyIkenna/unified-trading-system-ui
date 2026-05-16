@@ -157,7 +157,7 @@
       "status": "pass",
       "by": "agent+tests",
       "date": "2026-04-24",
-      "notes": "L1.5 harness spec: tests/widgets/risk/risk-var-chart.test.tsx — 12 tests covering loading/error/empty states, all four VaR method toggle buttons, setVarMethod call propagation, and asset-class legend. Per ui_widget_test_rollout_2026_04_24.plan.md Phase 5."
+      "notes": "L1.5 harness spec: tests/widgets/risk/risk-var-chart.test.tsx — 12 tests covering loading/error/empty states, all four VaR method toggle buttons, setVarMethod call propagation, and asset-class legend. Per ui_widget_test_rollout_2026_04_24.md Phase 5."
     },
     "l7": {
       "status": "pass",
@@ -236,7 +236,9 @@
     "notes": "VaR method toggle is widget-local state."
   },
   "dataContract": {
-    "channels": ["rest"],
+    "channels": [
+      "rest"
+    ],
     "primary": "rest",
     "cadence": "interval:30000",
     "staleness": "seconds",
@@ -245,9 +247,18 @@
     "notes": "adjustedVarData derived from componentVarData + varMethod multiplier in context."
   },
   "coverage": {
-    "assetClasses": ["defi", "cefi", "tradfi", "sports"],
-    "strategies": ["all"],
-    "venues": ["all"],
+    "assetClasses": [
+      "defi",
+      "cefi",
+      "tradfi",
+      "sports"
+    ],
+    "strategies": [
+      "all"
+    ],
+    "venues": [
+      "all"
+    ],
     "commonTabs": null,
     "verifiedOn": [],
     "gaps": [

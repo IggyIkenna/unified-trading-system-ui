@@ -14,7 +14,7 @@ import {
   generateOptionChain,
   generateTradFiOptionChain,
 } from "@/lib/mocks/fixtures/options-futures-mock";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 import type {
   Asset,
   AssetClass,
@@ -130,7 +130,7 @@ function findSymbolById(id: string): WatchlistSymbol | null {
 
 export function OptionsDataProvider({ children }: { children: React.ReactNode }) {
   const { mode } = useExecutionMode();
-  const { scope: globalScope } = useGlobalScope();
+  const globalScope = useWorkspaceScope();
   const [assetClass, setAssetClass] = React.useState<AssetClass>("crypto");
   const isCrypto = assetClass === "crypto";
 

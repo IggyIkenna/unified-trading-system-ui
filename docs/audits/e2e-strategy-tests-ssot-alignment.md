@@ -3,7 +3,7 @@
 **Status**: active (Phase 1 in progress)
 **Owner**: UI e2e coverage workstream
 **SSOT source**: [unified-trading-pm/codex/09-strategy/architecture-v2/](../../../unified-trading-pm/codex/09-strategy/architecture-v2/)
-**Plan**: [unified-trading-pm/plans/ai/ui_e2e_strategy_coverage_audit_2026_04_22.plan.md](../../../unified-trading-pm/plans/ai/ui_e2e_strategy_coverage_audit_2026_04_22.plan.md)
+**Plan**: [unified-trading-pm/plans/ai/ui_e2e_strategy_coverage_audit_2026_04_22.md](../../../unified-trading-pm/plans/ai/ui_e2e_strategy_coverage_audit_2026_04_22.md)
 
 ## Purpose
 
@@ -260,7 +260,7 @@ SSOT archetype docs list P&L-attribution widgets that should reflect state post-
 
 ## References
 
-- Approved plan: [unified-trading-pm/plans/ai/ui_e2e_strategy_coverage_audit_2026_04_22.plan.md](../../../unified-trading-pm/plans/ai/ui_e2e_strategy_coverage_audit_2026_04_22.plan.md)
+- Approved plan: [unified-trading-pm/plans/ai/ui_e2e_strategy_coverage_audit_2026_04_22.md](../../../unified-trading-pm/plans/ai/ui_e2e_strategy_coverage_audit_2026_04_22.md)
 - SSOT README: [architecture-v2/README.md](../../../unified-trading-pm/codex/09-strategy/architecture-v2/README.md)
 - Strategy registry: [tests/e2e/\_shared/strategy-registry.ts](../../tests/e2e/_shared/strategy-registry.ts)
 - Fixtures: [tests/e2e/fixtures/strategies/](../../tests/e2e/fixtures/strategies/)

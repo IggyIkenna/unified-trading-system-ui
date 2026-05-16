@@ -3,7 +3,7 @@
  *
  * Pattern reference:
  *   unified-trading-pm/codex/06-coding-standards/ui-testing-layers.md (L1.5)
- *   unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan.md Phase 5
+ *   unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.md Phase 5
  *
  * Scope:
  * - Toolbar mounts with filter selects and Refresh button.
@@ -15,9 +15,9 @@
  *
  * Out of scope: real route wiring (L2), E2E row click → detail panel (L3b), visual regression (L4).
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
-import { buildMockInstructionsData, buildMockInstruction } from "../_helpers/mock-instructions-context";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { buildMockInstruction, buildMockInstructionsData } from "../_helpers/mock-instructions-context";
 
 const mockData = buildMockInstructionsData();
 

@@ -103,7 +103,7 @@ export function PnLAttributionWidget(_props: WidgetComponentProps) {
   return (
     <div className="p-3">
       <div className="flex justify-end mb-2">
-        <Link href="/services/trading/pnl">
+        <Link href="/services/workspace?surface=terminal&tm=explain">
           <Button variant="ghost" size="sm" className="h-7 text-xs">
             View All
           </Button>
@@ -154,7 +154,7 @@ export function AlertsPreviewWidget(_props: WidgetComponentProps) {
           <Bell className="size-3.5" />
           <span>{hasCounts ? `${activeAlerts.length} active` : "All clear"}</span>
         </div>
-        <Link href="/services/trading/alerts">
+        <Link href="/services/workspace?surface=terminal&tm=command">
           <Button variant="ghost" size="sm" className="h-7 text-xs">
             View All
           </Button>
@@ -194,7 +194,7 @@ export function AlertsPreviewWidget(_props: WidgetComponentProps) {
               return (
                 <Link
                   key={a.id}
-                  href="/services/trading/alerts"
+                  href="/services/workspace?surface=terminal&tm=command"
                   className="block rounded-md border border-border/40 hover:border-border hover:bg-muted/30 transition-colors px-2 py-1.5"
                 >
                   <div className="flex items-start gap-2">
@@ -234,7 +234,7 @@ export function RecentFillsWidget(_props: WidgetComponentProps) {
   return (
     <div className="p-3">
       <div className="flex justify-end mb-2">
-        <Link href="/services/trading/orders">
+        <Link href="/services/workspace?surface=terminal&tm=command">
           <Button variant="ghost" size="sm" className="h-7 text-xs">
             View All
           </Button>
@@ -284,7 +284,7 @@ export function HealthGridWidget(_props: WidgetComponentProps) {
   const [sortKey, setSortKey] = React.useState<string | null>("status");
   const [sortDir, setSortDir] = React.useState<"asc" | "desc" | null>("asc");
 
-  const allMockServices = ctx?.allMockServices ?? [];
+  const allMockServices = React.useMemo(() => ctx?.allMockServices ?? [], [ctx?.allMockServices]);
   const coreLoading = ctx?.coreLoading ?? false;
 
   const handleRefresh = React.useCallback(() => {
@@ -407,7 +407,7 @@ export function HealthGridWidget(_props: WidgetComponentProps) {
           <RefreshCw className="size-3.5" />
           Refresh
         </Button>
-        <Link href="/services/observe/health">
+        <Link href="/services/workspace?surface=terminal&tm=ops">
           <Button variant="ghost" size="sm" className="h-7 text-xs">
             View All
           </Button>

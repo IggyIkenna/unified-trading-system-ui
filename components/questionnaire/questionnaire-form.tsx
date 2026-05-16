@@ -22,7 +22,7 @@
 
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { setBriefingSessionActive } from "@/lib/briefings/session";
@@ -50,6 +50,9 @@ import {
 } from "@/lib/questionnaire/types";
 import { fingerprintAccessCode, submitQuestionnaire, type SubmitResult } from "@/lib/questionnaire/submit";
 import { persistResolvedPersona, resolvePersonaFromQuestionnaire } from "@/lib/questionnaire/resolve-persona";
+import { dispatchEmail } from "@/lib/email/client";
+import type { EmailDispatchOutcome } from "@/lib/email/email-result";
+import { EmailStatusBanner } from "@/components/email/email-status-banner";
 import { Term } from "@/components/marketing/term";
 import { STRUCTURE_OPTIONS, STRUCTURE_PROMPT } from "@/lib/marketing/structure-options";
 
@@ -153,8 +156,11 @@ function buildResponse(state: FormState): QuestionnaireResponse {
     leverage_preference: state.leverage_preference,
   };
 
+  // Wire-format key is `categories` (UAC + GCS path-segment SSOT — see
+  // CLAUDE.md asset-group-vocabulary exception). FormState uses the new
+  // `assetGroups` naming internally; map back to wire shape on submit.
   const base: QuestionnaireResponse = {
-    assetGroups: [...state.assetGroups],
+    categories: [...state.assetGroups],
     instrument_types: [...state.instrument_types],
     venue_scope,
     strategy_style: [...state.strategy_style],
@@ -247,27 +253,29 @@ export function QuestionnaireForm({ returnPath, compact = false }: Questionnaire
   });
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<SubmitResult | null>(null);
+  const [emailOutcome, setEmailOutcome] = useState<EmailDispatchOutcome | null>(null);
 
   // Compute the URL-derived service family on every render — cheap (<10 entry
   // list) and avoids the React 19 react-hooks/set-state-in-effect warning that
-  // fires when an effect synchronously calls setState. We still allow the user
-  // to override via the form, so we only seed when state.service_family is the
-  // initial empty string.
+  // fires when an effect synchronously calls setState.
   const urlServiceFamily = useMemo(() => {
     const raw = searchParams?.get("service");
     if (!raw) return null;
     return QUESTIONNAIRE_SERVICE_FAMILIES.find((sf) => sf === raw) ?? null;
   }, [searchParams]);
 
-  useEffect(() => {
-    if (urlServiceFamily && state.service_family === "") {
-      setState((s) => ({ ...s, service_family: urlServiceFamily }));
-    }
-    // Only run when the URL-derived family changes; we deliberately don't
-    // depend on state.service_family so user overrides aren't clobbered by
-    // re-runs.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [urlServiceFamily]);
+  // Tracks whether the user has explicitly picked a service family via the
+  // radio. Once true, URL changes no longer clobber their choice. State
+  // (not ref) so render-phase reads are React-19-strict-mode-safe.
+  const [userPickedServiceFamily, setUserPickedServiceFamily] = useState(false);
+
+  // URL is the source of truth for service_family until the user explicitly
+  // picks a different family. We run the seed in render phase rather than
+  // via useEffect to avoid React 19's set-state-in-effect lint warning;
+  // the guard condition prevents an infinite re-render loop.
+  if (urlServiceFamily && !userPickedServiceFamily && state.service_family !== urlServiceFamily) {
+    setState((s) => ({ ...s, service_family: urlServiceFamily }));
+  }
 
   const regUmbrellaVisible = useMemo(() => isRegUmbrellaPath(state.service_family), [state.service_family]);
 
@@ -286,56 +294,66 @@ export function QuestionnaireForm({ returnPath, compact = false }: Questionnaire
         : null;
 
     const outcome = await submitQuestionnaire(response, envelope);
+    setResult(outcome);
+
+    // Email is the gate that unlocks the briefings — the route is
+    // intentionally fail-closed (returns ok=false on skip and on Resend
+    // rejection) so a misconfigured deploy can't silently let everyone
+    // in. We await the outcome here rather than fire-and-forget so the
+    // unlock + redirect only happen on confirmed delivery.
     if (outcome.success) {
       const personaId = resolvePersonaFromQuestionnaire(response);
       persistResolvedPersona(personaId);
-      fetch("/api/questionnaire/email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: state.email.trim() || undefined,
-          firmName: state.firm_name.trim() || undefined,
-          firmLocation: state.firm_location || undefined,
-          firmLocationNotes: state.firm_location_notes.trim() || undefined,
-          referralSource: state.referral_source || undefined,
-          referralSourceNotes: state.referral_source_notes.trim() || undefined,
-          serviceFamily: state.service_family,
-          submissionId: outcome.submissionId,
-          assetGroups: [...state.assetGroups],
-          instrumentTypes: [...state.instrument_types],
-          venueScope:
-            state.venue_scope_mode === "all"
-              ? "all"
-              : state.venue_scope_csv
-                  .split(",")
-                  .map((v) => v.trim())
-                  .filter((v) => v.length > 0),
-          strategyStyle: [...state.strategy_style],
-          fundStructure: [...state.fund_structure],
-          marketNeutral: state.market_neutral,
-          shareClassPreferences: [...state.share_class_preferences],
-          riskProfile: state.risk_profile,
-          targetSharpeMin: state.target_sharpe_min_str || undefined,
-          leveragePreference: state.leverage_preference,
-          licenceRegion: state.licence_region,
-          targets3mo: state.targets_3mo.trim() || undefined,
-          targets1yr: state.targets_1yr.trim() || undefined,
-          targets2yr: state.targets_2yr.trim() || undefined,
-          ownMlro: state.own_mlro,
-          entityJurisdiction: state.entity_jurisdiction.trim() || undefined,
-          supportedCurrencies: [
-            ...state.supported_currencies,
-            ...state.supported_currencies_other
-              .split(",")
-              .map((v) => v.trim().toUpperCase())
-              .filter((v) => v.length > 0),
-          ],
-        }),
-      }).catch(() => {
-        /* non-critical */
+      const dispatchOutcome = await dispatchEmail("/api/questionnaire/email", {
+        email: state.email.trim() || undefined,
+        firmName: state.firm_name.trim() || undefined,
+        firmLocation: state.firm_location || undefined,
+        firmLocationNotes: state.firm_location_notes.trim() || undefined,
+        referralSource: state.referral_source || undefined,
+        referralSourceNotes: state.referral_source_notes.trim() || undefined,
+        serviceFamily: state.service_family,
+        submissionId: outcome.submissionId,
+        assetGroups: [...state.assetGroups],
+        instrumentTypes: [...state.instrument_types],
+        venueScope:
+          state.venue_scope_mode === "all"
+            ? "all"
+            : state.venue_scope_csv
+                .split(",")
+                .map((v) => v.trim())
+                .filter((v) => v.length > 0),
+        strategyStyle: [...state.strategy_style],
+        fundStructure: [...state.fund_structure],
+        marketNeutral: state.market_neutral,
+        shareClassPreferences: [...state.share_class_preferences],
+        riskProfile: state.risk_profile,
+        targetSharpeMin: state.target_sharpe_min_str || undefined,
+        leveragePreference: state.leverage_preference,
+        licenceRegion: state.licence_region,
+        targets3mo: state.targets_3mo.trim() || undefined,
+        targets1yr: state.targets_1yr.trim() || undefined,
+        targets2yr: state.targets_2yr.trim() || undefined,
+        ownMlro: state.own_mlro,
+        entityJurisdiction: state.entity_jurisdiction.trim() || undefined,
+        supportedCurrencies: [
+          ...state.supported_currencies,
+          ...state.supported_currencies_other
+            .split(",")
+            .map((v) => v.trim().toUpperCase())
+            .filter((v) => v.length > 0),
+        ],
       });
+      setEmailOutcome(dispatchOutcome);
+
+      if (dispatchOutcome.status === "queued") {
+        setBriefingSessionActive();
+        const paramReturn = searchParams?.get("return");
+        const safeParam =
+          paramReturn && paramReturn.startsWith("/") && !paramReturn.startsWith("//") ? paramReturn : null;
+        const target = returnPath ?? safeParam ?? "/briefings";
+        setTimeout(() => router.push(target), 1200);
+      }
     }
-    setResult(outcome);
     setSubmitting(false);
     if (outcome.success) {
       setBriefingSessionActive();
@@ -348,7 +366,7 @@ export function QuestionnaireForm({ returnPath, compact = false }: Questionnaire
       try {
         const sharpeVal = parseFloat(state.target_sharpe_min_str);
         const seed = seedFiltersFromQuestionnaire({
-          categories: [...state.categories],
+          categories: [...state.assetGroups],
           instrument_types: [...state.instrument_types],
           market_neutral: state.market_neutral,
           risk_profile: state.risk_profile,
@@ -379,6 +397,16 @@ export function QuestionnaireForm({ returnPath, compact = false }: Questionnaire
           </p>
         </>
       )}
+
+      <div
+        className={`${compact ? "mb-6" : "mt-6"} rounded-md border border-amber-500/30 bg-amber-500/5 px-4 py-3 text-sm text-amber-200`}
+      >
+        <p className="font-medium">Complete this in one go.</p>
+        <p className="mt-1 text-xs text-amber-300/80">
+          About two minutes. This short questionnaire does not auto-save, so finish in this session. Submit to unlock
+          your briefings access; we will email your code in case you come back later.
+        </p>
+      </div>
 
       <form onSubmit={onSubmit} className={compact ? "space-y-8" : "mt-8 space-y-8"} data-testid="questionnaire-form">
         <fieldset data-testid="axis-asset-groups">
@@ -505,7 +533,10 @@ export function QuestionnaireForm({ returnPath, compact = false }: Questionnaire
                   value={sf}
                   data-testid={`service-family-${sf}`}
                   checked={state.service_family === sf}
-                  onChange={() => setState((s) => ({ ...s, service_family: sf }))}
+                  onChange={() => {
+                    setUserPickedServiceFamily(true);
+                    setState((s) => ({ ...s, service_family: sf }));
+                  }}
                 />
                 {SERVICE_FAMILY_GLOSSARY[sf] ? (
                   <Term id={SERVICE_FAMILY_GLOSSARY[sf]}>
@@ -1014,7 +1045,7 @@ export function QuestionnaireForm({ returnPath, compact = false }: Questionnaire
           >
             {submitting ? "Submitting…" : "Submit"}
           </button>
-          {result !== null && result.success && (
+          {result !== null && result.success && emailOutcome?.status === "queued" && (
             <span data-testid="questionnaire-success" className="text-green-700">
               Thanks: Deep Dive unlocked on this browser. You won&apos;t need to fill this in again here. We&apos;ve
               also emailed your access code (so you can return on a different device) and a link to book a 30-minute
@@ -1027,6 +1058,11 @@ export function QuestionnaireForm({ returnPath, compact = false }: Questionnaire
             </span>
           )}
         </div>
+        {result !== null && result.success && emailOutcome !== null && emailOutcome.status !== "queued" && (
+          <div data-testid="questionnaire-email-outcome">
+            <EmailStatusBanner outcome={emailOutcome} />
+          </div>
+        )}
         <p className="text-xs text-muted-foreground">
           By submitting, you agree we may store your responses to tailor your access and email you a code. We use no
           advertising trackers; small browser-storage flags remember your access on this device. See our{" "}

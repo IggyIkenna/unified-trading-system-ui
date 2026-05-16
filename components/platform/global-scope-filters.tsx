@@ -21,13 +21,21 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { useAuth } from "@/hooks/use-auth";
 import { ARCHETYPE_TO_FAMILY, FAMILY_METADATA, STRATEGY_FAMILIES_V2 } from "@/lib/architecture-v2";
 import type { StrategyArchetype, StrategyFamily } from "@/lib/architecture-v2";
-import { checkTradingEntitlement } from "@/lib/config/auth";
+import {
+  checkTradingEntitlement,
+  type EntitlementOrWildcard,
+  type StrategyFamilyEntitlement,
+  type TradingEntitlement,
+} from "@/lib/config/auth";
 import {
   CLIENTS as TRADING_CLIENTS,
   ORGANIZATIONS as TRADING_ORGS,
   STRATEGIES as TRADING_STRATEGIES,
 } from "@/lib/mocks/fixtures/trading-data";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import type { WorkspaceScope } from "@/lib/architecture-v2/workspace-scope";
+import { useWorkspaceScope, useWorkspaceScopeStore } from "@/lib/stores/workspace-scope-store";
+
+type WorkspaceScopeArchetypes = WorkspaceScope["archetypes"];
 import { formatArchetype, formatFamily } from "@/lib/strategy-display";
 import { cn } from "@/lib/utils";
 import { BarChart3, Building2, Check, ChevronDown, ChevronRight, ListTree, Users, X } from "lucide-react";
@@ -88,7 +96,7 @@ function CompactMultiSelect<T extends { id: string }>({
 }: {
   icon: React.ReactNode;
   items: T[];
-  selectedIds: string[];
+  selectedIds: readonly string[];
   onSelectionChange: (ids: string[]) => void;
   renderItem: (item: T) => React.ReactNode;
   allLabel?: string;
@@ -319,7 +327,7 @@ function FamilyArchetypeMultiSelect({
   archetypeIds,
   onChange,
 }: {
-  archetypeIds: string[];
+  archetypeIds: readonly string[];
   onChange: (nextArchetypeIds: string[]) => void;
 }) {
   const [open, setOpen] = React.useState(false);
@@ -501,13 +509,14 @@ function FamilyArchetypeMultiSelect({
 // ─────────────────────────────────────────────────────────────────────────────
 
 /** Asset classes a user is entitled to see, derived from their entitlements. */
-function entitlementAssetClasses(userEnts: readonly (string | { domain: string; tier: string })[]): Set<string> {
+function entitlementAssetClasses(
+  userEnts: readonly (EntitlementOrWildcard | TradingEntitlement | StrategyFamilyEntitlement)[],
+): Set<string> {
   const allowed = new Set<string>();
-  if (checkTradingEntitlement(userEnts as never, { domain: "trading-defi", tier: "basic" })) allowed.add("DeFi");
-  if (checkTradingEntitlement(userEnts as never, { domain: "trading-sports", tier: "basic" })) allowed.add("Sports");
-  if (checkTradingEntitlement(userEnts as never, { domain: "trading-predictions", tier: "basic" }))
-    allowed.add("Prediction");
-  if (checkTradingEntitlement(userEnts as never, { domain: "trading-common", tier: "basic" })) {
+  if (checkTradingEntitlement(userEnts, { domain: "trading-defi", tier: "basic" })) allowed.add("DeFi");
+  if (checkTradingEntitlement(userEnts, { domain: "trading-sports", tier: "basic" })) allowed.add("Sports");
+  if (checkTradingEntitlement(userEnts, { domain: "trading-predictions", tier: "basic" })) allowed.add("Prediction");
+  if (checkTradingEntitlement(userEnts, { domain: "trading-common", tier: "basic" })) {
     allowed.add("CeFi");
     allowed.add("TradFi");
   }
@@ -534,8 +543,12 @@ function filterByArchetype(list: Strategy[], archetypeIds: readonly string[]): S
 
 export function GlobalScopeFilters({ className }: { className?: string }) {
   const { isInternal, user } = useAuth();
-  const { scope, setOrganizationIds, setClientIds, setStrategyIds, setStrategyArchetypeIds, clearAll } =
-    useGlobalScope();
+  const scope = useWorkspaceScope();
+  const setOrganizationIds = useWorkspaceScopeStore((s) => s.setOrganizationIds);
+  const setClientIds = useWorkspaceScopeStore((s) => s.setClientIds);
+  const setStrategyIds = useWorkspaceScopeStore((s) => s.setStrategyIds);
+  const setArchetypes = useWorkspaceScopeStore((s) => s.setArchetypes);
+  const reset = useWorkspaceScopeStore((s) => s.reset);
 
   const internalUser = isInternal();
   const isClientScoped = !internalUser && !!user?.org;
@@ -590,23 +603,23 @@ export function GlobalScopeFilters({ className }: { className?: string }) {
     }
     // Asset-group filter is no longer surfaced as a pill but the field is
     // honoured at the data layer for reversibility (see docs/audits/global-filters-v2.md §10).
-    if (scope.assetGroupIds.length > 0) {
-      result = result.filter((s) => scope.assetGroupIds.includes(s.assetClass));
+    if (scope.assetGroups.length > 0) {
+      result = result.filter((s) => (scope.assetGroups as readonly string[]).includes(s.assetClass));
     }
-    result = filterByArchetype(result, scope.strategyArchetypeIds);
+    result = filterByArchetype(result, scope.archetypes);
     return result;
-  }, [scope.organizationIds, scope.clientIds, scope.assetGroupIds, scope.strategyArchetypeIds]);
+  }, [scope.organizationIds, scope.clientIds, scope.assetGroups, scope.archetypes]);
 
   const activeFilters = [
     scope.organizationIds.length > 0,
     scope.clientIds.length > 0,
     scope.strategyIds.length > 0,
-    scope.strategyArchetypeIds.length > 0,
+    scope.archetypes.length > 0,
   ].filter(Boolean).length;
 
   if (isClientScoped && user?.org) {
     const clientScopeActiveFilters =
-      (scope.strategyIds.length > 0 ? 1 : 0) + (scope.strategyArchetypeIds.length > 0 ? 1 : 0);
+      (scope.strategyIds.length > 0 ? 1 : 0) + (scope.archetypes.length > 0 ? 1 : 0);
     return (
       <div className={cn("flex items-center gap-0.5", className)}>
         <div className="flex items-center gap-1 px-2 py-1 rounded-md bg-secondary/50 text-xs text-muted-foreground">
@@ -615,18 +628,18 @@ export function GlobalScopeFilters({ className }: { className?: string }) {
         </div>
         <span className="text-muted-foreground/30 text-xs hidden sm:inline">/</span>
         <FamilyArchetypeMultiSelect
-          archetypeIds={scope.strategyArchetypeIds}
+          archetypeIds={scope.archetypes as readonly string[]}
           onChange={(next) => {
-            setStrategyArchetypeIds(next);
+            setArchetypes(next as WorkspaceScopeArchetypes);
             setStrategyIds([]);
           }}
         />
         <span className="text-muted-foreground/30 text-xs hidden sm:inline">/</span>
         <CompactMultiSelect
           icon={<BarChart3 className="size-3" />}
-          items={filterByArchetype(clientOrgStrategies, scope.strategyArchetypeIds)}
-          selectedIds={scope.strategyIds}
-          onSelectionChange={setStrategyIds}
+          items={filterByArchetype(clientOrgStrategies, scope.archetypes as readonly string[])}
+          selectedIds={scope.strategyIds as readonly string[]}
+          onSelectionChange={(ids) => setStrategyIds(ids)}
           allLabel="All Strategies"
           groupBy={(s) => s.assetClass}
           getGroupLabel={(g) => g}
@@ -657,7 +670,7 @@ export function GlobalScopeFilters({ className }: { className?: string }) {
               className="h-6 px-1.5 text-[10px] text-muted-foreground hover:text-foreground"
               onClick={() => {
                 setStrategyIds([]);
-                setStrategyArchetypeIds([]);
+                setArchetypes([]);
               }}
             >
               <X className="size-3 mr-0.5" />
@@ -674,7 +687,7 @@ export function GlobalScopeFilters({ className }: { className?: string }) {
       <CompactMultiSelect
         icon={<Building2 className="size-3 text-primary" />}
         items={organizations}
-        selectedIds={scope.organizationIds}
+        selectedIds={scope.organizationIds as readonly string[]}
         onSelectionChange={(ids) => {
           setOrganizationIds(ids);
           setClientIds([]);
@@ -693,7 +706,7 @@ export function GlobalScopeFilters({ className }: { className?: string }) {
       <CompactMultiSelect
         icon={<Users className="size-3" />}
         items={filteredClients}
-        selectedIds={scope.clientIds}
+        selectedIds={scope.clientIds as readonly string[]}
         onSelectionChange={(ids) => {
           setClientIds(ids);
           setStrategyIds([]);
@@ -716,9 +729,9 @@ export function GlobalScopeFilters({ className }: { className?: string }) {
       />
       <span className="text-muted-foreground/30 text-xs hidden md:inline">/</span>
       <FamilyArchetypeMultiSelect
-        archetypeIds={scope.strategyArchetypeIds}
+        archetypeIds={scope.archetypes as readonly string[]}
         onChange={(next) => {
-          setStrategyArchetypeIds(next);
+          setArchetypes(next as WorkspaceScopeArchetypes);
           setStrategyIds([]);
         }}
       />
@@ -726,8 +739,8 @@ export function GlobalScopeFilters({ className }: { className?: string }) {
       <CompactMultiSelect
         icon={<BarChart3 className="size-3" />}
         items={filteredStrategies}
-        selectedIds={scope.strategyIds}
-        onSelectionChange={setStrategyIds}
+        selectedIds={scope.strategyIds as readonly string[]}
+        onSelectionChange={(ids) => setStrategyIds(ids)}
         allLabel="All Strategies"
         groupBy={(s) => s.assetClass}
         getGroupLabel={(g) => g}
@@ -755,7 +768,7 @@ export function GlobalScopeFilters({ className }: { className?: string }) {
             variant="ghost"
             size="sm"
             className="h-6 px-1.5 text-[10px] text-muted-foreground hover:text-foreground"
-            onClick={clearAll}
+            onClick={() => reset("scope-bar")}
           >
             <X className="size-3 mr-0.5" />
             Clear

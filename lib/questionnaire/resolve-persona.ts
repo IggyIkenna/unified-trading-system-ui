@@ -1,6 +1,6 @@
 /**
  * Questionnaire -> Persona resolver (Phase 4 of
- * `ui_unification_v2_sanitisation_2026_04_20.plan.md`).
+ * `ui_unification_v2_sanitisation_2026_04_20.md`).
  *
  * Bridges the 6-axis `QuestionnaireResponse` (SSOT in
  * `unified-api-contracts/unified_api_contracts/internal/architecture_v2/restriction_profiles.py`)
@@ -24,9 +24,9 @@
  * Unrecognised / fallback     -> prospect-dart (safe generic).
  */
 
-import type { QuestionnaireResponse } from "@/lib/questionnaire/types";
 import type { CoverageStatus, StrategyCatalogueFilter } from "@/lib/architecture-v2/catalogue-filter";
 import type { ShareClass, StrategyFamily, VenueAssetGroupV2 } from "@/lib/architecture-v2/enums";
+import type { QuestionnaireResponse } from "@/lib/questionnaire/types";
 
 export type ResolvedPersonaId =
   | "prospect-dart"

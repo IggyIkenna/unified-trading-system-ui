@@ -11,11 +11,11 @@
  * - Active count shown as "n / total".
  * - AUM formatted with currency prefix.
  *
- * Per unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan.md Phase 5.
+ * Per unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan Phase 5.
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { buildMockStrategiesData, buildMockStrategy } from "../_helpers/mock-strategies-context";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { buildMockStrategiesData } from "../_helpers/mock-strategies-context";
 
 const mockStrategiesData = buildMockStrategiesData();
 
@@ -44,8 +44,8 @@ vi.mock("@/components/shared", () => ({
   ),
 }));
 
-import * as React from "react";
 import { StrategiesKpiWidget } from "@/components/widgets/strategies/strategies-kpi-widget";
+import * as React from "react";
 
 describe("strategies-kpi-strip — L1.5 harness", () => {
   beforeEach(() => {
@@ -80,11 +80,12 @@ describe("strategies-kpi-strip — L1.5 harness", () => {
   });
 
   describe("loading state", () => {
-    it("renders em-dash for all values when isLoading=true", () => {
+    it("renders dash for all values when isLoading=true", () => {
       Object.assign(mockStrategiesData, buildMockStrategiesData({ isLoading: true }));
       render(<StrategiesKpiWidget instanceId="test" />);
       const values = screen.getAllByTestId("kpi-value");
-      const allDash = values.every((v) => v.textContent === "—");
+      // Widget renders ASCII hyphen "-" as the loading placeholder.
+      const allDash = values.every((v) => v.textContent === "-");
       expect(allDash).toBe(true);
     });
   });

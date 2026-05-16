@@ -167,9 +167,9 @@ export function generateTimeSeriesData(
 }
 
 export function generatePnLComponents(
-  orgIds: string[],
-  clientIds: string[],
-  strategyIds: string[],
+  orgIds: readonly string[],
+  clientIds: readonly string[],
+  strategyIds: readonly string[],
   isBatch: boolean,
 ): PnLComponent[] {
   let multiplier = 1;
@@ -301,8 +301,8 @@ const FALLBACK_CLIENT_PNL = [
 ];
 
 export function generateClientPnL(
-  orgIds: string[],
-  clientIds: string[],
+  orgIds: readonly string[],
+  clientIds: readonly string[],
   isBatch: boolean,
   allOrgs: OrgRecord[],
   allClients: ClientRecord[],

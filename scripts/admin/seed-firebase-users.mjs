@@ -334,6 +334,51 @@ const STAGING_USERS = [
       ],
     },
   },
+  // ── 3 personas added 2026-05-01 to mirror personas.ts ────────────────────
+  // demo-signals-client (Clean Signals-In product showcase — DART tile + Reports;
+  // Research / Promote / Strategy Catalogue locked).
+  {
+    email: "demo-signals@odum-research.co.uk",
+    displayName: "Demo Signals Client",
+    password: "OdumIR2026!",
+    claims: {
+      role: "client",
+      entitlements: ["data-pro", "execution-full", "reporting", { domain: "trading-common", tier: "basic" }],
+    },
+  },
+  // demo-im-reports-only (Reports-only IM client — distinct from client-im-pooled
+  // / client-im-sma which also have investor-relations).
+  {
+    email: "demo-im@odum-research.co.uk",
+    displayName: "Demo IM Client",
+    password: "OdumIR2026!",
+    claims: {
+      role: "client",
+      entitlements: ["reporting"],
+    },
+  },
+  // desmondhw — bundled-pair persona (desmond-dart-full ⇄ desmond-signals-in
+  // via DemoPlanToggle tier-override). We seed the Firebase user with the
+  // FULL entitlement set; tier-override.ts overlays the downgrade in
+  // localStorage at render time. Single Firebase identity; two persona views.
+  {
+    email: "desmondhw@gmail.com",
+    displayName: "Desmond H-W",
+    password: "odum-demo-2026",
+    claims: {
+      role: "client",
+      entitlements: [
+        "investor-relations",
+        "investor-platform",
+        "data-pro",
+        "execution-full",
+        "ml-full",
+        "strategy-full",
+        "reporting",
+        { domain: "trading-common", tier: "basic" },
+      ],
+    },
+  },
 ];
 
 async function upsertUser(auth, user) {

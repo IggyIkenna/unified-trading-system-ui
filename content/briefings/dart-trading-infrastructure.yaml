@@ -1,0 +1,20 @@
+slug: dart-trading-infrastructure
+title: DART — Trading Infrastructure
+tldr: Operate on the same systematic-trading platform Odum runs internally — execution, position keeping, risk and reconciliation in one regulated stack.
+frame: |
+  DART exposes Odum's internal trading infrastructure to clients. Two engagement paths share the same operating system: Signals-In (you provide the alpha; we execute, position-keep, reconcile, report) and Full-Pipeline (research and promotion alongside operation). What you see is the same surface Odum uses on its own book — same components, same data, same lifecycle — entitlement-filtered to your slice. Strategy onboarding is rehearsed against historical data through the matching engine, then graduated to paper, then to live with the same code path the whole way.
+sections:
+  - title: One operating system, two engagement paths
+    body: Signals-In clients submit instructions and consume execution + reporting. Full-Pipeline clients additionally use the research and promotion stack. The platform is identical for both — only entitlements and the strategy-promotion lifecycle differ.
+  - title: Reporting parity with Odum's internal book
+    body: Positions, exposures, P&L attribution, reconciliation, audit trail and compliance artefacts surface through the same UI Odum's own traders and risk desk use. Filtered by tenant; shape unchanged.
+  - title: Promotion lifecycle — Code-audited → Backtested → Paper → Live
+    body: Strategies graduate through quality gates before any capital flows. The matching engine produces simulated fills with realistic slippage / latency assumptions, then paper trading exercises the full mesh, then live capital is switched on with the same code path.
+keyMessages:
+  - DART is an operating system, not a product line. Signals-In and Full-Pipeline are entry points into the same infrastructure.
+  - Reporting matches Odum's internal book, filtered by tenant.
+  - Strategy promotion runs through code-audit → backtest → paper → live with no engine swap.
+nextCall: The 45-minute call walks the engagement path that fits your operation, the venue setup against your existing relationships, and the strategy-promotion checklist against your alpha pipeline.
+cta:
+  label: Book 45-minute call
+  href: /contact

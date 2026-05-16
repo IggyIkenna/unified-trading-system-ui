@@ -7,13 +7,16 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScope, useWorkspaceScopeStore } from "@/lib/stores/workspace-scope-store";
 import { useOverviewDataSafe } from "./overview-data-context";
 import type { TradingOrganization, TradingClient } from "@/lib/types/trading";
 
 export function ScopeSummaryWidget(_props: WidgetComponentProps) {
   const ctx = useOverviewDataSafe();
-  const { scope: context, setOrganizationIds, setClientIds, setStrategyIds } = useGlobalScope();
+  const context = useWorkspaceScope();
+  const setOrganizationIds = useWorkspaceScopeStore((s) => s.setOrganizationIds);
+  const setClientIds = useWorkspaceScopeStore((s) => s.setClientIds);
+  const setStrategyIds = useWorkspaceScopeStore((s) => s.setStrategyIds);
   if (!ctx)
     return (
       <div className="flex h-full items-center justify-center p-3 text-xs text-muted-foreground">
@@ -52,14 +55,14 @@ export function ScopeSummaryWidget(_props: WidgetComponentProps) {
           name: String(s.name ?? ""),
           status: String(s.status ?? ""),
         }))}
-        selectedStrategyIds={context.strategyIds}
+        selectedStrategyIds={[...context.strategyIds]}
         totalStrategies={filteredSortedStrategies.length}
         totalOrganizations={organizations.length}
         totalClients={clients.length}
         totalCapital={totalNav}
         totalExposure={totalExposure}
         mode={context.mode}
-        asOfDatetime={context.asOfDatetime}
+        asOfDatetime={context.asOfTs ?? undefined}
         onClearScope={() => {
           setOrganizationIds([]);
           setClientIds([]);
@@ -75,7 +78,7 @@ export function ScopeSummaryWidget(_props: WidgetComponentProps) {
               context.organizationIds.length > 0 || context.clientIds.length > 0 ? "Filtered" : "All Strategies",
           }}
         />
-        <Link href="/services/trading/terminal">
+        <Link href="/services/workspace?surface=terminal&tm=command">
           <Button variant="default" size="sm" className="h-8 gap-1.5">
             Open Trading Terminal
             <ArrowRight className="size-3.5" />

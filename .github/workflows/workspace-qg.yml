@@ -1,0 +1,72 @@
+# workspace-qg.yml — UNIFIED quality-gates workflow template (replaces per-repo quality-gates.yml)
+#
+# DESIGN (opus-max-tier 2026-05-16; supersedes slot 8's first pass that omitted live-defi-rollout):
+#
+# ## Trigger surface — covers all 5 patterns observed across 21 Python repos as of 2026-05-15:
+#
+#  - 9 repos triggered on `[main, staging, live-defi-rollout]` push (fires hundreds/day on LDR)
+#  - 9 repos triggered on `[main]` only (slow cadence)
+#  - 2 repos triggered on `[main, staging]`
+#  - 1 repo triggered on `[main, develop]` (position-balance-monitor — stale 'develop' branch)
+#
+# This unified template fires on `push to [main, staging, live-defi-rollout]` + `pull_request to
+# [main, staging]` — strict superset of all current triggers. Repos on the `[main]`-only pattern
+# will see additional QG runs on LDR pushes after migration. That's the intended unification.
+#
+# ## Post-cutover migration (2026-05-23):
+#
+# After cutover, `live-defi-rollout` branch is retired. Update the template to:
+#
+#   push:
+#     branches: [main, staging]
+#   pull_request:
+#     branches: [main, staging]
+#
+# Then roll out via `bash scripts/workflow-templates/rollout-workflow-templates.sh`. Document the
+# transition in `codex/08-workflows/ci-cd-flow.md` § "Post-cutover workflow trigger surface".
+#
+# ## Why this lives in PM (not per-repo):
+#
+# - Single SSOT — drift between repos previously caused 5 distinct trigger patterns.
+# - `dep_repos` rendered from `workspace-manifest.json` (canonical) — eliminates hand-crafted
+#   phantom-dep lists (alerting-service's stale `unified-cloud-interface` / `unified-config-interface` /
+#   `unified-internal-contracts` references will be auto-corrected by next rollout).
+# - Roll forward: edit template + `rollout-workflow-templates.sh` propagates to all 21 repos in one
+#   pass.
+#
+# ## Substitution placeholders:
+#
+# - `` — rendered from workspace-manifest.json by rollout-workflow-templates.sh
+# - `unified-trading-system-ui` — repo name (e.g. alerting-service)
+# - `unified_trading_system_ui` — Python source dir (e.g. alerting_service)
+
+name: workspace-qg
+
+on:
+  push:
+    branches: [main, staging, live-defi-rollout]
+  pull_request:
+    branches: [main, staging]
+  workflow_dispatch:
+
+# Concurrency: cancel in-progress runs for the same ref on new push (saves Action minutes during
+# rapid LDR push cadence). PR runs serialize per-PR.
+concurrency:
+  group: workspace-qg-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'push' }}
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  quality-gates:
+    name: Quality Gates (unified-trading-system-ui)
+    uses: IggyIkenna/unified-trading-pm/.github/workflows/python-quality-gates.yml@live-defi-rollout
+    with:
+      dep_repos: ""
+    secrets: inherit
+    # Note: reusable workflow inputs are intentionally minimal — service_name + source_dir
+    # are derived inside the reusable workflow from github.repository (caller's repo name)
+    # and the conventional `<repo>_<underscored>` source-dir layout per workspace SSOT.
+    # See `.github/workflows/python-quality-gates.yml` in unified-trading-pm.

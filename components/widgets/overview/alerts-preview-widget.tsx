@@ -97,7 +97,7 @@ export function AlertsPreviewWidget(_props: WidgetComponentProps) {
           <Bell className="size-3.5" />
           <span>{hasCounts ? `${activeAlerts.length} active` : "All clear"}</span>
         </div>
-        <Link href="/services/trading/alerts">
+        <Link href="/services/workspace?surface=terminal&tm=command">
           <Button variant="ghost" size="sm" className="h-7 text-xs">
             View All
           </Button>
@@ -149,7 +149,7 @@ export function AlertsPreviewWidget(_props: WidgetComponentProps) {
                     </div>
                   </div>
                   <Link
-                    href="/services/trading/alerts"
+                    href="/services/workspace?surface=terminal&tm=command"
                     className="shrink-0 ml-1 opacity-0 group-hover:opacity-100 transition-opacity"
                     title="View in alerts tab"
                   >

@@ -3,7 +3,7 @@
 **Last Updated:** 2026-03-04 **SSOT for:** The Phase 0 audit protocol that every repo must pass before any hardening
 sprint begins. **Cross-refs:**
 
-- Plan: `unified-trading-pm/plans/active/phase0_standards_enforcement.plan.md`
+- Plan: `unified-trading-pm/plans/active/phase0_standards_enforcement.md`
 - Quality gates: `unified-trading-codex/06-coding-standards/quality-gates.md`
 - Integration testing layers: `unified-trading-codex/06-coding-standards/integration-testing-layers.md`
 - Tier architecture: `04-architecture/TIER-ARCHITECTURE.md`
@@ -119,6 +119,6 @@ Phase 0 is complete when ALL repos have:
 
 ## Related
 
-- [phase0_standards_enforcement.plan.md](../../unified-trading-pm/plans/active/phase0_standards_enforcement.plan.md)
+- [phase0_standards_enforcement.md](../../unified-trading-pm/plans/active/phase0_standards_enforcement.md)
 - [quality-gates.md](quality-gates.md)
 - [integration-testing-layers.md](integration-testing-layers.md)

@@ -1,0 +1,20 @@
+slug: regulated-operating-models
+title: Regulated Operating Models
+tldr: Use Odum's FCA permissions to cover your regulated activity — operate on Odum's stack with Odum as the regulated entity.
+frame: |
+  Odum Research Ltd holds FCA permissions and operates a regulated stack — MLRO, compliance monitoring, and supervisory reporting are operated internally, not outsourced. The Regulated Operating Models product lets a client carry out regulated activity under Odum's permissions: client capital flows through Odum-controlled accounts under Odum's regulatory cover, you operate strategies on Odum's infrastructure, and the lifecycle artefacts (audit trail, supervisory reports, compliance log) come from the same operating system Odum uses internally.
+sections:
+  - title: Permissions cover, not advisory wrapper
+    body: Odum's FCA permissions cover the regulated activity — client capital is held under Odum's compliance perimeter, not yours. This is a regulated cover, not an advisory wrap-around on someone else's permissions.
+  - title: Compliance + MLRO operated inside Odum
+    body: MLRO, compliance monitoring, KYC / AML, and supervisory reporting are operated by Odum staff against Odum's procedures — not outsourced. Same compliance perimeter Odum runs against its own book.
+  - title: Audit trail + supervisory reporting
+    body: Every state transition (subscription, trade, redemption, breach, override) emits a lifecycle event into your audit trail. Supervisory reports run from the same data store Odum uses internally; auditors see one canonical view.
+keyMessages:
+  - Odum's FCA permissions cover the regulated activity. Not advisory; regulated cover.
+  - MLRO + compliance + KYC operated internally; no outsourced compliance perimeter.
+  - Audit trail + supervisory reports come from the same stack Odum uses for its own regulated activity.
+nextCall: The 45-minute call walks the regulated activity in scope, the entity / capital structure that fits, and the compliance handover plan.
+cta:
+  label: Book 45-minute call
+  href: /contact

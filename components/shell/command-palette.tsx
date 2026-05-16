@@ -12,7 +12,7 @@ import {
   CommandSeparator,
 } from "@/components/ui/command";
 import { resetDemo } from "@/lib/reset-demo";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScopeStore } from "@/lib/stores/workspace-scope-store";
 import {
   Database,
   Wrench,
@@ -82,7 +82,7 @@ interface CommandPaletteProps {
 
 export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   const router = useRouter();
-  const { setMode } = useGlobalScope();
+  const setMode = useWorkspaceScopeStore((s) => s.setMode);
 
   const navigate = (href: string) => {
     onOpenChange(false);

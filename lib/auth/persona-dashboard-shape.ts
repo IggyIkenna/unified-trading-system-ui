@@ -2,15 +2,21 @@
  * Per-persona dashboard-tile visibility shape.
  *
  * Sibling to `persona-lifecycle-shape.ts`. Where that file governs the 4-stage
- * lifecycle-nav (Data · DART · Manage · Reports), THIS file governs the 5-tile
- * /dashboard product grid (DART · Odum Signals · Reports · Investor Relations ·
- * Admin & Ops).
+ * lifecycle-nav (Data · DART · Manage · Reports), THIS file governs the 6-tile
+ * /dashboard product grid (DART Terminal · DART Research · Odum Signals ·
+ * Reports · Investor Relations · Admin & Ops).
+ *
+ * 2026-04-28 tile split: legacy single `dart` tile split into `dart-terminal`
+ * (Signals-In + DART-Full visible) and `dart-research` (DART-Full only;
+ * padlocked-visible "locked" for Signals-In). FOMO behavior is default-on for
+ * non-DART-Full users via the instrument-type gate (lib/architecture-v2/
+ * user-instrument-types.ts), not a separate tier id.
  *
  * The two axes overlap but are NOT a 1:1 mapping:
  *   - Lifecycle-nav  = "how you work"         (stages of the pipeline)
  *   - Dashboard grid = "what products you own" (product-axis)
  *
- * SSOT: unified-trading-pm/codex/09-strategy/architecture-v2/dashboard-services-grid.md
+ * SSOT: unified-trading-pm/codex/14-playbooks/dart/dart-terminal-vs-research.md
  */
 
 import type { StageVisibility } from "./persona-lifecycle-shape";
@@ -24,8 +30,12 @@ export type DashboardTileVisibility = Record<DashboardTileId, StageVisibility>;
 /** Sub-route-level visibility, keyed by tile id → sub-route key. */
 export type DashboardSubRouteVisibility = Record<DashboardTileId, Record<string, StageVisibility>>;
 
+// 2026-04-28 tile split: legacy single `dart` tile split into `dart-terminal`
+// (Signals-In + DART-Full visible) and `dart-research` (DART-Full only;
+// padlocked-visible for Signals-In). SSOT: codex/14-playbooks/dart/dart-terminal-vs-research.md.
 const DEFAULT_TILE_SHAPE: DashboardTileVisibility = {
-  dart: "locked",
+  "dart-terminal": "locked",
+  "dart-research": "hidden",
   "odum-signals": "hidden",
   reports: "visible",
   "investor-relations": "hidden",
@@ -33,14 +43,25 @@ const DEFAULT_TILE_SHAPE: DashboardTileVisibility = {
 };
 
 const DEFAULT_SUBROUTE_SHAPE: DashboardSubRouteVisibility = {
-  dart: {
+  "dart-terminal": {
     terminal: "locked",
-    research: "hidden",
-    promote: "hidden",
     observe: "locked",
     "strategy-catalogue": "hidden",
     "signal-intake": "hidden",
     data: "hidden",
+  },
+  "dart-research": {
+    "research-overview": "hidden",
+    features: "hidden",
+    "feature-etl": "hidden",
+    quant: "hidden",
+    strategies: "hidden",
+    ml: "hidden",
+    backtests: "hidden",
+    signals: "hidden",
+    "execution-research": "hidden",
+    allocate: "hidden",
+    promote: "hidden",
   },
   "odum-signals": {
     counterparties: "hidden",
@@ -74,6 +95,10 @@ const DEFAULT_SUBROUTE_SHAPE: DashboardSubRouteVisibility = {
     engagement: "hidden",
     "data-etl": "hidden",
     "audit-log": "hidden",
+    // Plan D Phase 4 — approvals chip (onboarding + strategy-version queues).
+    // Hidden for non-admin/non-internal personas; visible to admin and the
+    // internal-trader persona (overridden in PERSONA_SUBROUTE_SHAPES below).
+    approvals: "hidden",
   },
 };
 
@@ -87,7 +112,8 @@ function subRouteOverride(
   }>,
 ): DashboardSubRouteVisibility {
   const out: DashboardSubRouteVisibility = {
-    dart: { ...DEFAULT_SUBROUTE_SHAPE.dart },
+    "dart-terminal": { ...DEFAULT_SUBROUTE_SHAPE["dart-terminal"] },
+    "dart-research": { ...DEFAULT_SUBROUTE_SHAPE["dart-research"] },
     "odum-signals": { ...DEFAULT_SUBROUTE_SHAPE["odum-signals"] },
     reports: { ...DEFAULT_SUBROUTE_SHAPE.reports },
     "investor-relations": { ...DEFAULT_SUBROUTE_SHAPE["investor-relations"] },
@@ -107,7 +133,8 @@ function subRouteOverride(
 }
 
 const ALL_VISIBLE_TILE: DashboardTileVisibility = {
-  dart: "visible",
+  "dart-terminal": "visible",
+  "dart-research": "visible",
   "odum-signals": "visible",
   reports: "visible",
   "investor-relations": "visible",
@@ -115,14 +142,25 @@ const ALL_VISIBLE_TILE: DashboardTileVisibility = {
 };
 
 const ALL_VISIBLE_SUBROUTES: DashboardSubRouteVisibility = {
-  dart: {
+  "dart-terminal": {
     terminal: "visible",
-    research: "visible",
-    promote: "visible",
     observe: "visible",
     "strategy-catalogue": "visible",
     "signal-intake": "visible",
     data: "visible",
+  },
+  "dart-research": {
+    "research-overview": "visible",
+    features: "visible",
+    "feature-etl": "visible",
+    quant: "visible",
+    strategies: "visible",
+    ml: "visible",
+    backtests: "visible",
+    signals: "visible",
+    "execution-research": "visible",
+    allocate: "visible",
+    promote: "visible",
   },
   "odum-signals": {
     counterparties: "visible",
@@ -155,97 +193,159 @@ const ALL_VISIBLE_SUBROUTES: DashboardSubRouteVisibility = {
     engagement: "visible",
     "data-etl": "visible",
     "audit-log": "visible",
+    approvals: "visible",
   },
 };
 
+// 2026-04-28 tile split: legacy `dart` tile entries migrated to `dart-terminal`
+// (Signals-In + DART-Full visible) and `dart-research` (visible iff persona has
+// strategy-full + ml-full; padlocked-visible "locked" otherwise; "hidden" if
+// persona has no DART access at all). SSOT: codex/14-playbooks/dart/dart-terminal-vs-research.md
 const PERSONA_TILE_SHAPES: Record<string, DashboardTileVisibility> = {
-  // ── Admin + Internal — all 5 tiles visible
+  // ── Admin + Internal — all 6 tiles visible
   admin: ALL_VISIBLE_TILE,
   "internal-trader": tileOverride({
-    dart: "visible",
+    "dart-terminal": "visible",
+    "dart-research": "visible",
     "odum-signals": "visible",
     reports: "visible",
     "investor-relations": "hidden",
     admin: "visible",
   }),
   "im-desk-operator": tileOverride({
-    dart: "visible",
+    "dart-terminal": "visible",
+    "dart-research": "visible",
     "odum-signals": "hidden",
     reports: "visible",
     "investor-relations": "visible",
     admin: "visible",
   }),
 
-  // ── DART Full clients
-  "client-full": tileOverride({ dart: "visible", reports: "visible" }),
-  "client-premium": tileOverride({ dart: "visible", reports: "visible" }),
-  "client-data-only": tileOverride({ dart: "visible", reports: "hidden" }),
-  "prospect-dart": tileOverride({ dart: "visible", reports: "locked" }),
+  // ── DART Full clients (have strategy-full + ml-full)
+  "client-full": tileOverride({ "dart-terminal": "visible", "dart-research": "visible", reports: "visible" }),
+  // client-premium has only basic trading entitlements — no strategy-full/ml-full
+  "client-premium": tileOverride({ "dart-terminal": "visible", "dart-research": "locked", reports: "visible" }),
+  // client-data-only has only data-basic — DART Research hidden entirely
+  "client-data-only": tileOverride({ "dart-terminal": "visible", "dart-research": "hidden", reports: "hidden" }),
+  "prospect-dart": tileOverride({ "dart-terminal": "visible", "dart-research": "visible", reports: "locked" }),
 
-  // ── DART Signals-In (inbound) — sees DART with ONLY Signal Intake sub-route
+  // ── DART Signals-In (inbound) — DART Terminal visible, DART Research padlocked
   "prospect-signals-only": tileOverride({
-    dart: "visible",
+    "dart-terminal": "visible",
+    "dart-research": "locked",
     reports: "visible",
   }),
 
   // ── Odum Signals counterparty (outbound) — standalone tile
   "prospect-odum-signals": tileOverride({
-    dart: "hidden",
+    "dart-terminal": "hidden",
+    "dart-research": "hidden",
     "odum-signals": "visible",
     reports: "hidden",
   }),
 
-  // ── IM clients — Reports + IR
+  // ── IM clients — Reports + IR (no DART)
+  // ── Carry & Yield family clients (DART-terminal access only) ─────────
+  // carry-yield-basic: data-pro + execution-basic + reporting + CARRY_AND_YIELD
+  // basic. Should see DART terminal (entitled) but no DART research.
+  "carry-yield-basic-client": tileOverride({
+    "dart-terminal": "visible",
+    "dart-research": "locked",
+    reports: "visible",
+    "investor-relations": "hidden",
+    "odum-signals": "hidden",
+  }),
+  // carry-yield-premium: ml-full + execution-full + premium tier — full DART
+  // research access.
+  "carry-yield-premium-client": tileOverride({
+    "dart-terminal": "visible",
+    "dart-research": "visible",
+    reports: "visible",
+    "investor-relations": "hidden",
+    "odum-signals": "hidden",
+  }),
+
+  // ── Funnel-Coherence demo personas ────────────────────────────────────
+  // demo-allocator: Path A allocator persona — sees Reports only (no DART,
+  // no IR, no Odum Signals). Mirrors the entitlements: ["reporting"] in
+  // lib/auth/personas.ts.
+  "demo-allocator": tileOverride({
+    "dart-terminal": "hidden",
+    "dart-research": "hidden",
+    reports: "visible",
+    "investor-relations": "hidden",
+    "odum-signals": "hidden",
+  }),
+  // demo-investor-lp: LP demo persona — sees Investor Relations + Reports.
+  "demo-investor-lp": tileOverride({
+    "dart-terminal": "hidden",
+    "dart-research": "hidden",
+    reports: "visible",
+    "investor-relations": "visible",
+    "odum-signals": "hidden",
+  }),
+
   "client-im-pooled": tileOverride({
-    dart: "hidden",
+    "dart-terminal": "hidden",
+    "dart-research": "hidden",
     reports: "visible",
     "investor-relations": "visible",
   }),
   "client-im-sma": tileOverride({
-    dart: "hidden",
+    "dart-terminal": "hidden",
+    "dart-research": "hidden",
     reports: "visible",
     "investor-relations": "visible",
   }),
   "prospect-im": tileOverride({
-    dart: "hidden",
+    "dart-terminal": "hidden",
+    "dart-research": "hidden",
     reports: "locked",
     "investor-relations": "locked",
   }),
 
   // ── Regulatory Umbrella
   "client-regulatory": tileOverride({
-    dart: "hidden",
+    "dart-terminal": "hidden",
+    "dart-research": "hidden",
     reports: "visible",
   }),
   "prospect-regulatory": tileOverride({
-    dart: "hidden",
+    "dart-terminal": "hidden",
+    "dart-research": "hidden",
     reports: "locked",
   }),
   "prospect-im-under-regulatory": tileOverride({
-    dart: "hidden",
+    "dart-terminal": "hidden",
+    "dart-research": "hidden",
     reports: "locked",
     "investor-relations": "locked",
   }),
 
   // ── Investor Relations
   investor: tileOverride({
-    dart: "hidden",
+    "dart-terminal": "hidden",
+    "dart-research": "hidden",
     reports: "hidden",
     "investor-relations": "visible",
   }),
   advisor: tileOverride({
-    dart: "hidden",
+    "dart-terminal": "hidden",
+    "dart-research": "hidden",
     reports: "hidden",
     "investor-relations": "visible",
   }),
 
   // ── Legacy / niche
   "prospect-platform": tileOverride({
-    dart: "locked",
+    "dart-terminal": "locked",
+    "dart-research": "locked",
     reports: "hidden",
   }),
+  // elysium-defi (Patrick base) has no strategy-full/ml-full — Research padlocked
   "elysium-defi": tileOverride({
-    dart: "visible",
+    "dart-terminal": "visible",
+    "dart-research": "locked",
     reports: "locked",
   }),
 
@@ -254,33 +354,38 @@ const PERSONA_TILE_SHAPES: Record<string, DashboardTileVisibility> = {
   //    DEFAULT_TILE_SHAPE and shows DART locked + Reports visible only — both
   //    Desmond personas + Patrick's full-tier persona need explicit shapes.
   "desmond-dart-full": tileOverride({
-    dart: "visible",
+    "dart-terminal": "visible",
+    "dart-research": "visible",
     reports: "visible",
   }),
   "desmond-signals-in": tileOverride({
-    dart: "visible",
+    "dart-terminal": "visible",
+    "dart-research": "locked",
     reports: "visible",
   }),
   "elysium-defi-full": tileOverride({
-    dart: "visible",
+    "dart-terminal": "visible",
+    "dart-research": "visible",
     reports: "visible",
   }),
 
   // ── Generic prospect personas (pre-existing demo coverage; surfaced by the
   //    persona-shape registration gate 2026-04-25). prospect-dart-full mirrors
   //    desmond-dart-full; prospect-dart-signals-in mirrors desmond-signals-in;
-  //    prospect-perp-funding is reg-umbrella + signals-in (reports + DART signals
-  //    sub-routes only).
+  //    prospect-perp-funding is reg-umbrella + signals-in.
   "prospect-dart-full": tileOverride({
-    dart: "visible",
+    "dart-terminal": "visible",
+    "dart-research": "visible",
     reports: "visible",
   }),
   "prospect-dart-signals-in": tileOverride({
-    dart: "visible",
+    "dart-terminal": "visible",
+    "dart-research": "locked",
     reports: "visible",
   }),
   "prospect-perp-funding": tileOverride({
-    dart: "visible",
+    "dart-terminal": "visible",
+    "dart-research": "locked",
     reports: "visible",
   }),
 
@@ -289,15 +394,23 @@ const PERSONA_TILE_SHAPES: Record<string, DashboardTileVisibility> = {
   //    is a clean Signals-In showcase; demo-im-reports-only is a reports-only
   //    IM client view (no IR, no DART) for the allocator-view walkthrough.
   "demo-signals-client": tileOverride({
-    dart: "visible",
+    "dart-terminal": "visible",
+    "dart-research": "locked",
     reports: "visible",
   }),
   "demo-im-reports-only": tileOverride({
-    dart: "hidden",
+    "dart-terminal": "hidden",
+    "dart-research": "hidden",
     reports: "visible",
   }),
 };
 
+// 2026-04-28 tile split: legacy `dart` subRouteOverride entries migrated.
+// Terminal-side chips (terminal/observe/strategy-catalogue/signal-intake/data)
+// move under `dart-terminal`. Research-side chips (research/promote which were
+// inside the old single `dart` tile) move under `dart-research` (and the new
+// research nav uses fine-grained chips: research-overview / features / ml /
+// backtests / signals / etc — see DEFAULT_SUBROUTE_SHAPE).
 const PERSONA_SUBROUTE_SHAPES: Record<string, DashboardSubRouteVisibility> = {
   admin: ALL_VISIBLE_SUBROUTES,
   "internal-trader": {
@@ -313,10 +426,13 @@ const PERSONA_SUBROUTE_SHAPES: Record<string, DashboardSubRouteVisibility> = {
       engagement: "visible",
       "data-etl": "visible",
       "audit-log": "visible",
+      // Plan D Phase 4 — internal-trader can review onboarding +
+      // strategy-version approval requests.
+      approvals: "visible",
     },
   },
   "im-desk-operator": subRouteOverride({
-    dart: { terminal: "visible", observe: "visible", "strategy-catalogue": "visible" },
+    "dart-terminal": { terminal: "visible", observe: "visible", "strategy-catalogue": "visible" },
     reports: {
       "pnl-attribution": "visible",
       settlement: "visible",
@@ -339,12 +455,24 @@ const PERSONA_SUBROUTE_SHAPES: Record<string, DashboardSubRouteVisibility> = {
   }),
 
   "client-full": subRouteOverride({
-    dart: {
+    "dart-terminal": {
       terminal: "visible",
-      research: "visible",
-      promote: "visible",
       observe: "visible",
       "strategy-catalogue": "visible",
+      "signal-intake": "visible",
+    },
+    "dart-research": {
+      "research-overview": "visible",
+      features: "visible",
+      "feature-etl": "visible",
+      quant: "visible",
+      strategies: "visible",
+      ml: "visible",
+      backtests: "visible",
+      signals: "visible",
+      "execution-research": "visible",
+      allocate: "visible",
+      promote: "visible",
     },
     reports: {
       "pnl-attribution": "visible",
@@ -353,11 +481,13 @@ const PERSONA_SUBROUTE_SHAPES: Record<string, DashboardSubRouteVisibility> = {
     },
   }),
   "client-premium": subRouteOverride({
-    dart: {
+    "dart-terminal": {
       terminal: "visible",
       observe: "visible",
       "strategy-catalogue": "visible",
     },
+    // No research entitlements — chip set stays empty (default-hidden) under
+    // padlocked `dart-research` tile.
     reports: {
       "pnl-attribution": "visible",
       settlement: "visible",
@@ -365,15 +495,26 @@ const PERSONA_SUBROUTE_SHAPES: Record<string, DashboardSubRouteVisibility> = {
     },
   }),
   "client-data-only": subRouteOverride({
-    dart: { "strategy-catalogue": "visible" },
+    "dart-terminal": { "strategy-catalogue": "visible" },
   }),
   "prospect-dart": subRouteOverride({
-    dart: {
+    "dart-terminal": {
       terminal: "locked",
-      research: "locked",
-      promote: "locked",
       observe: "locked",
       "strategy-catalogue": "visible",
+    },
+    "dart-research": {
+      "research-overview": "locked",
+      features: "locked",
+      "feature-etl": "locked",
+      quant: "locked",
+      strategies: "locked",
+      ml: "locked",
+      backtests: "locked",
+      signals: "locked",
+      "execution-research": "locked",
+      allocate: "locked",
+      promote: "locked",
     },
     reports: {
       "pnl-attribution": "locked",
@@ -382,9 +523,9 @@ const PERSONA_SUBROUTE_SHAPES: Record<string, DashboardSubRouteVisibility> = {
     },
   }),
 
-  // Signals-In — DART with ONLY Signal Intake chip; others hidden
+  // Signals-In — DART Terminal with Signal Intake + Observe; DART Research padlocked
   "prospect-signals-only": subRouteOverride({
-    dart: { "signal-intake": "visible", observe: "visible" },
+    "dart-terminal": { "signal-intake": "visible", observe: "visible" },
     reports: { "pnl-attribution": "visible", settlement: "visible" },
   }),
 
@@ -394,6 +535,52 @@ const PERSONA_SUBROUTE_SHAPES: Record<string, DashboardSubRouteVisibility> = {
       payloads: "visible",
       "emission-history": "visible",
       "rate-limits": "visible",
+    },
+  }),
+
+  // ── Carry & Yield clients — sub-route shapes ────────────────────────
+  "carry-yield-basic-client": subRouteOverride({
+    "dart-terminal": {
+      terminal: "visible",
+      observe: "visible",
+    },
+    reports: {
+      "pnl-attribution": "visible",
+      catalogue: "visible",
+    },
+  }),
+  "carry-yield-premium-client": subRouteOverride({
+    "dart-terminal": {
+      terminal: "visible",
+      observe: "visible",
+      "strategy-catalogue": "visible",
+    },
+    "dart-research": {
+      "research-overview": "visible",
+      strategies: "visible",
+      backtests: "visible",
+    },
+    reports: {
+      "pnl-attribution": "visible",
+      catalogue: "visible",
+    },
+  }),
+
+  // ── Funnel-Coherence demo personas — sub-route shapes ─────────────────
+  "demo-allocator": subRouteOverride({
+    reports: {
+      "pnl-attribution": "visible",
+      catalogue: "visible",
+    },
+  }),
+  "demo-investor-lp": subRouteOverride({
+    reports: {
+      "pnl-attribution": "visible",
+      catalogue: "visible",
+    },
+    "investor-relations": {
+      board: "visible",
+      "ir-briefings": "visible",
     },
   }),
 
@@ -455,27 +642,40 @@ const PERSONA_SUBROUTE_SHAPES: Record<string, DashboardSubRouteVisibility> = {
   }),
 
   "prospect-platform": subRouteOverride({
-    dart: {
+    "dart-terminal": {
       terminal: "locked",
       "strategy-catalogue": "locked",
     },
   }),
   "elysium-defi": subRouteOverride({
-    dart: { terminal: "visible", observe: "visible" },
+    "dart-terminal": { terminal: "visible", observe: "visible" },
+    // Research padlocked at tile level; sub-routes default to hidden.
     reports: { "pnl-attribution": "locked" },
   }),
 
   // ── Real-prospect demo personas (2026-04-25). DART Full / DeFi Full shapes
-  //    mirror "client-full" — all DART sub-routes visible, full Reports. Signals-In
-  //    shape mirrors "prospect-signals-only" — DART with Signal Intake + Observe,
-  //    Research / Promote / Strategy Config / Deployment locked.
+  //    mirror "client-full" — all DART Terminal + Research sub-routes visible,
+  //    full Reports. Signals-In shape mirrors "prospect-signals-only" — DART
+  //    Terminal with Signal Intake + Observe; DART Research padlocked at tile.
   "desmond-dart-full": subRouteOverride({
-    dart: {
+    "dart-terminal": {
       terminal: "visible",
-      research: "visible",
-      promote: "visible",
       observe: "visible",
       "strategy-catalogue": "visible",
+      "signal-intake": "visible",
+    },
+    "dart-research": {
+      "research-overview": "visible",
+      features: "visible",
+      "feature-etl": "visible",
+      quant: "visible",
+      strategies: "visible",
+      ml: "visible",
+      backtests: "visible",
+      signals: "visible",
+      "execution-research": "visible",
+      allocate: "visible",
+      promote: "visible",
     },
     reports: {
       "pnl-attribution": "visible",
@@ -484,14 +684,13 @@ const PERSONA_SUBROUTE_SHAPES: Record<string, DashboardSubRouteVisibility> = {
     },
   }),
   "desmond-signals-in": subRouteOverride({
-    dart: {
+    "dart-terminal": {
       terminal: "visible",
       observe: "visible",
       "signal-intake": "visible",
       "strategy-catalogue": "visible",
-      research: "locked",
-      promote: "locked",
     },
+    // No research entitlements — DART Research tile padlocked.
     reports: {
       "pnl-attribution": "visible",
       settlement: "visible",
@@ -499,12 +698,24 @@ const PERSONA_SUBROUTE_SHAPES: Record<string, DashboardSubRouteVisibility> = {
     },
   }),
   "elysium-defi-full": subRouteOverride({
-    dart: {
+    "dart-terminal": {
       terminal: "visible",
-      research: "visible",
-      promote: "visible",
       observe: "visible",
       "strategy-catalogue": "visible",
+      "signal-intake": "visible",
+    },
+    "dart-research": {
+      "research-overview": "visible",
+      features: "visible",
+      "feature-etl": "visible",
+      quant: "visible",
+      strategies: "visible",
+      ml: "visible",
+      backtests: "visible",
+      signals: "visible",
+      "execution-research": "visible",
+      allocate: "visible",
+      promote: "visible",
     },
     reports: {
       "pnl-attribution": "visible",
@@ -516,12 +727,24 @@ const PERSONA_SUBROUTE_SHAPES: Record<string, DashboardSubRouteVisibility> = {
   // ── Generic prospect personas (pre-existing; registered 2026-04-25 by the
   //    persona-shape gate). Mirrors the analogous client-full / Signals-In shapes.
   "prospect-dart-full": subRouteOverride({
-    dart: {
+    "dart-terminal": {
       terminal: "visible",
-      research: "visible",
-      promote: "visible",
       observe: "visible",
       "strategy-catalogue": "visible",
+      "signal-intake": "visible",
+    },
+    "dart-research": {
+      "research-overview": "visible",
+      features: "visible",
+      "feature-etl": "visible",
+      quant: "visible",
+      strategies: "visible",
+      ml: "visible",
+      backtests: "visible",
+      signals: "visible",
+      "execution-research": "visible",
+      allocate: "visible",
+      promote: "visible",
     },
     reports: {
       "pnl-attribution": "visible",
@@ -530,14 +753,13 @@ const PERSONA_SUBROUTE_SHAPES: Record<string, DashboardSubRouteVisibility> = {
     },
   }),
   "prospect-dart-signals-in": subRouteOverride({
-    dart: {
+    "dart-terminal": {
       terminal: "visible",
       observe: "visible",
       "signal-intake": "visible",
       "strategy-catalogue": "visible",
-      research: "locked",
-      promote: "locked",
     },
+    // No research entitlements — DART Research tile padlocked.
     reports: {
       "pnl-attribution": "visible",
       settlement: "visible",
@@ -545,14 +767,13 @@ const PERSONA_SUBROUTE_SHAPES: Record<string, DashboardSubRouteVisibility> = {
     },
   }),
   "demo-signals-client": subRouteOverride({
-    dart: {
+    "dart-terminal": {
       terminal: "visible",
       observe: "visible",
       "signal-intake": "visible",
       "strategy-catalogue": "visible",
-      research: "locked",
-      promote: "locked",
     },
+    // No research entitlements — DART Research tile padlocked.
     reports: {
       "pnl-attribution": "visible",
       settlement: "visible",
@@ -569,14 +790,13 @@ const PERSONA_SUBROUTE_SHAPES: Record<string, DashboardSubRouteVisibility> = {
     },
   }),
   "prospect-perp-funding": subRouteOverride({
-    dart: {
+    "dart-terminal": {
       terminal: "visible",
       observe: "visible",
       "signal-intake": "visible",
       "strategy-catalogue": "visible",
-      research: "locked",
-      promote: "locked",
     },
+    // Reg-umbrella + signals-in — DART Research tile padlocked at tile level.
     reports: {
       "pnl-attribution": "visible",
       settlement: "visible",
@@ -652,9 +872,15 @@ function entitlementDerivedShape(entitlements: ReadonlyArray<unknown>): Dashboar
     return tileOverride({ "investor-relations": "visible", reports: "visible" });
   }
 
-  // DART user — DART tile + Reports tile.
+  // DART user — DART Terminal tile + Reports. DART Research tile depends on
+  // whether the persona has the research entitlements (strategy-full + ml-full).
   if (hasDart) {
-    return tileOverride({ dart: "visible", reports: "visible" });
+    const hasResearch = flat.has("ml-full") && flat.has("strategy-full");
+    return tileOverride({
+      "dart-terminal": "visible",
+      "dart-research": hasResearch ? "visible" : "locked",
+      reports: "visible",
+    });
   }
 
   return null;

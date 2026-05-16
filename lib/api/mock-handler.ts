@@ -93,6 +93,16 @@ import {
 import { MOCK_TRANSFER_HISTORY } from "@/lib/mocks/fixtures/transfer-history";
 import { ALL_INSTRUMENTS, SNAPSHOT_META, type Instrument } from "@/lib/registry/instruments";
 import { isMockDataMode } from "@/lib/runtime/data-mode";
+import {
+  mockApproveInstruction,
+  mockInstructionStatus,
+  mockListPendingInstructions,
+  mockModeTransition,
+  mockPreviewResponse,
+  mockRejectInstruction,
+  mockStrategyRuns,
+  mockSubmitResponse,
+} from "@/lib/api/mocks/dart";
 
 export const MOCK_MODE = typeof window !== "undefined" && isMockDataMode();
 
@@ -982,6 +992,123 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       as_of: null,
     });
   }
+  // ─── DART manual-trade endpoints ─────────────────────────────────────────────
+  // POST /api/archetypes/:archetypeId/preview
+  const previewMatch = /^\/api\/archetypes\/([^/]+)\/preview$/.exec(route);
+  if (previewMatch && opts?.method?.toUpperCase() === "POST") {
+    const archetypeId = decodeURIComponent(previewMatch[1] ?? "");
+    const body = parseMockJsonBody(opts) as { side?: string; size_pct_nav?: number; venue?: string };
+    const mockResult = mockPreviewResponse(archetypeId, body);
+    if (!mockResult.risk_check_passed) {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(
+            new Response(JSON.stringify(mockResult), {
+              status: 422,
+              headers: { "Content-Type": "application/json" },
+            }),
+          );
+        }, 80);
+      });
+    }
+    return json(mockResult, 80);
+  }
+
+  // POST /api/manual/submit
+  if (route === "/api/manual/submit" && opts?.method?.toUpperCase() === "POST") {
+    const body = parseMockJsonBody(opts) as {
+      correlation_id?: string;
+      archetype?: string;
+      venue?: string;
+      side?: string;
+      strategy_id?: string;
+    };
+    const archetypeId = body.archetype ?? "CARRY_BASIS_PERP";
+    return json(
+      mockSubmitResponse(archetypeId, {
+        correlation_id: body.correlation_id ?? "corr-mock",
+        venue: body.venue,
+        side: body.side,
+        strategy_id: body.strategy_id,
+      }),
+      120,
+    );
+  }
+
+  // GET /api/instructions/:instructionId/status
+  const instructionStatusMatch = /^\/api\/instructions\/([^/]+)\/status$/.exec(route);
+  if (instructionStatusMatch) {
+    const instructionId = decodeURIComponent(instructionStatusMatch[1] ?? "");
+    return json(mockInstructionStatus(instructionId), 60);
+  }
+
+  // POST /api/archetypes/:archetypeId/operational-mode
+  const modeMatch = /^\/api\/archetypes\/([^/]+)\/operational-mode$/.exec(route);
+  if (modeMatch && opts?.method?.toUpperCase() === "POST") {
+    const archetypeId = decodeURIComponent(modeMatch[1] ?? "");
+    const body = parseMockJsonBody(opts) as { operational_mode?: string };
+    const targetMode = (body.operational_mode ?? "MANUAL") as import("@/lib/api/dart-client").OperationalMode;
+    const result = mockModeTransition(archetypeId, targetMode);
+    if ("status" in result && result.status === 409) {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(
+            new Response(JSON.stringify({ detail: result.detail }), {
+              status: 409,
+              headers: { "Content-Type": "application/json" },
+            }),
+          );
+        }, 80);
+      });
+    }
+    return json(result, 80);
+  }
+  // GET /api/manual/pending
+  if ((route === "/api/manual/pending" && !opts?.method) || opts?.method?.toUpperCase() === "GET") {
+    return json(mockListPendingInstructions(), 60);
+  }
+
+  // POST /api/manual/pending/:instructionId/approve
+  const approveMatch = /^\/api\/manual\/pending\/([^/]+)\/approve$/.exec(route);
+  if (approveMatch && opts?.method?.toUpperCase() === "POST") {
+    const instructionId = decodeURIComponent(approveMatch[1] ?? "");
+    const result = mockApproveInstruction(instructionId);
+    if ("status" in result && result.status === 404) {
+      return new Response(JSON.stringify({ detail: result.detail }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    return json(result, 80);
+  }
+
+  // POST /api/manual/pending/:instructionId/reject
+  const rejectMatch = /^\/api\/manual\/pending\/([^/]+)\/reject$/.exec(route);
+  if (rejectMatch && opts?.method?.toUpperCase() === "POST") {
+    const instructionId = decodeURIComponent(rejectMatch[1] ?? "");
+    const body = parseMockJsonBody(opts) as { reason?: string };
+    const result = mockRejectInstruction(instructionId, body.reason ?? "operator rejected");
+    if ("status" in result && result.status === 404) {
+      return new Response(JSON.stringify({ detail: result.detail }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    return json(result, 80);
+  }
+
+  // GET /api/strategy/:strategyId/runs?mode=batch|paper|live&limit=N (pvl-p23b)
+  const strategyRunsMatch = /^\/api\/strategy\/([^/]+)\/runs$/.exec(route);
+  if (strategyRunsMatch && (!opts?.method || opts?.method?.toUpperCase() === "GET")) {
+    const strategyId = decodeURIComponent(strategyRunsMatch[1] ?? "");
+    const urlObj = new URL(path, "http://localhost");
+    const mode = (urlObj.searchParams.get("mode") ?? "batch") as import("@/lib/api/dart-client").RunMode;
+    const limit = parseInt(urlObj.searchParams.get("limit") ?? "14", 10);
+    return json(mockStrategyRuns(strategyId, mode, limit), 60);
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────────
+
   if (route === "/api/compliance/pre-trade-check") {
     const body = opts?.body ? JSON.parse(opts.body as string) : {};
     const instrument = (body.instrument ?? "") as string;
@@ -6141,6 +6268,613 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   )
     return json({ data: [], total: 0 });
   if (route.startsWith("/api/analytics/")) return json({ data: [], total: 0 });
+
+  // DART cross-asset-group market-data endpoints (P1+ of the terminal plan).
+  // Per-view mock fixtures so widgets render in tier-0 dev mode without a
+  // backend gateway. Real endpoints land per phase as the views ship.
+  if (route.startsWith("/api/market-data/funding-rate-matrix")) {
+    const assets = ["BTC", "ETH", "SOL", "AVAX", "ARB", "OP", "MATIC", "DOGE"];
+    const venues = ["Binance", "OKX", "Bybit", "Deribit", "Hyperliquid"];
+    const cells: Record<string, Record<string, number>> = {};
+    for (const a of assets) {
+      cells[a] = {};
+      for (const v of venues) {
+        const venueBias = (venues.indexOf(v) - 2) * 0.00005;
+        const assetBias = (assets.indexOf(a) - 4) * 0.00003;
+        cells[a][v] = venueBias + assetBias + (Math.random() - 0.5) * 0.0002;
+      }
+    }
+    return json({ assets, venues, cells });
+  }
+  if (route.startsWith("/api/market-data/open-interest-ranking")) {
+    const assets = ["BTC", "ETH", "SOL", "AVAX", "ARB", "OP", "MATIC", "DOGE", "LINK", "ADA"];
+    const venues = ["Binance", "OKX", "Bybit", "Deribit"];
+    const items: Array<{
+      symbol: string;
+      venue: string;
+      oi_usd: number;
+      change_24h: number;
+      change_7d: number;
+      sparkline_7d: number[];
+    }> = [];
+    for (const a of assets) {
+      for (const v of venues) {
+        const baseOI = (assets.length - assets.indexOf(a)) * 1_500_000_000;
+        const venueScale = 1 - venues.indexOf(v) * 0.18;
+        const oi = baseOI * venueScale * (0.7 + Math.random() * 0.6);
+        const sparkline = Array.from(
+          { length: 24 },
+          (_, i) => oi * (0.95 + Math.sin(i / 4) * 0.05 + Math.random() * 0.02),
+        );
+        items.push({
+          symbol: a,
+          venue: v,
+          oi_usd: Math.round(oi),
+          change_24h: (Math.random() - 0.5) * 0.18,
+          change_7d: (Math.random() - 0.4) * 0.4,
+          sparkline_7d: sparkline,
+        });
+      }
+    }
+    items.sort((a, b) => b.oi_usd - a.oi_usd);
+    return json({ items: items.slice(0, 30) });
+  }
+  if (route.startsWith("/api/market-data/liquidation-heatmap")) {
+    const now = Date.now();
+    const points: Array<{ t: number; price: number; notional: number; side: "long" | "short" }> = [];
+    const basePrice = 64_000;
+    for (let i = 0; i < 240; i++) {
+      const tOffset = -((23 - Math.floor(i / 10)) * 60 * 60 * 1000 + (i % 10) * 6 * 60 * 1000);
+      const priceOffset = (Math.random() - 0.5) * 8000;
+      const isLong = Math.random() > 0.5;
+      points.push({
+        t: now + tOffset,
+        price: basePrice + priceOffset,
+        notional: 50_000 + Math.random() ** 3 * 5_000_000,
+        side: isLong ? "long" : "short",
+      });
+    }
+    return json({ asset: "BTC", bucket_minutes: 60, points });
+  }
+  if (route.startsWith("/api/market-data/long-short-ratio")) {
+    const longPct = 0.55 + Math.random() * 0.1;
+    const history = Array.from({ length: 48 }, () => 50 + (Math.random() - 0.5) * 20);
+    return json({
+      asset: "BTC",
+      ratio: longPct / (1 - longPct),
+      long_pct: longPct,
+      short_pct: 1 - longPct,
+      change_24h: (Math.random() - 0.5) * 5,
+      history,
+    });
+  }
+  if (route.startsWith("/api/market-data/market-cap-ranking")) {
+    const tokens: Array<[string, string]> = [
+      ["BTC", "Bitcoin"],
+      ["ETH", "Ethereum"],
+      ["USDT", "Tether"],
+      ["BNB", "BNB"],
+      ["SOL", "Solana"],
+      ["USDC", "USD Coin"],
+      ["XRP", "XRP"],
+      ["DOGE", "Dogecoin"],
+      ["ADA", "Cardano"],
+      ["TRX", "TRON"],
+      ["AVAX", "Avalanche"],
+      ["LINK", "Chainlink"],
+      ["TON", "Toncoin"],
+      ["DOT", "Polkadot"],
+      ["MATIC", "Polygon"],
+      ["NEAR", "NEAR Protocol"],
+      ["ATOM", "Cosmos"],
+      ["LTC", "Litecoin"],
+      ["UNI", "Uniswap"],
+      ["ARB", "Arbitrum"],
+    ];
+    let totalMcap = 0;
+    const raw = tokens.map(([sym, name], i) => {
+      const mcap = Math.round((1_400_000_000_000 - i * 50_000_000_000) * (0.6 + Math.random() * 0.6));
+      totalMcap += mcap;
+      return { sym, name, mcap, volume: mcap * (0.02 + Math.random() * 0.08) };
+    });
+    const items = raw.map(({ sym, name, mcap, volume }) => ({
+      symbol: sym,
+      name,
+      market_cap_usd: mcap,
+      volume_24h_usd: Math.round(volume),
+      change_24h: (Math.random() - 0.4) * 0.12,
+      change_7d: (Math.random() - 0.45) * 0.3,
+      dominance_pct: (mcap / totalMcap) * 100,
+      sparkline_7d: Array.from({ length: 28 }, () => mcap * (0.92 + Math.random() * 0.16)),
+    }));
+    return json({ items });
+  }
+  if (route.startsWith("/api/market-data/gainers-losers")) {
+    const universe: Array<[string, string]> = [
+      ["BTC", "Bitcoin"],
+      ["ETH", "Ethereum"],
+      ["SOL", "Solana"],
+      ["DOGE", "Dogecoin"],
+      ["AVAX", "Avalanche"],
+      ["ARB", "Arbitrum"],
+      ["MATIC", "Polygon"],
+      ["LINK", "Chainlink"],
+      ["UNI", "Uniswap"],
+      ["LTC", "Litecoin"],
+      ["INJ", "Injective"],
+      ["TIA", "Celestia"],
+      ["SUI", "Sui"],
+      ["APT", "Aptos"],
+      ["RNDR", "Render"],
+      ["SEI", "Sei"],
+      ["WLD", "Worldcoin"],
+      ["JUP", "Jupiter"],
+      ["PYTH", "Pyth"],
+      ["BONK", "Bonk"],
+    ];
+    const enriched = universe.map(([sym, name]) => {
+      const change = (Math.random() - 0.5) * 0.4;
+      const price = 50 + Math.random() * 5000;
+      return {
+        symbol: sym,
+        name,
+        price_usd: price,
+        change_24h: change,
+        sparkline_24h: Array.from({ length: 24 }, () => price * (1 + (Math.random() - 0.5) * Math.abs(change))),
+      };
+    });
+    enriched.sort((a, b) => b.change_24h - a.change_24h);
+    return json({ gainers: enriched.slice(0, 10), losers: enriched.slice(-10).reverse() });
+  }
+  if (route.startsWith("/api/market-data/volume-dominance")) {
+    const exchanges = ["Binance", "Coinbase", "OKX", "Bybit", "Upbit", "Kraken"];
+    const chains = ["Ethereum", "BSC", "Solana", "Tron", "Arbitrum", "Base"];
+    const sumTo100 = (n: number): number[] => {
+      const raw = Array.from({ length: n }, () => 0.5 + Math.random());
+      const sum = raw.reduce((a, b) => a + b, 0);
+      return raw.map((v) => (v / sum) * 100);
+    };
+    const ePct = sumTo100(exchanges.length);
+    const cPct = sumTo100(chains.length);
+    return json({
+      by_exchange: exchanges.map((name, i) => ({ name, volume_24h_usd: ePct[i] * 1_000_000_000, pct: ePct[i] })),
+      by_chain: chains.map((name, i) => ({ name, volume_24h_usd: cPct[i] * 1_000_000_000, pct: cPct[i] })),
+    });
+  }
+  if (route.startsWith("/api/market-data/trending-tokens")) {
+    const tokens: Array<[string, string]> = [
+      ["WIF", "Dogwifhat"],
+      ["JUP", "Jupiter"],
+      ["PYTH", "Pyth"],
+      ["TIA", "Celestia"],
+      ["INJ", "Injective"],
+      ["RNDR", "Render"],
+      ["SEI", "Sei"],
+      ["BONK", "Bonk"],
+      ["APT", "Aptos"],
+      ["SUI", "Sui"],
+      ["WLD", "Worldcoin"],
+      ["ARB", "Arbitrum"],
+    ];
+    const items = tokens.map(([sym, name]) => {
+      const avg7d = 100_000_000 + Math.random() * 500_000_000;
+      const today = avg7d * (1 + Math.random() * 4);
+      return {
+        symbol: sym,
+        name,
+        volume_24h_usd: Math.round(today),
+        volume_7d_avg_usd: Math.round(avg7d),
+        volume_change_pct: (today - avg7d) / avg7d,
+        sparkline_7d: Array.from({ length: 7 }, () => today * (0.5 + Math.random())),
+      };
+    });
+    items.sort((a, b) => b.volume_change_pct - a.volume_change_pct);
+    return json({ items: items.slice(0, 15) });
+  }
+  if (route.startsWith("/api/market-data/tvl-by-chain")) {
+    const chains = ["Ethereum", "Tron", "Solana", "BSC", "Arbitrum", "Base", "Optimism", "Polygon", "Avalanche", "Sui"];
+    const items = chains.map((chain, i) => {
+      const tvl = (300_000_000_000 - i * 25_000_000_000) * (0.7 + Math.random() * 0.5);
+      return {
+        chain,
+        tvl_usd: Math.round(tvl),
+        change_24h: (Math.random() - 0.4) * 0.06,
+        change_7d: (Math.random() - 0.45) * 0.18,
+        sparkline_7d: Array.from({ length: 28 }, () => tvl * (0.95 + Math.random() * 0.1)),
+      };
+    });
+    return json({ items });
+  }
+  if (route.startsWith("/api/market-data/tvl-by-protocol")) {
+    const protocols: Array<[string, string, string]> = [
+      ["Lido", "Ethereum", "Liquid Staking"],
+      ["AAVE", "Ethereum", "Lending"],
+      ["EigenLayer", "Ethereum", "Restaking"],
+      ["Maker", "Ethereum", "CDP"],
+      ["JustLend", "Tron", "Lending"],
+      ["Uniswap", "Ethereum", "DEX"],
+      ["Pendle", "Ethereum", "Yield"],
+      ["Curve", "Ethereum", "DEX"],
+      ["Morpho", "Ethereum", "Lending"],
+      ["GMX", "Arbitrum", "Perps"],
+    ];
+    const items = protocols.map(([protocol, chain, category], i) => {
+      const tvl = (50_000_000_000 - i * 4_000_000_000) * (0.7 + Math.random() * 0.5);
+      return {
+        protocol,
+        chain,
+        category,
+        tvl_usd: Math.round(tvl),
+        change_24h: (Math.random() - 0.4) * 0.08,
+        change_7d: (Math.random() - 0.45) * 0.2,
+        sparkline_7d: Array.from({ length: 28 }, () => tvl * (0.93 + Math.random() * 0.14)),
+      };
+    });
+    return json({ items });
+  }
+  if (route.startsWith("/api/market-data/dex-volume-ranking")) {
+    const dexes: Array<[string, string]> = [
+      ["Uniswap V3", "Ethereum"],
+      ["PancakeSwap", "BSC"],
+      ["Aerodrome", "Base"],
+      ["Curve", "Ethereum"],
+      ["Raydium", "Solana"],
+      ["Orca", "Solana"],
+      ["Uniswap V2", "Ethereum"],
+      ["Balancer", "Ethereum"],
+      ["dYdX", "Cosmos"],
+      ["Hyperliquid", "Hyperliquid"],
+    ];
+    const items = dexes.map(([protocol, chain], i) => {
+      const vol = (5_000_000_000 - i * 350_000_000) * (0.6 + Math.random() * 0.7);
+      return {
+        protocol,
+        chain,
+        volume_24h_usd: Math.round(vol),
+        change_24h: (Math.random() - 0.5) * 0.4,
+        sparkline_24h: Array.from({ length: 24 }, () => (vol / 24) * (0.7 + Math.random() * 0.6)),
+      };
+    });
+    return json({ items });
+  }
+  if (route.startsWith("/api/market-data/yield-farm-ranking")) {
+    const pools: Array<[string, string, string, number]> = [
+      ["AAVE", "Ethereum", "USDC supply", 4.2],
+      ["AAVE", "Ethereum", "USDT supply", 4.1],
+      ["AAVE", "Arbitrum", "USDC supply", 3.8],
+      ["Pendle", "Ethereum", "stETH PT-20Mar25", 12.4],
+      ["Morpho", "Ethereum", "WETH supply", 2.9],
+      ["Curve", "Ethereum", "3pool LP", 3.5],
+      ["Convex", "Ethereum", "stETH", 5.6],
+      ["GMX", "Arbitrum", "GLP", 9.8],
+      ["Lido", "Ethereum", "stETH", 3.4],
+      ["Marinade", "Solana", "mSOL", 7.1],
+    ];
+    const items = pools.map(([protocol, chain, pool, apy], i) => ({
+      protocol,
+      chain,
+      pool,
+      apy,
+      tvl_usd: Math.round((1_000_000_000 - i * 80_000_000) * (0.6 + Math.random() * 0.8)),
+      risk_score: 1 + Math.random() * 4,
+    }));
+    return json({ items });
+  }
+  if (route.startsWith("/api/market-data/stablecoin-supply")) {
+    const url = new URL(route, "http://localhost");
+    const symbol = url.searchParams.get("symbol") ?? "USDT";
+    const now = Date.now();
+    const buckets = Array.from({ length: 30 }, (_, i) => ({
+      t: now - (29 - i) * 24 * 60 * 60 * 1000,
+      mint_usd: 50_000_000 + Math.random() * 250_000_000,
+      burn_usd: 30_000_000 + Math.random() * 200_000_000,
+    }));
+    return json({ symbol, buckets });
+  }
+  if (route.startsWith("/api/market-data/basis-curve")) {
+    const venues = ["Binance", "OKX", "Bybit", "Deribit"];
+    const expiriesDays = [7, 14, 30, 60, 90, 180, 365];
+    const series = venues.map((venue, vi) => ({
+      venue,
+      points: expiriesDays.map((days) => ({
+        days_to_expiry: days,
+        // Contango — basis grows roughly with sqrt(time-to-expiry); add per-venue spread.
+        basis_bp: Math.sqrt(days) * 6 + vi * 4 + (Math.random() - 0.5) * 5,
+        expiry: new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+      })),
+    }));
+    return json({ asset: "BTC", series });
+  }
+  if (route.startsWith("/api/market-data/market-probability-curve")) {
+    const now = Date.now();
+    const days = 30;
+    return json({
+      market_id: "default",
+      market_title: "US presidential election — popular vote winner",
+      outcomes: [
+        {
+          outcome: "Candidate A",
+          series: Array.from({ length: days }, (_, i) => ({
+            t: now - (days - i - 1) * 24 * 60 * 60 * 1000,
+            implied_prob: 0.45 + Math.sin(i / 5) * 0.1 + (Math.random() - 0.5) * 0.04,
+          })),
+        },
+        {
+          outcome: "Candidate B",
+          series: Array.from({ length: days }, (_, i) => ({
+            t: now - (days - i - 1) * 24 * 60 * 60 * 1000,
+            implied_prob: 0.5 - Math.sin(i / 5) * 0.08 + (Math.random() - 0.5) * 0.04,
+          })),
+        },
+      ],
+    });
+  }
+  if (route.startsWith("/api/market-data/outcome-order-book")) {
+    const mkBids = (mid: number) =>
+      Array.from({ length: 12 }, (_, i) => ({ price: mid - (i + 1) * 0.01, size: 1000 + Math.random() * 8000 }));
+    const mkAsks = (mid: number) =>
+      Array.from({ length: 12 }, (_, i) => ({ price: mid + (i + 1) * 0.01, size: 1000 + Math.random() * 8000 }));
+    return json({
+      market_id: "default",
+      market_title: "US presidential election — popular vote winner",
+      outcomes: [
+        { outcome: "Candidate A", bids: mkBids(0.48), asks: mkAsks(0.48) },
+        { outcome: "Candidate B", bids: mkBids(0.52), asks: mkAsks(0.52) },
+      ],
+    });
+  }
+  if (route.startsWith("/api/market-data/outcome-volume")) {
+    const now = Date.now();
+    const days = 14;
+    return json({
+      market_id: "default",
+      market_title: "US presidential election — popular vote winner",
+      buckets: Array.from({ length: days }, (_, i) => ({
+        t: now - (days - i - 1) * 24 * 60 * 60 * 1000,
+        yes_volume: 200_000 + Math.random() * 1_500_000,
+        no_volume: 180_000 + Math.random() * 1_400_000,
+      })),
+    });
+  }
+  if (route.startsWith("/api/market-data/trending-markets") || route.startsWith("/api/market-data/closing-soon")) {
+    const closingSoon = route.includes("closing-soon");
+    const titles: Array<[string, string, string]> = [
+      ["Will Bitcoin hit $100K in 2026?", "Crypto", "Polymarket"],
+      ["US presidential election — popular vote winner", "Politics", "Polymarket"],
+      ["Will Fed cut rates at next FOMC?", "Macro", "Kalshi"],
+      ["Will SpaceX Starship reach orbit by 2026 Q3?", "Science", "Polymarket"],
+      ["Premier League — Arsenal top 4?", "Sports", "Polymarket"],
+      ["Will OpenAI release GPT-6 in 2026?", "Pop Culture", "Manifold"],
+      ["BTC ETF inflow > $5B in next 7 days?", "Crypto", "Polymarket"],
+      ["Will EU pass MiCA II by end of 2026?", "Politics", "Polymarket"],
+      ["S&P 500 close > 6000 by year-end?", "Macro", "Kalshi"],
+      ["NBA Finals MVP — Tatum?", "Sports", "Polymarket"],
+      ["Trump indictment count by Q4?", "Politics", "Polymarket"],
+      ["Will Tesla deliver 2.5M cars in 2026?", "Pop Culture", "Manifold"],
+    ];
+    const items = titles.map(([title, category, venue], i) => {
+      const vol7d = 30_000 + Math.random() * 800_000;
+      const vol24h = vol7d * (0.5 + Math.random() * 3);
+      return {
+        market_id: `mkt-${i}`,
+        title,
+        category,
+        venue,
+        volume_24h_usd: Math.round(vol24h),
+        volume_7d_avg_usd: Math.round(vol7d),
+        volume_change_pct: (vol24h - vol7d) / vol7d,
+        hours_to_resolution: closingSoon ? Math.floor(1 + Math.random() * 168) : 24 + Math.random() * 24 * 60,
+        current_implied_prob: 0.1 + Math.random() * 0.85,
+        sparkline: Array.from({ length: 14 }, () => vol24h * (0.4 + Math.random())),
+      };
+    });
+    if (closingSoon) {
+      items.sort((a, b) => (a.hours_to_resolution ?? Infinity) - (b.hours_to_resolution ?? Infinity));
+    } else {
+      items.sort((a, b) => b.volume_change_pct - a.volume_change_pct);
+    }
+    return json({ items });
+  }
+  if (route.startsWith("/api/market-data/topic-browser")) {
+    const topics: Array<[string, string, string]> = [
+      ["politics", "Politics", "Elections, legislation, geopolitics."],
+      ["crypto", "Crypto", "Token prices, ETF flows, protocol milestones."],
+      ["macro", "Macro", "Fed, rates, FX, equities."],
+      ["sports", "Sports", "NFL, NBA, Premier League, F1."],
+      ["science", "Science", "Climate, space, biotech."],
+      ["pop-culture", "Pop Culture", "Tech, awards, entertainment."],
+    ];
+    return json({
+      topics: topics.map(([slug, label, description]) => ({
+        slug,
+        label,
+        description,
+        market_count: Math.floor(20 + Math.random() * 200),
+        volume_24h_usd: Math.round(500_000 + Math.random() * 50_000_000),
+      })),
+    });
+  }
+  if (route.startsWith("/api/market-data/asset-group-screener")) {
+    const url = new URL(route, "http://localhost");
+    const ag = (url.searchParams.get("asset_group") ?? "cefi").toLowerCase();
+    type Row = {
+      id: string;
+      name: string;
+      subname?: string;
+      primary: number;
+      change: number;
+      sparkline: number[];
+      source?: string;
+      extra: Record<string, string | number>;
+    };
+    const mkRow = (
+      id: string,
+      name: string,
+      subname: string | undefined,
+      primary: number,
+      change: number,
+      source: string | undefined,
+      extra: Record<string, string | number> = {},
+    ): Row => ({
+      id,
+      name,
+      subname,
+      primary,
+      change,
+      sparkline: Array.from({ length: 14 }, () => primary * (0.85 + Math.random() * 0.3)),
+      source,
+      extra,
+    });
+    let items: Row[] = [];
+    if (ag === "sports") {
+      items = [
+        mkRow("nfl-1", "Chiefs vs Bills", "Sun 8pm", 2.3, 0.12, "Pinnacle", { sharpPct: "62%", valueScore: "8.4" }),
+        mkRow("nba-1", "Celtics vs Heat", "Mon 7pm", 1.8, 0.05, "Betfair", { sharpPct: "55%", valueScore: "6.2" }),
+        mkRow("epl-1", "Arsenal vs Chelsea", "Sat 12pm", 2.1, -0.08, "Matchbook", {
+          sharpPct: "48%",
+          valueScore: "5.1",
+        }),
+        mkRow("ncaa-1", "Duke vs UNC", "Sat 6pm", 1.95, 0.18, "OddsAPI", { sharpPct: "70%", valueScore: "9.0" }),
+      ];
+    } else if (ag === "prediction") {
+      items = [
+        mkRow("p-1", "BTC > $100K in 2026", "Crypto", 4_200_000, 0.45, "Polymarket", {
+          impliedProb: "0.34",
+          timeToResolve: "240h",
+        }),
+        mkRow("p-2", "Fed cuts rates next FOMC", "Macro", 2_800_000, 0.32, "Kalshi", {
+          impliedProb: "0.62",
+          timeToResolve: "48h",
+        }),
+        mkRow("p-3", "GPT-6 in 2026", "Pop Culture", 1_200_000, 0.18, "Manifold", {
+          impliedProb: "0.21",
+          timeToResolve: "1800h",
+        }),
+      ];
+    } else if (ag === "cefi") {
+      items = [
+        mkRow("BTC", "BTC", "Bitcoin", 1_300_000_000_000, 0.04, undefined, {
+          dominance: "52%",
+          volume24h: 28_000_000_000,
+        }),
+        mkRow("ETH", "ETH", "Ethereum", 350_000_000_000, 0.02, undefined, {
+          dominance: "14%",
+          volume24h: 15_000_000_000,
+        }),
+        mkRow("SOL", "SOL", "Solana", 80_000_000_000, 0.08, undefined, {
+          dominance: "3.2%",
+          volume24h: 4_500_000_000,
+        }),
+      ];
+    } else if (ag === "defi") {
+      items = [
+        mkRow("aave-eth-usdc", "AAVE — USDC supply", "Lending", 4_800_000_000, 0.03, "Ethereum", {
+          apy: "4.2%",
+          volume24h: 320_000_000,
+        }),
+        mkRow("uni-eth", "Uniswap V3", "DEX", 4_300_000_000, -0.02, "Ethereum", { apy: "—", volume24h: 1_800_000_000 }),
+        mkRow("lido-eth", "Lido stETH", "Liquid Staking", 25_000_000_000, 0.01, "Ethereum", {
+          apy: "3.4%",
+          volume24h: 80_000_000,
+        }),
+      ];
+    } else if (ag === "tradfi") {
+      items = [
+        mkRow("spy", "SPY", "S&P 500 ETF", 5840.5, 0.01, "OPRA", { yld: "1.3%" }),
+        mkRow("qqq", "QQQ", "Nasdaq 100 ETF", 510.2, 0.02, "OPRA", { yld: "0.6%" }),
+        mkRow("iwm", "IWM", "Russell 2000 ETF", 235.8, -0.005, "OPRA", { yld: "1.1%" }),
+      ];
+    }
+    return json({ items });
+  }
+  if (route.startsWith("/api/market-data/rates-curve")) {
+    const series: Array<[number, string]> = [
+      [30, "DGS1MO"],
+      [90, "DGS3MO"],
+      [180, "DGS6MO"],
+      [365, "DGS1"],
+      [730, "DGS2"],
+      [1825, "DGS5"],
+      [3650, "DGS10"],
+      [7300, "DGS20"],
+      [10950, "DGS30"],
+    ];
+    const points = series.map(([days, id]) => ({
+      maturity_days: days,
+      yield_pct: 4.5 + 0.001 * Math.log(days) - 0.0001 * days + (Math.random() - 0.5) * 0.05,
+      series_id: id,
+    }));
+    return json({ asof: new Date().toISOString().slice(0, 10), points });
+  }
+  if (route.startsWith("/api/market-data/vol-surface")) {
+    return json({
+      underlying: "SPY",
+      rows: Array.from({ length: 9 }, (_, i) => ({
+        strike: 500 + i * 10,
+        iv_30d: 0.18 + Math.random() * 0.04,
+        iv_60d: 0.19 + Math.random() * 0.04,
+        iv_90d: 0.2 + Math.random() * 0.04,
+        iv_180d: 0.21 + Math.random() * 0.04,
+      })),
+    });
+  }
+  if (route.startsWith("/api/market-data/etf-flows")) {
+    const url = new URL(route, "http://localhost");
+    const ticker = url.searchParams.get("ticker") ?? "SPY";
+    const now = Date.now();
+    const buckets = Array.from({ length: 30 }, (_, i) => ({
+      t: now - (29 - i) * 24 * 60 * 60 * 1000,
+      inflow_usd: 100_000_000 + Math.random() * 800_000_000,
+      outflow_usd: 80_000_000 + Math.random() * 600_000_000,
+    }));
+    return json({ ticker, buckets });
+  }
+  if (route.startsWith("/api/market-data/sector-heatmap")) {
+    const sectors = [
+      "Tech",
+      "Financials",
+      "Energy",
+      "Healthcare",
+      "Consumer",
+      "Industrials",
+      "Materials",
+      "Real Estate",
+      "Utilities",
+    ];
+    const buckets = ["1D", "1W", "1M", "3M", "YTD", "1Y"];
+    const cells: Record<string, Record<string, number>> = {};
+    for (const s of sectors) {
+      cells[s] = {};
+      for (const b of buckets) {
+        cells[s][b] = (Math.random() - 0.4) * 0.15;
+      }
+    }
+    return json({ sectors, buckets, cells });
+  }
+  if (route.startsWith("/api/market-data/resolution-ledger")) {
+    const titles = [
+      "Will BTC reach $80K by 2026 Q1?",
+      "Will US CPI < 3% in March?",
+      "Premier League — Arsenal top 4 (2025/26)?",
+      "Apple stock > $250 by end of Q1 2026?",
+      "Will OpenAI raise > $40B in 2026 Q1?",
+      "EU MiCA technical standards finalised by March?",
+      "Will Tether release attestation in Q1?",
+      "S&P 500 close > 6000 in March?",
+    ];
+    const venues = ["Polymarket", "Kalshi", "Manifold"];
+    const now = Date.now();
+    const items = titles.map((title, i) => ({
+      market_id: `resolved-${i}`,
+      title,
+      venue: venues[i % venues.length] ?? "Polymarket",
+      resolved_at: now - i * 24 * 60 * 60 * 1000,
+      final_outcome: Math.random() > 0.5 ? "Yes" : "No",
+      final_implied_prob: Math.random(),
+      payout_usd: Math.round(50_000 + Math.random() * 500_000),
+    }));
+    return json({ items });
+  }
   if (route.startsWith("/api/market-data/")) return json({ data: [], total: 0 });
 
   return null;
@@ -6174,6 +6908,13 @@ export function installMockHandler(): void {
         "/api/auth/",
         "/api/admin/",
         "/api/v1/",
+        // Catalogue GCS proxy — fetches envelope.json / availability.json /
+        // strategy_instruments.json from the real backend (or the catalogue
+        // route handler in dev). Mock-handler must NOT short-circuit this
+        // to `{}` because the strategy hierarchy on
+        // /services/research/strategies parses `data.slots` and crashes on
+        // an empty object.
+        "/api/catalogue/",
       ];
       if (realRoutePrefixes.some((prefix) => url.startsWith(prefix))) {
         return originalFetch(input, init);

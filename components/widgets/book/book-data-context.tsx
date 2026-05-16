@@ -8,7 +8,7 @@ import { BOOK_CATEGORY_LABELS, type BookAlgoType, type BookCategoryTab } from "@
 import { MOCK_TRADES, type BookTrade } from "@/lib/mocks/fixtures/book-trades";
 import { getTradesForScope } from "@/lib/mocks/fixtures/mock-data-index";
 import { STRATEGIES as REGISTRY_STRATEGIES } from "@/lib/mocks/fixtures/strategy-instances";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 import type { AlgoType, InstructionType } from "@/lib/types/defi";
 import { INSTRUCTION_ALGO_MAP } from "@/lib/types/defi";
 import { useSearchParams } from "next/navigation";
@@ -144,7 +144,7 @@ export function BookTradeDataProvider({ children }: { children: React.ReactNode 
   const placeOrder = usePlaceOrder();
   const preTradeCheck = usePreTradeCheck();
   const { data: organizations } = useOrganizationsList();
-  const { scope: globalScope } = useGlobalScope();
+  const globalScope = useWorkspaceScope();
 
   const [orgId, setOrgId] = React.useState("");
   const [clientId, setClientId] = React.useState("");

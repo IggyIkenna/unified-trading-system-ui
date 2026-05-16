@@ -88,7 +88,7 @@ Full wiring details: `05-infrastructure/UI-DEPENDENCY-MATRIX.md`
 
 ## Known Violations (extract these)
 
-These are active violations tracked in `consolidated_remaining_work.plan.md`:
+These are active violations tracked in `consolidated_remaining_work.md`:
 
 | Violation                                                                                      | Task ID                                 | Fix                                            |
 | ---------------------------------------------------------------------------------------------- | --------------------------------------- | ---------------------------------------------- |

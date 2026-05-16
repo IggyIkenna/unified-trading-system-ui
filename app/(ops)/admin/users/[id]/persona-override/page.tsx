@@ -7,16 +7,16 @@
  * the <PersonaOverrideCard> primitive. Audit-logged to
  * `localStorage['admin-persona-audit/v1']` in mock mode.
  *
- * Plan: `ui_unification_v2_sanitisation_2026_04_20.plan.md` § Phase 4.
+ * Plan: `ui_unification_v2_sanitisation_2026_04_20.plan` § Phase 4.
  */
 
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
-import { PageHeader } from "@/components/shared/page-header";
 import { PersonaOverrideCard } from "@/components/admin/persona-override-card";
+import { PageHeader } from "@/components/shared/page-header";
 import { Button } from "@/components/ui/button";
 
 export default function PersonaOverridePage() {

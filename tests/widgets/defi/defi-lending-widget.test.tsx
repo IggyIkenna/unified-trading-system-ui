@@ -3,7 +3,7 @@
  *
  * Pattern reference for rollout per
  *   unified-trading-pm/codex/06-coding-standards/ui-testing-layers.md (L1.5)
- *   unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan.md
+ *   unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan
  *
  * Scope:
  * - Render with mocked data-context; assert testid mounts.
@@ -120,9 +120,10 @@ describe("defi-lending-widget — L1.5 harness", () => {
       expect(screen.getByTestId("current-hf").textContent).toContain("1.80");
     });
 
-    it("shows after-hf em-dash placeholder when amount empty", () => {
+    it("shows after-hf dash placeholder when amount empty", () => {
       render(<DeFiLendingWidget />);
-      expect(screen.getByTestId("after-hf").textContent).toContain("—");
+      // Widget renders ASCII hyphen "-" as the empty-state placeholder.
+      expect(screen.getByTestId("after-hf").textContent).toContain("-");
     });
 
     it("shows computed after-hf when amount > 0", () => {

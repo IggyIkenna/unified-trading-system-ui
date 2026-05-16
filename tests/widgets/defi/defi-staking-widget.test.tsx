@@ -4,7 +4,7 @@
  * Pattern reference:
  *   tests/widgets/defi/defi-lending-widget.test.tsx (pilot)
  *   codex/06-coding-standards/ui-testing-layers.md (L1.5)
- *   plans/ai/ui_widget_test_rollout_2026_04_24.plan.md (Phase 3 Wave 2 DeFi)
+ *   plans/ai/ui_widget_test_rollout_2026_04_24.md (Phase 3 Wave 2 DeFi)
  *
  * Scope:
  * - Render with mocked DeFiData; root testid mounts.
@@ -103,9 +103,10 @@ describe("defi-staking-widget — L1.5 harness", () => {
   });
 
   describe("amount input + reactive annual yield", () => {
-    it("shows em-dash when amount is empty", () => {
+    it("shows dash when amount is empty", () => {
       render(<DeFiStakingWidget />);
-      expect(screen.getByTestId("expected-yield").textContent).toContain("—");
+      // Widget renders ASCII hyphen "-" as the empty-state placeholder.
+      expect(screen.getByTestId("expected-yield").textContent).toContain("-");
     });
 
     it("computes annual yield from amount × apy when amount > 0", () => {

@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -28,7 +30,7 @@ import {
   type AppGrant,
   type OnboardingRequest,
 } from "@/lib/api/approvals-client";
-import { CheckCircle2, Clock, FileText, XCircle } from "lucide-react";
+import { CheckCircle2, Clock, FileText, GitBranch, XCircle } from "lucide-react";
 import * as React from "react";
 
 interface RegisteredApp {
@@ -157,7 +159,7 @@ export default function ApprovalsPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <PageHeader title="User Approvals" description="Review and manage onboarding requests">
+      <PageHeader title="Approvals" description="Onboarding requests and strategy-version approvals">
         <Select value={filter} onValueChange={setFilter}>
           <SelectTrigger className="w-[140px]">
             <SelectValue />
@@ -169,6 +171,33 @@ export default function ApprovalsPage() {
           </SelectContent>
         </Select>
       </PageHeader>
+
+      {/* Plan D Phase 4 — top-level tab strip routing between the existing
+          onboarding queue (this page) and the strategy-version queue at
+          /approvals/strategy-versions. */}
+      <div className="flex items-center gap-2 border-b" data-testid="approvals-tab-strip">
+        <Link
+          href="/approvals"
+          aria-current="page"
+          className="border-b-2 border-primary px-3 py-2 text-sm font-medium text-foreground"
+          data-testid="approvals-tab-onboarding"
+        >
+          <span className="inline-flex items-center gap-1.5">
+            <FileText className="size-3.5" />
+            Onboarding
+          </span>
+        </Link>
+        <Link
+          href="/approvals/strategy-versions"
+          className="border-b-2 border-transparent px-3 py-2 text-sm text-muted-foreground hover:text-foreground"
+          data-testid="approvals-tab-strategy-versions"
+        >
+          <span className="inline-flex items-center gap-1.5">
+            <GitBranch className="size-3.5" />
+            Strategy Versions
+          </span>
+        </Link>
+      </div>
 
       {loading ? (
         <div className="flex items-center justify-center p-12">

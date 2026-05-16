@@ -360,7 +360,7 @@ See `unified-trading-pm/docker/docker-compose.mock.yml` for the full service def
 
 ### Implementation Reference
 
-Full hardening details: `unified-trading-pm/plans/archive/cicd_mock_hardening_2026_03_11.plan.md` (Plan #60)
+Full hardening details: `unified-trading-pm/plans/archive/cicd_mock_hardening_2026_03_11.md` (Plan #60)
 
 ## Quick Reference: Full Flow
 
@@ -975,7 +975,7 @@ When a merge conflict is detected during `staging-to-main.yml` (or during a feat
 agent is dispatched to propose a resolution.
 
 **Status:** Implementation pending — `conflict-resolution-agent.yml` is designed but not yet created. **Plan:**
-`plans/active/conflict_resolution_agent_2026_03_13.plan.md`
+`plans/active/conflict_resolution_agent_2026_03_13.md`
 
 ### Detection Points
 
@@ -1062,7 +1062,7 @@ Edit template in PM (feat/* branch)
       commits + quickmerges each repo (idempotent — skip if already up-to-date)
 ```
 
-**Composite Action Inheritance (WIP — `composite_action_qg_inheritance_2026_03_12.plan.md`):** Service repos reference
+**Composite Action Inheritance (WIP — `composite_action_qg_inheritance_2026_03_12.md`):** Service repos reference
 PM composite actions — changes in PM actions take effect for all repos on next CI run without re-rollout:
 
 ```yaml
@@ -1076,7 +1076,7 @@ PM composite actions — changes in PM actions take effect for all repos on next
 ```
 
 **P0 blocker:** `setup-python-tools/action.yml` is referenced by service repos but the action file doesn't exist yet.
-Fix tracked in `composite_action_qg_inheritance_2026_03_12.plan.md`.
+Fix tracked in `composite_action_qg_inheritance_2026_03_12.md`.
 
 **Risk:** Composite actions load from `@main` of PM. A broken PM push breaks all repo CI simultaneously. Mitigation: use
 `@v1` SHA-pinned tag on PM for stability once the action is created.
@@ -1298,7 +1298,7 @@ When a breaking change (`is_breaking=true`) cascades via `dependency-update`:
    Claude to fix code, creates PR for human approval. Agent NEVER self-merges.
 4. **Approval timeout**: 4hr Telegram escalation, 24hr CRITICAL alert for unreviewed fix PRs.
 
-See: `plans/active/cicd_code_rollout_master_2026_03_13.plan.md` cascade todos for implementation status.
+See: `plans/active/cicd_code_rollout_master_2026_03_13.md` cascade todos for implementation status.
 
 ---
 
@@ -1315,7 +1315,7 @@ When schema changes land in T0 libraries (UAC, UIC, UEI, UCI):
 This ensures documentation stays in sync with code without requiring PM/codex to be listed as formal dependents of T0
 libraries.
 
-See: `plans/active/cicd_code_rollout_master_2026_03_13.plan.md` reverse-dep todos for implementation status.
+See: `plans/active/cicd_code_rollout_master_2026_03_13.md` reverse-dep todos for implementation status.
 
 ---
 
@@ -1344,8 +1344,8 @@ See: `plans/active/cicd_code_rollout_master_2026_03_13.plan.md` reverse-dep todo
 | `scripts/rollout-agent-symlinks.sh`                                         | Rolls out .claude/CLAUDE.md + AGENTS.md symlinks to all 62 repos                 |
 | `scripts/setup-workspace-from-manifest.sh`                                  | Manifest-driven dep checkout + ephemeral cursor rules setup                      |
 | `scripts/generate-cicd-diagram.py`                                          | Diagram generator (YAML → SVG + HTML)                                            |
-| `plans/active/conflict_resolution_agent_2026_03_13.plan.md`                 | Conflict resolution agent implementation plan                                    |
-| `plans/active/work/cicd/composite_action_qg_inheritance_2026_03_12.plan.md` | Composite GHA action inheritance plan                                            |
+| `plans/active/conflict_resolution_agent_2026_03_13.md`                 | Conflict resolution agent implementation plan                                    |
+| `plans/active/work/cicd/composite_action_qg_inheritance_2026_03_12.md` | Composite GHA action inheritance plan                                            |
 | `scripts/propagation/templates/staging-version-gate.yml`                    | Per-repo staging version gate template (propagated to all repos)                 |
 | `terraform/environments/`                                                   | GCP project provisioning (dev/staging/prod)                                      |
 | **Codex**                                                                   | `06-coding-standards/setup-standards.md`, `dependency-management.md`             |

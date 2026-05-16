@@ -1,11 +1,12 @@
 "use client";
 
+import { DartScopeBar } from "@/components/shell/dart-scope-bar";
 import {
   ServiceTabs,
   STRATEGY_CATALOGUE_SUB_TABS,
 } from "@/components/shell/service-tabs";
-import { AvailabilityStoreProvider } from "@/lib/architecture-v2";
 import { useAuth } from "@/hooks/use-auth";
+import { AvailabilityStoreProvider } from "@/lib/architecture-v2";
 
 export default function StrategyCatalogueLayout({
   children,
@@ -13,7 +14,7 @@ export default function StrategyCatalogueLayout({
   children: React.ReactNode;
 }) {
   // Admin users see the full matrix regardless of persona filters — see
-  // plans/active/ui_unification_v2_sanitisation_2026_04_20.plan.md
+  // plans/active/ui_unification_v2_sanitisation_2026_04_20.plan
   // `p6-admin-sees-full-catalogue`.
   //
   // Do NOT wrap in ResearchFamilyShell — this is the Tier-3 client surface
@@ -26,6 +27,9 @@ export default function StrategyCatalogueLayout({
   return (
     <AvailabilityStoreProvider adminBypass={adminBypass}>
       <div className="flex flex-col h-full">
+        <div className="px-4 pt-3 bg-muted/20">
+          <DartScopeBar />
+        </div>
         <ServiceTabs
           tabs={STRATEGY_CATALOGUE_SUB_TABS}
           className="bg-muted/20 border-b-0"

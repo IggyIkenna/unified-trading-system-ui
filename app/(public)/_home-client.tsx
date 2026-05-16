@@ -1,7 +1,10 @@
 "use client";
 
-import { ArrowRight, Globe } from "lucide-react";
+import * as React from "react";
+import { ArrowRight, ChevronLeft, ChevronRight, Globe } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import useEmblaCarousel from "embla-carousel-react";
 
 import { ArbitrageGalaxy } from "@/components/marketing/arbitrage-galaxy";
 import { renderWithTerms } from "@/components/marketing/render-with-terms";
@@ -9,6 +12,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { trackEvent } from "@/lib/analytics/track";
 import { SERVICE_LABELS } from "@/lib/copy/service-labels";
+import { useAuth } from "@/hooks/use-auth";
+import { useDefaultLanding } from "@/lib/auth/default-landing";
 
 // Three buckets, ordered by familiarity for an institutional reader.
 // Digital assets folds Crypto + DeFi; sports & prediction markets read
@@ -18,14 +23,30 @@ const ASSET_CLASSES = ["Digital assets", "Traditional markets", "Sports & predic
 /**
  * Homepage React composition. See `app/(public)/page.tsx` for the metadata,
  * word-budget, and CTA-discipline contracts this file implements.
+ *
+ * 2026-04-29: already-authenticated visitors are auto-redirected to their
+ * default landing (/dashboard for most, /investor-relations for IR
+ * personas) — they shouldn't re-land on the marketing homepage every time
+ * they visit the root URL. Anonymous prospects keep seeing the marketing
+ * page. SSOT: lib/auth/default-landing.ts.
  */
 export function HomePageClient() {
+  const router = useRouter();
+  const { user, loading } = useAuth();
+  const defaultLanding = useDefaultLanding();
+
+  React.useEffect(() => {
+    if (loading) return;
+    if (!user) return;
+    router.replace(defaultLanding());
+  }, [loading, user, defaultLanding, router]);
+
   return (
     <div className="min-h-screen bg-background">
       <main>
         <Hero />
         <MarketsUniverse />
-        <EngagementRoutes />
+        <WaysClientsUseOdum />
         <WhyOdum />
         <EngagementJourney />
         <GovernanceAndRisk />
@@ -47,7 +68,7 @@ function HomeStartReviewButton({
   return (
     <Button asChild size={size} variant={variant}>
       <Link href="/start-your-review" onClick={() => trackEvent("homepage_start_review_click", { source })}>
-        Start Your Review
+        Start Your Strategy and Infrastructure Review
         <ArrowRight className="ml-2 size-4" />
       </Link>
     </Button>
@@ -207,27 +228,35 @@ function Hero() {
               className="block motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-700"
               style={{ animationFillMode: "both" }}
             >
-              Systematic strategies.
+              Trading infrastructure
             </span>
             <span
               className="block motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-700"
               style={{ animationDelay: "140ms", animationFillMode: "both" }}
             >
-              Trading infrastructure.
+              tailored to
             </span>
             <span
               className="block motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-700"
               style={{ animationDelay: "280ms", animationFillMode: "both" }}
             >
-              Institutional clients.
+              your ambition.
             </span>
           </h1>
           <p
             className="mx-auto mt-7 max-w-2xl text-pretty text-base leading-relaxed md:text-lg motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700"
             style={{ color: COLORS.textSecondary, animationDelay: "480ms", animationFillMode: "both" }}
           >
-            Odum manages selected systematic strategies and provides access to the infrastructure and regulated
-            operating models around them.
+            Odum helps institutional clients design, deploy and operate systematic trading capabilities across digital
+            assets, traditional markets, sports and prediction markets.
+          </p>
+          <p
+            className="mx-auto mt-5 max-w-2xl text-pretty text-base leading-relaxed md:text-lg motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700"
+            style={{ color: COLORS.textSecondary, animationDelay: "560ms", animationFillMode: "both" }}
+          >
+            Bring us a strategy, venue, dataset, execution challenge or operating model. We help shape the solution,
+            protect clear IP boundaries and provide the infrastructure, implementation and regulated operating support
+            needed to run it.
           </p>
           <div
             className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700"
@@ -327,8 +356,16 @@ function MarketsUniverse() {
   );
 }
 
-type EngagementRoute = {
-  readonly key: "investment" | "dart" | "regulatory";
+// ─── Ways clients use Odum ──────────────────────────────────────────────────
+// Merged 2026-05-01: replaces the prior split between "Three engagement
+// routes" (mechanism-led: Investment Management / DART / Regulatory) and a
+// separate problem-led bullet list. Now one section: 5 problem-led use cases
+// + 1 catch-all CTA, each card carrying the visual treatment of the original
+// engagement-route cards (accent strip, summary, bullets, CTA). Each CTA links
+// to the relevant deep-dive page so the engagement-route concept survives in
+// the link target without consuming a second card section.
+type WayClientsUseOdum = {
+  readonly key: string;
   readonly title: string;
   readonly summary: string;
   readonly bullets: readonly string[];
@@ -338,138 +375,293 @@ type EngagementRoute = {
   readonly accent: string;
 };
 
-const ENGAGEMENT_ROUTES: readonly EngagementRoute[] = [
+const WAYS_CLIENTS_USE_ODUM: readonly WayClientsUseOdum[] = [
   {
-    key: "investment",
-    title: SERVICE_LABELS.investment.marketing,
-    // Each card answers three things in parallel: WHAT it is, structural
-    // mechanism, and one qualifier. ~3 short bullets max — anything longer
-    // belongs on the route's own page.
-    summary: "Allocate capital to selected systematic strategies managed by Odum.",
+    key: "build",
+    title: "Build a new trading capability",
+    summary: "Research-to-execution infrastructure for teams launching from scratch.",
     bullets: [
-      "Available through {{term:sma}} or fund-route structures where appropriate.",
-      "Odum acts as investment manager.",
-      "Reporting is delivered through the same operating surface used to run the mandate.",
-    ],
-    href: "/investment-management",
-    cta: "Explore Odum-Managed Strategies",
-    // Subtle per-card accent strip across the top — gold for the
-    // capital/performance route. Restrained tones; signal not decoration.
-    accent: "#C8A94A",
-  },
-  {
-    key: "dart",
-    // Wrap "DART" in the title with the glossary tooltip — first mention of
-    // the acronym on the homepage. Subsequent mentions inside the card (CTA,
-    // bullets) stay plain to avoid dotted-underline noise.
-    title: SERVICE_LABELS.dart.marketing.replace("DART", "{{term:dart|DART}}"),
-    summary: "Use Odum's research-to-execution infrastructure to run strategies under the agreed engagement model.",
-    bullets: [
-      "Client-provided, Odum-provided, or hybrid signal workflows.",
-      "Research, testing, execution, monitoring, and reporting in one system.",
-      "Suitable for teams that want to run their own infrastructure without allocating capital to Odum-managed strategies.",
+      "Bring strategies, or design them with us — research, signal generation, execution, monitoring, and reporting on one operating surface.",
+      "Live ops handover from day one or staged over time.",
+      "Bespoke configurations reviewed case by case.",
     ],
     href: "/platform",
-    cta: "Explore DART Trading Infrastructure",
+    cta: "Explore {{term:dart|DART}} Trading Infrastructure",
+    accent: "#22D3EE", // cyan — DART family
+  },
+  {
+    key: "upgrade",
+    title: "Upgrade fragmented trading infrastructure",
+    summary: "Consolidate data, research, execution, monitoring, and reporting onto one operating surface.",
+    bullets: [
+      "Replace point-tool sprawl with one system that grows with the mandate without rebuild.",
+      "Keep your existing IP and signal logic; plug into Odum's surrounding stack.",
+      "Migration paths reviewed case by case.",
+    ],
+    href: "/platform",
+    cta: "Explore {{term:dart|DART}} Trading Infrastructure",
     accent: "#22D3EE",
   },
   {
-    key: "regulatory",
-    title: SERVICE_LABELS.regulatory.marketing,
-    summary:
-      "Where the engagement requires it, Odum can help structure the operating model around governance, reporting, and permissions.",
+    key: "byo-ip",
+    title: "Bring your own strategies — keep your IP",
+    summary: "Odum runs the surrounding infrastructure without taking signal ownership.",
+    bullets: [
+      "Data, execution, risk, reporting, governance — all run by Odum.",
+      "Your signals stay yours. We never see proprietary logic.",
+      "Where strategies need work, we help you enhance them and close gaps.",
+    ],
+    href: "/platform",
+    cta: "Explore {{term:dart|DART}} Trading Infrastructure",
+    accent: "#22D3EE",
+  },
+  {
+    key: "institutional",
+    title: "Launch under institutional controls",
+    summary: "Regulated operating models, fund structures, or affiliate arrangements where the engagement requires it.",
     bullets: [
       "Reviewed case by case; not a generic umbrella service.",
       "May include {{term:sma}} pathways, affiliate-supported structures, or other approved arrangements.",
-      "Governance, reporting, and oversight are aligned to the engagement.",
+      "Governance, reporting, and oversight aligned to the engagement.",
     ],
     href: "/regulatory",
     cta: "Explore Regulated Operating Models",
-    accent: "#34D399",
+    accent: "#34D399", // green — Regulatory
   },
-] as const;
+  {
+    key: "managed",
+    title: "Access Odum-managed systematic strategies",
+    summary: "Selected strategies managed by Odum, available through SMA or fund-route structures.",
+    bullets: [
+      "Odum acts as investment manager.",
+      "Reporting delivered through the same operating surface used to run the mandate.",
+      "Mandates aren't limited to the published list — bespoke allocations reviewed case by case.",
+    ],
+    href: "/investment-management",
+    cta: "Explore Odum-Managed Strategies",
+    accent: "#C8A94A", // gold — Investment Management
+  },
+  {
+    key: "custom",
+    title: "Don't fit a single bucket?",
+    summary:
+      "Most engagements blend two or three of the above. Tell us what you're solving and we'll map the right combination.",
+    bullets: [
+      "Tailored builds and operating models reviewed case by case.",
+      "We tailor to your business reality, not the other way around.",
+      "Start with a review and we'll route the conversation.",
+    ],
+    href: "/start-your-review",
+    cta: "Start Your Strategy and Infrastructure Review",
+    accent: "#8B93A0", // neutral — catch-all
+  },
+];
 
-function EngagementRoutes() {
+function WaysClientsUseOdum() {
+  // Embla-driven carousel — Deltix-style "Our Product Lines" pattern: one
+  // focused card centered with side-card peek, prev/next chevrons on the
+  // edges, dot indicators below. Cuts visual density from 6 simultaneous
+  // cards to 1-3 visible at a time depending on viewport. Each card retains
+  // its accent + bullets + CTA — the carousel never hides depth, just paces
+  // it. Embla 8.x is already installed (package.json), so no new dep.
+  // `loop: true` enables infinite rotation in both directions — chevrons
+  // never reach a dead-end, and `containScroll` is intentionally omitted
+  // because it conflicts with looping (would clamp scroll at the edges).
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    align: "center",
+    loop: true,
+    skipSnaps: false,
+  });
+  const [selectedIndex, setSelectedIndex] = React.useState(0);
+
+  React.useEffect(() => {
+    if (!emblaApi) return;
+    const onSelect = () => setSelectedIndex(emblaApi.selectedScrollSnap());
+    onSelect();
+    emblaApi.on("select", onSelect);
+    emblaApi.on("reInit", onSelect);
+    return () => {
+      emblaApi.off("select", onSelect);
+      emblaApi.off("reInit", onSelect);
+    };
+  }, [emblaApi]);
+
+  const scrollPrev = React.useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
+  const scrollNext = React.useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
+  const scrollTo = React.useCallback((idx: number) => emblaApi?.scrollTo(idx), [emblaApi]);
+
   return (
-    <section aria-labelledby="engagement-routes-heading" className="border-b border-border/40 bg-background">
+    <section aria-labelledby="ways-clients-heading" className="border-b border-border/40 bg-background">
       <div className="container px-4 py-16 md:px-6 md:py-20">
-        <div className="mx-auto max-w-5xl">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 id="engagement-routes-heading" className="text-3xl font-semibold tracking-tight md:text-4xl">
-              Three engagement routes
-            </h2>
-            <p className="mt-4 text-base leading-[1.7] text-muted-foreground">
-              Most clients fit one of three routes. The questionnaire helps confirm the right one before either side
-              commits time to a call.
-            </p>
-          </div>
-          <div className="mt-12 grid gap-6 md:grid-cols-3">
-            {ENGAGEMENT_ROUTES.map((route) => (
-              <Card
-                key={route.key}
-                className="relative flex h-full flex-col overflow-hidden border-border/80 bg-card/60"
-              >
-                {/* 2px accent strip across the top — gold / cyan / green —
-                    restrained scan-aid so the three routes are visually
-                    distinct without the cards looking decorative. Inline
-                    style so the colour ships regardless of Tailwind JIT. */}
-                <span
-                  aria-hidden
-                  className="absolute inset-x-0 top-0 h-[2px]"
-                  style={{ backgroundColor: route.accent, opacity: 0.85 }}
-                />
-                <CardHeader className="pt-6">
-                  <CardTitle className="text-lg">{renderWithTerms(route.title)}</CardTitle>
-                  {/* Summary does the heavy lift — first thing a skimmer
-                      reads. Keep at sm but bump line-height for readability. */}
-                  <CardDescription className="text-sm leading-[1.65] text-muted-foreground">
-                    {route.summary}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="flex flex-1 flex-col">
-                  <ul className="space-y-3 text-[13px] text-muted-foreground" style={{ lineHeight: 1.6 }}>
-                    {route.bullets.map((bullet) => (
-                      <li key={bullet} className="flex gap-2.5">
-                        {/* Bullet dot vertically centred on the first line of
-                            text. text-[13px] × leading 1.6 = 20.8px line, so
-                            (20.8 − 6) / 2 ≈ 7.4px top offset for a 6px dot.
-                            Inline style: Tailwind arbitrary-value mt-[Npx]
-                            is unreliable through the JIT in this codebase. */}
-                        <span
-                          aria-hidden
-                          className="shrink-0 rounded-full"
-                          style={{
-                            width: 6,
-                            height: 6,
-                            marginTop: 7,
-                            backgroundColor: route.accent,
-                            opacity: 0.85,
-                          }}
-                        />
-                        <span>{renderWithTerms(bullet)}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="mt-auto pt-6">
-                    <Button asChild variant="outline" size="sm">
-                      <Link
-                        href={route.href}
-                        onClick={() =>
-                          trackEvent("engagement_route_card_click", {
-                            route: route.key,
-                          })
-                        }
-                      >
-                        {route.cta}
-                        <ArrowRight className="ml-1.5 size-3.5" />
-                      </Link>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+        <div className="mx-auto max-w-2xl text-center">
+          <h2 id="ways-clients-heading" className="text-3xl font-semibold tracking-tight md:text-4xl">
+            Where Odum fits
+          </h2>
+          <p className="mt-4 text-base leading-[1.7] text-muted-foreground">
+            From a single capability gap to a full operating model. Each card maps to a deep-dive page; most engagements
+            blend two or three.
+          </p>
         </div>
+
+        <div className="relative mt-12" role="region" aria-roledescription="carousel" aria-label="Where Odum fits">
+          {/* Loop is enabled, so chevrons never reach a disabled state — no
+              `disabled` attribute or `disabled:` Tailwind variants needed. */}
+          <button
+            type="button"
+            onClick={scrollPrev}
+            aria-label="Previous card"
+            className="absolute left-0 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-border/60 bg-background/90 text-muted-foreground shadow-sm backdrop-blur transition hover:border-border hover:text-foreground md:-left-4"
+          >
+            <ChevronLeft className="size-5" />
+          </button>
+          <button
+            type="button"
+            onClick={scrollNext}
+            aria-label="Next card"
+            className="absolute right-0 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-border/60 bg-background/90 text-muted-foreground shadow-sm backdrop-blur transition hover:border-border hover:text-foreground md:-right-4"
+          >
+            <ChevronRight className="size-5" />
+          </button>
+
+          <div className="overflow-hidden" ref={emblaRef}>
+            <div className="flex">
+              {WAYS_CLIENTS_USE_ODUM.map((row, idx) => {
+                const isFocused = idx === selectedIndex;
+                return (
+                  <div
+                    key={row.key}
+                    className="ways-clients-slide min-w-0 shrink-0 grow-0 px-3"
+                    role="group"
+                    aria-roledescription="slide"
+                    aria-label={`${idx + 1} of ${WAYS_CLIENTS_USE_ODUM.length}: ${row.title}`}
+                  >
+                    <Card
+                      className="relative flex h-full flex-col overflow-hidden border-border/80 bg-card/60 transition-all duration-300"
+                      style={{
+                        opacity: isFocused ? 1 : 0.6,
+                        transform: isFocused ? "scale(1)" : "scale(0.97)",
+                      }}
+                    >
+                      <span
+                        aria-hidden
+                        className="absolute inset-x-0 top-0 h-[2px]"
+                        style={{
+                          backgroundColor: row.accent,
+                          opacity: isFocused ? 0.95 : 0.55,
+                        }}
+                      />
+                      <CardHeader className="pt-6">
+                        <CardTitle
+                          className="text-lg transition-colors"
+                          style={{ color: isFocused ? row.accent : undefined }}
+                        >
+                          {renderWithTerms(row.title)}
+                        </CardTitle>
+                        <CardDescription className="text-sm leading-[1.65] text-muted-foreground">
+                          {row.summary}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="flex flex-1 flex-col">
+                        <ul className="space-y-3 text-[13px] text-muted-foreground" style={{ lineHeight: 1.6 }}>
+                          {row.bullets.map((bullet) => (
+                            <li key={bullet} className="flex gap-2.5">
+                              <span
+                                aria-hidden
+                                className="shrink-0 rounded-full"
+                                style={{
+                                  width: 6,
+                                  height: 6,
+                                  marginTop: 7,
+                                  backgroundColor: row.accent,
+                                  opacity: 0.85,
+                                }}
+                              />
+                              <span>{renderWithTerms(bullet)}</span>
+                            </li>
+                          ))}
+                        </ul>
+                        <div className="mt-auto pt-6">
+                          <Button asChild variant="outline" size="sm">
+                            <Link
+                              href={row.href}
+                              onClick={() =>
+                                trackEvent("engagement_route_card_click", {
+                                  route: row.key,
+                                })
+                              }
+                            >
+                              {renderWithTerms(row.cta)}
+                              <ArrowRight className="ml-1.5 size-3.5" />
+                            </Link>
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Per-breakpoint slide width: 85% mobile (1 visible + peek), 46%
+              tablet (2 visible), 32% desktop (3 visible). Plain CSS via
+              styled-jsx keeps Tailwind JIT out of the picture for arbitrary
+              flex-basis values, which has been unreliable in this codebase. */}
+          <style jsx>{`
+            .ways-clients-slide {
+              flex: 0 0 85%;
+              max-width: 85%;
+            }
+            @media (min-width: 768px) {
+              .ways-clients-slide {
+                flex: 0 0 46%;
+                max-width: 46%;
+              }
+            }
+            @media (min-width: 1024px) {
+              .ways-clients-slide {
+                flex: 0 0 32%;
+                max-width: 32%;
+              }
+            }
+          `}</style>
+        </div>
+
+        {/* Dot indicators — clickable, aria-current state on active. Active
+            dot widens (w-6) so visitors can scan position at a glance. */}
+        <div className="mt-8 flex items-center justify-center gap-2">
+          {WAYS_CLIENTS_USE_ODUM.map((_, idx) => (
+            <button
+              key={idx}
+              type="button"
+              onClick={() => scrollTo(idx)}
+              aria-label={`Go to card ${idx + 1}`}
+              aria-current={idx === selectedIndex}
+              className="h-1.5 rounded-full transition-all"
+              style={{
+                width: idx === selectedIndex ? 24 : 6,
+                backgroundColor:
+                  idx === selectedIndex ? "hsl(var(--foreground) / 0.7)" : "hsl(var(--muted-foreground) / 0.3)",
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Fit-finder fallback — for visitors who don't see themselves in any
+            card, or who want to skip directly to the questionnaire / contact
+            form. Mirrors the catch-all card's CTA but as a low-key text link
+            so it doesn't compete with the active card's primary CTA. */}
+        <p className="mt-8 text-center text-sm text-muted-foreground">
+          Not sure which fits?{" "}
+          <Link href="/start-your-review" className="font-medium text-foreground underline-offset-4 hover:underline">
+            Start your review
+          </Link>{" "}
+          or{" "}
+          <Link href="/contact" className="font-medium text-foreground underline-offset-4 hover:underline">
+            contact us
+          </Link>{" "}
+          for a tailored conversation.
+        </p>
       </div>
     </section>
   );
@@ -519,38 +711,40 @@ const ENGAGEMENT_JOURNEY: readonly {
   {
     step: "01",
     title: "Questionnaire",
-    description: "Six axes; a few minutes. Routes you to the relevant briefing pillar.",
+    description: "Tell us where you are across six axes; we point you at the briefing that fits.",
   },
   {
     step: "02",
     title: "Briefings",
-    description: "Three pillars; gated material covering structure, mechanics, and scope.",
+    description: "Walk through how Odum approaches your route — structure, mechanics, and scope — before we book time.",
   },
   {
     step: "03",
     title: "Initial call",
-    description: "If the briefings line up, a focused call rather than a generic intro.",
+    description:
+      "If the briefings resonate, a focused conversation about your ambition and what an engagement could look like.",
   },
   {
     step: "04",
     title: "Strategy Evaluation",
-    description: "Structured DDQ covering entity, paths, risk, treasury, and governance.",
+    description:
+      "We work through your context together — entity, paths, risk, treasury, governance — staying inside your IP boundaries.",
   },
   {
     step: "05",
     title: "Strategy Review",
-    description: "A tailored pre-demo review of your route, requirements, and demo focus.",
+    description:
+      "We share a tailored read of how we'd shape the engagement — your route, requirements, and what the demo should cover.",
   },
   {
     step: "06",
     title: "Platform walkthrough",
-    description:
-      "A tailored walkthrough of the relevant workflows, followed by a self-guided review and feedback on fit.",
+    description: "We walk you through the relevant workflows, then leave you to explore and tell us what fits.",
   },
   {
     step: "07",
     title: "Commercial Tailoring",
-    description: "Once the demo confirms fit, we open the deeper catalogue, pricing, and contract shape.",
+    description: "Once fit lines up both ways, we open the deeper catalogue, pricing, and contract shape together.",
   },
 ] as const;
 
@@ -564,7 +758,8 @@ function EngagementJourney() {
               How an engagement progresses
             </h2>
             <p className="mt-4 text-base text-muted-foreground" style={{ lineHeight: 1.7 }}>
-              The funnel is intentional. Each stage filters fit on both sides and earns the next.
+              Tailored to the mandate; standardised in the path. Each stage shapes the engagement together — both sides
+              walk in with constraints clear.
             </p>
           </div>
 
@@ -697,11 +892,12 @@ function FinalCTA() {
       <div className="container px-4 py-20 md:px-6 md:py-24">
         <div className="mx-auto max-w-2xl text-center">
           <h2 id="final-cta-heading" className="text-3xl font-semibold tracking-tight md:text-4xl">
-            Start with a review
+            Start your strategy and infrastructure review
           </h2>
           <p className="mt-4 text-base text-muted-foreground" style={{ lineHeight: 1.7 }}>
-            A short questionnaire helps us understand the route, briefing, and next step. If your situation is already
-            specific, contact us directly.
+            Tell us where you are — building a capability, upgrading infrastructure, bringing your own strategies,
+            launching under institutional controls, or accessing Odum-managed strategies. The questionnaire takes a few
+            minutes; the review is tailored to your mandate.
           </p>
           <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <HomeStartReviewButton source="final" />

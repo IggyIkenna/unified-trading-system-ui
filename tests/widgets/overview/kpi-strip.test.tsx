@@ -23,8 +23,8 @@ vi.mock("@/components/widgets/overview/overview-data-context", () => ({
   useOverviewDataSafe: () => mockData,
 }));
 
-vi.mock("@/lib/stores/global-scope-store", () => ({
-  useGlobalScope: () => mockScope,
+vi.mock("@/lib/stores/workspace-scope-store", () => ({
+  useWorkspaceScope: () => mockScope.scope, useWorkspaceScopeStore: (selector?: (s: typeof mockScope) => unknown) => (selector ? selector(mockScope) : mockScope), useWorkspaceScopeActions: () => mockScope,
 }));
 
 import { KPIStripWidget } from "@/components/widgets/overview/kpi-strip-widget";
@@ -85,11 +85,12 @@ describe("kpi-strip — L1.5 harness", () => {
     expect(screen.getByText(/50%/)).toBeTruthy();
   });
 
-  it("renders em-dash margin when nav is zero but other data exists", () => {
-    // liveStrategies keeps hasData=true even with nav=0 path
+  it("renders dash margin when nav is zero but other data exists", () => {
+    // liveStrategies keeps hasData=true even with nav=0 path. Widget uses
+    // ASCII hyphen "-" as the placeholder for divide-by-zero margin.
     Object.assign(mockData, buildMockOverviewData({ totalNav: 0, liveStrategies: 2, totalExposure: 1000 }));
     render(<KPIStripWidget {...({} as never)} />);
-    expect(screen.getByText("—")).toBeTruthy();
+    expect(screen.getByText("-")).toBeTruthy();
   });
 
   it("shows alert count subtitle with critical/high breakdown", () => {
@@ -109,13 +110,13 @@ describe("kpi-strip — L1.5 harness", () => {
     vi.doMock("@/components/widgets/overview/overview-data-context", () => ({
       useOverviewDataSafe: () => null,
     }));
-    vi.doMock("@/lib/stores/global-scope-store", () => ({
-      useGlobalScope: () => mockScope,
+    vi.doMock("@/lib/stores/workspace-scope-store", () => ({
+      useWorkspaceScope: () => mockScope.scope, useWorkspaceScopeStore: (selector?: (s: typeof mockScope) => unknown) => (selector ? selector(mockScope) : mockScope), useWorkspaceScopeActions: () => mockScope,
     }));
     const mod = await import("@/components/widgets/overview/kpi-strip-widget");
     render(<mod.KPIStripWidget {...({} as never)} />);
     expect(screen.getByText(/Navigate to Overview tab/i)).toBeTruthy();
     vi.doUnmock("@/components/widgets/overview/overview-data-context");
-    vi.doUnmock("@/lib/stores/global-scope-store");
+    vi.doUnmock("@/lib/stores/workspace-scope-store");
   });
 });

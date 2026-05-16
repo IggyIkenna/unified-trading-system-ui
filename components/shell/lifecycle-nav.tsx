@@ -56,6 +56,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as React from "react";
 import { ApiStatusIndicator } from "./api-status-indicator";
+import { AssetGroupPill } from "./asset-group-pill";
 import { NotificationBell } from "./notification-bell";
 import { DemoPlanToggle } from "@/components/demo/DemoPlanToggle";
 
@@ -315,7 +316,8 @@ export function LifecycleNav({
           irrelevant on /dashboard and non-DART services (Manage / Reports)
           where no trading is happening. */}
       {(pathname.startsWith("/services/trading") || pathname.startsWith("/services/dart")) && (
-        <div className="hidden sm:flex flex-1 items-center justify-center">
+        <div className="hidden sm:flex flex-1 items-center justify-center gap-2">
+          <AssetGroupPill />
           <div className="flex items-center rounded-full border border-border/60 bg-muted/30 p-0.5">
             <button
               onClick={() => setMode("live")}

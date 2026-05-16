@@ -406,11 +406,27 @@ if [ "$TIER" = "2" ]; then
     .venv/bin/python -m uvicorn market_tick_data_service.api.main:app \
     --host 0.0.0.0 --port 8023
 
+  # ── deployment-api (8004) + legacy deployment-ui (5183) ────────────────
+  # Pair the deployment-stack with the rest of tier 2 so the data-status
+  # flow at http://localhost:5183 has its backend + the new shared
+  # rollup-aware code in one go. Reads the same Cloud Run rollup bucket
+  # as the shared Cloud Run instance (CLOUD_PROVIDER=gcp + project id
+  # resolved via UnifiedCloudConfig in --real mode), so the slicer
+  # fast-path lights up locally.
+  start_process "deployment-api" "$WORKSPACE/deployment-api" \
+    env CLOUD_MOCK_MODE="$MOCK_MODE" CLOUD_PROVIDER=gcp DISABLE_AUTH=true \
+    .venv/bin/python -m uvicorn deployment_api.main:app \
+    --host 0.0.0.0 --port 8004
+
+  start_process "deployment-ui" "$WORKSPACE/deployment-ui" \
+    npm run dev
+
   echo ""
   echo "  Waiting for service health endpoints..."
-  for svc_port in 8018 8019 8020 8021 8022 8023 8024 8025; do
+  for svc_port in 8018 8019 8020 8021 8022 8023 8024 8025 8004; do
     wait_for_port "$svc_port" "service:$svc_port" || true
   done
+  wait_for_port 5183 "deployment-ui"
 fi
 
 # ─── Start UI ────────────────────────────────────────────────────────────────

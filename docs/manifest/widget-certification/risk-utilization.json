@@ -157,7 +157,7 @@
       "status": "pass",
       "by": "agent+tests",
       "date": "2026-04-24",
-      "notes": "L1.5 harness spec: tests/widgets/risk/risk-utilization.test.tsx — 9 tests covering loading/error/empty/populated states including top-8 slice. Per ui_widget_test_rollout_2026_04_24.plan.md Phase 5."
+      "notes": "L1.5 harness spec: tests/widgets/risk/risk-utilization.test.tsx — 9 tests covering loading/error/empty/populated states including top-8 slice. Per ui_widget_test_rollout_2026_04_24.md Phase 5."
     },
     "l7": {
       "status": "pass",
@@ -237,7 +237,9 @@
     "notes": "Companion to risk-limits-hierarchy. Shows highest-priority limits at a glance."
   },
   "dataContract": {
-    "channels": ["rest"],
+    "channels": [
+      "rest"
+    ],
     "primary": "rest",
     "cadence": "interval:30000",
     "staleness": "seconds",
@@ -246,9 +248,18 @@
     "notes": "Sorted slice of riskLimits from useRiskLimits() SWR hook in use-risk-page-data.ts."
   },
   "coverage": {
-    "assetClasses": ["defi", "cefi", "tradfi", "sports"],
-    "strategies": ["all"],
-    "venues": ["all"],
+    "assetClasses": [
+      "defi",
+      "cefi",
+      "tradfi",
+      "sports"
+    ],
+    "strategies": [
+      "all"
+    ],
+    "venues": [
+      "all"
+    ],
     "commonTabs": null,
     "verifiedOn": [],
     "gaps": [],

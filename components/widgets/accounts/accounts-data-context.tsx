@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useExecutionMode } from "@/lib/execution-mode-context";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 import { useBalances } from "@/hooks/api/use-positions";
 import { useTransferHistory } from "@/hooks/api/use-transfer-history";
 import { ACCOUNTS } from "@/lib/mocks/fixtures/trading-data";
@@ -49,7 +49,7 @@ function coerceBalances(raw: unknown): BalanceRecord[] {
 
 export function AccountsDataProvider({ children }: { children: React.ReactNode }) {
   const { isPaper, isBatch, mode } = useExecutionMode();
-  const { scope: globalScope } = useGlobalScope();
+  const globalScope = useWorkspaceScope();
   const { data: balancesRaw, isLoading, error, refetch } = useBalances();
   const {
     data: transferHistory = [],

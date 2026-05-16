@@ -1,5 +1,8 @@
 "use client";
 
+import { ContextualLockedPreview } from "@/components/cockpit/contextual-locked-preview";
+import { PresetSelector } from "@/components/cockpit/preset-selector";
+import { DartScopeBar } from "@/components/shell/dart-scope-bar";
 import { DashboardFilterStrip } from "@/components/services/DashboardFilterStrip";
 import { QuickActions } from "@/components/platform/quick-actions";
 import { StatusDot } from "@/components/shared/status-badge";
@@ -7,13 +10,13 @@ import { ServiceTile, mockServiceDegraded, type ServiceTileSubRouteChip } from "
 import { PageHeader } from "@/components/shared/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
-import { useDashboardFilter } from "@/hooks/use-dashboard-filter";
-import { useFilteredDashboardQuickStats } from "@/hooks/api/use-filtered-dashboard-quick-stats";
+import { fiveDimFilterFromScope, useFilteredDashboardQuickStats } from "@/hooks/api/use-filtered-dashboard-quick-stats";
+import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 import type { Entitlement } from "@/lib/config/auth";
 import type { DashboardTileId, ServiceDefinition } from "@/lib/config/services";
 import { SERVICE_REGISTRY, getAccessibleSubRoutes, getVisibleServices } from "@/lib/config/services";
 import { personaDashboardShape, personaDashboardSubRoutes } from "@/lib/auth/persona-dashboard-shape";
-import { appendFilterToHref } from "@/lib/context/dashboard-filter-context";
+import { linkWithScope } from "@/lib/utils/nav-helpers";
 import { useExecutionMode } from "@/lib/execution-mode-context";
 import { PLATFORM_LIFECYCLE_CONFIG, PLATFORM_LIFECYCLE_STAGES, type PlatformLifecycleStage } from "@/lib/taxonomy";
 import { cn } from "@/lib/utils";
@@ -153,7 +156,8 @@ function useRoleKPIs(hasEntitlement: (e: Entitlement) => boolean, isLive: boolea
 export default function DashboardPage() {
   const { user, hasEntitlement, isAdmin, isInternal } = useAuth();
   const { isLive } = useExecutionMode();
-  const { filter } = useDashboardFilter();
+  const scope = useWorkspaceScope();
+  const filter = React.useMemo(() => fiveDimFilterFromScope(scope), [scope]);
   const filteredQuickStats = useFilteredDashboardQuickStats(filter, isLive);
 
   // Resolve per-persona tile visibility from the dashboard shape. Tiles marked
@@ -239,6 +243,23 @@ export default function DashboardPage() {
               noise on the services hub, and duplicates what the top-nav
               already exposes. */}
           <div className="space-y-4">
+            {/* DartScopeBar — Phase 2 of dart_ux_cockpit_refactor §6 + §17. The
+                compact line answers "what am I looking at?"; expand for chip
+                controls + Surface / Engagement / Stream dials. §4.3 Live
+                confirm + entitlement gate enforced inside. */}
+            <DartScopeBar />
+
+            {/* PresetSelector — Phase 6 of dart_ux_cockpit_refactor §8. Eight
+                starter cockpits with persona-recommended one badged + leading.
+                One click flips the active scope and routes to the preset's
+                primary surface. */}
+            <PresetSelector />
+
+            {/* ContextualLockedPreview — Phase 7 of §12 + §17. Scope-specific
+                FOMO cards that reflect what the user could unlock with their
+                current scope. Empty when no preview matches the scope. */}
+            <ContextualLockedPreview />
+
             {/* Filter strip — family/archetype/venue-set/share-class/instrument-type
                 picker, collapsed-by-default. Selections persist per-user in
                 localStorage and get threaded as URL query params onto every
@@ -269,7 +290,7 @@ export default function DashboardPage() {
                     // parses ?family= / ?archetype= / ?venue_set_variant= /
                     // ?share_class= / ?instrument_type= via
                     // FamilyArchetypePicker).
-                    href: appendFilterToHref(sub.href, filter),
+                    href: linkWithScope(sub.href, scope),
                     icon: sub.icon,
                     locked: sub.locked || chipVis[sub.key] === "locked",
                   }));
@@ -390,23 +411,24 @@ function useServiceQuickStat(
   filtered: { dart: string | null; reports: string | null },
 ): string | undefined {
   return React.useMemo(() => {
-    // Signals-In personas see a signal-centric stat on the DART tile, not the
-    // generic P&L. Post 2026-04-21 collapse — DART tile swallows Research /
-    // Promote / Observe / Strategy Catalogue surfaces, so the quick-stat
-    // headline depends on the persona's primary DART sub-route.
-    if (key === "dart" && personaId === "prospect-signals-only") {
+    // 2026-04-28 tile split: legacy "dart" is split into "dart-terminal" +
+    // "dart-research". Quick stats live on the Terminal tile (live trading)
+    // by default; Research tile shows a research-flavoured stat.
+    // Signals-In personas see a signal-centric stat on the Terminal tile.
+    if (key === "dart-terminal" && personaId === "prospect-signals-only") {
       return isLive ? "2 active signals · 14 today" : "Signals replay ready";
     }
-    if (key === "dart" && personaId === "client-data-only") {
+    if (key === "dart-terminal" && personaId === "client-data-only") {
       return "2,400+ instruments · Strategy catalogue";
     }
-    // Filter-aware slices come from useFilteredDashboardQuickStats (real API
-    // when deployed, deterministic mock otherwise). When the filter is
-    // unset, the hook returns nulls and we fall back to the default copy.
-    if (key === "dart" && filtered.dart) return filtered.dart;
+    // Filter-aware slices come from useFilteredDashboardQuickStats. The hook
+    // still returns a `dart` channel today (mock + real API both pre-split);
+    // route it to dart-terminal which is the live-trading surface.
+    if (key === "dart-terminal" && filtered.dart) return filtered.dart;
     if (key === "reports" && filtered.reports) return filtered.reports;
     const stats: Record<string, string> = {
-      dart: isLive ? "$142K P&L · 47 positions · 3 alerts" : "$139K batch P&L · 38 backtests",
+      "dart-terminal": isLive ? "$142K P&L · 47 positions · 3 alerts" : "$139K batch P&L · 38 backtests",
+      "dart-research": "12 strategies in backtest · 4 candidates · 2 promoted",
       "odum-signals": "12 counterparties · 284 emissions today",
       reports: "12 reports this month",
       "investor-relations": "Next board: May 15",

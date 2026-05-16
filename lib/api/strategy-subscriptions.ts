@@ -6,7 +6,7 @@
  *   DELETE /api/v1/strategy-instances/{id}/subscribe
  *   POST   /api/v1/strategy-instances/{id}/fork
  *
- * SSOT: plans/active/dart_exclusive_subscription_research_fork_2026_04_21.plan.md
+ * SSOT: plans/active/dart_exclusive_subscription_research_fork_2026_04_21.plan
  */
 
 export type SubscriptionType = "dart_exclusive" | "im_allocation" | "signals_in";
@@ -95,6 +95,29 @@ export interface VersionRecord {
   readonly maturity_phase: string;
   readonly status: string;
   readonly authored_by: string;
+}
+
+/**
+ * Plan D Phase 4 — list active subscriptions for the caller's org.
+ *
+ * The UTA endpoint `GET /api/v1/strategy-instances/subscriptions?client_id=...`
+ * is the production wiring; the strategy-catalogue page calls this on mount
+ * and falls back to the local placeholder when the call returns 404 / 5xx /
+ * network error so mock-mode + offline-dev keeps working without a live API.
+ */
+export async function listSubscriptionsForOrg(args: {
+  clientId: string;
+  authToken?: string;
+}): Promise<readonly SubscriptionRecord[]> {
+  const headers: Record<string, string> = {};
+  if (args.authToken) headers.Authorization = `Bearer ${args.authToken}`;
+  const url = `${UTA_BASE}/api/v1/strategy-instances/subscriptions?client_id=${encodeURIComponent(args.clientId)}`;
+  const response = await fetch(url, { method: "GET", headers });
+  if (!response.ok) {
+    throw new Error(`list-subscriptions ${response.status}: ${await response.text()}`);
+  }
+  const body = (await response.json()) as { subscriptions?: readonly SubscriptionRecord[] };
+  return body.subscriptions ?? [];
 }
 
 export async function forkInstance(instanceId: string, payload: ForkRequestPayload): Promise<VersionRecord> {

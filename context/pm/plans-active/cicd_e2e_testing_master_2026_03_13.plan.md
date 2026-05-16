@@ -320,7 +320,7 @@ what will be promoted to main.
   any repo is STAGING_PENDING or FAILING, SIT is blocked.
 
 **ci_status lifecycle (SSOT in rollout plan):** NOT_CONFIGURED → LOCAL_PASS → FEATURE_GREEN → STAGING_PENDING →
-STAGING_GREEN → SIT_VALIDATED See cicd_code_rollout_master_2026_03_13.plan.md § ci_status Lifecycle State Machine for
+STAGING_GREEN → SIT_VALIDATED See cicd_code_rollout_master_2026_03_13.md § ci_status Lifecycle State Machine for
 full spec.
 
 **Race-condition protection:**

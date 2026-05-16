@@ -1,7 +1,7 @@
 /**
  * Phase-2 regression tests for the Reg-Umbrella questionnaire extension.
  *
- * Plan: unified-trading-pm/plans/active/reg_umbrella_questionnaire_and_onboarding_docs_2026_04_21.plan.md
+ * Plan: unified-trading-pm/plans/active/reg_umbrella_questionnaire_and_onboarding_docs_2026_04_21.md
  *
  * Covers:
  *   - localStorage envelope write (submitted_by fields land in the new key).
@@ -13,15 +13,15 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
+  fingerprintAccessCode,
+  submitQuestionnaire,
+} from "@/lib/questionnaire/submit";
+import {
   QUESTIONNAIRE_ENVELOPE_LOCAL_STORAGE_KEY,
   QUESTIONNAIRE_LOCAL_STORAGE_KEY,
   type QuestionnaireEnvelope,
   type QuestionnaireResponse,
 } from "@/lib/questionnaire/types";
-import {
-  fingerprintAccessCode,
-  submitQuestionnaire,
-} from "@/lib/questionnaire/submit";
 
 const BASE_RESPONSE: QuestionnaireResponse = {
   categories: ["TradFi"],

@@ -11,6 +11,7 @@
  */
 import { ApiError } from "@/components/shared/api-error";
 import { WidgetScroll } from "@/components/shared/widget-scroll";
+import { FamilyArchetypeAssetGroupBrowser } from "../_components/family-archetype-asset-group-browser";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -172,6 +173,13 @@ export default function StrategiesPage() {
 
   return (
     <div className="flex flex-col h-full">
+      {/* 2026-04-28 DART tile-split D.6 page-level: research-side family →
+          archetype → asset_group browser sits above the search/backtest
+          toolbar so quants can pivot from "what's available" (top-down) to
+          "filter the running backtests" (bottom-up) without leaving the page. */}
+      <div className="px-6 pt-6">
+        <FamilyArchetypeAssetGroupBrowser title="Strategy hierarchy · family → archetype → asset_group" />
+      </div>
       {/* Toolbar: search + new backtest button on first row, filters below */}
       <div className="flex flex-col gap-3 px-6 pt-6 pb-4">
         <div className="flex items-center justify-between gap-3">

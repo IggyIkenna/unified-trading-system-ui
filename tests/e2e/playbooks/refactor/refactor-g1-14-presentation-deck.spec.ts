@@ -17,7 +17,7 @@ import { seedPersona } from "../seed-persona";
  * exit 0. For the HTML stretch, the spec loads the deck via `file://…`,
  * verifies slide count, screenshot visibility, and keyboard navigation.
  *
- * Plan:         plans/active/refactor_g1_14_presentation_deck_refresh_2026_04_20.plan.md
+ * Plan:         plans/active/refactor_g1_14_presentation_deck_refresh_2026_04_20.md
  * Codex SSOT:   unified-trading-pm/codex/14-playbooks/presentations/target-experience-post-refactor.md
  *
  * Wiring:       this spec lives under `tests/e2e/playbooks/refactor/` so it is
@@ -36,20 +36,20 @@ const DECK_HTML = join(PM_ROOT, "codex/14-playbooks/presentations/target-experie
 const PLANS_ACTIVE = join(PM_ROOT, "plans/active");
 
 const G1_PLAN_FILES = [
-  "refactor_g1_1_phase_unification_2026_04_20.plan.md",
-  "refactor_g1_2_instruction_schema_validation_service_2026_04_20.plan.md",
-  "refactor_g1_3_locked_visible_ui_service_tile_mode_2026_04_20.plan.md",
-  "refactor_g1_4_persona_combinatorial_expansion_2026_04_20.plan.md",
-  "refactor_g1_5_ml_catalogue_broken_hrefs_cleanup_2026_04_20.plan.md",
-  "refactor_g1_6_derivation_engine_ship_to_strategy_service_availability_2026_04_20.plan.md",
-  "refactor_g1_7_restriction_profile_engine_2026_04_20.plan.md",
-  "refactor_g1_8_uac_archetype_capability_v2_2026_04_20.plan.md",
-  "refactor_g1_9_codex_scope_registry_2026_04_20.plan.md",
-  "refactor_g1_10_questionnaire_to_configuration_flow_2026_04_20.plan.md",
-  "refactor_g1_11_service_family_scope_rules_2026_04_20.plan.md",
-  "refactor_g1_12_public_site_ia_and_briefings_polish_2026_04_20.plan.md",
-  "refactor_g1_13_demo_upsell_overlay_tempt_logic_2026_04_20.plan.md",
-  "refactor_g1_14_presentation_deck_refresh_2026_04_20.plan.md",
+  "refactor_g1_1_phase_unification_2026_04_20.md",
+  "refactor_g1_2_instruction_schema_validation_service_2026_04_20.md",
+  "refactor_g1_3_locked_visible_ui_service_tile_mode_2026_04_20.md",
+  "refactor_g1_4_persona_combinatorial_expansion_2026_04_20.md",
+  "refactor_g1_5_ml_catalogue_broken_hrefs_cleanup_2026_04_20.md",
+  "refactor_g1_6_derivation_engine_ship_to_strategy_service_availability_2026_04_20.md",
+  "refactor_g1_7_restriction_profile_engine_2026_04_20.md",
+  "refactor_g1_8_uac_archetype_capability_v2_2026_04_20.md",
+  "refactor_g1_9_codex_scope_registry_2026_04_20.md",
+  "refactor_g1_10_questionnaire_to_configuration_flow_2026_04_20.md",
+  "refactor_g1_11_service_family_scope_rules_2026_04_20.md",
+  "refactor_g1_12_public_site_ia_and_briefings_polish_2026_04_20.md",
+  "refactor_g1_13_demo_upsell_overlay_tempt_logic_2026_04_20.md",
+  "refactor_g1_14_presentation_deck_refresh_2026_04_20.md",
 ] as const;
 
 // If the PM repo is not checked out next to the UI repo, skip — this spec is

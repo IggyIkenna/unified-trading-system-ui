@@ -21,7 +21,7 @@ import { STRUCTURE_OPTIONS, STRUCTURE_ROLE_CLARITY } from "@/lib/marketing/struc
  * - unified-trading-pm/codex/14-playbooks/_ssot-rules/10-strategy-instruction-schema-principles.md
  * - unified-trading-pm/codex/14-playbooks/shared-core/instruction-schema-fit-and-package-boundaries.md
  * - unified-trading-pm/codex/09-strategy/architecture-v2/category-instrument-coverage.md
- * - unified-trading-pm/plans/active/signal_leasing_broadcast_architecture_2026_04_20.plan.md (Phase 2 D1-D10)
+ * - unified-trading-pm/plans/active/signal_leasing_broadcast_architecture_2026_04_20.md (Phase 2 D1-D10)
  *
  * Voice: rule 02 (tone & posture) — present tense, specific, UK English.
  * Pricing numbers are codex-private per rule 08 — none appear here.

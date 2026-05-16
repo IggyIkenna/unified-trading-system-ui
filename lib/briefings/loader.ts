@@ -17,7 +17,7 @@ import type { BriefingHub, BriefingPillar, BriefingPillarSlug, BriefingSection }
  * editable draft; parity CI (`scripts/validate-briefings-yaml.ts`) asserts
  * the YAML covers every codex briefing file.
  *
- * Plan: unified-trading-pm/plans/active/refactor_g3_3_briefings_cms_migration_2026_04_20.plan.md
+ * Plan: unified-trading-pm/plans/active/refactor_g3_3_briefings_cms_migration_2026_04_20.md
  */
 
 /**
@@ -97,35 +97,35 @@ function parsePillar(raw: unknown, sourcePath: string): BriefingPillar {
       body: s.body,
       ...(s.appliesTo !== undefined
         ? {
-            appliesTo: (() => {
-              if (typeof s.appliesTo !== "string" || !VALID_APPLIES_TO.has(s.appliesTo)) {
-                throw new Error(
-                  `[briefings-loader] ${sourcePath}: sections[${i}].appliesTo must be one of signals-in|full-pipeline|both`,
-                );
-              }
-              return s.appliesTo as BriefingSection["appliesTo"];
-            })(),
-          }
+          appliesTo: (() => {
+            if (typeof s.appliesTo !== "string" || !VALID_APPLIES_TO.has(s.appliesTo)) {
+              throw new Error(
+                `[briefings-loader] ${sourcePath}: sections[${i}].appliesTo must be one of signals-in|full-pipeline|both`,
+              );
+            }
+            return s.appliesTo as BriefingSection["appliesTo"];
+          })(),
+        }
         : {}),
       ...(s.bullets !== undefined
         ? {
-            bullets: (() => {
-              if (!isStringArray(s.bullets)) {
-                throw new Error(`[briefings-loader] ${sourcePath}: sections[${i}].bullets must be a string list`);
-              }
-              return s.bullets;
-            })(),
-          }
+          bullets: (() => {
+            if (!isStringArray(s.bullets)) {
+              throw new Error(`[briefings-loader] ${sourcePath}: sections[${i}].bullets must be a string list`);
+            }
+            return s.bullets;
+          })(),
+        }
         : {}),
       ...(s.bodyAfter !== undefined
         ? {
-            bodyAfter: (() => {
-              if (typeof s.bodyAfter !== "string") {
-                throw new Error(`[briefings-loader] ${sourcePath}: sections[${i}].bodyAfter must be a string`);
-              }
-              return s.bodyAfter;
-            })(),
-          }
+          bodyAfter: (() => {
+            if (typeof s.bodyAfter !== "string") {
+              throw new Error(`[briefings-loader] ${sourcePath}: sections[${i}].bodyAfter must be a string`);
+            }
+            return s.bodyAfter;
+          })(),
+        }
         : {}),
     };
     return section;

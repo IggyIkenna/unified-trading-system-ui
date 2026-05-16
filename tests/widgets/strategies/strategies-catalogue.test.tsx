@@ -12,7 +12,7 @@
  *              Details → /services/trading/strategies/[id]
  * - Grouped rendering: each assetClass group heading appears.
  *
- * Per unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan.md Phase 5.
+ * Per unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan Phase 5.
  */
 import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -37,6 +37,9 @@ vi.mock("@/lib/config/services/strategies.config", () => ({
     { id: "yield-rotation", label: "Yield Rotation" },
     { id: "momentum", label: "Momentum" },
   ],
+  // Identity normaliser — real one snake-cases / strips emoji prefixes; for
+  // mock data we keep archetype strings as-is.
+  normalizeArchetype: (s: string) => s,
   asset_group_COLORS: {
     DeFi: "#10b981",
     Crypto: "#6366f1",

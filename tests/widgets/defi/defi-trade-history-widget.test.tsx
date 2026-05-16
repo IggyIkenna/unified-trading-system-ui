@@ -5,7 +5,7 @@
  *   tests/widgets/defi/defi-lending-widget.test.tsx
  *   tests/widgets/book/book-trade-history.test.tsx
  *   codex/06-coding-standards/ui-testing-layers.md (L1.5)
- *   plans/ai/ui_widget_test_rollout_2026_04_24.plan.md (Phase 3 Wave 2 DeFi)
+ *   plans/ai/ui_widget_test_rollout_2026_04_24.plan (Phase 3 Wave 2 DeFi)
  *
  * Scope (per cert docs/manifest/widget-certification/defi-trade-history.json):
  * - Render rows from tradeHistory context.
@@ -15,9 +15,9 @@
  * - Row click on parent with execution_chain toggles expansion (cert L4.1).
  * - Status badges render per row.
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
 import type { TradeHistoryRow } from "@/lib/types/defi";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { buildMockDeFiData } from "../_helpers/mock-defi-context";
 
 function buildMockTradeRow(overrides: Partial<TradeHistoryRow> = {}): TradeHistoryRow {

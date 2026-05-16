@@ -7,8 +7,5 @@ cta:
   href: /contact
 displayOrder:
   - investment-management
-  - platform
-  - dart-signals-in
-  - dart-full
-  - signals-out
-  - regulatory
+  - dart-trading-infrastructure
+  - regulated-operating-models

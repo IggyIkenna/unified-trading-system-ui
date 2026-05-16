@@ -337,5 +337,5 @@ python3 scripts/utilities/create-all-service-projects.py --service execution-ser
 **Last Updated:** 2026-02-13
 **Status:** Current state of unified trading system workflow
 **Next:** See
-[phase_0_cod_service_specs_f0a0afbd.plan.md](../../.cursor/plans/phase_0_cod_service_specs_f0a0afbd.plan.md) for initial
+[phase_0_cod_service_specs_f0a0afbd.md](../../.cursor/plans/phase_0_cod_service_specs_f0a0afbd.md) for initial
 build plan

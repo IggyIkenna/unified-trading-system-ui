@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useExecutionMode } from "@/lib/execution-mode-context";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 import { getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
 import { MOCK_STRATEGY_INSTRUCTIONS } from "@/lib/mocks/fixtures/strategy-instructions";
 import { INSTRUCTION_STRATEGY_TYPES } from "@/lib/config/services/instructions.config";
@@ -44,7 +44,7 @@ const InstructionsDataContext = React.createContext<InstructionsDataContextValue
 
 export function InstructionsDataProvider({ children }: { children: React.ReactNode }) {
   const { isPaper, isBatch, mode } = useExecutionMode();
-  const { scope: globalScope } = useGlobalScope();
+  const globalScope = useWorkspaceScope();
   const scopeStrategyIds = React.useMemo(
     () =>
       getStrategyIdsForScope({

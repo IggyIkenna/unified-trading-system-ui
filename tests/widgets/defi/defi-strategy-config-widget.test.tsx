@@ -4,7 +4,7 @@
  * Pattern reference:
  *   tests/widgets/defi/defi-lending-widget.test.tsx (pilot)
  *   codex/06-coding-standards/ui-testing-layers.md (L1.5)
- *   plans/ai/ui_widget_test_rollout_2026_04_24.plan.md (Phase 3 Wave 2 DeFi)
+ *   plans/ai/ui_widget_test_rollout_2026_04_24.md (Phase 3 Wave 2 DeFi)
  *
  * Notes:
  * - This widget does NOT use DeFiDataContext; it is driven by the
@@ -20,8 +20,8 @@
  * - Deploy Strategy button invokes deployDefiStrategy(selectedStrategy).
  * - Promote button surfaces a toast.
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const { getDefiStrategyConfig, saveDefiStrategyConfig, deployDefiStrategy, toastSuccess } = vi.hoisted(() => ({
   getDefiStrategyConfig: vi.fn<(id: string) => unknown>(() => undefined),
@@ -133,12 +133,12 @@ describe("defi-strategy-config-widget — L1.5 harness", () => {
       getDefiStrategyConfig.mockImplementation((id: string) =>
         id === "AAVE_LENDING"
           ? {
-              strategy_id: id,
-              share_class: "USDT",
-              status: "deployed",
-              deployed_at: null,
-              config: { __marker: "from-store" },
-            }
+            strategy_id: id,
+            share_class: "USDT",
+            status: "deployed",
+            deployed_at: null,
+            config: { __marker: "from-store" },
+          }
           : undefined,
       );
       render(<DeFiStrategyConfigWidget />);

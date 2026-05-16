@@ -71,10 +71,21 @@ registerWidget({
   defaultW: 24,
   defaultH: 1,
   requiredEntitlements: [{ domain: "trading-options", tier: "basic" }],
-  category: "Options & Futures",
+  assetGroup: "PLATFORM",
+  catalogGroup: "Options & Futures",
   availableOn: ["options"],
   singleton: true,
   component: OptionsControlBarWidget,
+  // Phase 5 cockpit-axis metadata: scope-aware reshaping.
+  dartMeta: {
+    surfaces: ["terminal", "research"],
+    terminalModes: ["markets"],
+    importance: "primary",
+    scopePredicate: (scope) =>
+      scope.instrumentTypes.length === 0 ||
+      scope.instrumentTypes.includes("option") ||
+      scope.instrumentTypes.includes("future"),
+  },
 });
 
 registerWidget({
@@ -87,7 +98,8 @@ registerWidget({
   defaultW: 6,
   defaultH: 10,
   requiredEntitlements: [{ domain: "trading-options", tier: "basic" }],
-  category: "Options & Futures",
+  assetGroup: "PLATFORM",
+  catalogGroup: "Options & Futures",
   availableOn: ["options"],
   singleton: true,
   component: OptionsWatchlistWidget,
@@ -104,7 +116,8 @@ registerWidget({
   defaultW: 18,
   defaultH: 8,
   requiredEntitlements: [{ domain: "trading-options", tier: "basic" }],
-  category: "Options & Futures",
+  assetGroup: "PLATFORM",
+  catalogGroup: "Options & Futures",
   availableOn: ["options"],
   singleton: true,
   component: OptionsChainWidget,
@@ -121,7 +134,8 @@ registerWidget({
   defaultW: 18,
   defaultH: 6,
   requiredEntitlements: [{ domain: "trading-options", tier: "basic" }],
-  category: "Options & Futures",
+  assetGroup: "PLATFORM",
+  catalogGroup: "Options & Futures",
   availableOn: ["options"],
   singleton: true,
   component: OptionsFuturesTableWidget,
@@ -137,7 +151,8 @@ registerWidget({
   defaultW: 24,
   defaultH: 7,
   requiredEntitlements: [{ domain: "trading-options", tier: "basic" }],
-  category: "Options & Futures",
+  assetGroup: "PLATFORM",
+  catalogGroup: "Options & Futures",
   availableOn: ["options"],
   singleton: true,
   component: OptionsStrategiesWidget,
@@ -153,8 +168,107 @@ registerWidget({
   defaultW: 12,
   defaultH: 4,
   requiredEntitlements: [{ domain: "trading-options", tier: "basic" }],
-  category: "Options & Futures",
+  assetGroup: "PLATFORM",
+  catalogGroup: "Options & Futures",
   availableOn: ["options"],
   singleton: false,
   component: OptionsGreekSurfaceWidget,
+});
+
+// ─── Deribit-style options analytics (P6 of DART terminal plan) ────────────
+// UI scaffolds; data gated on Greeks/IV computation in features-derivatives-
+// service (P6 data prereq). Each widget renders graceful "data unavailable"
+// placeholder until the backend lands.
+
+import { IvSmileWidget, IvTermStructureWidget, MaxPainChartWidget, PutCallRatioWidget } from "./dart-options-analytics";
+import {
+  Activity as ActivityP6,
+  Grid3x3 as Grid3x3P6,
+  TrendingDown as TrendingDownP6,
+  TrendingUp as TrendingUpP6,
+} from "lucide-react";
+
+registerPresets("options", [
+  {
+    id: "options-deribit-analytics",
+    name: "Deribit analytics",
+    tab: "options",
+    isPreset: true,
+    layouts: [
+      { widgetId: "options-iv-smile", instanceId: "options-iv-smile-1", x: 0, y: 0, w: 14, h: 8 },
+      { widgetId: "options-iv-term-structure", instanceId: "options-iv-term-structure-1", x: 14, y: 0, w: 10, h: 8 },
+      { widgetId: "options-max-pain", instanceId: "options-max-pain-1", x: 0, y: 8, w: 16, h: 6 },
+      { widgetId: "options-put-call-ratio", instanceId: "options-put-call-ratio-1", x: 16, y: 8, w: 8, h: 6 },
+    ],
+    createdAt: "2026-04-28T00:00:00Z",
+    updatedAt: "2026-04-28T00:00:00Z",
+  },
+]);
+
+registerWidget({
+  id: "options-iv-smile",
+  label: "IV smile",
+  description: "Strike × expiry IV matrix — diverging colour scale. P6 data prereq: Greeks/IV computation.",
+  icon: Grid3x3P6,
+  minW: 8,
+  minH: 6,
+  defaultW: 14,
+  defaultH: 8,
+  requiredEntitlements: [{ domain: "trading-options", tier: "basic" }],
+  assetGroup: "CEFI",
+  catalogGroup: "Options & Futures",
+  availableOn: ["options"],
+  singleton: false,
+  component: IvSmileWidget,
+});
+
+registerWidget({
+  id: "options-iv-term-structure",
+  label: "IV term structure",
+  description: "ATM IV per expiry — XY plot xKind=expiry. P6 data prereq.",
+  icon: TrendingUpP6,
+  minW: 6,
+  minH: 5,
+  defaultW: 10,
+  defaultH: 8,
+  requiredEntitlements: [{ domain: "trading-options", tier: "basic" }],
+  assetGroup: "CEFI",
+  catalogGroup: "Options & Futures",
+  availableOn: ["options"],
+  singleton: false,
+  component: IvTermStructureWidget,
+});
+
+registerWidget({
+  id: "options-max-pain",
+  label: "Max pain",
+  description: "Pain per strike with current price marker. P6 data prereq.",
+  icon: TrendingDownP6,
+  minW: 8,
+  minH: 4,
+  defaultW: 16,
+  defaultH: 6,
+  requiredEntitlements: [{ domain: "trading-options", tier: "basic" }],
+  assetGroup: "CEFI",
+  catalogGroup: "Options & Futures",
+  availableOn: ["options"],
+  singleton: false,
+  component: MaxPainChartWidget,
+});
+
+registerWidget({
+  id: "options-put-call-ratio",
+  label: "Put/Call ratio",
+  description: "Single-asset P/C ratio gauge with historical sparkline. P6 data prereq.",
+  icon: ActivityP6,
+  minW: 4,
+  minH: 4,
+  defaultW: 8,
+  defaultH: 6,
+  requiredEntitlements: [{ domain: "trading-options", tier: "basic" }],
+  assetGroup: "CEFI",
+  catalogGroup: "Options & Futures",
+  availableOn: ["options"],
+  singleton: false,
+  component: PutCallRatioWidget,
 });

@@ -4,7 +4,7 @@ import { HomePageClient } from "./_home-client";
 /**
  * Public homepage — React composition.
  *
- * Plan: `marketing_site_three_route_consolidation_2026_04_26.plan.md`,
+ * Plan: `marketing_site_three_route_consolidation_2026_04_26.md`,
  * Phase 3. Replaces the prior `<MarketingStaticFromFile file="homepage.html" />`
  * shadow-DOM render with a typed React component tree.
  *
@@ -25,9 +25,9 @@ import { HomePageClient } from "./_home-client";
  * only on `/start-your-review`.
  */
 export const metadata: Metadata = {
-  title: "Odum Research | Systematic Strategies and Trading Infrastructure",
+  title: "Odum Research | Trading Infrastructure for Institutional Clients",
   description:
-    "Odum operates selected systematic strategies and DART Trading Infrastructure for institutional clients, with regulated operating models where appropriate.",
+    "Odum helps institutional clients design, build, and operate systematic trading capabilities across digital assets, traditional markets, sports, and prediction markets. Bring your own strategies (we protect your IP) or use ours.",
 };
 
 export default function PublicHomePage() {

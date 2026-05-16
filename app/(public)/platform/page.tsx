@@ -39,37 +39,37 @@ const PROCESS_STEPS: readonly ProcessStep[] = [
   {
     number: "01",
     title: "Questionnaire",
-    body: "A few minutes. Routes you to the relevant briefing pillar.",
+    body: "Tell us where you are; we point you at the briefing that fits.",
   },
   {
     number: "02",
     title: "Briefings",
-    body: "Gated material covering DART's structure, mechanics, and scope.",
+    body: "Walk through how DART would shape around your route — structure, mechanics, and scope.",
   },
   {
     number: "03",
     title: "Initial call",
-    body: "If the briefing lines up, a focused call rather than a generic intro.",
+    body: "If the briefing resonates, a focused conversation about your ambition and what an engagement could look like.",
   },
   {
     number: "04",
     title: "Strategy Evaluation",
-    body: "Structured DDQ covering your strategy, venues, risk, and infrastructure needs.",
+    body: "We work through your context together — venues, risk, and infrastructure — without exposing strategy IP.",
   },
   {
     number: "05",
     title: "Strategy Review",
-    body: "A tailored pre-demo review of your route, requirements, and demo focus.",
+    body: "We share a tailored read of how we'd shape the engagement — your route, requirements, and what the demo should cover.",
   },
   {
     number: "06",
     title: "Platform walkthrough",
-    body: "A tailored walkthrough of the relevant workflows and a self-guided fit check.",
+    body: "We walk you through the relevant workflows, then leave you to explore and check fit.",
   },
   {
     number: "07",
     title: "Commercial Tailoring",
-    body: "Deeper catalogue, pricing, and contract shape against your specifics.",
+    body: "We open the deeper catalogue, pricing, and contract shape against your specifics — both sides walk in with constraints clear.",
   },
 ];
 
@@ -140,8 +140,10 @@ export default function MarketingPlatformPage() {
             </Badge>
             <h1 className="text-3xl font-bold tracking-tight md:text-4xl">{SERVICE_LABELS.dart.marketing}</h1>
             <p className="mx-auto mt-4 max-w-3xl text-lg text-muted-foreground">
-              DART is the infrastructure layer behind Odum&rsquo;s systematic trading activity, available to selected
-              clients who need a controlled path from research to execution, monitoring, and reporting.
+              DART is the infrastructure layer that accelerates your trading build — research, execution, monitoring,
+              and reporting in one operating surface. Bring your own strategies and we protect your IP, use
+              Odum&rsquo;s, or combine both. Modes below are starting points; configurations are tailored to the mandate
+              and reviewed case by case.
             </p>
             <div className="mt-6 flex flex-wrap justify-center gap-3">
               <Button asChild>

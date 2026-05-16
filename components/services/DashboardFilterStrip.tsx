@@ -13,21 +13,22 @@
  * `dashboardFilter.changed` CustomEvent on every change via the context.
  *
  * SSOTs:
- *   - plans/active/dashboard_services_grid_collapse_2026_04_21.plan.md Phase 4
+ *   - plans/active/dashboard_services_grid_collapse_2026_04_21.plan Phase 4
  *   - codex/09-strategy/architecture-v2/dashboard-services-grid.md §4
  */
 
-import * as React from "react";
 import { ChevronDown, Filter, X } from "lucide-react";
+import * as React from "react";
 
 import { FamilyArchetypePicker } from "@/components/architecture-v2/family-archetype-picker";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useDashboardFilter } from "@/hooks/use-dashboard-filter";
+import { useAuth } from "@/hooks/use-auth";
+import { INSTRUMENT_TYPES_V2, type InstrumentTypeV2 } from "@/lib/architecture-v2/coverage";
 import { ARCHETYPE_TO_FAMILY, type StrategyArchetype, type StrategyFamily } from "@/lib/architecture-v2/enums";
 import { SHARE_CLASS_LABEL, loadVenueSetVariants, type VenueSetVariant } from "@/lib/architecture-v2/lifecycle";
-import { INSTRUMENT_TYPES_V2, type InstrumentTypeV2 } from "@/lib/architecture-v2/coverage";
+import { useWorkspaceScope, useWorkspaceScopeStore } from "@/lib/stores/workspace-scope-store";
 import { cn } from "@/lib/utils";
 
 const ALL_SENTINEL = "__all__";
@@ -50,29 +51,86 @@ export interface DashboardFilterStripProps {
 }
 
 export function DashboardFilterStrip({ className }: DashboardFilterStripProps) {
-  const { filter, setFilter, clear, expanded, setExpanded, isActive } = useDashboardFilter();
+  const { user } = useAuth();
+  const scope = useWorkspaceScope();
+  const applyScope = useWorkspaceScopeStore((s) => s.applyScope);
+
+  const family = scope.families[0] ?? null;
+  const archetype = scope.archetypes[0] ?? null;
+  const venueSetVariant = scope.venueSetVariants[0] ?? null;
+  const shareClass = scope.shareClasses[0] ?? null;
+  const instrumentType = (scope.instrumentTypes[0] as InstrumentTypeV2 | undefined) ?? null;
+
+  const isActive =
+    family !== null ||
+    archetype !== null ||
+    venueSetVariant !== null ||
+    shareClass !== null ||
+    instrumentType !== null;
+
+  // Expanded state is per-user UI ephemera, not workspace scope. Keep local
+  // and persist to localStorage with the user-id as the key.
+  const expandedKey = user?.id ? `dashboardFilter:${user.id}:expanded` : null;
+  const [expanded, setExpandedState] = React.useState<boolean>(false);
+  React.useEffect(() => {
+    if (typeof window === "undefined" || !expandedKey) return;
+    try {
+      setExpandedState(window.localStorage.getItem(expandedKey) === "1");
+    } catch {
+      // Storage disabled — keep default false.
+    }
+  }, [expandedKey]);
+  const setExpanded = React.useCallback(
+    (next: boolean) => {
+      setExpandedState(next);
+      if (typeof window === "undefined" || !expandedKey) return;
+      try {
+        if (next) window.localStorage.setItem(expandedKey, "1");
+        else window.localStorage.removeItem(expandedKey);
+      } catch {
+        // Storage disabled — silent.
+      }
+    },
+    [expandedKey],
+  );
+
+  const clear = React.useCallback(() => {
+    applyScope(
+      {
+        families: [],
+        archetypes: [],
+        venueSetVariants: [],
+        shareClasses: [],
+        instrumentTypes: [],
+      },
+      "dashboard-filter",
+    );
+  }, [applyScope]);
 
   const variants = React.useMemo<readonly VenueSetVariant[]>(() => loadVenueSetVariants(), []);
 
   // If an archetype is selected, narrow the venue-set options to that archetype.
   const availableVariants = React.useMemo<readonly VenueSetVariant[]>(() => {
-    if (!filter.archetype) return variants;
-    return variants.filter((v) => v.archetype === filter.archetype);
-  }, [variants, filter.archetype]);
+    if (!archetype) return variants;
+    return variants.filter((v) => v.archetype === archetype);
+  }, [variants, archetype]);
 
   const handleFamilyArchetypeChange = React.useCallback(
     (next: { family?: StrategyFamily; archetype?: StrategyArchetype }) => {
       const nextArchetype = next.archetype ?? null;
       const nextFamily = next.family ?? (nextArchetype ? ARCHETYPE_TO_FAMILY[nextArchetype] : null);
-      setFilter({
-        family: nextFamily,
-        archetype: nextArchetype,
-        // Clear dependent dims when archetype changes so we don't leave a
-        // stale variant that no longer matches.
-        venueSetVariant: filter.archetype !== nextArchetype ? null : filter.venueSetVariant,
-      });
+      applyScope(
+        {
+          families: nextFamily ? [nextFamily] : [],
+          archetypes: nextArchetype ? [nextArchetype] : [],
+          // Clear dependent dim when archetype changes so we don't leave a
+          // stale variant that no longer matches.
+          venueSetVariants: archetype !== nextArchetype ? [] : scope.venueSetVariants,
+        },
+        "dashboard-filter",
+      );
     },
-    [setFilter, filter.archetype, filter.venueSetVariant],
+    [applyScope, archetype, scope.venueSetVariants],
   );
 
   return (
@@ -97,7 +155,13 @@ export function DashboardFilterStrip({ className }: DashboardFilterStripProps) {
 
         {isActive ? (
           <>
-            <ActiveFilterBadges />
+            <ActiveFilterBadges
+              family={family}
+              archetype={archetype}
+              venueSetVariant={venueSetVariant}
+              shareClass={shareClass}
+              instrumentType={instrumentType}
+            />
             <Button
               variant="ghost"
               size="sm"
@@ -124,8 +188,8 @@ export function DashboardFilterStrip({ className }: DashboardFilterStripProps) {
           <div className="flex flex-col gap-2 md:flex-row md:flex-wrap md:items-center md:gap-3">
             <FamilyArchetypePicker
               value={{
-                family: filter.family ?? undefined,
-                archetype: filter.archetype ?? undefined,
+                family: family ?? undefined,
+                archetype: archetype ?? undefined,
               }}
               onChange={handleFamilyArchetypeChange}
               availabilityFilter="allowed"
@@ -134,11 +198,14 @@ export function DashboardFilterStrip({ className }: DashboardFilterStripProps) {
             />
 
             <Select
-              value={filter.venueSetVariant ?? ALL_SENTINEL}
+              value={venueSetVariant ?? ALL_SENTINEL}
               onValueChange={(next) =>
-                setFilter({
-                  venueSetVariant: next === ALL_SENTINEL ? null : next,
-                })
+                applyScope(
+                  {
+                    venueSetVariants: next === ALL_SENTINEL ? [] : [next as VenueSetVariant["id"]],
+                  },
+                  "dashboard-filter",
+                )
               }
               disabled={availableVariants.length === 0}
             >
@@ -160,11 +227,14 @@ export function DashboardFilterStrip({ className }: DashboardFilterStripProps) {
             </Select>
 
             <Select
-              value={filter.shareClass ?? ALL_SENTINEL}
+              value={shareClass ?? ALL_SENTINEL}
               onValueChange={(next) =>
-                setFilter({
-                  shareClass: next === ALL_SENTINEL ? null : (next as keyof typeof SHARE_CLASS_LABEL),
-                })
+                applyScope(
+                  {
+                    shareClasses: next === ALL_SENTINEL ? [] : [next as keyof typeof SHARE_CLASS_LABEL],
+                  },
+                  "dashboard-filter",
+                )
               }
             >
               <SelectTrigger
@@ -185,11 +255,14 @@ export function DashboardFilterStrip({ className }: DashboardFilterStripProps) {
             </Select>
 
             <Select
-              value={filter.instrumentType ?? ALL_SENTINEL}
+              value={instrumentType ?? ALL_SENTINEL}
               onValueChange={(next) =>
-                setFilter({
-                  instrumentType: next === ALL_SENTINEL ? null : (next as InstrumentTypeV2),
-                })
+                applyScope(
+                  {
+                    instrumentTypes: next === ALL_SENTINEL ? [] : [next as InstrumentTypeV2],
+                  },
+                  "dashboard-filter",
+                )
               }
             >
               <SelectTrigger
@@ -215,14 +288,25 @@ export function DashboardFilterStrip({ className }: DashboardFilterStripProps) {
   );
 }
 
-function ActiveFilterBadges() {
-  const { filter } = useDashboardFilter();
+function ActiveFilterBadges({
+  family,
+  archetype,
+  venueSetVariant,
+  shareClass,
+  instrumentType,
+}: {
+  readonly family: StrategyFamily | null;
+  readonly archetype: StrategyArchetype | null;
+  readonly venueSetVariant: VenueSetVariant["id"] | null;
+  readonly shareClass: keyof typeof SHARE_CLASS_LABEL | null;
+  readonly instrumentType: InstrumentTypeV2 | null;
+}) {
   const chips: string[] = [];
-  if (filter.family) chips.push(filter.family);
-  if (filter.archetype) chips.push(filter.archetype);
-  if (filter.venueSetVariant) chips.push(filter.venueSetVariant);
-  if (filter.shareClass) chips.push(SHARE_CLASS_LABEL[filter.shareClass]);
-  if (filter.instrumentType) chips.push(INSTRUMENT_TYPE_LABEL[filter.instrumentType]);
+  if (family) chips.push(family);
+  if (archetype) chips.push(archetype);
+  if (venueSetVariant) chips.push(venueSetVariant);
+  if (shareClass) chips.push(SHARE_CLASS_LABEL[shareClass]);
+  if (instrumentType) chips.push(INSTRUMENT_TYPE_LABEL[instrumentType]);
   if (chips.length === 0) return null;
   return (
     <div className="flex flex-wrap items-center gap-1" data-testid="dashboard-filter-active-chips">

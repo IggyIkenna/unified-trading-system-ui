@@ -5,21 +5,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { FamilyArchetypeAssetGroupBrowser } from "../../_components/family-archetype-asset-group-browser";
 import { useStrategyCatalog } from "@/hooks/api/use-strategy-catalog";
 import {
   CATEGORY_COLORS,
@@ -32,17 +20,7 @@ import {
 import { getStrategyCatalogSource } from "@/lib/strategy-catalog/source";
 import { cn } from "@/lib/utils";
 import { formatCurrency, formatNumber } from "@/lib/utils/formatters";
-import {
-  ArrowUpDown,
-  BarChart3,
-  Grid3X3,
-  LayoutList,
-  Search,
-  Shield,
-  TrendingUp,
-  Trophy,
-  Zap,
-} from "lucide-react";
+import { ArrowUpDown, BarChart3, Grid3X3, LayoutList, Search, Shield, TrendingUp, Trophy, Zap } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";
 
@@ -85,7 +63,11 @@ const STATUS_ORDER: Record<string, number> = { LIVE: 0, STAGING: 1, PAPER: 2, BA
 // Helpers
 // ---------------------------------------------------------------------------
 
-function sortStrategies(items: StrategyCatalogEntry[], sortKey: SortKey, sortDir: "asc" | "desc"): StrategyCatalogEntry[] {
+function sortStrategies(
+  items: StrategyCatalogEntry[],
+  sortKey: SortKey,
+  sortDir: "asc" | "desc",
+): StrategyCatalogEntry[] {
   const sorted = [...items].sort((a, b) => {
     let cmp = 0;
     switch (sortKey) {
@@ -185,9 +167,7 @@ function StrategyCard({ strategy }: { strategy: StrategyCatalogEntry }) {
               </Badge>
             ))}
             {strategy.config.venues.length > 3 && (
-              <span className="text-[10px] text-muted-foreground">
-                +{strategy.config.venues.length - 3} more
-              </span>
+              <span className="text-[10px] text-muted-foreground">+{strategy.config.venues.length - 3} more</span>
             )}
           </div>
         </CardContent>
@@ -200,13 +180,7 @@ function StrategyCard({ strategy }: { strategy: StrategyCatalogEntry }) {
 // Category Section (Grid View grouped by category)
 // ---------------------------------------------------------------------------
 
-function CategorySection({
-  category,
-  strategies,
-}: {
-  category: StrategyCategory;
-  strategies: StrategyCatalogEntry[];
-}) {
+function CategorySection({ category, strategies }: { category: StrategyCategory; strategies: StrategyCatalogEntry[] }) {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-3">
@@ -293,9 +267,7 @@ export default function StrategyCatalogPage() {
   const [search, setSearch] = React.useState("");
   // Multi-select: empty set === "All". Categories are DERIVED from venue mix
   // per the v2 architecture, so the filter must allow the union of categories.
-  const [selectedCategories, setSelectedCategories] = React.useState<Set<StrategyCategory>>(
-    () => new Set(),
-  );
+  const [selectedCategories, setSelectedCategories] = React.useState<Set<StrategyCategory>>(() => new Set());
   const [sortKey, setSortKey] = React.useState<SortKey>("apy");
   const [sortDir, setSortDir] = React.useState<"asc" | "desc">("desc");
   const [view, setView] = React.useState<ViewMode>("grid");
@@ -397,16 +369,14 @@ export default function StrategyCatalogPage() {
         {/* Page Header */}
         <div className="space-y-2">
           <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-page-title font-semibold tracking-tight text-foreground">
-              Strategy Catalog
-            </h1>
+            <h1 className="text-page-title font-semibold tracking-tight text-foreground">Strategy Catalog</h1>
             <Badge variant="outline" className="text-[10px] uppercase tracking-wide">
               Source: {catalogQuery.data?.source ?? catalogSource}
             </Badge>
           </div>
           <p className="text-body text-muted-foreground max-w-2xl">
-            Browse our full range of systematic trading strategies across DeFi, CeFi, traditional
-            markets, sports, and prediction markets.
+            Browse our full range of systematic trading strategies across DeFi, CeFi, traditional markets, sports, and
+            prediction markets.
           </p>
           {catalogQuery.data?.degraded ? (
             <Alert className="max-w-2xl border-amber-500/40 bg-amber-500/5">
@@ -417,6 +387,13 @@ export default function StrategyCatalogPage() {
             </Alert>
           ) : null}
         </div>
+
+        {/* 2026-04-28 DART tile-split D.6 page-level: research-side family →
+            archetype → asset_group drilldown. Coexists with the catalog
+            table below — quants who think in family terms ("show me all
+            CARRY_AND_YIELD strategies") use the browser; ones who already
+            know the strategy id use the table search. */}
+        <FamilyArchetypeAssetGroupBrowser title="Browse by family · archetype · asset group" />
 
         {/* Toolbar */}
         <div className="flex flex-wrap items-center gap-3">
@@ -445,9 +422,7 @@ export default function StrategyCatalogPage() {
                   {cat.icon}
                   <span className="hidden sm:inline">{cat.label}</span>
                   {cat.id !== "All" && (
-                    <span className="text-[10px] text-muted-foreground">
-                      ({categoryCounts[cat.id]})
-                    </span>
+                    <span className="text-[10px] text-muted-foreground">({categoryCounts[cat.id]})</span>
                   )}
                 </button>
               );
@@ -508,9 +483,7 @@ export default function StrategyCatalogPage() {
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <Search className="size-10 text-muted-foreground/50 mb-4" />
             <p className="text-lg font-medium text-muted-foreground">No strategies found</p>
-            <p className="text-sm text-muted-foreground/70 mt-1">
-              Try adjusting your search or filter criteria.
-            </p>
+            <p className="text-sm text-muted-foreground/70 mt-1">Try adjusting your search or filter criteria.</p>
           </div>
         ) : view === "grid" ? (
           <div className="space-y-8">

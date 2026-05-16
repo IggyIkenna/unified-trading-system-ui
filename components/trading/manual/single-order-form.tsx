@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/shared/spinner";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAlgos, useVenues } from "@/hooks/api/use-orders";
 import { cn } from "@/lib/utils";
 import { AlertTriangle, CheckCircle2, ShieldCheck, ShieldX, TrendingDown, TrendingUp, XCircle } from "lucide-react";
 import * as React from "react";
@@ -101,6 +102,20 @@ export function SingleOrderForm({
   handlePreview,
   handleSubmit,
 }: SingleOrderFormProps) {
+  const { data: venuesData } = useVenues();
+  const { data: algosData } = useAlgos();
+
+  const venues = React.useMemo(
+    () =>
+      (venuesData as { data?: Array<{ name: string }> } | undefined)?.data?.map((v) => v.name) ?? [...VENUES],
+    [venuesData],
+  );
+  const algos = React.useMemo(
+    () =>
+      (algosData as { data?: Array<{ type: string }> } | undefined)?.data?.map((a) => a.type) ?? [...ALGOS],
+    [algosData],
+  );
+
   const compliancePassed = complianceUnavailable || (complianceResult?.passed ?? false);
   const failedCheck = complianceResult?.checks.find((c) => !c.passed);
 
@@ -134,7 +149,7 @@ export function SingleOrderForm({
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {VENUES.map((v) => (
+            {venues.map((v) => (
               <SelectItem key={v} value={v}>
                 {v}
               </SelectItem>
@@ -186,7 +201,7 @@ export function SingleOrderForm({
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {ALGOS.map((a) => (
+            {algos.map((a) => (
               <SelectItem key={a} value={a}>
                 {a}
               </SelectItem>

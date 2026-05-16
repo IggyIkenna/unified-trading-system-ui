@@ -1,12 +1,12 @@
 # Task Template — Reusable for Any Agent Task
 
-**Copy this structure when creating new tasks. Every task plan MUST use `.plan.md` suffix and YAML frontmatter.**
+**Copy this structure when creating new tasks. Every task plan MUST use `.md` suffix and YAML frontmatter.**
 
 ---
 
 ## Plan File Format (Required)
 
-All task plans must be saved as `<slug>.plan.md` in `plans/active/` and include this YAML frontmatter:
+All task plans must be saved as `<slug>.md` in `plans/active/` and include this YAML frontmatter:
 
 ```yaml
 ---
@@ -138,4 +138,4 @@ See `TASK_1_ADD_QUALITY_CHECKS.md`, `TASK_2_FIX_VIOLATIONS.md`, `TASK_3_TYPE_CLE
 
 ---
 
-**Use this template to create new executable task docs as `<slug>.plan.md` in `plans/active/`**
+**Use this template to create new executable task docs as `<slug>.md` in `plans/active/`**

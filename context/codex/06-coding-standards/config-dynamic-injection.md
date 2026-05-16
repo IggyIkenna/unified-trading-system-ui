@@ -145,4 +145,4 @@ Additionally, `os.getenv` is blocked in all non-UCI source files by STEP 5.x os.
 - Full architecture: `unified-trading-codex/08-workflows/config-injection.md`
 - Cursor rule: `cursor-rules/config/dynamic-config-injection.mdc`
 - Domain schemas: `unified_config_interface.domain_configs` (InstrumentDomainConfig, StrategyDomainConfig, etc.)
-- Audit check: `trading_system_audit_prompt.plan.md` § `audit-config-injection`
+- Audit check: `trading_system_audit_prompt.md` § `audit-config-injection`

@@ -3,7 +3,7 @@
 **SSOT for:** canonical schema for `unified-trading-pm/configs/data-catalogue.{service}.yaml` files (symlinked into `deployment-service/configs/`).
 
 All `data-catalogue.*.yaml` files must conform to this schema. Validated by
-`data_catalogue_refresh.plan.md#dc-catalogue-format-standard`.
+`data_catalogue_refresh.md#dc-catalogue-format-standard`.
 
 ---
 
@@ -44,7 +44,7 @@ datasets:
 | `last_updated`         | ISO datetime | Auto-updated by `catalogue_updater.py` after each successful batch write                          |
 | `row_count_last_batch` | int          | Auto-updated by `catalogue_updater.py`                                                            |
 | `status`               | enum         | `available \| empty \| missing \| deprecated`                                                     |
-| `mvp_tier`             | enum         | `mvp_required \| mvp_optional \| post_mvp` — set by `data_catalogue_refresh.plan.md#dc-mvp-split` |
+| `mvp_tier`             | enum         | `mvp_required \| mvp_optional \| post_mvp` — set by `data_catalogue_refresh.md#dc-mvp-split` |
 
 ---
 
@@ -90,6 +90,6 @@ PASS threshold: >= 80% of declared datasets have `status: available`.
 
 ## References
 
-- `data_catalogue_refresh.plan.md` — implementation plan (availability audit, MVP split, auto-update, metadata store)
+- `data_catalogue_refresh.md` — implementation plan (availability audit, MVP split, auto-update, metadata store)
 - `unified-trading-pm/configs/data-catalogue.*.yaml` — per-service catalogue files (canonical data; symlinked into `deployment-service/configs/`)
 - `00-SSOT-INDEX.md` — SSOT registry entry for data catalogue

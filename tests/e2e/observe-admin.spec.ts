@@ -1,9 +1,9 @@
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 /**
  * Agent 7 — Observe & Admin E2E Tests
  * Tests for observe service pages and admin/ops pages.
- * Plan: agent7_observe_admin_2026_03_22.plan.md (a7-p7-tests)
+ * Plan: agent7_observe_admin_2026_03_22.plan (a7-p7-tests)
  */
 
 test.describe("Observe > Risk Dashboard", () => {

@@ -1,5 +1,5 @@
-import eslintConfigPrettier from "eslint-config-prettier";
 import nextConfig from "eslint-config-next";
+import eslintConfigPrettier from "eslint-config-prettier";
 
 const eslintConfig = [
   ...nextConfig,
@@ -22,7 +22,7 @@ const eslintConfig = [
     // bug class. See unified-trading-pm/codex/06-coding-standards/ui-testing-layers.md
     // (branch-tier gate policy: whole-surface gates warn on feat/*, block
     // on main; "what you just touched" still blocks).
-    // Tracked in unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan.md.
+    // Tracked in unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan.
     rules: {
       "react-hooks/set-state-in-effect": "warn",
       "react-hooks/purity": "warn",

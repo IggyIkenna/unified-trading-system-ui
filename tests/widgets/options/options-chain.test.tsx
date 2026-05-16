@@ -3,7 +3,7 @@
  *
  * Pattern per:
  *   unified-trading-pm/codex/06-coding-standards/ui-testing-layers.md (L1.5)
- *   unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan.md Phase 5
+ *   unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan Phase 5
  *
  * Scope:
  * - Renders chain tab for crypto vs TradFi underlying.
@@ -15,8 +15,8 @@
  * - Row-level strike interaction (sub-component internals — L3b)
  * - Real route wiring (L2)
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { buildMockOptionsData } from "../_helpers/mock-options-context";
 
 const mockOptionsData = buildMockOptionsData();

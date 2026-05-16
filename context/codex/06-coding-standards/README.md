@@ -534,7 +534,7 @@ fixtures eliminate live cloud calls:
 | Tick replay        | `TickReplayEngine`                        | `unified-trading-pm/scripts/dev/fixtures/`                   |
 | Full demo stack    | `demo-mode.sh`                            | `unified-trading-pm/scripts/`                                |
 
-Full details: `unified-trading-pm/plans/archive/cicd_mock_hardening_2026_03_11.plan.md` (Plan #60) See also:
+Full details: `unified-trading-pm/plans/archive/cicd_mock_hardening_2026_03_11.md` (Plan #60) See also:
 [quality-gates.md](quality-gates.md) § GCP Emulator Configuration, AWS Moto, Credential-Free CI Gate
 
 ---
@@ -627,7 +627,7 @@ See `02-data/unified-unified-api-contracts-chain.md` for the full chain and inte
 - **basedpyright zero-baseline policy [ENFORCED 2026-03-10]:** `.basedpyright-baseline.json` must not exist in any repo.
   All basedpyright errors must be fixed — baseline suppression is not allowed. Presence of the file causes a hard CI
   failure at STEP 5.22 in quality-gates. See
-  `unified-trading-pm/plans/archive/zero_baseline_typecheck_2026_03_10.plan.md`.
+  `unified-trading-pm/plans/archive/zero_baseline_typecheck_2026_03_10.md`.
 - Focus on public APIs first, internal helpers second.
 
 ```python
@@ -711,5 +711,5 @@ fixtures eliminate live cloud calls:
 | Tick replay        | `TickReplayEngine`                        | `unified-trading-pm/scripts/dev/fixtures/`                   |
 | Full demo stack    | `demo-mode.sh`                            | `unified-trading-pm/scripts/`                                |
 
-Full details: `unified-trading-pm/plans/archive/cicd_mock_hardening_2026_03_11.plan.md` (Plan #60) See also:
+Full details: `unified-trading-pm/plans/archive/cicd_mock_hardening_2026_03_11.md` (Plan #60) See also:
 [quality-gates.md](quality-gates.md) § GCP Emulator Configuration, AWS Moto, Credential-Free CI Gate

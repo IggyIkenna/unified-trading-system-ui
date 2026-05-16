@@ -3,20 +3,20 @@
 /**
  * TradingFamilyFilterBanner — reusable filter banner for trading surfaces
  * (orders / positions / P&L). Mirrors the signals-dashboard pattern: picks
- * (family, archetype) and persists to `useGlobalScope` so downstream
+ * (family, archetype) and persists to `useWorkspaceScope` so downstream
  * data-contexts can apply the filter.
  *
- * Phase 3 wave-B of `ui_unification_v2_sanitisation_2026_04_20.plan.md` §
+ * Phase 3 wave-B of `ui_unification_v2_sanitisation_2026_04_20.plan` §
  * p3-wire-picker-orders-positions. Placement: top of page, above WidgetGrid.
  *
  * `testIdPrefix` distinguishes banners across pages
  * (e.g. "orders" → `orders-family-picker`).
  */
 
-import { FamilyArchetypePicker } from "./family-archetype-picker";
 import type { StrategyArchetype, StrategyFamily } from "@/lib/architecture-v2";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScope, useWorkspaceScopeStore } from "@/lib/stores/workspace-scope-store";
 import { useMemo } from "react";
+import { FamilyArchetypePicker } from "./family-archetype-picker";
 
 export interface TradingFamilyFilterBannerProps {
   /** Prefix for data-testid attributes (e.g. "orders", "positions", "pnl"). */
@@ -35,15 +35,13 @@ export function TradingFamilyFilterBanner({
   label = "Strategy filter",
   counts,
 }: TradingFamilyFilterBannerProps) {
-  const { scope, setStrategyFamily, setStrategyArchetype } = useGlobalScope();
+  const scope = useWorkspaceScope();
+  const setFamilies = useWorkspaceScopeStore((s) => s.setFamilies);
+  const setArchetypes = useWorkspaceScopeStore((s) => s.setArchetypes);
 
-  const value = useMemo(
-    () => ({
-      family: scope.strategyFamily as StrategyFamily | undefined,
-      archetype: scope.strategyArchetype as StrategyArchetype | undefined,
-    }),
-    [scope.strategyFamily, scope.strategyArchetype],
-  );
+  const family = scope.families[0] as StrategyFamily | undefined;
+  const archetype = scope.archetypes[0] as StrategyArchetype | undefined;
+  const value = useMemo(() => ({ family, archetype }), [family, archetype]);
 
   const isActive = value.family !== undefined || value.archetype !== undefined;
 
@@ -58,8 +56,8 @@ export function TradingFamilyFilterBanner({
         availabilityFilter="all"
         value={value}
         onChange={(next) => {
-          setStrategyFamily(next.family);
-          setStrategyArchetype(next.archetype);
+          setFamilies(next.family ? [next.family] : []);
+          setArchetypes(next.archetype ? [next.archetype] : []);
         }}
       />
       {isActive && counts ? (
@@ -74,8 +72,8 @@ export function TradingFamilyFilterBanner({
         <button
           type="button"
           onClick={() => {
-            setStrategyFamily(undefined);
-            setStrategyArchetype(undefined);
+            setFamilies([]);
+            setArchetypes([]);
           }}
           className="text-xs text-primary hover:underline"
           data-testid={`${testIdPrefix}-family-picker-clear`}

@@ -51,7 +51,7 @@ SOURCE_DIR=${SOURCE_DIR:-"src"}
 TEST_PATHS=${TEST_PATHS:-"tests"}
 REQUIRED_PYTHON_VERSION="3.13"
 REQUIRED_RUFF_VERSION="0.15.0"
-MIN_COVERAGE=70  # Minimum 70% — BLOCKING (see coverage_70_percent.plan.md)
+MIN_COVERAGE=70  # Minimum 70% — BLOCKING (see coverage_70_percent.md)
 
 # ============================================================================
 # HELPER FUNCTIONS

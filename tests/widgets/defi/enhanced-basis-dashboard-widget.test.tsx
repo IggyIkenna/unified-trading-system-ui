@@ -4,7 +4,7 @@
  * Pattern reference:
  *   tests/widgets/defi/defi-lending-widget.test.tsx
  *   codex/06-coding-standards/ui-testing-layers.md (L1.5)
- *   plans/ai/ui_widget_test_rollout_2026_04_24.plan.md (Phase 3 Wave 2 DeFi)
+ *   plans/ai/ui_widget_test_rollout_2026_04_24.md (Phase 3 Wave 2 DeFi)
  *
  * Scope (per cert docs/manifest/widget-certification/enhanced-basis-dashboard.json):
  * - Render + root testid mount with market data present.
@@ -13,9 +13,9 @@
  * - Empty-state when basisTradeAssets has no matching market data (cert L0.7).
  * - Table columns: pair, basis bps, funding 8h, APY render from context.
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
 import type { BasisTradeMarketData } from "@/lib/types/defi";
+import { render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { buildMockDeFiData } from "../_helpers/mock-defi-context";
 
 function buildMarketData(overrides: Partial<BasisTradeMarketData> = {}): BasisTradeMarketData {

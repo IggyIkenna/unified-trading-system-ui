@@ -73,5 +73,5 @@ order submit, position query, market data snapshot).
 ## References
 
 - `02-data/vcr-cassette-ownership.md` — who records, where cassettes live, how to contribute to AC's `mocks/`
-- `api_keys_and_auth.plan.md` — implementation plan for cassette recording + GCP auth tests
+- `api_keys_and_auth.md` — implementation plan for cassette recording + GCP auth tests
 - `07-security/secrets-management.md` — how API keys are stored in Secret Manager

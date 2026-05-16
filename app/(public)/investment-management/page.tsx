@@ -57,27 +57,27 @@ const PROCESS_STEPS: readonly ProcessStep[] = [
   {
     number: "03",
     title: "Fit call",
-    body: "We confirm whether an Odum-managed route is appropriate.",
+    body: "A focused conversation about your mandate and whether an Odum-managed route fits.",
   },
   {
     number: "04",
     title: "Strategy Evaluation",
-    body: "We collect the information needed to assess mandate fit, structure, and reporting.",
+    body: "We work through your mandate context together — structure, reporting, and fit — without asking for strategy IP.",
   },
   {
     number: "05",
     title: "Strategy Review",
-    body: "A tailored pre-demo review of your route, requirements, and demo focus.",
+    body: "We share a tailored read of how we'd shape the mandate — route, requirements, and what the demo should cover.",
   },
   {
     number: "06",
     title: "Platform walkthrough",
-    body: "A tailored walkthrough of the relevant workflows, followed by a self-guided review.",
+    body: "We walk you through the relevant workflows, then leave you to explore.",
   },
   {
     number: "07",
     title: "Commercial Tailoring",
-    body: "Deeper catalogue, pricing, and mandate shape against your specifics.",
+    body: "We open the deeper catalogue, pricing, and mandate shape together — both sides walk in with constraints clear.",
   },
 ];
 
@@ -137,13 +137,15 @@ export default function InvestmentManagementPage() {
             </div>
             <h1 className="text-3xl font-bold tracking-tight md:text-4xl">{SERVICE_LABELS.investment.marketing}</h1>
             <p className="mt-4 text-lg text-muted-foreground">
-              Allocate to selected systematic strategies managed by Odum.
+              Allocate to selected systematic strategies managed by Odum — accelerating capital deployment under
+              Odum&rsquo;s operating discipline.
             </p>
             <p className="mt-3 text-sm text-muted-foreground">
               Odum acts as investment manager for selected systematic strategies available to eligible clients through
               SMA or fund-route structures where appropriate. Strategies may be developed by Odum, shaped with partners,
               or operated through Odum&rsquo;s infrastructure where the structure, governance, and risk controls are
-              suitable.
+              suitable. Mandates aren&rsquo;t limited to the published strategy list — bespoke allocations are reviewed
+              case by case.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Button asChild>
@@ -326,7 +328,7 @@ export default function InvestmentManagementPage() {
                   <ArrowRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
                 </div>
                 <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                  Build, run, monitor, or scale strategies through Odum&rsquo;s infrastructure.
+                  Design, deploy, operate, or evolve strategies through Odum&rsquo;s infrastructure.
                 </p>
               </Link>
               <Link

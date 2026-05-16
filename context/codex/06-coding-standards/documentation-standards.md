@@ -156,7 +156,7 @@ Schema governance documentation lives in:
   contracts
 - **Schema governance:** [02-data/schema-governance.md](../02-data/schema-governance.md) — Validation integration point,
   DRY/SoC enforcement, STEP 5.12 quality gate
-- **Schema contract audit:** `unified-trading-pm/plans/active/schema_governance_full_audit.plan.md` — Full audit results
+- **Schema contract audit:** `unified-trading-pm/plans/active/schema_governance_full_audit.md` — Full audit results
   for UAC normalization quality, UIC utilization, cross-contract deduplication
 
 Service docs (`docs/SCHEMA_VALIDATION.md`) must reference the canonical schemas used, not redefine them.
@@ -165,8 +165,8 @@ Service docs (`docs/SCHEMA_VALIDATION.md`) must reference the canonical schemas 
 
 ## S5.10 — Enforcement
 
-Phase 0 (`phase0_standards_enforcement.plan.md`) runs the audit script on all repos and produces a baseline gap table.
-Phase 1 doc filling (`documentation_standards_enforcement.plan.md`) is blocked until Phase 0 baseline is established.
+Phase 0 (`phase0_standards_enforcement.md`) runs the audit script on all repos and produces a baseline gap table.
+Phase 1 doc filling (`documentation_standards_enforcement.md`) is blocked until Phase 0 baseline is established.
 
 The documentation gate passes when:
 

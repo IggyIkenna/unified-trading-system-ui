@@ -1,4 +1,4 @@
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScopeStore } from "@/lib/stores/workspace-scope-store";
 import { parseSlotLabel, type ParsedSlotLabel } from "@/lib/types/defi";
 
 /**
@@ -14,7 +14,7 @@ import { parseSlotLabel, type ParsedSlotLabel } from "@/lib/types/defi";
  * archetype component should prefer `useActiveStrategy()` below.
  */
 export function useActiveStrategyId(): string | undefined {
-  const strategyIds = useGlobalScope((s) => s.scope.strategyIds);
+  const strategyIds = useWorkspaceScopeStore((s) => s.scope.strategyIds);
   return strategyIds.length === 1 ? strategyIds[0] : undefined;
 }
 

@@ -3,7 +3,7 @@
  *
  * Pattern reference:
  *   unified-trading-pm/codex/06-coding-standards/ui-testing-layers.md (L1.5)
- *   unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan.md Phase 5
+ *   unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.md Phase 5
  *
  * Scope:
  * - Empty state when no instruction is selected (cert L0.7).
@@ -16,11 +16,11 @@
  *
  * Out of scope: real route wiring (L2), multi-widget flow (L3b), visual regression (L4).
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
-  buildMockInstructionsData,
   buildMockInstruction,
+  buildMockInstructionsData,
   buildMockPendingInstruction,
 } from "../_helpers/mock-instructions-context";
 

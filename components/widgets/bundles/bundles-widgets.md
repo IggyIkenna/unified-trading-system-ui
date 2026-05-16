@@ -27,7 +27,7 @@ The bundle builder is a multi-step transaction constructor. Users either pick a 
 | ---------------- | -------------- | ------------------------------------------------------------------------------------------------------------- | -------- | ---- | ---- | -------- | -------- | --------- |
 | `bundle-builder` | Bundle Builder | Template gallery (toggleable) + step editor with visual flow + P&L KPI strip + sticky simulate/submit actions | `Layers` | 6    | 8    | 12       | 14       | yes       |
 
-**Note (2026-04-22):** Bundles tab was originally decomposed into four co-dependent widgets (`bundle-templates`, `bundle-steps`, `bundle-pnl`, `bundle-actions`) that all wrote to the same shared `useBundlesData()` context and only made sense together (P&L read steps; actions fired on steps; templates loaded into steps). They were merged into a single `bundle-builder` widget that owns the full workflow. See `docs/audits/live-review-findings.md` row #17 and `unified-trading-pm/plans/active/trading_widget_merge_audit_2026_04_22.plan.md` WU-2.
+**Note (2026-04-22):** Bundles tab was originally decomposed into four co-dependent widgets (`bundle-templates`, `bundle-steps`, `bundle-pnl`, `bundle-actions`) that all wrote to the same shared `useBundlesData()` context and only made sense together (P&L read steps; actions fired on steps; templates loaded into steps). They were merged into a single `bundle-builder` widget that owns the full workflow. See `docs/audits/live-review-findings.md` row #17 and `unified-trading-pm/plans/active/trading_widget_merge_audit_2026_04_22.md` WU-2.
 
 ---
 

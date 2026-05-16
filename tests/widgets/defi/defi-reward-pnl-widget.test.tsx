@@ -4,7 +4,7 @@
  * Pattern reference:
  *   tests/widgets/defi/defi-lending-widget.test.tsx
  *   codex/06-coding-standards/ui-testing-layers.md (L1.5)
- *   plans/ai/ui_widget_test_rollout_2026_04_24.plan.md (Phase 3 Wave 2 DeFi)
+ *   plans/ai/ui_widget_test_rollout_2026_04_24.md (Phase 3 Wave 2 DeFi)
  *
  * Scope (per cert docs/manifest/widget-certification/defi-reward-pnl.json):
  * - Render + root testid mount with factors present.
@@ -14,9 +14,9 @@
  * - Waterfall bars render one entry per factor with label + formatted amount.
  * - Total reward sum displayed in header.
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
 import type { RewardPnLBreakdown } from "@/lib/types/defi";
+import { render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { buildMockDeFiData } from "../_helpers/mock-defi-context";
 
 const DEFAULT_REWARD_PNL: RewardPnLBreakdown = [

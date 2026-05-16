@@ -14,7 +14,7 @@ vi.mock("next/link", () => ({
 }));
 
 // Public homepage was rebuilt 2026-04-26 as a React composition (Phase 3 of
-// `marketing_site_three_route_consolidation_2026_04_26.plan.md`). It no longer
+// `marketing_site_three_route_consolidation_2026_04_26.md`). It no longer
 // loads `public/homepage.html` via shadow-DOM. Tests now assert the React
 // component tree directly: hero headline, three engagement-route cards, and
 // the canonical CTA strings.
@@ -29,10 +29,13 @@ describe("Public pages — homepage shell", () => {
     const mod = await import("@/app/(public)/page");
     const Page = mod.default;
     render(<Page />, { wrapper: TestWrapper });
+    // Hero is now a 3-line stagger inside one h1: "Systematic strategies." /
+    // "Trading infrastructure." / "Institutional clients." Assert via
+    // accessible name (which concatenates the three spans).
     expect(
       screen.getByRole("heading", {
         level: 1,
-        name: /Systematic strategies and trading infrastructure/i,
+        name: /Systematic strategies\.\s*Trading infrastructure\./i,
       }),
     ).toBeDefined();
     // Two "Start Your Review" CTAs (hero + final) and two "Contact Odum" CTAs.
@@ -44,9 +47,12 @@ describe("Public pages — homepage shell", () => {
     const mod = await import("@/app/(public)/page");
     const Page = mod.default;
     render(<Page />, { wrapper: TestWrapper });
-    expect(screen.getByText("Odum-Managed Strategies")).toBeDefined();
-    expect(screen.getByText("DART Trading Infrastructure")).toBeDefined();
-    expect(screen.getByText("Regulated Operating Models")).toBeDefined();
+    expect(screen.getAllByText("Odum-Managed Strategies").length).toBeGreaterThan(0);
+    // The "DART" term is wrapped in a glossary tooltip <Term> element so the
+    // full string is split across nodes; the literal "Trading Infrastructure"
+    // also appears in the metadata description, so use getAllByText.
+    expect(screen.getAllByText(/Trading Infrastructure/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Regulated Operating Models").length).toBeGreaterThan(0);
   });
 });
 

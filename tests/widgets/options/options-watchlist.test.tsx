@@ -3,7 +3,7 @@
  *
  * Pattern per:
  *   unified-trading-pm/codex/06-coding-standards/ui-testing-layers.md (L1.5)
- *   unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan.md Phase 5
+ *   unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan Phase 5
  *
  * Scope:
  * - Widget mounts and passes correct props to WatchlistPanel.
@@ -15,8 +15,8 @@
  * - WatchlistPanel internal search, add/remove (L3b)
  * - Visual regression (L4 deferred)
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { buildMockOptionsData, buildMockWatchlist, buildMockWatchlistSymbol } from "../_helpers/mock-options-context";
 
 const mockOptionsData = buildMockOptionsData();

@@ -14,8 +14,56 @@ import { ArrowDownRight, ArrowUpRight, Info, Receipt } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import * as React from "react";
+import { useTierZeroScenario } from "@/lib/cockpit/use-tier-zero-scenario";
+import type { ScenarioPosition, ScenarioStrategyInstance } from "@/lib/mocks/tier-zero-scenario";
 import type { AssetClassFilter } from "./positions-data-context";
 import { usePositionsData, type PositionRecord } from "./positions-data-context";
+
+// 2026-05-01 cockpit migration: scope-resolved tier-zero positions get
+// adapted into the legacy `PositionRecord` shape so the existing column
+// renderers + filter machinery work unchanged. Synthetic fields (today_pnl,
+// entry/current price, leverage, margin) use deterministic heuristics so
+// the demo prospect sees plausible numbers; replacing them with real
+// scenario telemetry is a follow-up.
+function adaptScenarioPosition(p: ScenarioPosition, strategy: ScenarioStrategyInstance | undefined): PositionRecord {
+  const side: PositionRecord["side"] = p.side === "long" ? "LONG" : "SHORT";
+  const netPnl = p.unrealisedPnlUsd;
+  const netPnlPct = p.notional > 0 ? (netPnl / p.notional) * 100 : 0;
+  // Today's slice is a deterministic ~25% of net P&L so the column renders
+  // sensibly without requiring per-day fixtures.
+  const todayPnl = netPnl * 0.25;
+  const todayPnlPct = netPnlPct * 0.25;
+  // Synthetic price + quantity: chosen so price * qty ≈ notional.
+  const syntheticPrice = 1000;
+  const quantity = p.notional / syntheticPrice;
+  const entryPrice = syntheticPrice * (1 - netPnlPct / 100);
+  // Default 1× margin / leverage; perp/future positions could be flagged
+  // separately by ScenarioPosition once the schema gains an instrumentType.
+  const leverage = 1;
+  const margin = p.notional / leverage;
+  return {
+    id: p.id,
+    strategy_id: p.strategyId,
+    strategy_name: strategy?.label ?? p.strategyId,
+    instrument: `${p.venue}:SPOT:${p.symbol}@${p.symbol}-USD`,
+    side,
+    quantity,
+    entry_price: entryPrice,
+    current_price: syntheticPrice,
+    net_pnl: netPnl,
+    net_pnl_pct: netPnlPct,
+    today_pnl: todayPnl,
+    today_pnl_pct: todayPnlPct,
+    unrealized_pnl: netPnl,
+    venue: p.venue,
+    margin,
+    leverage,
+    updated_at: new Date().toISOString().slice(0, 19).replace("T", " "),
+    notional_usd: p.notional,
+    category: p.assetGroup,
+    strategy_family: strategy?.family,
+  };
+}
 
 const EXPORT_COLUMNS: ExportColumn[] = [
   { key: "instrument", header: "Instrument" },
@@ -417,6 +465,32 @@ export function PositionsTableWidget(_props: WidgetComponentProps) {
     resetFilters,
   } = usePositionsData();
 
+  const tierZero = useTierZeroScenario();
+  const useTierZero = tierZero.status === "match" && tierZero.positions.length > 0;
+  const tzRows: PositionRecord[] = React.useMemo(() => {
+    if (!useTierZero) return [];
+    const strategiesById = new Map(tierZero.strategies.map((s) => [s.id, s] as const));
+    return tierZero.positions.map((p) => adaptScenarioPosition(p, strategiesById.get(p.strategyId)));
+  }, [useTierZero, tierZero.positions, tierZero.strategies]);
+
+  // When tier-zero is active, apply the same in-widget filter chips to the
+  // synthesised rows so search / strategy / venue / side / asset-class chips
+  // continue to do something. (matchesScope already pre-filtered by
+  // top-level scope.)
+  const tzFilteredRows: PositionRecord[] = React.useMemo(() => {
+    if (!useTierZero) return [];
+    const q = searchQuery.trim().toLowerCase();
+    return tzRows.filter((r) => {
+      if (q && !`${r.instrument} ${r.strategy_name}`.toLowerCase().includes(q)) return false;
+      if (venueFilter !== "all" && r.venue !== venueFilter) return false;
+      if (sideFilter !== "all" && r.side !== sideFilter) return false;
+      if (strategyFilter !== "all" && r.strategy_id !== strategyFilter) return false;
+      return true;
+    });
+  }, [useTierZero, tzRows, searchQuery, venueFilter, sideFilter, strategyFilter]);
+
+  const dataRows = useTierZero ? tzFilteredRows : filteredPositions;
+
   const activeFilterCount =
     [
       searchQuery,
@@ -429,6 +503,20 @@ export function PositionsTableWidget(_props: WidgetComponentProps) {
     () => buildColumns(getInstrumentRoute, classifyInstrument, onViewTrades),
     [getInstrumentRoute, classifyInstrument, onViewTrades],
   );
+
+  const tzVenueOptions = React.useMemo(
+    () => (useTierZero ? Array.from(new Set(tzRows.map((r) => r.venue))) : []),
+    [useTierZero, tzRows],
+  );
+  const tzStrategyOptions = React.useMemo<Array<readonly [string, string]>>(
+    () =>
+      useTierZero ? Array.from(new Map(tzRows.map((r) => [r.strategy_id, r.strategy_name] as const)).entries()) : [],
+    [useTierZero, tzRows],
+  );
+  const venueOptionsForFilter = useTierZero ? tzVenueOptions : uniqueVenues.filter(Boolean);
+  const strategyOptionsForFilter: Array<readonly [string, string]> = useTierZero
+    ? tzStrategyOptions
+    : uniqueStrategies.filter(([id]) => id);
 
   const filterConfig: TableFilterConfig = {
     search: {
@@ -443,7 +531,7 @@ export function PositionsTableWidget(_props: WidgetComponentProps) {
         placeholder: "Strategy",
         allLabel: "All Strategies",
         width: "w-32",
-        options: uniqueStrategies.filter(([id]) => id).map(([id, name]) => ({ value: id, label: name })),
+        options: strategyOptionsForFilter.map(([id, name]) => ({ value: id, label: name })),
       },
       {
         value: venueFilter,
@@ -451,7 +539,7 @@ export function PositionsTableWidget(_props: WidgetComponentProps) {
         placeholder: "Venue",
         allLabel: "All Venues",
         width: "w-32",
-        options: uniqueVenues.filter(Boolean).map((v) => ({ value: v, label: v })),
+        options: venueOptionsForFilter.map((v) => ({ value: v, label: v })),
       },
       {
         value: sideFilter,
@@ -482,25 +570,28 @@ export function PositionsTableWidget(_props: WidgetComponentProps) {
       isBatch: !isLive,
     },
     export: {
-      data: filteredPositions as unknown as Record<string, unknown>[],
+      data: dataRows as unknown as Record<string, unknown>[],
       columns: EXPORT_COLUMNS,
       filename: "positions",
     },
   };
 
   return (
-    <TableWidget
-      data-testid="positions-table-widget"
-      columns={columns}
-      data={filteredPositions}
-      filterConfig={filterConfig}
-      actions={actionsConfig}
-      isLoading={positionsLoading}
-      error={positionsError ? "Failed to load positions" : null}
-      onRetry={refetchPositions}
-      emptyMessage="No positions match your filters"
-      enableSorting
-      enableColumnVisibility
-    />
+    <div data-testid="positions-table-widget" data-source={useTierZero ? "tier-zero" : "legacy"}>
+      <TableWidget
+        columns={columns}
+        data={dataRows}
+        filterConfig={filterConfig}
+        actions={actionsConfig}
+        isLoading={positionsLoading && !useTierZero}
+        error={positionsError && !useTierZero ? "Failed to load positions" : null}
+        onRetry={refetchPositions}
+        emptyMessage={
+          useTierZero ? "No positions match the current scope or chip filters" : "No positions match your filters"
+        }
+        enableSorting
+        enableColumnVisibility
+      />
+    </div>
   );
 }

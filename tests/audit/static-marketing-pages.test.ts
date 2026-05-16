@@ -87,9 +87,12 @@ describe("Marketing page content consistency", () => {
 
   it("who-we-are page contains company description", () => {
     const fp = pages["who-we-are.html"];
-    expect(fp).toContain("investment manager");
-    expect(fp).toContain("platform infrastructure");
-    expect(fp).toContain("regulatory");
+    // Page copy was tightened during the marketing refresh; updated keywords
+    // match the "regulated quantitative trading firm" + "systematic strategies"
+    // + "infrastructure" framing used today.
+    expect(fp).toContain("regulated quantitative trading firm");
+    expect(fp).toContain("systematic strategies");
+    expect(fp).toContain("infrastructure");
   });
 
   it("contact page contains form", () => {

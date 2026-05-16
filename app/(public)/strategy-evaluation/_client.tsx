@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Term } from "@/components/marketing/term";
 import { FileUploadField } from "@/components/strategy-evaluation/file-upload-field";
 import { isUploadedFileRef, type UploadedFileRef } from "@/lib/strategy-evaluation/upload";
+import { validateStrategyEvaluation } from "@/lib/strategy-evaluation/validate";
 import PreStepGate from "./_pre-step-gate";
 import AllocatorWizard, { type AllocatorFormState } from "./_allocator-wizard";
 import { persistSeed, seedFiltersFromQuestionnaire } from "@/lib/questionnaire/seed-catalogue-filters";
@@ -332,6 +333,22 @@ const FIELD_TO_STEP: Record<string, number> = {
   understandSignals: 2,
 };
 
+// File refs are dropped from any cross-session persistence (localStorage +
+// server-side draft mirror). The actual File objects live in pendingFilesRef
+// in-memory and can't survive a reload or device switch anyway; persisting
+// the metadata only creates a stale-blob trap where the saved doc lies about
+// having attachments. The picker re-attach flow is the source of truth.
+function stripFileRefs<T extends SerializedFormState>(s: T): T {
+  return {
+    ...s,
+    backtestMethodologyDoc: null,
+    assumptionsDoc: null,
+    tearSheet: null,
+    tradeLogCsv: null,
+    equityCurveCsv: null,
+  };
+}
+
 function serializeState(state: FormState): SerializedFormState {
   return {
     ...state,
@@ -604,8 +621,9 @@ export default function StrategyEvaluationFormClient({
   React.useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
+      const draftPayload = stripFileRefs(serializeState(form));
       try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(serializeState(form)));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(draftPayload));
         setDraftSavedAt(Date.now());
       } catch {
         // ignore storage errors
@@ -618,7 +636,7 @@ export default function StrategyEvaluationFormClient({
         fetch("/api/strategy-evaluation/save-draft", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: form.email, payload: serializeState(form) }),
+          body: JSON.stringify({ email: form.email, payload: draftPayload }),
           cache: "no-store",
         }).catch(() => {
           // non-critical
@@ -660,19 +678,7 @@ export default function StrategyEvaluationFormClient({
   }
 
   function validate(): FieldError[] {
-    const errs: FieldError[] = [];
-    if (!form.strategyName.trim()) errs.push({ field: "strategyName", message: "Strategy name is required." });
-    if (!form.leadResearcher.trim()) errs.push({ field: "leadResearcher", message: "Lead researcher is required." });
-    if (!form.email.trim()) errs.push({ field: "email", message: "Email is required." });
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
-      errs.push({ field: "email", message: "Enter a valid email address." });
-    if (!form.commercialPath) errs.push({ field: "commercialPath", message: "Select a commercial path." });
-    if (!form.understandFit) errs.push({ field: "understandFit", message: "You must acknowledge this statement." });
-    if (!form.understandIncubation)
-      errs.push({ field: "understandIncubation", message: "You must acknowledge this statement." });
-    if (!form.understandSignals)
-      errs.push({ field: "understandSignals", message: "You must acknowledge this statement." });
-    return errs;
+    return validateStrategyEvaluation(form).map((e) => ({ field: e.field, message: e.message }));
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -696,6 +702,27 @@ export default function StrategyEvaluationFormClient({
         const firstField = document.getElementById(firstFieldName);
         if (firstField) firstField.scrollIntoView({ behavior: "smooth", block: "center" });
       }
+      return;
+    }
+    // Block submit if any field carries a stale ref without a corresponding
+    // fresh File in pendingFilesRef. Lets the user re-pick before the form
+    // POSTs a doc with empty file URLs.
+    const fileFieldKeys: readonly FileFieldKey[] = [
+      "backtestMethodologyDoc",
+      "assumptionsDoc",
+      "tearSheet",
+      "tradeLogCsv",
+      "equityCurveCsv",
+    ];
+    const staleFields = fileFieldKeys.filter((k) => form[k]?.path === "stale" && !pendingFilesRef.current.has(k));
+    if (staleFields.length > 0) {
+      const errs: Partial<Record<FileFieldKey, string>> = {};
+      for (const k of staleFields) {
+        errs[k] = "Re-attach this file — the previous upload did not complete.";
+      }
+      setUploadErrors(errs);
+      setCurrentStep(5);
+      window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
     setSubmitting(true);
@@ -917,6 +944,7 @@ export default function StrategyEvaluationFormClient({
           submitting={submitting}
           submitted={submitted}
           submitError={submitError}
+          validationErrors={errors}
           onSubmit={async () => {
             // Synthesize a form-event-like submit through the existing
             // pipeline so we get the same persistence + email behaviour.
@@ -984,6 +1012,14 @@ export default function StrategyEvaluationFormClient({
           </p>
         </div>
       )}
+
+      <div className="mb-6 rounded-md border border-sky-500/30 bg-sky-500/5 px-4 py-3 text-sm text-sky-200">
+        <p className="font-medium">Your answers save automatically as you go.</p>
+        <p className="mt-1 text-xs text-sky-300/80">
+          You can close the tab and come back later. Just open this page again from the same browser (Chrome to Chrome,
+          Firefox to Firefox) and your draft is right where you left it.
+        </p>
+      </div>
 
       {/* Wizard stepper — shows progress + lets the user jump back to any earlier step. */}
       <div className="mb-8">
@@ -2269,8 +2305,10 @@ export default function StrategyEvaluationFormClient({
                     {
                       key: "tradeLogCsv" as const,
                       label: "Trade log CSV",
-                      hint: "One row per trade or fill: at minimum timestamp, side, instrument, size, price",
+                      hint: "One row per trade or fill, ordered by timestamp. Required: timestamp (UTC), venue, instrument_id (the exact venue-native symbol — e.g. BTCUSDT, BTC-29MAR24-50000-C, BTC-PERPETUAL — not just “BTC”), side (buy/sell), size, price. Optional: fee, fee_ccy, trade_id.",
                       accept: ".csv,.tsv,.parquet",
+                      templateUrl: "/templates/strategy-evaluation/trade_log_template.csv",
+                      templateLabel: "trade log CSV template",
                     },
                     {
                       key: "equityCurveCsv" as const,
@@ -2283,8 +2321,10 @@ export default function StrategyEvaluationFormClient({
                     label: string;
                     hint: string;
                     accept: string;
+                    templateUrl?: string;
+                    templateLabel?: string;
                   }[]
-                ).map(({ key, label, hint, accept }) => (
+                ).map(({ key, label, hint, accept, templateUrl, templateLabel }) => (
                   <FileUploadField
                     key={key}
                     label={label}
@@ -2294,6 +2334,8 @@ export default function StrategyEvaluationFormClient({
                     onChange={(ref) => setField(key, ref)}
                     onFileChange={(file) => handleFileChange(key, file)}
                     errorMessage={uploadErrors[key] ?? null}
+                    templateUrl={templateUrl}
+                    templateLabel={templateLabel}
                   />
                 ))}
 

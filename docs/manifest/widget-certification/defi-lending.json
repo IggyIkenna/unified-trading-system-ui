@@ -158,7 +158,7 @@
       "status": "pass",
       "by": "agent+tests",
       "date": "2026-04-24",
-      "notes": "L1.5 harness spec: 17 tests covering render, operation toggle, amount input + reactive expected-output, health factor preview, execute-button enable/disable + executeDeFiOrder payload, protocol switching, empty-protocols AlertTriangle path. See tests/widgets/defi/defi-lending-widget.test.tsx. Pattern pilot for rollout per unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan.md."
+      "notes": "L1.5 harness spec: 17 tests covering render, operation toggle, amount input + reactive expected-output, health factor preview, execute-button enable/disable + executeDeFiOrder payload, protocol switching, empty-protocols AlertTriangle path. See tests/widgets/defi/defi-lending-widget.test.tsx. Pattern pilot for rollout per unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan."
     },
     "l7": {
       "status": "pass",
@@ -233,7 +233,9 @@
     "notes": "Peers with defi-health-factor (both show health factor). Master relationship may emerge if detail panel added for position."
   },
   "dataContract": {
-    "channels": ["rest"],
+    "channels": [
+      "rest"
+    ],
     "primary": "rest",
     "cadence": "on-demand",
     "staleness": "seconds",
@@ -242,9 +244,18 @@
     "notes": "Current: synchronous mock via defi-data-context. Production: REST to DeFi protocol service for APY, health factor."
   },
   "coverage": {
-    "assetClasses": ["defi"],
-    "strategies": ["YIELD_ROTATION_LENDING", "CARRY_RECURSIVE_STAKED"],
-    "venues": ["AAVEV3-ETHEREUM", "MORPHO-ETHEREUM", "COMPOUND-ETHEREUM"],
+    "assetClasses": [
+      "defi"
+    ],
+    "strategies": [
+      "YIELD_ROTATION_LENDING",
+      "CARRY_RECURSIVE_STAKED"
+    ],
+    "venues": [
+      "AAVEV3-ETHEREUM",
+      "MORPHO-ETHEREUM",
+      "COMPOUND-ETHEREUM"
+    ],
     "commonTabs": null,
     "verifiedOn": [],
     "gaps": [

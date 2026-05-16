@@ -47,7 +47,7 @@ describe("alerts-table — L1.5 harness", () => {
     it("shows empty-state message when filteredAlerts is empty", () => {
       Object.assign(mockData, buildMockAlertsData({ alerts: [], filteredAlerts: [] }));
       render(<AlertsTableWidget {...noopProps} />);
-      expect(screen.getByText(/No active alerts — all systems operating normally/i)).toBeTruthy();
+      expect(screen.getByText(/No active alerts: all systems operating normally/i)).toBeTruthy();
     });
 
     it("shows error message when isError=true", () => {
@@ -122,7 +122,12 @@ describe("alerts-table — L1.5 harness", () => {
       expect(ackButton.disabled).toBe(true);
     });
 
-    it("renders the 'Batch — actions disabled' indicator in batch mode", () => {
+    it("disables every per-row action when isBatchMode=true (no banner; tooltip-only UX)", () => {
+      // The legacy "Batch — actions disabled" banner was replaced by per-row
+      // BatchGuardButton tooltips ("Switch to live mode to take action") + a
+      // disabled state on the action buttons themselves. Assert the tooltip
+      // text is registered in the DOM (radix renders it as TooltipContent
+      // even before hover).
       Object.assign(
         mockData,
         buildMockAlertsData({
@@ -131,7 +136,8 @@ describe("alerts-table — L1.5 harness", () => {
         }),
       );
       render(<AlertsTableWidget {...noopProps} />);
-      expect(screen.getByText(/Batch — actions disabled/i)).toBeTruthy();
+      const ackButton = screen.getByRole("button", { name: /Acknowledge alert/i }) as HTMLButtonElement;
+      expect(ackButton.disabled).toBe(true);
     });
   });
 });

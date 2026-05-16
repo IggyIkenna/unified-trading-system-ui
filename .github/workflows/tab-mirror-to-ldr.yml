@@ -1,0 +1,99 @@
+# tab-mirror-to-ldr.yml — auto-FF push tab/** branches to live-defi-rollout
+#
+# Triggered on every push to a `tab/<operator>/<slot>` branch. Attempts an FF-only
+# push of the new tip to `live-defi-rollout`. Idempotent: if the tab branch is not
+# strictly ahead of LDR (e.g. someone else just pushed first), the FF-only push
+# fails cleanly and the workflow exits 0 — no destructive action.
+#
+# Why this exists: agents commit on `tab/<op>/<N>` and historically had to remember
+# `git push origin HEAD:live-defi-rollout` to land on LDR. This workflow makes
+# `git push` (which pushes to the tab branch) automatically mirror to LDR.
+#
+# Per-side / per-slot push semantics:
+#   - Tab branch always advances first (the push that triggers this).
+#   - LDR advances iff tab tip is a strict FF over LDR HEAD.
+#   - If LDR has commits the tab branch doesn't, the agent must rebase locally and
+#     re-push (the FF-only refuses + this workflow logs `[skip:non-ff]`).
+#
+# Concurrency: workflow uses `cancel-in-progress: false` with concurrency group keyed
+# on the destination ref so two simultaneous mirror attempts serialize (avoids race
+# where both pass FF-only check then one clobbers the other).
+#
+# Rollout: `bash unified-trading-pm/scripts/workflow-templates/rollout-workflow-templates.sh --template tab-mirror-to-ldr.yml`
+#
+# SSOT: this file lives canonically in unified-trading-pm/scripts/workflow-templates/.
+# Per-repo copies are flat duplicates; never edit the per-repo copy.
+
+name: tab-mirror-to-ldr
+
+on:
+  push:
+    branches:
+      - "tab/**"
+
+concurrency:
+  group: tab-mirror-to-ldr
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout pushed tab branch (full history needed for FF check)
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Compute FF eligibility
+        id: ff_check
+        run: |
+          set -euo pipefail
+          git fetch origin live-defi-rollout
+          tab_sha="$(git rev-parse HEAD)"
+          ldr_sha="$(git rev-parse origin/live-defi-rollout)"
+          if [ "$tab_sha" = "$ldr_sha" ]; then
+            echo "decision=noop" >> "$GITHUB_OUTPUT"
+            echo "reason=tab tip == LDR tip (no-op)" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          merge_base="$(git merge-base HEAD origin/live-defi-rollout)"
+          if [ "$merge_base" = "$ldr_sha" ]; then
+            echo "decision=ff" >> "$GITHUB_OUTPUT"
+            echo "reason=tab is strict FF over LDR" >> "$GITHUB_OUTPUT"
+          elif [ "$merge_base" = "$tab_sha" ]; then
+            echo "decision=skip" >> "$GITHUB_OUTPUT"
+            echo "reason=LDR is ahead of tab (tab needs to rebase locally)" >> "$GITHUB_OUTPUT"
+          else
+            echo "decision=skip" >> "$GITHUB_OUTPUT"
+            echo "reason=tab and LDR diverged (manual rebase required)" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Fast-forward LDR to tab tip
+        if: steps.ff_check.outputs.decision == 'ff'
+        run: |
+          set -euo pipefail
+          echo "[mirror] ${GITHUB_REF} -> live-defi-rollout (${{ steps.ff_check.outputs.reason }})"
+          # Default `git push` (no --force) is FF-only on the destination ref.
+          # If a concurrent mirror beat us to LDR (or LDR was advanced by another
+          # tab), this push fails cleanly and exits non-zero; we trap so the
+          # workflow ends in a clear "race lost" log rather than red failure.
+          if git push origin "HEAD:live-defi-rollout" 2>&1 | tee /tmp/push.log; then
+            echo "[mirror:done] LDR advanced to $(git rev-parse HEAD | head -c 8)"
+          else
+            echo "[mirror:race-lost] another push beat us; LDR is now ahead of this tab tip"
+            grep -q "non-fast-forward\|rejected" /tmp/push.log && exit 0
+            cat /tmp/push.log
+            exit 1
+          fi
+
+      - name: Log skip / no-op
+        if: steps.ff_check.outputs.decision != 'ff'
+        run: |
+          echo "[mirror:skip] ${GITHUB_REF} -> live-defi-rollout : ${{ steps.ff_check.outputs.reason }}"
+          echo "decision: ${{ steps.ff_check.outputs.decision }}"

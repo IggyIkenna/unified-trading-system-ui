@@ -9,7 +9,7 @@ import type { StrategyArchetype, StrategyFamily } from "@/lib/architecture-v2";
 import { makeFamilyFilterPredicate } from "@/lib/architecture-v2/family-filter";
 import { useExecutionMode } from "@/lib/execution-mode-context";
 import { getPositionsForScope } from "@/lib/mocks/fixtures/mock-data-index";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 import { getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
@@ -341,7 +341,7 @@ function mapRawRowToPosition(row: Record<string, unknown>): PositionRecord {
 export function PositionsDataProvider({ children }: { children: React.ReactNode }) {
   const searchParams = useSearchParams();
   const strategyIdFilter = searchParams.get("strategy_id");
-  const { scope: globalScope } = useGlobalScope();
+  const globalScope = useWorkspaceScope();
   const { isLive } = useExecutionMode();
 
   const {
@@ -521,8 +521,8 @@ export function PositionsDataProvider({ children }: { children: React.ReactNode 
     // Phase 3 (plan p3-wire-picker-orders-positions): filter by the global
     // (family, archetype) selection written by TradingFamilyFilterBanner.
     const familyPredicate = makeFamilyFilterPredicate({
-      family: globalScope.strategyFamily as StrategyFamily | undefined,
-      archetype: globalScope.strategyArchetype as StrategyArchetype | undefined,
+      family: globalScope.families[0] as StrategyFamily | undefined,
+      archetype: globalScope.archetypes[0] as StrategyArchetype | undefined,
     });
     result = result.filter(familyPredicate);
     return result;
@@ -533,8 +533,8 @@ export function PositionsDataProvider({ children }: { children: React.ReactNode 
     venueFilter,
     sideFilter,
     instrumentTypeFilters,
-    globalScope.strategyFamily,
-    globalScope.strategyArchetype,
+    globalScope.families,
+    globalScope.archetypes,
   ]);
 
   const summary: PositionsSummary = React.useMemo(() => {

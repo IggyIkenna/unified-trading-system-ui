@@ -3,7 +3,7 @@
 /**
  * Admin view of the questionnaire response filed by this organisation.
  *
- * Plan: unified-trading-pm/plans/active/reg_umbrella_questionnaire_and_onboarding_docs_2026_04_21.plan.md
+ * Plan: unified-trading-pm/plans/active/reg_umbrella_questionnaire_and_onboarding_docs_2026_04_21.plan
  *
  * Joins the Firestore `/questionnaires` collection to the admin org detail
  * view by `submitted_by.email === org.contact_email` (primary) or

@@ -3,7 +3,7 @@
 /**
  * Strategy Universe — Tier-1 admin read-only catalogue.
  *
- * Plan B Phase 2 (plans/active/strategy_catalogue_3tier_surface_2026_04_21.plan.md).
+ * Plan B Phase 2 (plans/active/strategy_catalogue_3tier_surface_2026_04_21.md).
  * Surface: /admin/strategy-universe → mounts
  * `<StrategyCatalogueSurface viewMode="admin-universe" />`.
  *
@@ -14,8 +14,8 @@
 
 import { useState } from "react";
 
-import { Badge } from "@/components/ui/badge";
 import { StrategyCatalogueSurface } from "@/components/strategy-catalogue/StrategyCatalogueSurface";
+import { Badge } from "@/components/ui/badge";
 import {
   EMPTY_CATALOGUE_FILTER,
   type StrategyCatalogueFilter,

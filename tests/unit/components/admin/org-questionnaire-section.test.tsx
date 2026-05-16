@@ -1,7 +1,7 @@
 /**
  * Phase-3 regression tests for the admin org questionnaire section.
  *
- * Plan: unified-trading-pm/plans/active/reg_umbrella_questionnaire_and_onboarding_docs_2026_04_21.plan.md
+ * Plan: unified-trading-pm/plans/active/reg_umbrella_questionnaire_and_onboarding_docs_2026_04_21.md
  */
 
 import "@testing-library/jest-dom/vitest";

@@ -179,9 +179,9 @@ isProject: false
 
 ## Related Documents
 
-- Architectural decisions: `.cursor/plans/registry_completeness_refactor_6ecf4abc.plan.md` (scope, decision framework,
+- Architectural decisions: `.cursor/plans/registry_completeness_refactor_6ecf4abc.md` (scope, decision framework,
   separation of concerns)
-- UAC Citadel execution plan: `.cursor/plans/uac_citadel_implementation_execution.plan.md` (completed — facade pattern,
+- UAC Citadel execution plan: `.cursor/plans/uac_citadel_implementation_execution.md` (completed — facade pattern,
   per-source normalization)
 
 ## Context

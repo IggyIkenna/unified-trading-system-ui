@@ -156,5 +156,5 @@ Both are in `quality-gates.sh`. Any violation blocks merge. Exceptions: `unified
 - `deployment-service/configs/runtime-topology.yaml` — per-service env var wiring
 - `unified-cloud-interface/unified_cloud_interface/factory.py` — implementation
 - `unified-cloud-interface/unified_cloud_interface/protocol.py` — DataSink/DataSource/EventBus ABCs
-- `unified-trading-pm/plans/active/service_protocol_abstraction.plan.md` — plan defining this architecture
-- `unified-trading-pm/plans/active/topology_dag_pm_ssot.plan.md` — plan that created this doc
+- `unified-trading-pm/plans/active/service_protocol_abstraction.md` — plan defining this architecture
+- `unified-trading-pm/plans/active/topology_dag_pm_ssot.md` — plan that created this doc

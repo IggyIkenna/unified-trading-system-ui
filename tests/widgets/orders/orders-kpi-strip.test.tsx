@@ -4,7 +4,7 @@
  * Pattern reference:
  *   tests/widgets/defi/defi-lending-widget.test.tsx
  *   codex/06-coding-standards/ui-testing-layers.md (L1.5)
- *   plans/ai/ui_widget_test_rollout_2026_04_24.plan.md (Phase 2 Wave 1)
+ *   plans/ai/ui_widget_test_rollout_2026_04_24.md (Phase 2 Wave 1)
  *
  * Scope:
  * - Render with mocked OrdersData; assert the six metric labels mount.
@@ -72,11 +72,11 @@ describe("orders-kpi-strip — L1.5 harness", () => {
   });
 
   describe("loading branch (cert L0.6)", () => {
-    it("renders em-dash placeholder for each metric while isLoading is true", () => {
+    it("renders dash placeholder for each metric while isLoading is true", () => {
       Object.assign(mockOrdersData, buildMockOrdersData({ isLoading: true }));
       const { container } = renderWidget();
-      // Six em-dashes — one per metric value
-      const dashMatches = container.textContent?.match(/—/g) ?? [];
+      // Six ASCII hyphens — one per metric value (widget renders "-" not "—").
+      const dashMatches = container.textContent?.match(/-/g) ?? [];
       expect(dashMatches.length).toBeGreaterThanOrEqual(6);
     });
 

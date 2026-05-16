@@ -64,7 +64,8 @@ describe("BriefingAccessGate", () => {
     // The Contact us nudge renders as a link to /contact with request-access
     // prefill context; the service key is derived from pathname and falls back
     // to `general` when the test harness renders at the default route.
-    const contactLink = screen.getByText("Contact us").closest("a");
+    // Link text is lowercase "contact us" in the current copy.
+    const contactLink = screen.getByText("contact us").closest("a");
     expect(contactLink).toBeTruthy();
     const href = contactLink?.getAttribute("href") ?? "";
     expect(href.startsWith("/contact?")).toBe(true);

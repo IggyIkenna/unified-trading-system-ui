@@ -1,7 +1,7 @@
 /**
  * SERVICE_LABELS — single source of truth for service display labels.
  *
- * Per `marketing_site_three_route_consolidation_2026_04_26.plan.md` and codex SSOT
+ * Per `marketing_site_three_route_consolidation_2026_04_26.plan` and codex SSOT
  * `unified-trading-pm/codex/08-workflows/signup-signin-workflow.md` §2.7.2:
  *
  * - `marketing` — public-facing display label. Used on homepage cards, engagement-route

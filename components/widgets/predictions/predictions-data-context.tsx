@@ -26,7 +26,7 @@ import {
   ODUM_INSTRUMENTS,
 } from "@/lib/mocks/fixtures/predictions-data";
 import { mock01 } from "@/lib/mocks/generators/deterministic";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 import { getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 import * as React from "react";
@@ -162,7 +162,7 @@ function computeFilteredMarkets(
 
 export function PredictionsDataProvider({ children }: { children: React.ReactNode }) {
   const { isPaper, isBatch, mode } = useExecutionMode();
-  const { scope: globalScope } = useGlobalScope();
+  const globalScope = useWorkspaceScope();
   const scopeStrategyIds = React.useMemo(
     () =>
       getStrategyIdsForScope({

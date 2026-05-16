@@ -19,6 +19,19 @@ vi.mock("@/components/widgets/positions/positions-data-context", () => ({
   usePositionsData: () => mockData,
 }));
 
+// Force tier-zero into "unsupported" so the widget falls through to the
+// legacy positions-data path the test asserts on.
+vi.mock("@/lib/cockpit/use-tier-zero-scenario", () => ({
+  useTierZeroScenario: () => ({
+    matchedScenarios: [],
+    strategies: [],
+    positions: [],
+    backtests: [],
+    bundles: [],
+    status: "unsupported" as const,
+  }),
+}));
+
 vi.mock("next/navigation", () => ({
   useRouter: () => ({
     push: vi.fn(),

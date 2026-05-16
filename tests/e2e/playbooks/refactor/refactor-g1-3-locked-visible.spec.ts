@@ -24,7 +24,7 @@
  *     entitlements. CI runs the same spec against `odum-research.co.uk`.
  *
  * SSOTs:
- *   - unified-trading-pm/plans/active/refactor_g1_3_locked_visible_ui_service_tile_mode_2026_04_20.plan.md
+ *   - unified-trading-pm/plans/active/refactor_g1_3_locked_visible_ui_service_tile_mode_2026_04_20.plan
  *   - codex/14-playbooks/_ssot-rules/06-show-dont-show-discipline.md
  *   - codex/14-playbooks/cross-cutting/visibility-slicing.md
  *   - codex/14-playbooks/demo-ops/demo-restriction-profiles.md

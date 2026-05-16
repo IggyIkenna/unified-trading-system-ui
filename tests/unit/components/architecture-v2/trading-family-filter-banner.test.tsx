@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { TradingFamilyFilterBanner } from "@/components/architecture-v2/trading-family-filter-banner";
 import { AvailabilityStoreProvider } from "@/lib/architecture-v2";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScopeStore } from "@/lib/stores/workspace-scope-store";
 
 type AuthUser = {
   readonly id: string;
@@ -21,9 +21,9 @@ vi.mock("@/hooks/use-auth", () => ({
 }));
 
 function resetScope() {
-  const { setStrategyFamily, setStrategyArchetype } = useGlobalScope.getState();
-  setStrategyFamily(undefined);
-  setStrategyArchetype(undefined);
+  const { setFamilies, setArchetypes } = useWorkspaceScopeStore.getState();
+  setFamilies([]);
+  setArchetypes([]);
 }
 
 describe("TradingFamilyFilterBanner", () => {
@@ -77,7 +77,7 @@ describe("TradingFamilyFilterBanner", () => {
   it("clear button resets the global scope selection", async () => {
     const user = userEvent.setup();
     // Seed a selection directly.
-    useGlobalScope.getState().setStrategyFamily("ML_DIRECTIONAL");
+    useWorkspaceScopeStore.getState().setFamilies(["ML_DIRECTIONAL"]);
 
     render(
       <AvailabilityStoreProvider persist={false}>
@@ -89,7 +89,7 @@ describe("TradingFamilyFilterBanner", () => {
     );
     const clearBtn = screen.getByTestId("pnl-family-picker-clear");
     await user.click(clearBtn);
-    expect(useGlobalScope.getState().scope.strategyFamily).toBeUndefined();
-    expect(useGlobalScope.getState().scope.strategyArchetype).toBeUndefined();
+    expect(useWorkspaceScopeStore.getState().scope.families).toEqual([]);
+    expect(useWorkspaceScopeStore.getState().scope.archetypes).toEqual([]);
   });
 });

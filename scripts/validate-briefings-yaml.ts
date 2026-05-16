@@ -22,7 +22,7 @@
  * Usage:
  *   tsx scripts/validate-briefings-yaml.ts
  *
- * Plan: unified-trading-pm/plans/active/refactor_g3_3_briefings_cms_migration_2026_04_20.plan.md
+ * Plan: unified-trading-pm/plans/active/refactor_g3_3_briefings_cms_migration_2026_04_20.md
  */
 
 import * as fs from "node:fs";
@@ -43,16 +43,18 @@ interface CodexMapping {
  * does NOT yet have a dedicated codex file (tracked as a G3.5 follow-up);
  * parity accepts that and skips codex lookup for it.
  */
+// Aligned with the 3-pillar canonical refactor (b531beb2). DART
+// orientation + signals-in + full-pipeline collapsed into the single
+// `dart-trading-infrastructure` pillar; regulatory-umbrella renamed to
+// `regulated-operating-models`. The signals-out pillar was removed
+// entirely (lives elsewhere in the marketing surface).
 const CODEX_MAPPING: readonly CodexMapping[] = [
   { codexFile: "im-decision-journey.md", yamlSlugs: ["investment-management"] },
-  { codexFile: "regulatory-umbrella-briefing.md", yamlSlugs: ["regulatory"] },
-  {
-    codexFile: "dart-briefing.md",
-    yamlSlugs: ["platform", "dart-signals-in", "dart-full"],
-  },
+  { codexFile: "regulatory-umbrella-briefing.md", yamlSlugs: ["regulated-operating-models"] },
+  { codexFile: "dart-briefing.md", yamlSlugs: ["dart-trading-infrastructure"] },
 ];
 
-const YAML_ONLY_SLUGS: readonly BriefingPillarSlug[] = ["signals-out"];
+const YAML_ONLY_SLUGS: readonly BriefingPillarSlug[] = [];
 
 const REPO_ROOT = path.resolve(__dirname, "..");
 const WORKSPACE_ROOT = path.resolve(REPO_ROOT, "..");

@@ -191,7 +191,7 @@ export default function StrategyHandoffPage() {
             <Shield className="size-4" />
             Submit for Review
           </Button>
-          <Link href="/services/trading/overview">
+          <Link href="/services/workspace?surface=terminal&tm=command">
             <Button variant="outline" size="lg" className="gap-2">
               Go to Execution
               <ArrowRight className="size-4" />

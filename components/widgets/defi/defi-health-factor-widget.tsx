@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { useDeFiData } from "./defi-data-context";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useWorkspaceScope } from "@/lib/stores/workspace-scope-store";
 import {
   Dialog,
   DialogContent,
@@ -40,7 +40,7 @@ function hfLabel(hf: number): string {
 
 export function DeFiHealthFactorWidget(_props: WidgetComponentProps) {
   const { healthFactorDashboard: hf, emergencyExit } = useDeFiData();
-  const { scope } = useGlobalScope();
+  const scope = useWorkspaceScope();
   const [exitOpen, setExitOpen] = React.useState(false);
 
   // HF gauge: visual bar from 0 to 2.0

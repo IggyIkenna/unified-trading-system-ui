@@ -3,7 +3,7 @@
  * → catalogue-filter shape.
  *
  * Funnel Coherence plan Workstream E4 (absorbed from
- * dart_ui_strategy_filtering_and_onboarding_2026_04_24.plan.md Phase 3).
+ * dart_ui_strategy_filtering_and_onboarding_2026_04_24.md Phase 3).
  *
  * Maps the prospect's questionnaire / strategy-evaluation answers (asset
  * groups, instrument types, market_neutral preference, risk profile,
@@ -64,8 +64,11 @@ interface QuestionnaireLikeInput {
 
 function asArray(value: ReadonlySet<string> | readonly string[] | undefined): readonly string[] {
   if (!value) return [];
-  if (value instanceof Set) return Array.from(value);
-  return value;
+  if (Array.isArray(value)) return value;
+  // ReadonlySet<string> at this point — TS doesn't narrow `instanceof Set`
+  // against the readonly variant, so we narrow via the array check above
+  // and treat the remaining branch as the Set form.
+  return Array.from(value as ReadonlySet<string>);
 }
 
 /**

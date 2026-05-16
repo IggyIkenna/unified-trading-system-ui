@@ -9,9 +9,18 @@ describe("shouldHidePublicDepthChrome", () => {
   });
 
   it("shows on public marketing home and paths", () => {
+    // Engagement-route pages carry their own on-page review-path strip
+    // (per 2026-04-26 review), so /platform / /investment-management /
+    // /regulatory now hide the global chrome. The home and the
+    // questionnaire page still show it.
     expect(shouldHidePublicDepthChrome("/")).toBe(false);
-    expect(shouldHidePublicDepthChrome("/platform")).toBe(false);
     expect(shouldHidePublicDepthChrome("/questionnaire")).toBe(false);
+  });
+
+  it("hides on engagement-route pages (own on-page review-path strip)", () => {
+    expect(shouldHidePublicDepthChrome("/platform")).toBe(true);
+    expect(shouldHidePublicDepthChrome("/investment-management")).toBe(true);
+    expect(shouldHidePublicDepthChrome("/regulatory")).toBe(true);
   });
 
   it("hides on auth", () => {

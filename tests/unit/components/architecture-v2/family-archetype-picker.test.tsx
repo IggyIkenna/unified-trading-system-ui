@@ -81,15 +81,18 @@ describe("FamilyArchetypePicker", () => {
     renderPicker({ family: "CARRY_AND_YIELD" });
     const archetypeTrigger = screen.getByTestId("archetype-select");
     await user.click(archetypeTrigger);
-    // CARRY_AND_YIELD contains 6 archetypes per ARCHETYPE_TO_FAMILY (formatted via formatArchetype).
-    expect(await screen.findByText("Basis Carry — Dated Futures")).toBeInTheDocument();
-    expect(screen.getByText("Basis Carry — Funding Rate (Perp)")).toBeInTheDocument();
+    // CARRY_AND_YIELD contains 6 archetypes per ARCHETYPE_TO_FAMILY. Labels
+    // were retitled 2026-04-29 from " — " to ":" separator (Basis Carry: Dated,
+    // Carry: Staked Basis, Yield: Lending Rotation, etc.).
+    // Labels come from ARCHETYPE_DISPLAY_NAMES in lib/strategy-display.ts.
+    expect(await screen.findByText("Basis Carry: Dated Futures")).toBeInTheDocument();
+    expect(screen.getByText("Basis Carry: Funding Rate (Perp)")).toBeInTheDocument();
     expect(screen.getByText("Staked Basis Carry")).toBeInTheDocument();
     expect(screen.getByText("Recursive Staked Carry")).toBeInTheDocument();
     expect(screen.getByText("Lending Yield Rotation")).toBeInTheDocument();
     expect(screen.getByText("Simple Staking Yield")).toBeInTheDocument();
     // A non-matching archetype should NOT appear.
-    expect(screen.queryByText("ML Directional — Continuous")).toBeNull();
+    expect(screen.queryByText(/ML Directional/i)).toBeNull();
   });
 
   it("emits onChange({family}) when a family is picked", async () => {
@@ -105,7 +108,8 @@ describe("FamilyArchetypePicker", () => {
     const { onChange } = renderPicker({ family: "STAT_ARB_PAIRS" });
     await user.click(screen.getByTestId("archetype-select"));
     // Picker renders formatArchetype() labels; value emitted is still the raw archetype id.
-    await user.click(await screen.findByText("Statistical Arbitrage — Fixed Pairs"));
+    // Display label from ARCHETYPE_DISPLAY_NAMES is "Statistical Arbitrage: Fixed Pairs".
+    await user.click(await screen.findByText("Statistical Arbitrage: Fixed Pairs"));
     expect(onChange).toHaveBeenCalledWith({
       family: "STAT_ARB_PAIRS",
       archetype: "STAT_ARB_PAIRS_FIXED",

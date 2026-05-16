@@ -2,7 +2,7 @@
  * Onboarding document store — pluggable backend for
  * /api/onboarding/upload, /download, /docs/list, /docs/delete.
  *
- * Plan: unified-trading-pm/plans/active/reg_umbrella_questionnaire_and_onboarding_docs_2026_04_21.plan.md
+ * Plan: unified-trading-pm/plans/active/reg_umbrella_questionnaire_and_onboarding_docs_2026_04_21.md
  *
  * Dispatches between a local-disk store (mock / dev — writes under
  * .local-dev-cache/onboarding-docs/) and a cloud store (staging / prod —

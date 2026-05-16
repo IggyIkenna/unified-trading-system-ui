@@ -271,8 +271,8 @@ if drift:
 
 ```bash
 # In PM quality-gates.sh:
-ACTIVE=$(ls plans/active/*.plan.md 2>/dev/null | wc -l)
-REGISTERED=$(rg '\.plan\.md' unified-trading-codex/00-SSOT-INDEX.md 2>/dev/null | wc -l)
+ACTIVE=$(ls plans/active/*.md 2>/dev/null | wc -l)
+REGISTERED=$(rg '\.md\.md' unified-trading-codex/00-SSOT-INDEX.md 2>/dev/null | wc -l)
 if [ "$ACTIVE" -gt "$REGISTERED" ]; then
   echo "WARN: $ACTIVE active plans but only $REGISTERED registered in SSOT-INDEX"
 fi

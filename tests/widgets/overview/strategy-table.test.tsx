@@ -86,10 +86,10 @@ describe("strategy-table — L1.5 harness", () => {
     expect(screen.getByText(/Show all 20 strategies/i)).toBeTruthy();
   });
 
-  it("View All link targets /services/trading/strategies", () => {
+  it("View All link targets /services/strategy-catalogue", () => {
     render(<StrategyTableWidget {...({} as never)} />);
     const links = screen.getAllByRole("link");
-    expect(links.some((l) => l.getAttribute("href") === "/services/trading/strategies")).toBe(true);
+    expect(links.some((l) => l.getAttribute("href") === "/services/strategy-catalogue")).toBe(true);
   });
 
   it("falls back to 'Navigate to Overview tab' when context null", async () => {

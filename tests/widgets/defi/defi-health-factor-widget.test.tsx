@@ -4,7 +4,7 @@
  * Pattern reference:
  *   tests/widgets/defi/defi-lending-widget.test.tsx
  *   codex/06-coding-standards/ui-testing-layers.md (L1.5)
- *   plans/ai/ui_widget_test_rollout_2026_04_24.plan.md (Phase 3 Wave 2 DeFi — metrics)
+ *   plans/ai/ui_widget_test_rollout_2026_04_24.plan (Phase 3 Wave 2 DeFi — metrics)
  *
  * Scope:
  * - Render root testid; HF number + status badge ("Healthy"/"Warning"/"Critical").
@@ -15,10 +15,11 @@
  * - Emergency-exit dialog opens, shows cost breakdown + numbered steps.
  * - Confirm Exit in batch mode triggers toast.info guard (cert L3.2 fix).
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import type { EmergencyExitEstimate, HealthFactorDashboard } from "@/lib/types/defi";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { toast } from "sonner";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { buildMockDeFiData } from "../_helpers/mock-defi-context";
-import type { HealthFactorDashboard, EmergencyExitEstimate } from "@/lib/types/defi";
 
 function buildMockHealthFactor(overrides: Partial<HealthFactorDashboard> = {}): HealthFactorDashboard {
   return {
@@ -57,7 +58,6 @@ function buildMockEmergencyExit(overrides: Partial<EmergencyExitEstimate> = {}):
 vi.mock("sonner", () => ({
   toast: { success: vi.fn(), error: vi.fn(), info: vi.fn() },
 }));
-import { toast } from "sonner";
 const toastMock = toast as unknown as {
   success: ReturnType<typeof vi.fn>;
   error: ReturnType<typeof vi.fn>;
@@ -77,8 +77,8 @@ const mockScope = {
   },
 };
 
-vi.mock("@/lib/stores/global-scope-store", () => ({
-  useGlobalScope: () => mockScope,
+vi.mock("@/lib/stores/workspace-scope-store", () => ({
+  useWorkspaceScope: () => mockScope.scope, useWorkspaceScopeStore: (selector?: (s: typeof mockScope) => unknown) => (selector ? selector(mockScope) : mockScope), useWorkspaceScopeActions: () => mockScope,
 }));
 
 const mockDeFiData = {
